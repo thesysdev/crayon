@@ -49,6 +49,7 @@ export async function runDeploy(options: DeployOptions): Promise<void> {
     prod,
     yes,
     skipEnv,
+    noInteractive: Boolean(options.noInteractive),
   });
 }
 

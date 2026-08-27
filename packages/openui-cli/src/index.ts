@@ -139,7 +139,8 @@ program
   .addHelpText(
     "after",
     `
-Deploys an OpenUI project to Vercel. Passes allowlisted keys from .env / .env.local via --env.
+Deploys an OpenUI project to Vercel. If you are not logged in, opens vercel login
+first. Passes allowlisted keys from .env / .env.local via --env.
 
 Extra flags after deploy are forwarded as-is to the target deployment platform,
 which validates them (for example --prod or --force).

@@ -36,6 +36,7 @@ export type DeployToVercelOptions = {
   prod: boolean;
   yes: boolean;
   skipEnv: boolean;
+  noInteractive: boolean;
 };
 
 export async function deployToVercel(opts: DeployToVercelOptions): Promise<void> {
@@ -46,22 +47,16 @@ export async function deployToVercel(opts: DeployToVercelOptions): Promise<void>
   warnMissingRequiredEnv(opts.projectDir, fileEnv);
 
   const vercel = resolveTargetCli(opts.projectDir, packageManager, "vercel");
-  const vercelVersion = await probeVercelVersion(vercel, opts.projectDir);
-  const loggedIn = await isVercelLoggedIn(vercel, opts.projectDir);
-  const temporary = !loggedIn && versionAtLeast(vercelVersion, TEMPORARY_DEPLOY_SINCE);
+  await prepareVercelCli(vercel, opts.projectDir);
+  let loggedIn = await isVercelLoggedIn(vercel, opts.projectDir);
   if (!loggedIn) {
-    console.info(
-      temporary
-        ? "Not logged into Vercel. Creating a temporary deployment you can claim later.\n"
-        : "Not logged into Vercel.\n",
-    );
+    await loginToVercel(vercel, opts);
+    loggedIn = true;
   }
 
   const vercelArgs = buildVercelArgs({
     extraArgs: opts.extraArgs,
-    yes: opts.yes || !loggedIn,
-    nonInteractive: !loggedIn,
-    temporary,
+    yes: opts.yes,
     localEnv,
   });
   const publicArgs = vercelArgs.filter((_, i, args) => !isVercelEnvFlag(args, i));
@@ -80,6 +75,7 @@ export async function deployToVercel(opts: DeployToVercelOptions): Promise<void>
     vercel.command,
     [...vercel.quietPrefixArgs, ...vercelArgs],
     opts.projectDir,
+    { inheritOutput: true },
   );
   if (!result.error && result.status === 0) {
     telemetry.capture("cli_deploy_succeeded", {
@@ -126,13 +122,7 @@ function resolveTargetCli(
   };
 }
 
-/** Unauthenticated deploys need `--temporary` from this Vercel CLI version. */
-const TEMPORARY_DEPLOY_SINCE: [number, number, number] = [59, 7, 0];
-
-async function probeVercelVersion(
-  invocation: TargetInvocation,
-  cwd: string,
-): Promise<[number, number, number] | null> {
+async function prepareVercelCli(invocation: TargetInvocation, cwd: string): Promise<void> {
   const preparing = invocation.source === "dlx";
   const tty = Boolean(process.stdout.isTTY);
   if (preparing) {
@@ -150,7 +140,7 @@ async function probeVercelVersion(
 
   if (!result.error && result.status === 0) {
     if (preparing && tty) process.stdout.write(" done\n");
-    return parseVercelVersion(result.diagnosticTail);
+    return;
   }
 
   if (preparing && tty) process.stdout.write("\n");
@@ -162,23 +152,6 @@ async function probeVercelVersion(
   );
 }
 
-function parseVercelVersion(output: string): [number, number, number] | null {
-  const match = output.match(/(\d+)\.(\d+)\.(\d+)/);
-  if (!match) return null;
-  return [Number(match[1]), Number(match[2]), Number(match[3])];
-}
-
-function versionAtLeast(
-  version: [number, number, number] | null,
-  min: [number, number, number],
-): boolean {
-  if (!version) return true;
-  for (let i = 0; i < 3; i++) {
-    if (version[i] !== min[i]) return version[i]! > min[i]!;
-  }
-  return true;
-}
-
 async function isVercelLoggedIn(invocation: TargetInvocation, cwd: string): Promise<boolean> {
   const result = await runCommand(
     invocation.command,
@@ -187,6 +160,31 @@ async function isVercelLoggedIn(invocation: TargetInvocation, cwd: string): Prom
     { echo: false, stdin: "ignore" },
   );
   return !result.error && result.status === 0;
+}
+
+async function loginToVercel(
+  invocation: TargetInvocation,
+  opts: Pick<DeployToVercelOptions, "projectDir" | "noInteractive">,
+): Promise<void> {
+  const canPrompt = Boolean(process.stdin.isTTY && process.stdout.isTTY) && !opts.noInteractive;
+  if (!canPrompt) {
+    throw new CreateError(
+      "vercel_login",
+      "Not logged into Vercel. Run `vercel login` or set VERCEL_TOKEN, then retry.",
+      "authentication",
+      "NOT_LOGGED_IN",
+    );
+  }
+
+  console.info("Not logged into Vercel. Starting login...\n");
+  const result = await runCommand(
+    invocation.command,
+    [...invocation.quietPrefixArgs, "login"],
+    opts.projectDir,
+    { inheritOutput: true },
+  );
+  if (!result.error && result.status === 0) return;
+  throwCommandFailure(result, "vercel_login", "Vercel login failed");
 }
 
 function throwCommandFailure(result: CommandResult, stage: string, message: string): never {
@@ -222,43 +220,45 @@ function findExecutableOnPath(bin: string): string | undefined {
 function buildVercelArgs(opts: {
   extraArgs: string[];
   yes: boolean;
-  nonInteractive: boolean;
-  temporary: boolean;
   localEnv: Record<string, string>;
 }): string[] {
   const args = [...opts.extraArgs];
   if (opts.yes && !args.includes("--yes") && !args.includes("-y")) args.unshift("--yes");
-  if (opts.nonInteractive && !args.includes("--non-interactive")) {
-    args.unshift("--non-interactive");
-  }
-  if (opts.temporary && !args.includes("--temporary")) args.unshift("--temporary");
-  // `--temporary` is a deploy-only flag. Older CLIs have no such option and
-  // treat a bare `vercel --yes` as the anonymous deploy.
-  if (opts.temporary && args[0] !== "deploy") args.unshift("deploy");
 
-  const alreadySet = vercelEnvKeysInArgs(args);
+  const envKeys = vercelEnvKeysInArgs(args, ["--env", "-e"]);
+  const buildEnvKeys = vercelEnvKeysInArgs(args, ["--build-env", "-b"]);
   for (const key of Object.keys(opts.localEnv).sort()) {
-    if (alreadySet.has(key)) continue;
     const value = opts.localEnv[key];
     if (value === undefined) continue;
-    args.push("--env", `${key}=${value}`);
+    const assignment = `${key}=${value}`;
+    // Next.js inlines process.env at `next build`. Runtime `--env` alone is
+    // not enough — the remote build also needs `--build-env`.
+    if (!envKeys.has(key)) args.push("--env", assignment);
+    if (!buildEnvKeys.has(key)) args.push("--build-env", assignment);
   }
   return args;
 }
 
-function vercelEnvKeysInArgs(args: string[]): Set<string> {
+function vercelEnvKeysInArgs(
+  args: string[],
+  flags: readonly string[] = ["--env", "-e", "--build-env", "-b"],
+): Set<string> {
   const keys = new Set<string>();
+  const flagSet = new Set(flags);
+  const prefixed = new RegExp(
+    `^(?:${flags.map((flag) => flag.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|")})=(.+)$`,
+  );
   for (let i = 0; i < args.length; i++) {
     const arg = args[i]!;
-    if (arg === "--env" || arg === "-e" || arg === "--build-env" || arg === "-b") {
+    if (flagSet.has(arg)) {
       const assignment = args[i + 1];
       const key = assignment?.split("=")[0];
       if (key) keys.add(key);
       i += 1;
       continue;
     }
-    const prefixed = arg.match(/^(?:--env|-e|--build-env|-b)=(.+)$/);
-    if (prefixed?.[1]) keys.add(prefixed[1].split("=")[0]!);
+    const match = arg.match(prefixed);
+    if (match?.[1]) keys.add(match[1].split("=")[0]!);
   }
   return keys;
 }
