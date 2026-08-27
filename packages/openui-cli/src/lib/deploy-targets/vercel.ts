@@ -45,15 +45,6 @@ export async function deployToVercel(opts: DeployToVercelOptions): Promise<void>
   const localEnv = opts.skipEnv ? {} : fileEnv;
   warnMissingRequiredEnv(opts.projectDir, fileEnv);
 
-  const hasLangGraph = fs.existsSync(path.join(opts.projectDir, "langgraph.json"));
-  if (hasLangGraph) {
-    console.info(
-      "This project has a LangGraph Agent Server (langgraph.json).\n" +
-        "`openui deploy` publishes the Next.js app. Deploy the Agent Server separately " +
-        "and set LANGGRAPH_API_URL on Vercel to that URL.\n",
-    );
-  }
-
   const vercel = resolveTargetCli(opts.projectDir, packageManager, "vercel");
   await prepareDlxCli(vercel, opts.projectDir);
   const loggedIn = await isVercelLoggedIn(vercel, opts.projectDir);
@@ -90,7 +81,6 @@ export async function deployToVercel(opts: DeployToVercelOptions): Promise<void>
       prod: opts.prod,
       yes: opts.yes,
       skip_env: opts.skipEnv,
-      has_langgraph: hasLangGraph,
       cli_source: vercel.source,
       logged_in: loggedIn,
       env_key_count: Object.keys(localEnv).length,
