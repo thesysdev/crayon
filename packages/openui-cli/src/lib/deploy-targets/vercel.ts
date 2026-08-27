@@ -46,16 +46,22 @@ export async function deployToVercel(opts: DeployToVercelOptions): Promise<void>
   warnMissingRequiredEnv(opts.projectDir, fileEnv);
 
   const vercel = resolveTargetCli(opts.projectDir, packageManager, "vercel");
-  await prepareDlxCli(vercel, opts.projectDir);
+  const vercelVersion = await probeVercelVersion(vercel, opts.projectDir);
   const loggedIn = await isVercelLoggedIn(vercel, opts.projectDir);
+  const temporary = !loggedIn && versionAtLeast(vercelVersion, TEMPORARY_DEPLOY_SINCE);
   if (!loggedIn) {
-    console.info("Not logged into Vercel. Creating a temporary deployment you can claim later.\n");
+    console.info(
+      temporary
+        ? "Not logged into Vercel. Creating a temporary deployment you can claim later.\n"
+        : "Not logged into Vercel.\n",
+    );
   }
 
   const vercelArgs = buildVercelArgs({
     extraArgs: opts.extraArgs,
     yes: opts.yes || !loggedIn,
     nonInteractive: !loggedIn,
+    temporary,
     localEnv,
   });
   const publicArgs = vercelArgs.filter((_, i, args) => !isVercelEnvFlag(args, i));
@@ -120,31 +126,57 @@ function resolveTargetCli(
   };
 }
 
-async function prepareDlxCli(invocation: TargetInvocation, cwd: string): Promise<void> {
-  if (invocation.source !== "dlx") return;
+/** Unauthenticated deploys need `--temporary` from this Vercel CLI version. */
+const TEMPORARY_DEPLOY_SINCE: [number, number, number] = [59, 7, 0];
 
+async function probeVercelVersion(
+  invocation: TargetInvocation,
+  cwd: string,
+): Promise<[number, number, number] | null> {
+  const preparing = invocation.source === "dlx";
   const tty = Boolean(process.stdout.isTTY);
-  const label = "Preparing Vercel CLI...";
-  if (tty) process.stdout.write(label);
-  else console.info(label);
+  if (preparing) {
+    const label = "Preparing Vercel CLI...";
+    if (tty) process.stdout.write(label);
+    else console.info(label);
+  }
 
   const result = await runCommand(
     invocation.command,
     [...invocation.quietPrefixArgs, "--version"],
     cwd,
-    {
-      echo: false,
-    },
+    { echo: false },
   );
 
   if (!result.error && result.status === 0) {
-    if (tty) process.stdout.write(" done\n");
-    return;
+    if (preparing && tty) process.stdout.write(" done\n");
+    return parseVercelVersion(result.diagnosticTail);
   }
 
-  if (tty) process.stdout.write("\n");
+  if (preparing && tty) process.stdout.write("\n");
   if (result.diagnosticTail) process.stderr.write(result.diagnosticTail);
-  throwCommandFailure(result, "vercel_cli_install", "Failed to install Vercel CLI");
+  throwCommandFailure(
+    result,
+    preparing ? "vercel_cli_install" : "vercel_cli_version",
+    preparing ? "Failed to install Vercel CLI" : "Failed to run Vercel CLI",
+  );
+}
+
+function parseVercelVersion(output: string): [number, number, number] | null {
+  const match = output.match(/(\d+)\.(\d+)\.(\d+)/);
+  if (!match) return null;
+  return [Number(match[1]), Number(match[2]), Number(match[3])];
+}
+
+function versionAtLeast(
+  version: [number, number, number] | null,
+  min: [number, number, number],
+): boolean {
+  if (!version) return true;
+  for (let i = 0; i < 3; i++) {
+    if (version[i] !== min[i]) return version[i]! > min[i]!;
+  }
+  return true;
 }
 
 async function isVercelLoggedIn(invocation: TargetInvocation, cwd: string): Promise<boolean> {
@@ -191,6 +223,7 @@ function buildVercelArgs(opts: {
   extraArgs: string[];
   yes: boolean;
   nonInteractive: boolean;
+  temporary: boolean;
   localEnv: Record<string, string>;
 }): string[] {
   const args = [...opts.extraArgs];
@@ -198,6 +231,10 @@ function buildVercelArgs(opts: {
   if (opts.nonInteractive && !args.includes("--non-interactive")) {
     args.unshift("--non-interactive");
   }
+  if (opts.temporary && !args.includes("--temporary")) args.unshift("--temporary");
+  // `--temporary` is a deploy-only flag. Older CLIs have no such option and
+  // treat a bare `vercel --yes` as the anonymous deploy.
+  if (opts.temporary && args[0] !== "deploy") args.unshift("deploy");
 
   const alreadySet = vercelEnvKeysInArgs(args);
   for (const key of Object.keys(opts.localEnv).sort()) {
