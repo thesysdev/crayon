@@ -84,7 +84,9 @@ export function FeatureGridSection({
   features = FEATURES,
   lead,
   showHeader = true,
+  showHeaderSeparator = true,
   showCompat = true,
+  compatFirst = false,
   header,
   showBottomSeparator = true,
   fadeColumnLines = false,
@@ -98,8 +100,12 @@ export function FeatureGridSection({
   lead?: ReactNode;
   /** The benchmark header + CTA (OpenUI-specific). Off for sub-product pages. */
   showHeader?: boolean;
+  /** The rule under that header. Off when there is no grid for it to divide. */
+  showHeaderSeparator?: boolean;
   /** The "Works with your stack" compatibility band (OpenUI-specific). */
   showCompat?: boolean;
+  /** Put that band above the header instead of below the grid. */
+  compatFirst?: boolean;
   /** Custom headline above the grid (with a separator below it), e.g. a page tagline. */
   header?: ReactNode;
   /** The full-width separator at the very bottom of the section (default on). */
@@ -119,8 +125,29 @@ export function FeatureGridSection({
   // open one can be tapped to collapse. Desktop ignores this (CSS shows all).
   const accordion = useSingleOpenAccordion();
 
+  const compatBand = showCompat ? (
+    <div className={styles.compat}>
+      <CompatibilitySection
+        embedded
+        title="Works with your stack"
+        description={
+          <>
+            OpenUI works with any LLM, UI library, and agent framework.{" "}
+            <br className={styles.compatDescBreak} />
+            Add generative UI without changing your stack.
+          </>
+        }
+      />
+    </div>
+  ) : null;
+
   return (
     <section className={styles.section}>
+      {compatFirst && compatBand && (
+        /* No rule here: the space below the band separates it from the header,
+           which reads quieter than a line across the page. */
+        <div className={styles.compatLead}>{compatBand}</div>
+      )}
       {showHeader && (
         <>
           <div className={styles.header}>
@@ -138,7 +165,7 @@ export function FeatureGridSection({
               </div>
             </SectionHeader>
           </div>
-          <div className={styles.separator} />
+          {showHeaderSeparator && <div className={styles.separator} />}
         </>
       )}
       {header && (
@@ -153,8 +180,7 @@ export function FeatureGridSection({
           features.length <= desktopColumns ? styles.gridSingleRow : ""
         } ${flushOuterCards ? styles.gridFlushOuterCards : ""} ${
           balanceLastRow ? styles.gridBalancedLastRow : ""
-        } ${desktopColumns === 4 ? styles.gridFourColumns : ""
-        }`.trim()}
+        } ${desktopColumns === 4 ? styles.gridFourColumns : ""}`.trim()}
       >
         {lead && <div className={styles.lead}>{lead}</div>}
         {features.map(({ Icon, icon, title, description }, index) => {
@@ -181,22 +207,10 @@ export function FeatureGridSection({
           );
         })}
       </div>
-      {showCompat && (
+      {!compatFirst && compatBand && (
         <>
           <div className={styles.separator} />
-          <div className={styles.compat}>
-            <CompatibilitySection
-              embedded
-              title="OpenUI works with any stack"
-              description={
-                <>
-                  OpenUI works with any LLM, UI library, and agent framework.{" "}
-                  <br className={styles.compatDescBreak} />
-                  Add generative UI without changing your stack.
-                </>
-              }
-            />
-          </div>
+          {compatBand}
         </>
       )}
       {showBottomSeparator && <div className={`${styles.separator} ${styles.separatorBottom}`} />}

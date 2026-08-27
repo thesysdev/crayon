@@ -1,5 +1,6 @@
 "use client";
 
+import { AGENT_SETUP_PROMPT, AgentPicker } from "@/app/(home)/components/AgentPicker/AgentPicker";
 import { GitHubButton } from "@/app/(home)/components/GitHubButton/GitHubButton";
 import { type LogoVariant } from "@/components/brand-logo";
 import { SiteHeaderFrame } from "@/components/site-header";
@@ -267,6 +268,9 @@ export function SiteMarketingHeader({
           // a long scroll away on a phone.
           <div className={styles.desktopActions}>
             {extraActions}
+            {/* Sits left of the GitHub button. Reveals leftward because it is at
+                the end of the row, so there is only room to grow inward. */}
+            <AgentPicker command={AGENT_SETUP_PROMPT} direction="left" compact />
             <GitHubButton
               variant="desktopGlow"
               compact

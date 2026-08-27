@@ -315,6 +315,7 @@ function DesktopHero({
   secondaryCommand,
   secondaryCommandLabel,
   commandSlot,
+  commandTrailing,
   compact,
   align,
   smallSubtitle,
@@ -332,6 +333,8 @@ function DesktopHero({
   secondaryCommand?: string;
   secondaryCommandLabel?: string;
   commandSlot?: ReactNode;
+  /* Rendered beside the command button, inside its row. */
+  commandTrailing?: ReactNode;
   compact: boolean;
   align: "center" | "left";
   smallSubtitle: boolean;
@@ -395,6 +398,9 @@ function DesktopHero({
                 )}
               </div>
             )}
+            {/* Sits inside the command group so it lines up with the command
+                rather than with the CTA stack around it. */}
+            {commandTrailing}
           </div>
           {showPlaygroundButton && <DesktopPlaygroundButton />}
           {!isLeft && githubRepoUrl && (
@@ -419,6 +425,7 @@ function MobileHero({
   secondaryCommand,
   secondaryCommandLabel,
   commandSlot,
+  commandTrailing,
   compact,
   smallSubtitle,
   showPlaygroundButton,
@@ -440,6 +447,8 @@ function MobileHero({
   secondaryCommand?: string;
   secondaryCommandLabel?: string;
   commandSlot?: ReactNode;
+  /* Rendered beside the command button, inside its row. */
+  commandTrailing?: ReactNode;
   compact: boolean;
   smallSubtitle: boolean;
   showPlaygroundButton: boolean;
@@ -519,6 +528,7 @@ function MobileHero({
               </div>
             </>
           )}
+          {commandTrailing}
         </div>
         {showPlaygroundButton && <MobilePlaygroundButton className={styles.mobileCtaButtonWidth} />}
       </div>
@@ -640,6 +650,7 @@ export function HeroSection({
   secondaryCommand,
   secondaryCommandLabel,
   commandSlot,
+  commandTrailing,
   compact = false,
   align = "center",
   smallSubtitle = false,
@@ -676,6 +687,8 @@ export function HeroSection({
   secondaryCommandLabel?: string;
   /** Replaces the default command pill with a custom node (e.g. the OpenClaw split button). */
   commandSlot?: ReactNode;
+  /* Rendered beside the command button, inside its row. */
+  commandTrailing?: ReactNode;
   compact?: boolean;
   /** Horizontal alignment of the desktop hero content (default "center"). */
   align?: "center" | "left";
@@ -733,6 +746,7 @@ export function HeroSection({
         secondaryCommand={secondaryCommand}
         secondaryCommandLabel={secondaryCommandLabel}
         commandSlot={commandSlot}
+        commandTrailing={commandTrailing}
         compact={compact}
         align={align}
         smallSubtitle={smallSubtitle}
@@ -752,6 +766,7 @@ export function HeroSection({
         secondaryCommand={secondaryCommand}
         secondaryCommandLabel={secondaryCommandLabel}
         commandSlot={commandSlot}
+        commandTrailing={commandTrailing}
         compact={compact}
         smallSubtitle={smallSubtitle}
         showPlaygroundButton={showPlaygroundButton}
@@ -765,16 +780,16 @@ export function HeroSection({
         mobileImageCropTopPercent={mobilePreviewImageCropTopPercent}
         mobilePreviewSlot={mobilePreviewSlot}
       />
-        <PreviewImage
-          theme={theme}
-          desktopImageOverride={desktopPreviewImage}
-          desktopImageOverrideDark={desktopPreviewImageDark}
-          desktopImageAlt={desktopPreviewImageAlt}
-          desktopImageWidth={desktopPreviewImageWidth}
-          desktopImageHeight={desktopPreviewImageHeight}
-          widePreview={widePreview}
-          desktopPreviewSlot={desktopPreviewSlot}
-        />
+      <PreviewImage
+        theme={theme}
+        desktopImageOverride={desktopPreviewImage}
+        desktopImageOverrideDark={desktopPreviewImageDark}
+        desktopImageAlt={desktopPreviewImageAlt}
+        desktopImageWidth={desktopPreviewImageWidth}
+        desktopImageHeight={desktopPreviewImageHeight}
+        widePreview={widePreview}
+        desktopPreviewSlot={desktopPreviewSlot}
+      />
       {showTagline && <Tagline compact={taglineCompact}>{tagline}</Tagline>}
     </section>
   );
