@@ -1,11 +1,12 @@
-import { agUIAdapter, type ChatLLM, type Message } from "@openuidev/react-ui";
-import type { HandleMessageStreamEvent, SessionState } from "eve/client";
-import { eveEventsToAGUI } from "./eve-stream";
+import { eveAdapter, type ChatLLM, type Message } from "@openuidev/react-ui";
+import type { SessionState } from "eve/client";
 
 // Eve's native HTTP session protocol (same-origin, proxied by `withEve`):
 //   POST /eve/v1/session            -> create a session
 //   POST /eve/v1/session/:id        -> deliver a follow-up turn
 //   GET  /eve/v1/session/:id/stream -> resumable NDJSON event feed
+// `eveAdapter` (from @openuidev/react-headless, re-exported by react-ui)
+// translates the NDJSON feed into the AG-UI events OpenUI renders.
 const EVE_PREFIX = "/eve/v1";
 const SESSION_ID_HEADER = "x-eve-session-id";
 
@@ -13,11 +14,6 @@ interface KVStorage {
   getItem(key: string): string | null;
   setItem(key: string, value: string): void;
 }
-
-const isTurnBoundary = (event: HandleMessageStreamEvent): boolean =>
-  event.type === "session.completed" ||
-  event.type === "session.failed" ||
-  event.type === "session.waiting";
 
 function messageText(message: Pick<Message, "content">): string {
   const content = message.content as unknown;
@@ -64,122 +60,81 @@ function saveSession(storage: KVStorage, threadId: string, state: SessionState):
   storage.setItem(sessionKey(threadId), JSON.stringify(state));
 }
 
-async function* readNdjson(
-  body: ReadableStream<Uint8Array>,
-): AsyncIterable<HandleMessageStreamEvent> {
-  const reader = body.getReader();
-  const decoder = new TextDecoder();
-  let buffer = "";
-  try {
-    for (;;) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      buffer += decoder.decode(value, { stream: true });
-      const lines = buffer.split("\n");
-      buffer = lines.pop() ?? "";
-      for (const line of lines) {
-        if (line.trim()) yield JSON.parse(line) as HandleMessageStreamEvent;
-      }
-    }
-    if (buffer.trim()) yield JSON.parse(buffer) as HandleMessageStreamEvent;
-  } finally {
-    reader.releaseLock();
-  }
-}
-
-async function* runTurn(
-  state: SessionState,
-  message: string,
-  signal: AbortSignal,
-  onState: (next: SessionState) => void,
-): AsyncIterable<HandleMessageStreamEvent> {
-  const deliverPath = state.sessionId
-    ? `${EVE_PREFIX}/session/${encodeURIComponent(state.sessionId)}`
-    : `${EVE_PREFIX}/session`;
-  const deliverBody: Record<string, unknown> = { message };
-  if (state.sessionId && state.continuationToken) {
-    deliverBody.continuationToken = state.continuationToken;
-  }
-
-  const delivered = await fetch(deliverPath, {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify(deliverBody),
-    signal,
-  });
-  if (!delivered.ok) {
-    throw new Error(`Eve session POST failed (${delivered.status}): ${await delivered.text()}`);
-  }
-
-  const meta = (await delivered.json().catch(() => ({}))) as {
-    sessionId?: string;
-    continuationToken?: string;
-  };
-  const sessionId =
-    meta.sessionId ?? delivered.headers.get(SESSION_ID_HEADER)?.trim() ?? state.sessionId;
-  if (!sessionId) throw new Error("Eve did not return a session id.");
-  const continuationToken = meta.continuationToken ?? state.continuationToken;
-
-  let index = state.sessionId === sessionId ? state.streamIndex : 0;
-  const streamPath =
-    `${EVE_PREFIX}/session/${encodeURIComponent(sessionId)}/stream` +
-    (index > 0 ? `?startIndex=${index}` : "");
-
-  const streamed = await fetch(streamPath, { signal });
-  if (!streamed.ok || !streamed.body) {
-    throw new Error(`Eve session stream GET failed (${streamed.status}).`);
-  }
-
-  let completed = false;
-  try {
-    for await (const event of readNdjson(streamed.body)) {
-      index += 1;
-      yield event;
-      if (isTurnBoundary(event)) {
-        completed = event.type === "session.completed";
-        break;
-      }
-    }
-  } finally {
-    onState(completed ? { streamIndex: 0 } : { sessionId, continuationToken, streamIndex: index });
-  }
-}
-
 /**
  * Client-side ChatLLM for Eve. Conversation history lives in OpenUI Cloud;
  * this adapter only maps the current turn onto Eve's session protocol and
- * keeps the per-thread Eve cursor in localStorage.
+ * keeps the per-thread Eve cursor in localStorage. Stream translation is
+ * `eveAdapter`'s job; its `onEvent` hook advances the cursor so an
+ * interrupted or waiting session resumes from `?startIndex=`.
  */
 export function createEveLLM(storage: KVStorage = getClientStorage()): ChatLLM {
+  // Cursor for the run in flight. OpenUI finishes consuming one send() stream
+  // before starting the next, so a single slot is enough.
+  let active: { threadId: string; state: SessionState } | null = null;
+
   const send: ChatLLM["send"] = async ({ messages, threadId, signal }): Promise<Response> => {
-    let nextSession = loadSession(storage, threadId);
-    const turn = runTurn(nextSession, latestUserText(messages), signal, (state) => {
-      nextSession = state;
+    const state = loadSession(storage, threadId);
+
+    const deliverPath = state.sessionId
+      ? `${EVE_PREFIX}/session/${encodeURIComponent(state.sessionId)}`
+      : `${EVE_PREFIX}/session`;
+    const deliverBody: Record<string, unknown> = { message: latestUserText(messages) };
+    if (state.sessionId && state.continuationToken) {
+      deliverBody.continuationToken = state.continuationToken;
+    }
+
+    const delivered = await fetch(deliverPath, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(deliverBody),
+      signal,
     });
+    if (!delivered.ok) {
+      throw new Error(`Eve session POST failed (${delivered.status}): ${await delivered.text()}`);
+    }
 
-    const encoder = new TextEncoder();
+    const meta = (await delivered.json().catch(() => ({}))) as {
+      sessionId?: string;
+      continuationToken?: string;
+    };
+    const sessionId =
+      meta.sessionId ?? delivered.headers.get(SESSION_ID_HEADER)?.trim() ?? state.sessionId;
+    if (!sessionId) throw new Error("Eve did not return a session id.");
+    const continuationToken = meta.continuationToken ?? state.continuationToken;
 
-    const body = new ReadableStream<Uint8Array>({
-      async start(controller) {
-        try {
-          for await (const event of eveEventsToAGUI(turn)) {
-            controller.enqueue(encoder.encode(`data: ${JSON.stringify(event)}\n\n`));
-          }
-        } catch (error) {
-          const message = error instanceof Error ? error.message : String(error);
-          controller.enqueue(
-            encoder.encode(`data: ${JSON.stringify({ type: "RUN_ERROR", message })}\n\n`),
-          );
-        } finally {
-          saveSession(storage, threadId, nextSession);
-          controller.enqueue(encoder.encode("data: [DONE]\n\n"));
-          controller.close();
-        }
-      },
-    });
+    const streamIndex = state.sessionId === sessionId ? state.streamIndex : 0;
+    active = { threadId, state: { sessionId, continuationToken, streamIndex } };
 
-    return new Response(body, { headers: { "content-type": "text/event-stream" } });
+    const streamPath =
+      `${EVE_PREFIX}/session/${encodeURIComponent(sessionId)}/stream` +
+      (streamIndex > 0 ? `?startIndex=${streamIndex}` : "");
+
+    const streamed = await fetch(streamPath, { signal });
+    if (!streamed.ok || !streamed.body) {
+      throw new Error(`Eve session stream GET failed (${streamed.status}).`);
+    }
+    return streamed;
   };
 
-  return { send, streamProtocol: agUIAdapter() };
+  return {
+    send,
+    streamProtocol: eveAdapter({
+      onEvent: (event) => {
+        if (!active) return;
+        const { threadId, state } = active;
+        // A completed session is spent: reset so the next message starts a
+        // fresh one. Waiting/failed keep the cursor for a resumable read.
+        if (event.type === "session.completed") {
+          active = null;
+          saveSession(storage, threadId, { streamIndex: 0 });
+          return;
+        }
+        active.state = { ...state, streamIndex: state.streamIndex + 1 };
+        saveSession(storage, threadId, active.state);
+        if (event.type === "session.waiting" || event.type === "session.failed") {
+          active = null;
+        }
+      },
+    }),
+  };
 }

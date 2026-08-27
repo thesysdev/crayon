@@ -1,6 +1,6 @@
 "use client";
 
-import { OPENUI_LOGOS } from "@/lib/starters";
+import { OPENUI_LOGOS, PROMPT_TEMPLATES, STARTERS } from "@/lib/starters";
 import { AgentInterface, useSystemThemeMode } from "@openuidev/react-ui";
 import { chatLibrary, useOpenuiCloudStorage } from "@openuidev/thesys";
 import { useMemo } from "react";
@@ -13,6 +13,7 @@ export default function CloudChat() {
   const storage = useOpenuiCloudStorage({
     token: "/api/frontend-token",
     apiBaseUrl: "https://api.thesys.dev",
+    features: { artifact: true },
   });
 
   const logoPath = mode === "dark" ? OPENUI_LOGOS.DARK : OPENUI_LOGOS.LIGHT;
@@ -25,10 +26,12 @@ export default function CloudChat() {
         componentLibrary={chatLibrary}
         logoUrl={logoPath}
         theme={{ mode }}
+        starters={STARTERS}
       >
         <AgentInterface.Welcome
           title="Good to see you"
           description="What's on your mind today?"
+          promptTemplates={PROMPT_TEMPLATES}
           glowAnimation
         />
       </AgentInterface>

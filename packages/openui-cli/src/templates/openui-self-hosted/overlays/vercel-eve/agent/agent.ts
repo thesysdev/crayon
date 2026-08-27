@@ -6,7 +6,9 @@ const openai = createOpenAI({
   baseURL: process.env.OPENAI_BASE_URL,
 });
 
-const model = openai(process.env.OPENAI_MODEL ?? "gpt-5.2");
+// Chat Completions works against any OpenAI-compatible OPENAI_BASE_URL
+// (OpenRouter, vLLM, Ollama, ...); the default Responses endpoint does not.
+const model = openai.chat(process.env.OPENAI_MODEL ?? "gpt-5.2");
 
 export default defineAgent({
   model,
