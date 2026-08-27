@@ -1,24 +1,12 @@
 import { formatCliCommand, resolveCliInvocation } from "../../cli-bin";
 import { throwCommandFailure } from "../../deploy/failure";
-import {
-  loadProjectDeployEnv,
-  warnMissingRequiredDeployEnv,
-} from "../../deploy/project-env";
-import {
-  dumpFailureLog,
-  printQuietDeploySuccess,
-  runQuietCommand,
-} from "../../deploy/quiet";
+import { loadProjectDeployEnv, warnMissingRequiredDeployEnv } from "../../deploy/project-env";
+import { dumpFailureLog, printQuietDeploySuccess, runQuietCommand } from "../../deploy/quiet";
 import type { DeployTargetOptions } from "../../deploy/types";
 import { resolveInstallPackageManager } from "../../detect-package-manager";
 import { runCommand } from "../../process-runner";
 import { telemetry } from "../../telemetry";
-import {
-  buildVercelDeployArgs,
-  mutedNpmEnv,
-  publicVercelArgs,
-  vercelSpawnArgs,
-} from "./args";
+import { buildVercelDeployArgs, mutedNpmEnv, publicVercelArgs, vercelSpawnArgs } from "./args";
 import {
   isVercelLinked,
   isVercelLoggedIn,
@@ -97,12 +85,10 @@ export async function deployToVercel(opts: DeployToVercelOptions): Promise<void>
         label: "Uploading and building on Vercel...",
         env: deployEnv,
       })
-    : await runCommand(
-        vercel.command,
-        vercelSpawnArgs(vercel, vercelArgs),
-        opts.projectDir,
-        { inheritOutput: true, env: deployEnv },
-      );
+    : await runCommand(vercel.command, vercelSpawnArgs(vercel, vercelArgs), opts.projectDir, {
+        inheritOutput: true,
+        env: deployEnv,
+      });
 
   if (!result.error && result.status === 0) {
     if (quiet) {

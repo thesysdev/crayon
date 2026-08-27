@@ -1,7 +1,6 @@
 import type { CliInvocation } from "../../cli-bin";
-import { confirmOrDefault } from "../../deploy/prompt";
 import { SENSITIVE_DEPLOY_ENV_KEYS } from "../../deploy/project-env";
-import type { DeployTargetOptions } from "../../deploy/types";
+import { confirmOrDefault } from "../../deploy/prompt";
 import { parseJsonObject } from "../../env-file";
 import { runCommand } from "../../process-runner";
 import { mutedNpmEnv, vercelSpawnArgs } from "./args";
@@ -36,9 +35,7 @@ export async function syncLocalEnvToVercelProject(opts: {
 
   const existing = await listVercelProjectEnv(opts.invocation, opts.projectDir);
   if (!existing) {
-    console.info(
-      "Could not read Vercel project env — continuing with deployment-only env.\n",
-    );
+    console.info("Could not read Vercel project env — continuing with deployment-only env.\n");
     return 0;
   }
 

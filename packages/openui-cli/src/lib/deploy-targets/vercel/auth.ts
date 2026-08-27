@@ -14,10 +14,7 @@ export function isVercelLinked(projectDir: string): boolean {
   return fs.existsSync(path.join(projectDir, ".vercel", "project.json"));
 }
 
-export async function prepareVercelCli(
-  invocation: CliInvocation,
-  cwd: string,
-): Promise<void> {
+export async function prepareVercelCli(invocation: CliInvocation, cwd: string): Promise<void> {
   const preparing = invocation.source === "dlx";
   const runVersion = () =>
     runCommand(invocation.command, vercelSpawnArgs(invocation, ["--version"]), cwd, {
@@ -42,10 +39,7 @@ export async function prepareVercelCli(
   );
 }
 
-export async function isVercelLoggedIn(
-  invocation: CliInvocation,
-  cwd: string,
-): Promise<boolean> {
+export async function isVercelLoggedIn(invocation: CliInvocation, cwd: string): Promise<boolean> {
   const result = await runCommand(
     invocation.command,
     vercelSpawnArgs(invocation, ["--non-interactive", "whoami"]),

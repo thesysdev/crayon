@@ -37,8 +37,7 @@ export async function runDeploy(options: DeployOptions): Promise<void> {
     extraArgs.includes("--yes") ||
     extraArgs.includes("-y");
   const skipEnv = Boolean(options.skipEnv);
-  const verbose =
-    Boolean(options.verbose) || (options.extraArgs ?? []).includes("--verbose");
+  const verbose = Boolean(options.verbose) || (options.extraArgs ?? []).includes("--verbose");
 
   const target = DEFAULT_DEPLOY_TARGET;
   const targetOpts: DeployTargetOptions = {

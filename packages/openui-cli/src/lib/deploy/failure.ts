@@ -1,12 +1,8 @@
+import type { CommandResult } from "../process-runner";
 import { CliCancelledError, CreateError } from "../telemetry";
 import { processErrorProperties } from "../utils";
-import type { CommandResult } from "../process-runner";
 
-export function throwCommandFailure(
-  result: CommandResult,
-  stage: string,
-  message: string,
-): never {
+export function throwCommandFailure(result: CommandResult, stage: string, message: string): never {
   const properties = processErrorProperties(result, stage, {
     error_class: "process",
     error_code: "NONZERO_EXIT",
