@@ -25,7 +25,9 @@ export { DetailedViewContext, useDetailedViewStore } from "./store/DetailedViewC
 export { ThreadContextContext, useThreadContextStore } from "./store/ThreadContextContext";
 export { pairToolActivity, partialJSONParse } from "./store/toolActivity";
 export {
+  EVE_INPUT_REQUESTED_EVENT,
   agUIAdapter,
+  eveAdapter,
   langGraphAdapter,
   openAIAdapter,
   openAIReadableStreamAdapter,
@@ -99,6 +101,12 @@ export type {
   UserMessage,
 } from "./types/message";
 
+export type {
+  EveAdapterOptions,
+  EveInputOption,
+  EveInputRequest,
+  EveStreamEvent,
+} from "./stream/adapters/eve";
 export type { LangGraphAdapterOptions } from "./stream/adapters/langgraph";
 export type { LangGraphMessageFormat } from "./stream/formats/langgraph-message-format";
 export { identityMessageFormat } from "./types/messageFormat";
