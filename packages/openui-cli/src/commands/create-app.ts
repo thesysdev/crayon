@@ -12,8 +12,10 @@ import {
 import { runDevCommand } from "../lib/dev-server";
 import { runSkillInstall, shouldInstallSkill } from "../lib/install-skill";
 import { applyOverlay, OVERLAYS_DIR, resolveOverlay, type OverlayManifest } from "../lib/overlays";
+import { dumpFailureLog, QUIET_COMMAND_CAPTURE_LIMIT } from "../lib/deploy/quiet";
 import { runCommand } from "../lib/process-runner";
 import { resolveArgs } from "../lib/resolve-args";
+import { withSpinner } from "../lib/spinner";
 import { resolveAvailableTarget } from "../lib/target-dir";
 import { CliCancelledError, CreateError, telemetry } from "../lib/telemetry";
 import { cliErrorProperties, processErrorProperties } from "../lib/utils";
@@ -416,15 +418,26 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
     });
     console.info(`Skipping dependency install (--no-install). Run \`${installCmd}\` later.\n`);
   } else {
-    console.info(`Installing dependencies with: ${installCmd}\n`);
     telemetry.capture("cli_dependency_install_started", {
       ...createFunnelProps("dependency_install_started"),
       template,
       ai_setup: aiSetup,
     });
-    const installResult = await runCommand(packageManager.runCmd, installArgs, targetDir);
+    const installResult = await withSpinner("Installing dependencies...", () =>
+      runCommand(packageManager.runCmd, installArgs, targetDir, {
+        echo: false,
+        stdin: "ignore",
+        captureLimit: QUIET_COMMAND_CAPTURE_LIMIT,
+        env: {
+          ...process.env,
+          npm_config_loglevel: "error",
+          NPM_CONFIG_LOGLEVEL: "error",
+        },
+      }),
+    );
     if (!installResult.error && installResult.status === 0) {
       dependencyInstalled = true;
+      console.info("✓ Dependencies installed\n");
       telemetry.capture("cli_dependency_install_succeeded", {
         ...createFunnelProps("dependency_install_succeeded"),
         template,
@@ -432,6 +445,7 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
         dependency_installed: dependencyInstalled,
       });
     } else {
+      dumpFailureLog(installResult.diagnosticTail, "install log (tail)");
       const properties = processErrorProperties(installResult, "dependency_install", {
         error_class: "dependency",
         error_code: "NONZERO_EXIT",
@@ -490,7 +504,6 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
       skillInstalled,
       envWritten: envResult.envWritten,
       startDev,
-      devStartBlockedByMissingApiKey,
       installCmd,
       dependencyInstalled,
     }),
@@ -501,15 +514,6 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
       skip_reason: "missing_api_key",
       required_env: apiKeyEnv,
     });
-    const keyHint =
-      apiKeyEnv === "THESYS_API_KEY"
-        ? `Get a key at ${THESYS_KEYS_URL}, then add:\n\n  ${apiKeyEnv}=…\n\nto ${name}/.env`
-        : `Add your key to ${name}/.env:\n\n  ${apiKeyEnv}=…`;
-    console.error(
-      `\nSkipped starting the development server — ${apiKeyEnv} is missing.\n\n` +
-        `${keyHint}\n\n` +
-        `Then run:\n\n> cd ${name}\n> ${devCmd} run dev\n`,
-    );
     process.exitCode = 1;
     return;
   }
@@ -687,7 +691,7 @@ async function resolveCloudEnv(
       auth_succeeded: false,
       ...properties,
     });
-    console.error(`\n⚠ Could not obtain an API key: ${msg}`);
+    console.error(`\n[!] Could not obtain an API key: ${msg}`);
     console.error(`  Add THESYS_API_KEY to .env later (keys: ${THESYS_KEYS_URL}).\n`);
   }
   const lines = [`THESYS_API_KEY=${apiKey ?? ""}`, `DEMO_USER_ID=demo-user`];
@@ -707,7 +711,6 @@ function getStartedMessage(o: {
   skillInstalled: boolean;
   envWritten: boolean;
   startDev: boolean;
-  devStartBlockedByMissingApiKey: boolean;
   installCmd: string;
   dependencyInstalled: boolean;
 }): string {
@@ -719,20 +722,18 @@ function getStartedMessage(o: {
     o.template === "openui-cloud"
       ? o.envWritten
         ? "✅ .env created with your OpenUI Cloud API key + base URL."
-        : `⚠ .env created without a key. Add THESYS_API_KEY=… (get one at ${THESYS_KEYS_URL}).`
+        : `[!] .env created without a key. Add THESYS_API_KEY=… (get one at ${THESYS_KEYS_URL}).`
       : o.envWritten
         ? "✅ .env created with your API key."
         : "Add your API key to .env:\nOPENAI_API_KEY=sk-your-key-here";
 
   const nextStep = o.startDev
     ? `Starting the development server in "${o.name}"...\n\n> ${o.devCmd} run dev`
-    : o.devStartBlockedByMissingApiKey
-      ? ""
-      : [
-          `> cd ${o.name}`,
-          ...(o.dependencyInstalled ? [] : [`> ${o.installCmd}`]),
-          `> ${o.devCmd} run dev`,
-        ].join("\n");
+    : [
+        `> cd ${o.name}`,
+        ...(o.dependencyInstalled ? [] : [`> ${o.installCmd}`]),
+        `> ${o.devCmd} run dev`,
+      ].join("\n");
 
   const frameworkNote = o.backendGettingStarted?.replaceAll("{{packageManager}}", o.devCmd) ?? "";
 

@@ -1,18 +1,23 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 
-import { deployToVercel } from "../lib/deploy-targets/vercel";
+import {
+  DEFAULT_DEPLOY_TARGET,
+  deployToTarget,
+  type DeployTargetOptions,
+} from "../lib/deploy-targets";
 import { resolveInstallPackageManager } from "../lib/detect-package-manager";
 import { CreateError, telemetry } from "../lib/telemetry";
 
-/** OpenUI-only flags. Everything else is forwarded for the Vercel CLI to validate. */
-const OWN_FLAGS = new Set(["--skip-env", "--no-interactive"]);
+/** OpenUI-only flags. Everything else is forwarded for the target CLI to validate. */
+const OWN_FLAGS = new Set(["--skip-env", "--no-interactive", "--verbose"]);
 
 export type DeployOptions = {
   dir?: string;
   yes?: boolean;
   skipEnv?: boolean;
   noInteractive?: boolean;
+  verbose?: boolean;
   extraArgs?: string[];
 };
 
@@ -24,7 +29,7 @@ type ResolvedDeploy = {
 export async function runDeploy(options: DeployOptions): Promise<void> {
   const resolved = resolveDeployInvocation(options);
   const projectDir = resolveProjectDir(resolved.projectDir);
-  const extraArgs = resolved.extraArgs;
+  const extraArgs = resolved.extraArgs.filter((arg) => arg !== "--verbose");
   const prod = extraArgs.includes("--prod");
   const yes =
     Boolean(options.yes) ||
@@ -32,25 +37,31 @@ export async function runDeploy(options: DeployOptions): Promise<void> {
     extraArgs.includes("--yes") ||
     extraArgs.includes("-y");
   const skipEnv = Boolean(options.skipEnv);
+  const verbose =
+    Boolean(options.verbose) || (options.extraArgs ?? []).includes("--verbose");
 
-  telemetry.register({ package_manager: resolveInstallPackageManager().name });
-  telemetry.capture("cli_deploy_started", {
-    target: "vercel",
-    prod,
-    yes,
-    skip_env: skipEnv,
-    has_dir_arg: Boolean(resolved.projectDir),
-  });
-
-  // Vercel is the only platform today. Add a branch here when more deploy targets land.
-  await deployToVercel({
+  const target = DEFAULT_DEPLOY_TARGET;
+  const targetOpts: DeployTargetOptions = {
     projectDir,
     extraArgs,
     prod,
     yes,
     skipEnv,
     noInteractive: Boolean(options.noInteractive),
+    verbose,
+  };
+
+  telemetry.register({ package_manager: resolveInstallPackageManager().name });
+  telemetry.capture("cli_deploy_started", {
+    target,
+    prod,
+    yes,
+    skip_env: skipEnv,
+    verbose,
+    has_dir_arg: Boolean(resolved.projectDir),
   });
+
+  await deployToTarget(target, targetOpts);
 }
 
 function resolveDeployInvocation(options: DeployOptions): ResolvedDeploy {

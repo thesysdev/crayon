@@ -18,6 +18,8 @@ export type RunCommandOptions = {
   stdin?: "inherit" | "ignore";
   /** Inherit stdout/stderr so the child sees a TTY (needed for `vercel login`). */
   inheritOutput?: boolean;
+  /** Max bytes retained in `diagnosticTail` when output is piped. Default 16KiB. */
+  captureLimit?: number;
 };
 
 /**
@@ -39,6 +41,7 @@ export function runCommand(
     const startedAt = Date.now();
     const echo = options.echo !== false;
     const inheritOutput = Boolean(options.inheritOutput);
+    const captureLimit = options.captureLimit ?? DIAGNOSTIC_TAIL_LIMIT;
     const child = spawn(command, args, {
       cwd,
       env: options.env,
@@ -54,7 +57,7 @@ export function runCommand(
     let forceKillTimer: NodeJS.Timeout | undefined;
 
     const observe = (chunk: Buffer) => {
-      diagnosticTail = (diagnosticTail + chunk.toString("utf8")).slice(-DIAGNOSTIC_TAIL_LIMIT);
+      diagnosticTail = (diagnosticTail + chunk.toString("utf8")).slice(-captureLimit);
     };
     if (!inheritOutput) {
       child.stdout?.on("data", (chunk: Buffer) => {

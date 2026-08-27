@@ -179,12 +179,15 @@ Arguments:
 
 Options:
 
-- `-y, --yes`: Skip confirmation prompts
-- `--skip-env`: Do not pass local `.env` / `.env.local` values to this deployment
+- `-y, --yes`: Skip confirmation prompts (also saves missing env keys to the Vercel project)
+- `--skip-env`: Do not pass or save local `.env` / `.env.local` values
 - `--no-interactive`: Skip prompts (implies `--yes`)
+- `--verbose`: Stream full Vercel build logs (hidden by default; failure still prints a log tail)
 - `--agent-name <name>`: Declare the invoking coding agent as a lowercase kebab-case product slug (default: `unknown`)
 
 Extra flags after `deploy` are forwarded as-is to the target deployment platform, which validates them (for example `--prod` or `--force`). `--skip-env` is OpenUI-specific so it does not collide with Vercel's `--env KEY=value`.
+
+Unlinked projects run `vercel link` first (so env can be saved before the build). Allowlisted keys from `.env` / `.env.local` that are missing on production, preview, or development can be saved to the project (prompted; auto-accepted with `--yes`). Existing project keys are never overwritten. Env is still attached to the current deployment via `--env` / `--build-env`. Build logs are quiet by default.
 
 Examples:
 

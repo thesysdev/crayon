@@ -132,15 +132,19 @@ program
   .usage("[dir] [options]")
   .argument("[dir]", "Project directory (default: current directory)")
   .option("-y, --yes", "Skip confirmation prompts")
-  .option("--skip-env", "Do not pass local .env values to this deployment")
+  .option("--skip-env", "Do not pass or save local .env values")
   .option("--no-interactive", "Skip prompts (implies --yes)")
+  .option("--verbose", "Stream full deployment build logs")
   .allowUnknownOption()
   .allowExcessArguments()
   .addHelpText(
     "after",
     `
 Deploys an OpenUI project to Vercel. If you are not logged in, opens vercel login
-first. Passes allowlisted keys from .env / .env.local via --env.
+first. Links the project when needed, then offers to save missing allowlisted
+keys from .env / .env.local to the Vercel project (auto-accepted with --yes).
+Build logs are hidden by default; pass --verbose to stream them. On failure the
+log tail is printed.
 
 Extra flags after deploy are forwarded as-is to the target deployment platform,
 which validates them (for example --prod or --force).
@@ -149,6 +153,7 @@ Examples:
   $ openui deploy
   $ openui deploy ./my-app
   $ openui deploy ./my-app --prod
+  $ openui deploy --verbose
   $ openui deploy -- --archive=tgz
 `,
   )
@@ -159,6 +164,7 @@ Examples:
         yes?: boolean;
         skipEnv?: boolean;
         interactive: boolean;
+        verbose?: boolean;
       },
       command: Command,
     ) => {
@@ -168,6 +174,7 @@ Examples:
           yes: options.yes,
           skipEnv: options.skipEnv,
           noInteractive: !options.interactive,
+          verbose: options.verbose,
           extraArgs: command.args,
         });
       } catch (e) {
