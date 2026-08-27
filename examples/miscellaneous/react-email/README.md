@@ -17,26 +17,26 @@ Describe an email in natural language, and the AI generates a live preview with 
 ## Prerequisites
 
 - Node.js 20+
-- [pnpm](https://pnpm.io/) (this example lives inside the OpenUI monorepo)
+- pnpm, npm, or Bun
 - An [OpenAI API key](https://platform.openai.com/api-keys)
 
 ## Getting Started
 
-1. Clone the repo and install dependencies from the monorepo root:
+1. Clone the repo, enter this standalone example, and install its dependencies:
 
 ```bash
 git clone https://github.com/thesysdev/openui.git
-cd openui
-pnpm install
+cd openui/examples/miscellaneous/react-email
+pnpm install --ignore-workspace
 ```
 
 2. Copy `.env.example` to `.env.local` and add your OpenAI API key:
 
 ```bash
-cp examples/miscellaneous/react-email/.env.example examples/miscellaneous/react-email/.env.local
+cp .env.example .env.local
 ```
 
-Edit `examples/miscellaneous/react-email/.env.local`:
+Edit `.env.local`:
 
 ```
 OPENAI_API_KEY=sk-your-api-key-here
@@ -45,7 +45,6 @@ OPENAI_API_KEY=sk-your-api-key-here
 3. Start the development server:
 
 ```bash
-cd examples/miscellaneous/react-email
 pnpm dev
 ```
 
@@ -53,24 +52,24 @@ The app will be available at [http://localhost:3000](http://localhost:3000).
 
 ## Scripts
 
-| Command | Description |
-|---------|-------------|
-| `pnpm dev` | Start dev server (auto-generates system prompt) |
-| `pnpm build` | Production build |
-| `pnpm start` | Start production server |
-| `pnpm lint` | Run ESLint |
+| Command      | Description                                     |
+| ------------ | ----------------------------------------------- |
+| `pnpm dev`   | Start dev server (auto-generates system prompt) |
+| `pnpm build` | Production build                                |
+| `pnpm start` | Start production server                         |
+| `pnpm lint`  | Run ESLint                                      |
 
 ## Key Dependencies
 
-| Package | Purpose |
-|---------|---------|
-| `@openuidev/react-email` | 44 email components + system prompt generation |
-| `@openuidev/react-lang` | `Renderer` — parses OpenUI Lang and renders components |
-| `@openuidev/react-headless` | Chat thread state management |
-| `@react-email/components` | Email-compatible HTML primitives |
-| `@react-email/render` | Converts React components to email HTML |
-| `next` | App framework (Next.js 16) |
-| `openai` | OpenAI streaming API client |
+| Package                     | Purpose                                                |
+| --------------------------- | ------------------------------------------------------ |
+| `@openuidev/react-email`    | 44 email components + system prompt generation         |
+| `@openuidev/react-lang`     | `Renderer` — parses OpenUI Lang and renders components |
+| `@openuidev/react-headless` | Chat thread state management                           |
+| `@react-email/components`   | Email-compatible HTML primitives                       |
+| `@react-email/render`       | Converts React components to email HTML                |
+| `next`                      | App framework (Next.js 16)                             |
+| `openai`                    | OpenAI streaming API client                            |
 
 ## Project Structure
 

@@ -46,15 +46,15 @@ An AI-powered spreadsheet app that pairs a full-featured [Handsontable](https://
 
 ## Available AI Tools
 
-| Tool | Description |
-|------|-------------|
-| `get_table_data` | Read current table data, headers, and dimensions |
-| `update_cells` | Update one or more cells (values or formulas) |
-| `add_rows` | Insert rows at a position (formulas auto-shift) |
-| `delete_rows` | Remove rows by index (formulas auto-shrink) |
-| `set_formula` | Set an Excel-like formula in a cell |
-| `query_table` | Filter rows by column value with comparison operators |
-| `add_column` | Add a new column with a header name |
+| Tool                     | Description                                                |
+| ------------------------ | ---------------------------------------------------------- |
+| `get_table_data`         | Read current table data, headers, and dimensions           |
+| `update_cells`           | Update one or more cells (values or formulas)              |
+| `add_rows`               | Insert rows at a position (formulas auto-shift)            |
+| `delete_rows`            | Remove rows by index (formulas auto-shrink)                |
+| `set_formula`            | Set an Excel-like formula in a cell                        |
+| `query_table`            | Filter rows by column value with comparison operators      |
+| `add_column`             | Add a new column with a header name                        |
 | `recalculate_aggregates` | Rewrite Total/Average/Sum rows to cover current data range |
 
 ## Getting Started
@@ -74,7 +74,7 @@ cp env.example .env
 # Edit .env and set OPENAI_API_KEY=sk-...
 
 # Install dependencies
-pnpm install
+pnpm install --ignore-workspace
 
 # Start the dev server
 pnpm dev
@@ -84,10 +84,10 @@ Open [http://localhost:3000](http://localhost:3000) to see the spreadsheet with 
 
 ### Environment Variables
 
-| Variable | Required | Default | Description |
-|----------|----------|---------|-------------|
-| `OPENAI_API_KEY` | Yes | — | Your OpenAI API key |
-| `OPENAI_MODEL` | No | `gpt-5.5` | Model to use for chat completions |
+| Variable         | Required | Default   | Description                       |
+| ---------------- | -------- | --------- | --------------------------------- |
+| `OPENAI_API_KEY` | Yes      | —         | Your OpenAI API key               |
+| `OPENAI_MODEL`   | No       | `gpt-5.5` | Model to use for chat completions |
 
 ## Project Structure
 
@@ -123,16 +123,16 @@ hands-on-table-chat/
 
 ## Key Dependencies
 
-| Package | Purpose |
-|---------|---------|
-| [`handsontable`](https://handsontable.com/) | Excel-like data grid |
-| [`@handsontable/react-wrapper`](https://www.npmjs.com/package/@handsontable/react-wrapper) | React bindings for Handsontable |
-| [`hyperformula`](https://hyperformula.handsontable.com/) | Formula engine (386+ Excel-compatible functions) |
-| [`@openuidev/react-ui`](https://openui.com/docs) | OpenUI `AgentInterface` chat component |
-| [`@openuidev/react-headless`](https://openui.com/docs) | OpenUI adapter and message formatting |
-| [`@openuidev/react-lang`](https://openui.com/docs) | OpenUI Lang component library DSL |
-| [`openai`](https://www.npmjs.com/package/openai) | OpenAI SDK for chat completions with tool calling |
-| [`next`](https://nextjs.org/) | React framework with API routes and SSE streaming. |
+| Package                                                                                    | Purpose                                            |
+| ------------------------------------------------------------------------------------------ | -------------------------------------------------- |
+| [`handsontable`](https://handsontable.com/)                                                | Excel-like data grid                               |
+| [`@handsontable/react-wrapper`](https://www.npmjs.com/package/@handsontable/react-wrapper) | React bindings for Handsontable                    |
+| [`hyperformula`](https://hyperformula.handsontable.com/)                                   | Formula engine (386+ Excel-compatible functions)   |
+| [`@openuidev/react-ui`](https://openui.com/docs)                                           | OpenUI `AgentInterface` chat component             |
+| [`@openuidev/react-headless`](https://openui.com/docs)                                     | OpenUI adapter and message formatting              |
+| [`@openuidev/react-lang`](https://openui.com/docs)                                         | OpenUI Lang component library DSL                  |
+| [`openai`](https://www.npmjs.com/package/openai)                                           | OpenAI SDK for chat completions with tool calling  |
+| [`next`](https://nextjs.org/)                                                              | React framework with API routes and SSE streaming. |
 
 ## Try These Prompts
 

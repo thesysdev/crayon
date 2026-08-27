@@ -24,7 +24,7 @@ stdio mode for persistent coding sessions, live reasoning, tool activity, and ca
 
 ## Prerequisites
 
-- Node.js 22 and pnpm 9
+- Node.js 22 and pnpm, npm, or Bun
 - The latest stable `grok` CLI on `PATH`
 - A Grok login or `XAI_API_KEY`
 
@@ -41,16 +41,16 @@ For a non-interactive environment, set `XAI_API_KEY` instead.
 
 ## Run locally
 
-Install dependencies from the OpenUI repository root:
+Enter this standalone example and install its dependencies:
 
 ```bash
-pnpm install
+cd examples/harnesses/grok-build
+pnpm install --ignore-workspace
 ```
 
 Then start the example and choose the project Grok Build should work in:
 
 ```bash
-cd examples/harnesses/grok-build
 cp .env.example .env.local
 pnpm dev -- /absolute/path/to/your/project
 ```

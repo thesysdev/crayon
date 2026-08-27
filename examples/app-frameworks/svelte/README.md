@@ -14,15 +14,15 @@ A chat application built with [SvelteKit](https://svelte.dev/docs/kit), [Vercel 
 ### Prerequisites
 
 - Node.js 18+
-- [pnpm](https://pnpm.io/)
+- pnpm, npm, or Bun
 - An OpenAI API key
 
 ### Install dependencies
 
-From the monorepo root:
+From this example directory:
 
 ```bash
-pnpm install
+pnpm install --ignore-workspace
 ```
 
 ### Configure environment
@@ -40,7 +40,7 @@ OPENAI_API_KEY=sk-...
 ### Run
 
 ```bash
-pnpm --filter @openuidev/example-svelte dev
+pnpm dev
 ```
 
 Open [http://localhost:5173](http://localhost:5173).

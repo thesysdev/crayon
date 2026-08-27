@@ -16,10 +16,10 @@ An [OpenUI](https://openui.com) example showing how to wire a [Mastra](https://m
 echo "OPENAI_API_KEY=sk-..." > .env.local
 ```
 
-2. Install dependencies from the monorepo root:
+2. Install dependencies from this example directory:
 
 ```bash
-pnpm install
+pnpm install --ignore-workspace
 ```
 
 3. Run the dev server from this directory:

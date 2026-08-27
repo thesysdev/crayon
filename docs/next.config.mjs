@@ -102,6 +102,18 @@ const config = {
         destination: "/blog/beyond-the-chatbar",
         permanent: true,
       },
+      // Preserve the founder-shared singular spelling while keeping one
+      // canonical benchmark namespace for search engines and agents.
+      {
+        source: "/benchmark/framework",
+        destination: "/benchmarks/framework",
+        permanent: true,
+      },
+      {
+        source: "/benchmark/language",
+        destination: "/benchmarks/language",
+        permanent: true,
+      },
     ];
   },
   async rewrites() {

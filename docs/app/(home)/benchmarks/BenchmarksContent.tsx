@@ -9,18 +9,19 @@ import { RenderSplit } from "@/components/charts/render-split";
 import { RepairFunnelFlow } from "@/components/charts/repair-funnel-flow";
 import { SpeedTokens } from "@/components/charts/speed-tokens";
 import {
-  BRIEFS,
-  COST_MODELS,
-  FORMAT_ORDER,
-  LINKS,
-  MODELS,
-  RUNS_PER_FORMAT,
   blankScreens,
+  BRIEFS,
   completionByDensity,
   completionOver,
+  COST_MODELS,
   costPerPass,
+  FORMAT_ORDER,
+  LINKS,
+  MODEL_BOARD_SIZE,
+  MODELS,
   production,
   repairedShare,
+  RUNS_PER_FORMAT,
 } from "@/lib/benchmark-data";
 import { ChartLineUp, CurrencyDollarSimple, ShieldCheck, Wrench } from "@phosphor-icons/react";
 import { ArrowUpRight } from "lucide-react";
@@ -124,12 +125,13 @@ function Section({
 
 export function BenchmarksContent() {
   return (
-    <main className={s.page}>
+    <main id="benchmark-content" className={s.page}>
       <VizSkin vivid>
         <header className={s.hero}>
           <div className={s.heroLockup}>
             <p className={s.heroAside}>
-              46 real screens, 6 models, 3 formats: 1,104 scored runs each
+              {MODEL_BOARD_SIZE} models on OpenUI, plus a 6-model comparison across 3 generative UI
+              formats
             </p>
             <div className={s.heroCopy}>
               <p className={s.heroEyebrow}>
@@ -137,8 +139,7 @@ export function BenchmarksContent() {
                 <span className={s.heroTag}>Benchmarks</span>
               </p>
               <h1 className={s.heroTitle}>
-                <span>Generative UI</span>
-                <span>Benchmark</span>
+                <span>Generative UI</span> <span>Benchmark</span>
               </h1>
             </div>
             <div className={s.heroActions}>
@@ -169,7 +170,10 @@ export function BenchmarksContent() {
           <ReliabilityByModel models={ALL_MODELS} formats={FORMAT_ORDER} />
         </section>
 
-        <div className={s.featureBand} aria-label="Headline results">
+        <div className={s.featureBand} aria-labelledby="headline-results-heading">
+          <h2 id="headline-results-heading" className={s.srOnly}>
+            Headline results
+          </h2>
           <FeatureGridSection
             features={HEADLINE_FEATURES}
             showHeader={false}
