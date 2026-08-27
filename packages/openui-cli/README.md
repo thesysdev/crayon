@@ -187,12 +187,14 @@ Options:
 - `--no-interactive`: Skip prompts (implies `--yes`)
 - `--agent-name <name>`: Declare the invoking coding agent as a lowercase kebab-case product slug (default: `unknown`)
 
-Extra flags after `deploy` are forwarded to the target CLI (for example `--force` for Vercel). `--skip-env` is OpenUI-specific so it does not collide with Vercel's `--env KEY=value`.
+Extra flags after `deploy` are forwarded as-is to the target CLI, which validates them (for example `--force` for Vercel). `--skip-env` is OpenUI-specific so it does not collide with Vercel's `--env KEY=value`.
 
 What the Vercel target does:
 
 - resolves the project directory and requires a `package.json`
-- runs the Vercel CLI (local binary, `PATH`, or package-manager `dlx`/`npx`) with inherited stdin so login and prompts work
+- runs the Vercel CLI (local binary, `PATH`, or package-manager `dlx`/`npx`)
+- checks login with `vercel whoami` (non-interactive). If logged in, deploys as usual. If not, skips `vercel login` and uses Vercel's temporary/anonymous deploy (claim URL comes from Vercel). `--prod` requires a logged-in account
+- when using `dlx`/`npx`, fetches the Vercel CLI behind a single `Preparing Vercel CLI...` line instead of streaming install logs
 - passes allowlisted keys from `.env` then `.env.local` via `--env` for this deployment (`THESYS_API_KEY`, `OPENAI_API_KEY`, `APP_ID`, `DEMO_USER_ID`, and related template vars)
 - warns when a required API key is missing locally
 - warns when `langgraph.json` is present: only the Next.js app is deployed; set `LANGGRAPH_API_URL` to the separately deployed Agent Server
@@ -292,7 +294,7 @@ The CLI sends usage analytics; OAuth sign-ins may link usage to your OIDC accoun
 
 When a coding agent invokes the CLI, it should pass `--agent-name` using its stable, lowercase kebab-case product slug—for example, `codex`, `claude-code`, `cline`, `factory-droid`, or `pi`. Do not pass a model/version, user name, session ID, or other unique value. Humans can omit the flag; it defaults to `unknown`.
 
-Telemetry includes both `agent_name` (the CLI declaration) and `detected_agent_name` (best-effort environment detection). Either can be spoofed, inherited, missing, or ambiguous; neither is an authentication signal. Every invocation gets an ephemeral, unpersisted `cli_run_id` so its events can be correlated. Failure events include bounded `failure_stage`, `error_class`, and `error_code` values, never raw error messages. Dependency failures distinguish peer, registry, network, install-script, workspace, and package-compatibility errors. Process failures include duration, exit code, and signal; Cloud-auth failures include a bounded auth substage and HTTP status when known; cancellations use separate events. For `create`, telemetry also includes `package_manager`, the immediate-start selection, and best-effort dev-command start and result events. Dev-command events contain status, duration, exit code, and signal—not project paths, command output, code, or environment values. For `deploy`, telemetry includes the target (currently `vercel`), production vs preview, whether local env was passed, LangGraph detection, CLI resolution source, and process status—not env values, project paths, or command output. Disable telemetry with `--no-telemetry` or `DO_NOT_TRACK=1`.
+Telemetry includes both `agent_name` (the CLI declaration) and `detected_agent_name` (best-effort environment detection). Either can be spoofed, inherited, missing, or ambiguous; neither is an authentication signal. Every invocation gets an ephemeral, unpersisted `cli_run_id` so its events can be correlated. Failure events include bounded `failure_stage`, `error_class`, and `error_code` values, never raw error messages. Dependency failures distinguish peer, registry, network, install-script, workspace, and package-compatibility errors. Process failures include duration, exit code, and signal; Cloud-auth failures include a bounded auth substage and HTTP status when known; cancellations use separate events. For `create`, telemetry also includes `package_manager`, the immediate-start selection, and best-effort dev-command start and result events. Dev-command events contain status, duration, exit code, and signal—not project paths, command output, code, or environment values. For `deploy`, telemetry includes the target (currently `vercel`), production vs preview, whether the Vercel CLI was logged in, whether local env was passed, LangGraph detection, CLI resolution source, and process status—not env values, project paths, or command output. Disable telemetry with `--no-telemetry` or `DO_NOT_TRACK=1`.
 
 ```bash
 openui create --no-telemetry

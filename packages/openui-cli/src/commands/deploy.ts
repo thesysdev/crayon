@@ -6,7 +6,7 @@ import {
   resolveInstallPackageManager,
   type PackageManager,
 } from "../lib/detect-package-manager";
-import { runCommand } from "../lib/process-runner";
+import { runCommand, type CommandResult } from "../lib/process-runner";
 import { CliCancelledError, CreateError, telemetry } from "../lib/telemetry";
 import {
   DEFAULT_DEPLOY_TARGET,
@@ -30,7 +30,8 @@ const ENV_ALLOWLIST = [
   "LANGSMITH_API_KEY",
 ] as const;
 
-const OWN_FLAGS = new Set(["--prod", "-y", "--yes", "--skip-env", "--no-interactive", "--target"]);
+/** OpenUI-only flags. Everything else is forwarded for the target CLI to validate. */
+const OWN_FLAGS = new Set(["--skip-env", "--no-interactive"]);
 
 export type DeployOptions = {
   targetOrDir?: string;
@@ -46,6 +47,7 @@ export type DeployOptions = {
 type TargetInvocation = {
   command: string;
   prefixArgs: string[];
+  quietPrefixArgs: string[];
   source: "local" | "path" | "dlx";
 };
 
@@ -161,13 +163,8 @@ function extraDeployArgs(
     ),
   );
   const out: string[] = [];
-  for (let i = 0; i < args.length; i++) {
-    const arg = args[i]!;
-    if (arg === "--target") {
-      i += 1;
-      continue;
-    }
-    if (arg.startsWith("--target=") || skip.has(arg) || OWN_FLAGS.has(arg)) continue;
+  for (const arg of args) {
+    if (skip.has(arg) || OWN_FLAGS.has(arg)) continue;
     out.push(arg);
   }
   return out;
@@ -208,10 +205,25 @@ async function deployToVercel(opts: {
   }
 
   const vercel = resolveTargetCli(opts.projectDir, packageManager, "vercel");
+  await prepareDlxCli(vercel, opts.projectDir);
+  const loggedIn = await isVercelLoggedIn(vercel, opts.projectDir);
+  if (!loggedIn && opts.prod) {
+    throw new CreateError(
+      "args_resolution",
+      "Production deploys need a Vercel account. Run `vercel login`, then retry with --prod. Omit --prod for a temporary deploy.",
+      "authentication",
+      "VERCEL_LOGIN_REQUIRED",
+    );
+  }
+  if (!loggedIn) {
+    console.info("Not logged into Vercel. Creating a temporary deployment you can claim later.\n");
+  }
+
   const vercelArgs = buildVercelArgs({
     extraArgs: opts.extraArgs,
-    prod: opts.prod,
-    yes: opts.yes,
+    prod: loggedIn && opts.prod,
+    yes: opts.yes || !loggedIn,
+    nonInteractive: !loggedIn,
     localEnv: opts.localEnv,
   });
   const publicArgs = vercelArgs.filter((_, i, args) => !isVercelEnvFlag(args, i));
@@ -228,7 +240,7 @@ async function deployToVercel(opts: {
 
   const result = await runCommand(
     vercel.command,
-    [...vercel.prefixArgs, ...vercelArgs],
+    [...vercel.quietPrefixArgs, ...vercelArgs],
     opts.projectDir,
   );
   if (!result.error && result.status === 0) {
@@ -239,25 +251,14 @@ async function deployToVercel(opts: {
       skip_env: opts.skipEnv,
       has_langgraph: hasLangGraph,
       cli_source: vercel.source,
+      logged_in: loggedIn,
       env_key_count: Object.keys(opts.localEnv).length,
       duration_ms: Date.now() - t0,
     });
     return;
   }
 
-  const properties = processErrorProperties(result, "vercel_deploy", {
-    error_class: "process",
-    error_code: "NONZERO_EXIT",
-  });
-  if (properties.error_class === "user_cancelled") {
-    throw new CliCancelledError(
-      "vercel_deploy",
-      properties.cancellation_exit_code ?? 0,
-      properties,
-    );
-  }
-  const { failure_stage, error_class, error_code, ...metadata } = properties;
-  throw new CreateError(failure_stage, "Vercel deploy failed", error_class, error_code, metadata);
+  throwCommandFailure(result, "vercel_deploy", "Vercel deploy failed");
 }
 
 function resolveProjectDir(dir?: string): string {
@@ -296,14 +297,74 @@ function resolveTargetCli(
 ): TargetInvocation {
   const localUnix = path.join(projectDir, "node_modules", ".bin", bin);
   const localWin = `${localUnix}.cmd`;
-  if (fs.existsSync(localWin)) return { command: localWin, prefixArgs: [], source: "local" };
-  if (fs.existsSync(localUnix)) return { command: localUnix, prefixArgs: [], source: "local" };
+  if (fs.existsSync(localWin)) {
+    return { command: localWin, prefixArgs: [], quietPrefixArgs: [], source: "local" };
+  }
+  if (fs.existsSync(localUnix)) {
+    return { command: localUnix, prefixArgs: [], quietPrefixArgs: [], source: "local" };
+  }
 
   const fromPath = findExecutableOnPath(bin);
-  if (fromPath) return { command: fromPath, prefixArgs: [], source: "path" };
+  if (fromPath) {
+    return { command: fromPath, prefixArgs: [], quietPrefixArgs: [], source: "path" };
+  }
 
   const dlx = resolveDlxInvocation(packageManager, bin);
-  return { command: dlx.command, prefixArgs: dlx.args, source: "dlx" };
+  return {
+    command: dlx.command,
+    prefixArgs: dlx.args,
+    quietPrefixArgs: dlx.quietArgs,
+    source: "dlx",
+  };
+}
+
+async function prepareDlxCli(invocation: TargetInvocation, cwd: string): Promise<void> {
+  if (invocation.source !== "dlx") return;
+
+  const tty = Boolean(process.stdout.isTTY);
+  const label = "Preparing Vercel CLI...";
+  if (tty) process.stdout.write(label);
+  else console.info(label);
+
+  const result = await runCommand(
+    invocation.command,
+    [...invocation.quietPrefixArgs, "--version"],
+    cwd,
+    {
+      echo: false,
+    },
+  );
+
+  if (!result.error && result.status === 0) {
+    if (tty) process.stdout.write(" done\n");
+    return;
+  }
+
+  if (tty) process.stdout.write("\n");
+  if (result.diagnosticTail) process.stderr.write(result.diagnosticTail);
+  throwCommandFailure(result, "vercel_cli_install", "Failed to install Vercel CLI");
+}
+
+async function isVercelLoggedIn(invocation: TargetInvocation, cwd: string): Promise<boolean> {
+  const result = await runCommand(
+    invocation.command,
+    [...invocation.quietPrefixArgs, "--non-interactive", "whoami"],
+    cwd,
+    { echo: false, stdin: "ignore" },
+  );
+  return !result.error && result.status === 0;
+}
+
+function throwCommandFailure(result: CommandResult, stage: string, message: string): never {
+  const properties = processErrorProperties(result, stage, {
+    error_class: "process",
+    error_code: "NONZERO_EXIT",
+  });
+  if (properties.error_class === "user_cancelled") {
+    throw new CliCancelledError(stage, properties.cancellation_exit_code ?? 0, properties);
+  }
+  const { failure_stage, error_class, error_code, ...metadata } = properties;
+  throw new CreateError(failure_stage, message, error_class, error_code, metadata);
 }
 
 function findExecutableOnPath(bin: string): string | undefined {
@@ -328,11 +389,15 @@ function buildVercelArgs(opts: {
   extraArgs: string[];
   prod: boolean;
   yes: boolean;
+  nonInteractive: boolean;
   localEnv: Record<string, string>;
 }): string[] {
   const args = [...opts.extraArgs];
   if (opts.prod && !args.includes("--prod")) args.unshift("--prod");
   if (opts.yes && !args.includes("--yes") && !args.includes("-y")) args.unshift("--yes");
+  if (opts.nonInteractive && !args.includes("--non-interactive")) {
+    args.unshift("--non-interactive");
+  }
 
   const alreadySet = vercelEnvKeysInArgs(args);
   for (const key of Object.keys(opts.localEnv).sort()) {

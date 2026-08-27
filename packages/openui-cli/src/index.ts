@@ -144,8 +144,10 @@ program
 Targets:
   vercel  Default. Runs the Vercel CLI (local install, PATH, or package-manager dlx)
           and passes allowlisted keys from .env / .env.local via --env.
+          Logged-out deploys use Vercel's temporary path instead of vercel login.
 
-Extra flags after deploy are forwarded to the target CLI (for example --force).
+Extra flags after deploy are forwarded as-is to the target CLI, which validates them
+(for example --force).
 
 Examples:
   $ openui deploy

@@ -227,15 +227,16 @@ openui deploy [target-or-dir] [dir] [options]
 | `--no-interactive`    | Skip prompts (implies `--yes`)                                    |
 | `--agent-name <name>` | Declare the invoking coding-agent slug (default: `unknown`)       |
 
-Extra flags after `deploy` are forwarded to the target CLI (for example `--force` for Vercel). `--skip-env` is OpenUI-specific so it does not collide with Vercel's `--env KEY=value`.
+Extra flags after `deploy` are forwarded as-is to the target CLI, which validates them (for example `--force` for Vercel). `--skip-env` is OpenUI-specific so it does not collide with Vercel's `--env KEY=value`.
 
 **Vercel target**
 
 1. Resolves the project directory and requires a `package.json`
-2. Runs the [Vercel CLI](https://vercel.com/docs/cli) (local `node_modules/.bin/vercel`, a `vercel` binary on `PATH`, or the detected package manager's `dlx`/`npx` runner) with inherited stdin so login and project prompts work
-3. Passes allowlisted keys from `.env`, then `.env.local`, via `--env` for this deployment: `THESYS_API_KEY`, `OPENAI_API_KEY`, `OPENAI_BASE_URL`, `OPENAI_MODEL`, `APP_ID`, `DEMO_USER_ID`, `LANGGRAPH_API_URL`, `LANGGRAPH_ASSISTANT_ID`, and `LANGSMITH_API_KEY`
-4. Warns when a required API key is missing locally
-5. Warns when `langgraph.json` is present: only the Next.js frontend is deployed; set `LANGGRAPH_API_URL` to the separately hosted Agent Server
+2. Runs the [Vercel CLI](https://vercel.com/docs/cli) (local `node_modules/.bin/vercel`, a `vercel` binary on `PATH`, or the detected package manager's `dlx`/`npx` runner). `dlx`/`npx` installs are collapsed into a `Preparing Vercel CLI...` line
+3. Checks login with `vercel whoami`. If logged in, deploys as usual. If not, skips `vercel login` and uses Vercel's temporary/anonymous deploy. `--prod` requires a logged-in account
+4. Passes allowlisted keys from `.env`, then `.env.local`, via `--env` for this deployment: `THESYS_API_KEY`, `OPENAI_API_KEY`, `OPENAI_BASE_URL`, `OPENAI_MODEL`, `APP_ID`, `DEMO_USER_ID`, `LANGGRAPH_API_URL`, `LANGGRAPH_ASSISTANT_ID`, and `LANGSMITH_API_KEY`
+5. Warns when a required API key is missing locally
+6. Warns when `langgraph.json` is present: only the Next.js frontend is deployed; set `LANGGRAPH_API_URL` to the separately hosted Agent Server
 
 These `--env` values apply to the current deployment. Persist them on the Vercel project with `vercel env add` or the Vercel dashboard for later deploys.
 
