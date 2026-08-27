@@ -1,3 +1,4 @@
+import { ReliabilityObservability } from "@/components/reliability-observability";
 import { WebsiteThemeProvider } from "@/components/website-theme-provider";
 import { createPageMetadata } from "@/lib/page-metadata";
 import type { ReactNode } from "react";
@@ -12,5 +13,10 @@ export const metadata = createPageMetadata({
 });
 
 export default function DemoGitHubLayout({ children }: { children: ReactNode }) {
-  return <WebsiteThemeProvider>{children}</WebsiteThemeProvider>;
+  return (
+    <WebsiteThemeProvider>
+      <ReliabilityObservability />
+      {children}
+    </WebsiteThemeProvider>
+  );
 }

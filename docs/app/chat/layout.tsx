@@ -1,3 +1,4 @@
+import { ReliabilityObservability } from "@/components/reliability-observability";
 import { WebsiteThemeProvider } from "@/components/website-theme-provider";
 import type { ReactNode } from "react";
 import { ChatPageClient } from "./_components/chat-page-client";
@@ -5,6 +6,7 @@ import { ChatPageClient } from "./_components/chat-page-client";
 export default function ChatLayout({ children }: { children: ReactNode }) {
   return (
     <WebsiteThemeProvider>
+      <ReliabilityObservability />
       <ChatPageClient />
       {children}
     </WebsiteThemeProvider>

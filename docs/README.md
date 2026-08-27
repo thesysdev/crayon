@@ -45,6 +45,21 @@ a shared, cross-instance session-and-IP rate limiter, Cloud organization budgets
 an approved conversation retention/deletion process are in place. Same-origin validation is an
 additional browser safeguard, not a substitute for those cost controls.
 
+### Demo reliability monitoring
+
+The site demos (`/demos`, `/demo/github`, `/chat`, `/compare`) mount
+`components/reliability-observability.tsx`, which forwards OpenUI render events to the [Reliability
+dashboard](https://console.thesys.dev/reliability) through `@openuidev/observability-cloud`. It only
+initializes when a client API key from the [Thesys
+Console](https://console.thesys.dev/client-api-keys) is set:
+
+```bash
+NEXT_PUBLIC_THESYS_CLIENT_API_KEY=pk-th-...
+```
+
+Without the variable nothing is initialized and no events leave the browser, so local development
+needs no extra setup. The key is a publishable client key; do not use `THESYS_API_KEY` here.
+
 ## Project structure
 
 ```

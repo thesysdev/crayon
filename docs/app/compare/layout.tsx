@@ -1,6 +1,12 @@
+import { ReliabilityObservability } from "@/components/reliability-observability";
 import { WebsiteThemeProvider } from "@/components/website-theme-provider";
 import type { ReactNode } from "react";
 
 export default function CompareLayout({ children }: { children: ReactNode }) {
-  return <WebsiteThemeProvider>{children}</WebsiteThemeProvider>;
+  return (
+    <WebsiteThemeProvider>
+      <ReliabilityObservability />
+      {children}
+    </WebsiteThemeProvider>
+  );
 }
