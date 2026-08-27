@@ -129,10 +129,9 @@ Backend frameworks:
 program
   .command("deploy")
   .description("Deploy an OpenUI project")
-  .argument("[target-or-dir]", "Deploy target (default: vercel) or project directory")
-  .argument("[dir]", "Project directory when the first argument is a target")
+  .argument("[target]", "Deploy target (default: vercel)")
+  .argument("[dir]", "Project directory (default: current directory)")
   .option("--target <target>", "Deploy target: vercel (default)")
-  .option("--prod", "Deploy to production")
   .option("-y, --yes", "Skip confirmation prompts")
   .option("--skip-env", "Do not pass local .env values to this deployment")
   .option("--no-interactive", "Skip prompts (implies --yes)")
@@ -147,22 +146,21 @@ Targets:
           Logged-out deploys use Vercel's temporary path instead of vercel login.
 
 Extra flags after deploy are forwarded as-is to the target CLI, which validates them
-(for example --force).
+(for example --prod or --force).
 
 Examples:
   $ openui deploy
   $ openui deploy vercel --prod --yes
-  $ openui deploy --target vercel ./my-app --prod
+  $ openui deploy vercel ./my-app --prod
   $ openui deploy -- --archive=tgz
 `,
   )
   .action(
     async (
-      targetOrDir: string | undefined,
+      target: string | undefined,
       dir: string | undefined,
       options: {
         target?: string;
-        prod?: boolean;
         yes?: boolean;
         skipEnv?: boolean;
         interactive: boolean;
@@ -171,10 +169,9 @@ Examples:
     ) => {
       try {
         await runDeploy({
-          targetOrDir,
+          positionalTarget: target,
           dir,
           target: options.target,
-          prod: options.prod,
           yes: options.yes,
           skipEnv: options.skipEnv,
           noInteractive: !options.interactive,

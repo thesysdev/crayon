@@ -170,30 +170,29 @@ openui create --no-interactive --name my-app --template openui-cloud --api-key t
 Deploys an OpenUI project. The default target is **Vercel**; more targets can be added later.
 
 ```bash
-openui deploy [target-or-dir] [dir] [options]
+openui deploy [target] [dir] [options]
 ```
 
 Arguments:
 
-- `target-or-dir`: Deploy target (`vercel`, the default) or a project directory
-- `dir`: Project directory when the first argument is a target
+- `target`: Deploy target (`vercel`, the default)
+- `dir`: Project directory (default: current directory)
 
 Options:
 
 - `--target <target>`: Deploy target (default: `vercel`; currently the only target)
-- `--prod`: Deploy to production
 - `-y, --yes`: Skip confirmation prompts
 - `--skip-env`: Do not pass local `.env` / `.env.local` values to this deployment
 - `--no-interactive`: Skip prompts (implies `--yes`)
 - `--agent-name <name>`: Declare the invoking coding agent as a lowercase kebab-case product slug (default: `unknown`)
 
-Extra flags after `deploy` are forwarded as-is to the target CLI, which validates them (for example `--force` for Vercel). `--skip-env` is OpenUI-specific so it does not collide with Vercel's `--env KEY=value`.
+Extra flags after `deploy` are forwarded as-is to the target CLI, which validates them (for example `--prod` or `--force` for Vercel). `--skip-env` is OpenUI-specific so it does not collide with Vercel's `--env KEY=value`.
 
 What the Vercel target does:
 
 - resolves the project directory and requires a `package.json`
 - runs the Vercel CLI (local binary, `PATH`, or package-manager `dlx`/`npx`)
-- checks login with `vercel whoami` (non-interactive). If logged in, deploys as usual. If not, skips `vercel login` and uses Vercel's temporary/anonymous deploy (claim URL comes from Vercel). `--prod` requires a logged-in account
+- checks login with `vercel whoami` (non-interactive). If logged in, deploys as usual. If not, skips `vercel login` and uses Vercel's temporary/anonymous deploy (claim URL comes from Vercel)
 - when using `dlx`/`npx`, fetches the Vercel CLI behind a single `Preparing Vercel CLI...` line instead of streaming install logs
 - passes allowlisted keys from `.env` then `.env.local` via `--env` for this deployment (`THESYS_API_KEY`, `OPENAI_API_KEY`, `APP_ID`, `DEMO_USER_ID`, and related template vars)
 - warns when a required API key is missing locally
@@ -204,7 +203,7 @@ Examples:
 ```bash
 openui deploy
 openui deploy vercel --prod --yes
-openui deploy --target vercel ./my-app --prod
+openui deploy vercel ./my-app --prod
 openui deploy --skip-env -- --force
 ```
 

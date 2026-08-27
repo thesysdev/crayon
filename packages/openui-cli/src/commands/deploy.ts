@@ -34,10 +34,9 @@ const ENV_ALLOWLIST = [
 const OWN_FLAGS = new Set(["--skip-env", "--no-interactive"]);
 
 export type DeployOptions = {
-  targetOrDir?: string;
+  positionalTarget?: string;
   dir?: string;
   target?: string;
-  prod?: boolean;
   yes?: boolean;
   skipEnv?: boolean;
   noInteractive?: boolean;
@@ -61,7 +60,7 @@ export async function runDeploy(options: DeployOptions): Promise<void> {
   const resolved = resolveDeployInvocation(options);
   const projectDir = resolveProjectDir(resolved.projectDir);
   const extraArgs = resolved.extraArgs;
-  const prod = Boolean(options.prod) || extraArgs.includes("--prod");
+  const prod = extraArgs.includes("--prod");
   const yes =
     Boolean(options.yes) ||
     Boolean(options.noInteractive) ||
@@ -105,7 +104,7 @@ export async function runDeploy(options: DeployOptions): Promise<void> {
 }
 
 function resolveDeployInvocation(options: DeployOptions): ResolvedDeploy {
-  const first = unsetIfFlag(options.targetOrDir);
+  const first = unsetIfFlag(options.positionalTarget);
   const second = unsetIfFlag(options.dir);
   let positionalTarget: string | undefined;
   let projectDir: string | undefined;
@@ -113,25 +112,31 @@ function resolveDeployInvocation(options: DeployOptions): ResolvedDeploy {
   if (first && isDeployTarget(first)) {
     positionalTarget = first;
     projectDir = second;
-  } else if (first && !looksLikeProjectDir(first)) {
+  } else if (first && options.target && !second) {
+    // `--target` already chose the platform; the leftover positional is [dir].
+    projectDir = first;
+  } else if (first) {
     throw new CreateError(
       "args_resolution",
-      `unknown deploy target "${first}". Use: ${DEPLOY_TARGETS.join(" | ")}.`,
+      `unknown deploy target "${first}". Use: ${DEPLOY_TARGETS.join(" | ")}.` +
+        (looksLikeProjectDir(first)
+          ? ` To deploy a directory, pass the target first: openui deploy ${DEFAULT_DEPLOY_TARGET} ${first}`
+          : ""),
       "invalid_input",
       "INVALID_DEPLOY_TARGET",
     );
   } else {
-    projectDir = first;
+    projectDir = second;
   }
 
   const target = resolveTarget(positionalTarget, options.target);
   const extraArgs = extraDeployArgs(options.extraArgs ?? [], {
     dir: projectDir,
     target,
-    targetOrDir: options.targetOrDir,
+    positionalTarget: options.positionalTarget,
   });
-  if (options.targetOrDir?.startsWith("-") && !extraArgs.includes(options.targetOrDir)) {
-    extraArgs.unshift(options.targetOrDir);
+  if (options.positionalTarget?.startsWith("-") && !extraArgs.includes(options.positionalTarget)) {
+    extraArgs.unshift(options.positionalTarget);
   }
   if (options.dir?.startsWith("-") && !extraArgs.includes(options.dir)) {
     extraArgs.unshift(options.dir);
@@ -155,10 +160,10 @@ function resolveTarget(positional?: string, flag?: string): DeployTarget {
 
 function extraDeployArgs(
   args: string[],
-  consumed: { dir?: string; target: string; targetOrDir?: string },
+  consumed: { dir?: string; target: string; positionalTarget?: string },
 ): string[] {
   const skip = new Set(
-    [consumed.dir, consumed.target, consumed.targetOrDir].filter((value): value is string =>
+    [consumed.dir, consumed.target, consumed.positionalTarget].filter((value): value is string =>
       Boolean(value && !value.startsWith("-")),
     ),
   );
@@ -207,21 +212,12 @@ async function deployToVercel(opts: {
   const vercel = resolveTargetCli(opts.projectDir, packageManager, "vercel");
   await prepareDlxCli(vercel, opts.projectDir);
   const loggedIn = await isVercelLoggedIn(vercel, opts.projectDir);
-  if (!loggedIn && opts.prod) {
-    throw new CreateError(
-      "args_resolution",
-      "Production deploys need a Vercel account. Run `vercel login`, then retry with --prod. Omit --prod for a temporary deploy.",
-      "authentication",
-      "VERCEL_LOGIN_REQUIRED",
-    );
-  }
   if (!loggedIn) {
     console.info("Not logged into Vercel. Creating a temporary deployment you can claim later.\n");
   }
 
   const vercelArgs = buildVercelArgs({
     extraArgs: opts.extraArgs,
-    prod: loggedIn && opts.prod,
     yes: opts.yes || !loggedIn,
     nonInteractive: !loggedIn,
     localEnv: opts.localEnv,
@@ -387,13 +383,11 @@ function findExecutableOnPath(bin: string): string | undefined {
 
 function buildVercelArgs(opts: {
   extraArgs: string[];
-  prod: boolean;
   yes: boolean;
   nonInteractive: boolean;
   localEnv: Record<string, string>;
 }): string[] {
   const args = [...opts.extraArgs];
-  if (opts.prod && !args.includes("--prod")) args.unshift("--prod");
   if (opts.yes && !args.includes("--yes") && !args.includes("-y")) args.unshift("--yes");
   if (opts.nonInteractive && !args.includes("--non-interactive")) {
     args.unshift("--non-interactive");
