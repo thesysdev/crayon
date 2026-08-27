@@ -1,20 +1,18 @@
 import "@openuidev/react-ui/components.css";
 import "@openuidev/react-ui/styles/index.css";
+import "@openuidev/thesys/styles.css";
 
 import {
   AgentInterface,
   openAIMessageFormat,
   openAIReadableStreamAdapter,
 } from "@openuidev/react-ui";
-import { openuiLibrary, openuiPromptOptions } from "@openuidev/react-ui/genui-lib";
+import { chatLibrary } from "@openuidev/thesys";
 import { useMemo } from "react";
 
-const systemPrompt = openuiLibrary.prompt(openuiPromptOptions);
-
 export default function App() {
-  // Storage is AgentInterface's built-in in-memory default (wiped on reload). The
-  // backend call is unchanged — only the chat surface moved from FullScreen to
-  // AgentInterface.
+  // Storage is AgentInterface's built-in in-memory default (wiped on reload).
+  // The Cloud system prompt is attached on the FastAPI side.
   const llm = useMemo(
     () => ({
       send: ({ messages, signal }) =>
@@ -22,7 +20,6 @@ export default function App() {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            systemPrompt,
             messages: openAIMessageFormat.toApi(messages),
           }),
           signal,
@@ -34,7 +31,7 @@ export default function App() {
 
   return (
     <div className="h-screen w-screen overflow-hidden">
-      <AgentInterface llm={llm} componentLibrary={openuiLibrary} agentName="OpenUI Chat" />
+      <AgentInterface llm={llm} componentLibrary={chatLibrary} agentName="OpenUI Chat" />
     </div>
   );
 }

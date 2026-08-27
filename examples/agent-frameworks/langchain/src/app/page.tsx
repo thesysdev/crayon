@@ -1,9 +1,10 @@
 "use client";
 import "@openuidev/react-ui/components.css";
+import "@openuidev/thesys/styles.css";
 
 import { useTheme } from "@/hooks/use-system-theme";
 import { AgentInterface, agUIAdapter, fetchLLM } from "@openuidev/react-ui";
-import { openuiChatLibrary } from "@openuidev/react-ui/genui-lib";
+import { chatLibrary } from "@openuidev/thesys";
 import { useMemo } from "react";
 
 export default function Page() {
@@ -22,7 +23,7 @@ export default function Page() {
     <div className="h-screen w-screen overflow-hidden relative">
       <AgentInterface
         llm={llm}
-        componentLibrary={openuiChatLibrary}
+        componentLibrary={chatLibrary}
         agentName="OpenUI + DeepAgents Chat"
         theme={{ mode }}
         starterVariant="short"

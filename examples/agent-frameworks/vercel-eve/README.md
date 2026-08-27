@@ -8,7 +8,7 @@ translates Eve events into AG-UI events that OpenUI renders as live React compon
 
 - Node.js 24
 - pnpm, npm, or Bun
-- An API key for an OpenAI-compatible model provider
+- An API key for [OpenUI Cloud](https://console.thesys.dev/keys)
 
 ## Run locally
 
@@ -25,9 +25,8 @@ translates Eve events into AG-UI events that OpenUI renders as live React compon
    cp .env.example .env
    ```
 
-   Set `LLM_API_KEY` in `.env`. `LLM_MODEL` and `LLM_BASE_URL` select the model and any
-   OpenAI-compatible endpoint. `OPENAI_API_KEY`, `OPENAI_MODEL`, and `OPENAI_BASE_URL` are
-   accepted as aliases.
+   Set `THESYS_API_KEY` in `.env`. Optionally set `OPENUI_MODEL` (defaults to
+   `google/gemini-3.6-flash-free`). The Eve agent calls OpenUI Cloud as its model provider.
 
 3. Start the Next.js application and embedded Eve development server:
 
@@ -65,9 +64,8 @@ Eve session events ──► AG-UI adapter ──► OpenUI renderer
 
 | Environment variable | Default                                          | Purpose                                        |
 | -------------------- | ------------------------------------------------ | ---------------------------------------------- |
-| `LLM_API_KEY`        | `OPENAI_API_KEY`                                 | API key sent to the configured model provider. |
-| `LLM_MODEL`          | `OPENAI_MODEL` or `gpt-5.5`                      | Model used by the Eve agent.                   |
-| `LLM_BASE_URL`       | `OPENAI_BASE_URL` or `https://api.openai.com/v1` | OpenAI-compatible API endpoint.                |
+| `THESYS_API_KEY` | —                                                | OpenUI Cloud API key.                          |
+| `OPENUI_MODEL`   | `google/gemini-3.6-flash-free`                   | Model used by the Eve agent.                   |
 
 ## Eve commands
 

@@ -45,7 +45,7 @@ fastapi-backend/
 - Python 3.10+
 - [uv](https://docs.astral.sh/uv/) (or pip)
 - Node.js 18+
-- An OpenAI API key
+- An OpenUI Cloud API key (https://console.thesys.dev/keys)
 
 ### 1. Configure the backend
 
@@ -57,7 +57,7 @@ cp .env.example .env
 Add your key to `backend/.env`:
 
 ```
-OPENAI_API_KEY=sk-...
+THESYS_API_KEY=sk-th-...
 ```
 
 ### 2. Start the backend

@@ -62,7 +62,7 @@ An AI-powered spreadsheet app that pairs a full-featured [Handsontable](https://
 ### Prerequisites
 
 - Node.js 18+
-- An [OpenAI API key](https://platform.openai.com/api-keys) (GPT-5.5 recommended)
+- An [OpenUI Cloud API key](https://console.thesys.dev/keys)
 
 ### Setup
 
@@ -71,7 +71,7 @@ cd examples/miscellaneous/handsontable
 
 # Copy the environment template and add your API key
 cp env.example .env
-# Edit .env and set OPENAI_API_KEY=sk-...
+# Edit .env and set THESYS_API_KEY=sk-th-...
 
 # Install dependencies
 pnpm install --ignore-workspace
@@ -86,8 +86,8 @@ Open [http://localhost:3000](http://localhost:3000) to see the spreadsheet with 
 
 | Variable         | Required | Default   | Description                       |
 | ---------------- | -------- | --------- | --------------------------------- |
-| `OPENAI_API_KEY` | Yes      | —         | Your OpenAI API key               |
-| `OPENAI_MODEL`   | No       | `gpt-5.5` | Model to use for chat completions |
+| `THESYS_API_KEY` | Yes      | —         | Your OpenUI Cloud API key               |
+| `OPENUI_MODEL`   | No       | `google/gemini-3.6-flash-free` | Model id on OpenUI Cloud          |
 
 ## Project Structure
 
@@ -113,7 +113,7 @@ hands-on-table-chat/
 │   │   └── system-prompt.txt          # Auto-generated OpenUI Lang prompt
 │   └── lib/
 │       └── spreadsheet-library.tsx    # OpenUI component library with SpreadsheetTable
-├── env.example                        # Environment variable template
+├── .env.example                       # Environment variable template
 ├── package.json
 ├── tsconfig.json
 ├── next.config.ts

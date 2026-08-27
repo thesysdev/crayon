@@ -1,7 +1,13 @@
 "use client";
 
 import { spreadsheetLibrary } from "@/lib/spreadsheet-library";
-import { AgentInterface, fetchLLM, openAIAdapter, openAIMessageFormat } from "@openuidev/react-ui";
+import {
+  AgentInterface,
+  fetchLLM,
+  openAIConversationMessageFormat,
+  openAIResponsesAdapter,
+} from "@openuidev/react-ui";
+import { useOpenuiCloudStorage } from "@openuidev/thesys";
 import { MessageSquare, PanelRightClose } from "lucide-react";
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -10,18 +16,20 @@ import { TableProvider } from "./TableContext";
 const PersistentSpreadsheet = dynamic(() => import("./PersistentSpreadsheet"), { ssr: false });
 
 function ChatPanel({ onClose }: { onClose: () => void }) {
-  // AgentInterface uses its built-in in-memory storage default (wiped on reload).
-  // fetchLLM sends AgentInterface's per-thread id, but the server ignores it and
-  // keys the shared table store on "default" (see api/chat/route.ts).
+  // Cloud storage persists threads; the spreadsheet tools key off the same threadId.
   const llm = useMemo(
     () =>
       fetchLLM({
         url: "/api/chat",
-        streamAdapter: openAIAdapter(),
-        messageFormat: openAIMessageFormat,
+        streamAdapter: openAIResponsesAdapter(),
+        messageFormat: openAIConversationMessageFormat,
       }),
     [],
   );
+  const storage = useOpenuiCloudStorage({
+    token: "/api/frontend-token",
+    apiBaseUrl: "https://api.thesys.dev",
+  });
 
   return (
     <div className="chat-panel">
@@ -33,6 +41,7 @@ function ChatPanel({ onClose }: { onClose: () => void }) {
       <div className="chat-panel__body">
         <AgentInterface
           llm={llm}
+          storage={storage}
           componentLibrary={spreadsheetLibrary}
           agentName="Spreadsheet AI"
           starterVariant="long"

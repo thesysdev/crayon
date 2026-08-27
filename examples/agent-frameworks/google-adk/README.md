@@ -19,6 +19,8 @@ frontend renders as live generative UI (cards, tables, forms, charts…).
 
 ## Getting started
 
+The TypeScript ADK talks to Gemini natively (`GEMINI_API_KEY`). This example keeps that provider because ADK JS does not yet ship a first-party OpenAI-compatible model adapter. The frontend is still a standard OpenUI Agent Interface.
+
 1. Create a `.env.local` file with your Gemini key
    (get a free one at https://aistudio.google.com/apikey):
 

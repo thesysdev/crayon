@@ -1,4 +1,4 @@
-"""Minimal FastAPI backend — streams OpenAI completions as NDJSON."""
+"""Minimal FastAPI backend — streams OpenUI Cloud completions as NDJSON."""
 import os
 
 from dotenv import load_dotenv
@@ -9,8 +9,14 @@ from starlette.responses import StreamingResponse
 
 load_dotenv()
 
-client = AsyncOpenAI()
-MODEL = os.environ.get("OPENAI_MODEL", "gpt-5.5")
+client = AsyncOpenAI(
+    api_key=os.environ.get("THESYS_API_KEY"),
+    base_url="https://api.thesys.dev/v1/embed",
+)
+MODEL = os.environ.get("OPENUI_MODEL", "google/gemini-3.6-flash-free")
+
+# Same payload as generateSystemPrompt() from @openuidev/thesys-server.
+CLOUD_SYSTEM_PROMPT = ']]>openui:config\n{"libraryVersion": "0.1.0"}'
 
 app = FastAPI()
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
@@ -18,9 +24,10 @@ app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], all
 
 @app.post("/api/chat")
 async def chat(body: dict):
+    messages = [m for m in body.get("messages", []) if m.get("role") != "system"]
     response = await client.chat.completions.create(
         model=MODEL,
-        messages=[{"role": "system", "content": body["systemPrompt"]}, *body["messages"]],
+        messages=[{"role": "system", "content": CLOUD_SYSTEM_PROMPT}, *messages],
         stream=True,
     )
 

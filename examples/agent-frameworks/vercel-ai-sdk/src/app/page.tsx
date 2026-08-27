@@ -1,5 +1,6 @@
 "use client";
 
+import "@openuidev/thesys/styles.css";
 
 import { useChat } from "@ai-sdk/react";
 import { useRef, useEffect, useState } from "react";

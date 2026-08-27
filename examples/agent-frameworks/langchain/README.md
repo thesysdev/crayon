@@ -45,8 +45,8 @@ the Next.js app (serves the UI). The default dev script starts both.
    ```
 
    ```env
-   OPENAI_API_KEY=sk-your-key-here
-   OPENAI_MODEL=gpt-5.5
+   THESYS_API_KEY=sk-th-...
+   OPENUI_MODEL=google/gemini-3.6-flash-free
    LANGGRAPH_API_URL=http://localhost:2024
    LANGGRAPH_ASSISTANT_ID=agent
    ```
@@ -71,7 +71,7 @@ the Next.js app (serves the UI). The default dev script starts both.
 Open [http://localhost:3000](http://localhost:3000) and try a starter such as
 "Weather in Tokyo" or "AAPL stock price".
 
-> `OPENAI_API_KEY` is read by the **LangGraph server** (it runs the LLM), so it
+> `THESYS_API_KEY` is read by the **LangGraph server** (it runs the LLM), so it
 > belongs in `.env` next to `langgraph.json`. The Next.js app only needs the
 > `LANGGRAPH_*` variables. The example route enables detailed upstream errors
 > outside production so a misconfigured graph id is visible during local setup.

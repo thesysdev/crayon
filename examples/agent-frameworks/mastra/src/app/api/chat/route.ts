@@ -2,15 +2,9 @@ import { MastraAgent } from "@ag-ui/mastra";
 import { Agent } from "@mastra/core/agent";
 import { createTool } from "@mastra/core/tools";
 import type { Message } from "@ag-ui/core";
-import { readFileSync } from "fs";
+import { generateSystemPrompt } from "@openuidev/thesys-server";
 import { NextRequest } from "next/server";
-import { join } from "path";
 import { z } from "zod";
-
-const systemPromptFile = readFileSync(
-  join(process.cwd(), "src/generated/system-prompt.txt"),
-  "utf-8",
-);
 
 // ========== Mock tools ==========
 const getWeather = createTool({
@@ -56,11 +50,14 @@ const agent = new MastraAgent({
   agent: new Agent({
     id: "openui-agent",
     name: "OpenUI Agent",
-    instructions: `You are a helpful assistant. Use tools when relevant and help the user with their requests. Always format your responses cleanly.\n\n${systemPromptFile}`,
+    instructions: generateSystemPrompt({
+      instructions:
+        "You are a helpful assistant. Use tools when relevant and help the user with their requests. Always format your responses cleanly.",
+    }),
     model: {
-      id: (process.env.OPENAI_MODEL as `${string}/${string}`) || "openai/gpt-5.5",
-      apiKey: process.env.OPENAI_API_KEY,
-      url: process.env.OPENAI_BASE_URL || "https://api.openai.com/v1",
+      id: (process.env.OPENUI_MODEL as `${string}/${string}`) || "google/gemini-3.6-flash-free",
+      apiKey: process.env.THESYS_API_KEY,
+      url: process.env.OPENUI_BASE_URL || "https://api.thesys.dev/v1/embed",
     },
     tools: { getWeather, getStockPrice },
   }),

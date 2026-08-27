@@ -103,7 +103,7 @@ vercel-ai-sdk/
 
 - Node.js 18+
 - pnpm, npm, or Bun
-- An OpenAI API key
+- An OpenUI Cloud API key (https://console.thesys.dev/keys)
 
 ### 1. Install dependencies
 
@@ -121,7 +121,7 @@ cp .env.example .env.local
 Add your key to `.env.local`:
 
 ```
-OPENAI_API_KEY=sk-...
+THESYS_API_KEY=sk-th-...
 ```
 
 ### 3. Start the dev server
@@ -152,7 +152,7 @@ The API route uses the Vercel AI SDK's `streamText` with five arguments:
 
 | Argument   | Value                            | Purpose                                                    |
 | ---------- | -------------------------------- | ---------------------------------------------------------- |
-| `model`    | `openai("gpt-5.5")`              | The LLM to call                                            |
+| `model`    | OpenUI Cloud (`openai.chat(...)`) | The LLM to call                                            |
 | `system`   | contents of `system-prompt.txt`  | Teaches the model OpenUI Lang and the available components |
 | `messages` | conversation history from client | The full thread so far                                     |
 | `tools`    | four tool definitions            | Functions the LLM can call mid-generation                  |

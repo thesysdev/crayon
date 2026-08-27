@@ -14,10 +14,10 @@ header = CardHeader("Q1 Sales")
 tbl = Table([Col("Product"), Col("Revenue", "number")], [["Widget", 1200]])
 ```
 
-On the client, `<AgentInterface />` from `@openuidev/react-ui` provides the artifact chat interface — thread history, streaming, input, and rendering. It requires an `llm` object whose `send()` calls the backend and whose `streamProtocol` parses the incoming SSE stream with `openAIAdapter()`, and a `componentLibrary` (`muiChatLibrary` — the custom component library defined in `src/lib/mui-genui/`) used to render each OpenUI Lang node. `storage` is optional — threads live in memory by default and reset on reload.
+On the client, `<AgentInterface />` from `@openuidev/react-ui` provides the chat interface. It uses `openAIResponsesAdapter()` plus `useOpenuiCloudStorage()` for OpenUI Cloud persistence, and `muiChatLibrary` to render each OpenUI Lang node.
 
 ```tsx
-<AgentInterface llm={{ send, streamProtocol: openAIAdapter() }} componentLibrary={muiChatLibrary} />
+<AgentInterface llm={llm} storage={storage} componentLibrary={muiChatLibrary} />
 ```
 
 ## Architecture
@@ -27,17 +27,17 @@ On the client, `<AgentInterface />` from `@openuidev/react-ui` provides the arti
 │   Browser                          │  HTTP  │   Next.js API Route                │
 │                                    │ ──────►│                                    │
 │  • <AgentInterface /> manages UI   │        │  • Loads system-prompt.txt         │
-│  • openAIAdapter() parses SSE      │◄────── │  • Calls LLM with runTools         │
-│  • muiChatLibrary renders nodes    │  SSE   │  • Executes tools server-side      │
+│  • openAIResponsesAdapter()        │◄────── │  • OpenUI Cloud Responses proxy    │
+│  • muiChatLibrary renders nodes    │  SSE   │  • App tools via runFunctionToolLoop│
 │  • MUI ThemeProvider + CssBaseline │        │  • Streams response as SSE events  │
 └────────────────────────────────────┘        └────────────────────────────────────┘
 ```
 
-1. The user types a message. `<AgentInterface />` invokes the `llm.send()` callback, which `POST`s to `/api/chat` with the conversation history formatted via `openAIMessageFormat.toApi()`.
-2. The API route reads `src/generated/system-prompt.txt`, instantiates an OpenAI client, and calls `runTools` — the OpenAI SDK's multi-step tool-execution loop.
-3. Tool calls run server-side; results are fed back to the model automatically and emitted as SSE events.
-4. The LLM streams a final OpenUI Lang response. The stream ends with `data: [DONE]`.
-5. The client parses the events with `openAIAdapter()` and renders each node as a Material UI component as it streams in.
+1. The user types a message. `<AgentInterface />` invokes `llm.send()`, which `POST`s to `/api/chat` with the latest turn formatted via `openAIConversationMessageFormat`.
+2. The API route loads the generated library spec, calls OpenUI Cloud's Responses API, and runs app-owned tools with `runFunctionToolLoop`.
+3. Tool calls run server-side; results are posted back into the Cloud conversation.
+4. The model streams OpenUI Lang as Responses SSE events.
+5. The client parses the events with `openAIResponsesAdapter()` and renders each node as a Material UI component as it streams in.
 
 ## Project Structure
 
@@ -92,7 +92,7 @@ The app wraps everything in MUI's `ThemeProvider` + `CssBaseline` via `ColorMode
 
 - Node.js 20.x
 - pnpm, npm, or Bun
-- An OpenAI API key
+- An OpenUI Cloud API key (https://console.thesys.dev/keys)
 
 ### Setup
 
@@ -107,7 +107,7 @@ Provide your API key:
 
 ```bash
 cp .env.example .env.local
-# edit .env.local and set OPENAI_API_KEY
+# edit .env.local and set THESYS_API_KEY
 ```
 
 ### Develop

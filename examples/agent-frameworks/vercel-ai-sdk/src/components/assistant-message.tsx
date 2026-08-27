@@ -1,6 +1,6 @@
 import type { ActionEvent } from "@openuidev/react-lang";
 import { BuiltinActionType, Renderer } from "@openuidev/react-lang";
-import { openuiChatLibrary } from "@openuidev/react-ui/genui-lib";
+import { chatLibrary } from "@openuidev/thesys";
 import type { UIMessage } from "ai";
 import { Bot } from "lucide-react";
 import { ToolCallIndicator } from "./tool-call-indicator";
@@ -57,7 +57,7 @@ export function AssistantMessage({ message, isStreaming, onSend }: AssistantMess
           <div className="prose-container">
             <Renderer
               response={textContent}
-              library={openuiChatLibrary}
+              library={chatLibrary}
               isStreaming={isStreaming}
               onAction={handleAction}
             />

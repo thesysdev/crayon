@@ -13,7 +13,7 @@ An [OpenUI](https://openui.com) example showing how to wire a [Mastra](https://m
 1. Create a `.env.local` file with your OpenAI key:
 
 ```bash
-echo "OPENAI_API_KEY=sk-..." > .env.local
+echo "THESYS_API_KEY=sk-th-..." > .env.local
 ```
 
 2. Install dependencies from this example directory:

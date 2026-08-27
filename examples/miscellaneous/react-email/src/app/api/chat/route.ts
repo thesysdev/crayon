@@ -1,16 +1,28 @@
-import { readFileSync } from "fs";
+import { emailLibrary, emailPromptOptions } from "@openuidev/react-email";
+import { generateSystemPrompt, type ChatLibrary } from "@openuidev/thesys-server";
 import { NextRequest } from "next/server";
 import OpenAI from "openai";
 import type { ChatCompletionMessageParam } from "openai/resources/chat/completions.mjs";
-import { join } from "path";
 
-const systemPrompt = readFileSync(join(process.cwd(), "src/generated/system-prompt.txt"), "utf-8");
+const { components: _components, ...chatLibrary } = emailLibrary.toSpec() as ChatLibrary & {
+  components?: unknown;
+};
+
+const systemPrompt = generateSystemPrompt({
+  library: chatLibrary,
+  promptOptions: {
+    examples: emailPromptOptions.examples,
+    preamble: emailPromptOptions.preamble,
+    additionalRules: emailPromptOptions.additionalRules,
+  },
+});
 
 export async function POST(req: NextRequest) {
   const { messages } = await req.json();
 
   const client = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
+    apiKey: process.env.THESYS_API_KEY,
+    baseURL: "https://api.thesys.dev/v1/embed",
   });
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -30,7 +42,7 @@ export async function POST(req: NextRequest) {
   ];
 
   const stream = await client.chat.completions.create({
-    model: "gpt-5.5",
+    model: process.env.OPENUI_MODEL || "google/gemini-3.6-flash-free",
     messages: chatMessages,
     stream: true,
   });

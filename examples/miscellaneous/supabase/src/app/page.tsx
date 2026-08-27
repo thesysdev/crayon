@@ -1,5 +1,7 @@
 "use client";
 
+import "@openuidev/thesys/styles.css";
+
 import { createSupabaseBrowser } from "@/lib/supabase/browser";
 import {
   AgentInterface,
@@ -8,6 +10,7 @@ import {
   openAIMessageFormat,
   restStorage,
 } from "@openuidev/react-ui";
+import { chatLibrary } from "@openuidev/thesys";
 import type { RealtimeChannel } from "@supabase/supabase-js";
 import { useEffect, useMemo, useState } from "react";
 
@@ -75,7 +78,13 @@ export default function Page() {
 
   return (
     <div className="h-screen w-screen overflow-hidden">
-      <AgentInterface key={threadListKey} storage={storage} llm={llm} agentName="Supabase Chat" />
+      <AgentInterface
+        key={threadListKey}
+        storage={storage}
+        llm={llm}
+        componentLibrary={chatLibrary}
+        agentName="Supabase Chat"
+      />
     </div>
   );
 }
