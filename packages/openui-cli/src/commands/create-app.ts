@@ -423,21 +423,31 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
       template,
       ai_setup: aiSetup,
     });
-    const installResult = await withSpinner("Installing dependencies...", () =>
-      runCommand(packageManager.runCmd, installArgs, targetDir, {
-        echo: false,
-        stdin: "ignore",
-        captureLimit: QUIET_COMMAND_CAPTURE_LIMIT,
-        env: {
-          ...process.env,
-          npm_config_loglevel: "error",
-          NPM_CONFIG_LOGLEVEL: "error",
-        },
-      }),
-    );
+    const runInstall = () =>
+      options.verbose
+        ? runCommand(packageManager.runCmd, installArgs, targetDir)
+        : runCommand(packageManager.runCmd, installArgs, targetDir, {
+            echo: false,
+            stdin: "ignore",
+            captureLimit: QUIET_COMMAND_CAPTURE_LIMIT,
+            env: {
+              ...process.env,
+              npm_config_loglevel: "error",
+              NPM_CONFIG_LOGLEVEL: "error",
+            },
+          });
+
+    if (options.verbose) {
+      console.info(`Installing dependencies with: ${installCmd}\n`);
+    }
+    const installResult = options.verbose
+      ? await runInstall()
+      : await withSpinner("Installing dependencies...", runInstall);
     if (!installResult.error && installResult.status === 0) {
       dependencyInstalled = true;
-      console.info("✓ Dependencies installed\n");
+      if (!options.verbose) {
+        console.info("✓ Dependencies installed\n");
+      }
       telemetry.capture("cli_dependency_install_succeeded", {
         ...createFunnelProps("dependency_install_succeeded"),
         template,
@@ -445,7 +455,9 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
         dependency_installed: dependencyInstalled,
       });
     } else {
-      dumpFailureLog(installResult.diagnosticTail, "install log (tail)");
+      if (!options.verbose) {
+        dumpFailureLog(installResult.diagnosticTail, "install log (tail)");
+      }
       const properties = processErrorProperties(installResult, "dependency_install", {
         error_class: "dependency",
         error_code: "NONZERO_EXIT",

@@ -72,6 +72,7 @@ program
   .option("--no-install", "Scaffold without running the package install")
   .option("-i, --immediate", "Start the development server after installing dependencies")
   .option("--no-immediate", "Install dependencies without starting the development server")
+  .option("--verbose", "Stream full dependency install logs")
   .addHelpText(
     "after",
     `
@@ -103,6 +104,7 @@ Backend frameworks:
       interactive: boolean;
       install: boolean;
       immediate?: boolean;
+      verbose?: boolean;
     }) => {
       try {
         rejectConflictingImmediateFlags(process.argv.slice(2));
@@ -116,6 +118,7 @@ Backend frameworks:
           noInteractive: !options.interactive,
           noInstall: !options.install,
           immediate: options.immediate,
+          verbose: options.verbose,
         });
       } catch (e) {
         handleCliError(e, "cli_create_failed");
