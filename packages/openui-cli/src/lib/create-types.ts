@@ -12,7 +12,6 @@ export interface CreateAppOptions {
   noInteractive?: boolean;
   noInstall?: boolean;
   immediate?: boolean;
-  /** Stream full dependency install logs instead of quiet spinner output. */
   verbose?: boolean;
   apiKey?: string;
   auth?: CloudAuthMethod;
