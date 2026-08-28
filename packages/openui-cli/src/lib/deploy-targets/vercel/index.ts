@@ -1,7 +1,7 @@
 import { formatCliCommand, resolveCliInvocation } from "../../cli-bin";
 import { throwCommandFailure } from "../../deploy/failure";
 import { loadProjectDeployEnv, warnMissingRequiredDeployEnv } from "../../deploy/project-env";
-import { dumpFailureLog, printQuietDeploySuccess, runQuietCommand } from "../../deploy/quiet";
+import { printLogTail, printQuietDeploySuccess, runQuietCommand } from "../../deploy/quiet";
 import type { DeployTargetOptions } from "../../deploy/types";
 import { resolveInstallPackageManager } from "../../detect-package-manager";
 import { runCommand } from "../../process-runner";
@@ -125,6 +125,6 @@ export async function deployToVercel(opts: DeployToVercelOptions): Promise<void>
     return;
   }
 
-  if (quiet) dumpFailureLog(result.diagnosticTail, "Vercel log (tail)");
+  if (quiet) printLogTail(result.diagnosticTail, "Vercel log (tail)");
   throwCommandFailure(result, "vercel_deploy", "Vercel deploy failed");
 }

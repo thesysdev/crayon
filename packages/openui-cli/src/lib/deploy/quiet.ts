@@ -1,12 +1,12 @@
 import type { CliInvocation } from "../cli-bin";
 import {
-  dumpFailureLog,
+  printLogTail,
   QUIET_COMMAND_CAPTURE_LIMIT,
 } from "../command-output";
 import { runCommand, type CommandResult } from "../process-runner";
 import { withSpinner } from "../spinner";
 
-export { dumpFailureLog, QUIET_COMMAND_CAPTURE_LIMIT };
+export { printLogTail, QUIET_COMMAND_CAPTURE_LIMIT };
 
 export type QuietCommandOptions = {
   invocation: CliInvocation;
