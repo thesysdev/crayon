@@ -3,9 +3,9 @@ import * as os from "node:os";
 import * as path from "node:path";
 
 import { resolveCloudApiKey, THESYS_KEYS_URL } from "../auth/mint";
+import { dumpFailureLog, QUIET_COMMAND_CAPTURE_LIMIT } from "../lib/command-output";
 import { aiSetupFromTemplate, createFunnelProps } from "../lib/create-telemetry";
 import type { CreateAppOptions, EnvResult, OverlayName, TemplateName } from "../lib/create-types";
-import { dumpFailureLog, QUIET_COMMAND_CAPTURE_LIMIT } from "../lib/command-output";
 import {
   resolveInstallPackageManager,
   type PackageManagerName,
