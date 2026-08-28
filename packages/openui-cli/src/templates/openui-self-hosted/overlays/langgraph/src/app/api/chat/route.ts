@@ -1,19 +1,53 @@
-import { createLangChainStreamResponse } from "@openuidev/langchain";
+import { graph } from "@/agent/agent";
 
 export const runtime = "nodejs";
 
-const API_URL = process.env.LANGGRAPH_API_URL || "http://localhost:2024";
-const ASSISTANT_ID = process.env.LANGGRAPH_ASSISTANT_ID || "agent";
+interface LangChainRequestMessage {
+  type?: unknown;
+  content?: unknown;
+}
+
+function badRequest(message: string) {
+  return Response.json({ error: message }, { status: 400 });
+}
 
 /**
- * Browser-to-Agent-Server proxy. The agent itself lives in src/agent/agent.ts
- * and can be run locally or deployed independently.
+ * Runs the LangGraph agent from src/agent/agent.ts in-process and returns its
+ * native `messages`-mode SSE stream untransformed. The browser converts
+ * outgoing messages with `langGraphMessageFormat` and parses the stream with
+ * `langGraphAdapter()`, so no conversion happens here. Nothing is stored
+ * server-side, so the full conversation history is sent as graph input.
  */
 export async function POST(request: Request) {
-  return createLangChainStreamResponse(request, {
-    apiUrl: API_URL,
-    assistantId: ASSISTANT_ID,
-    apiKey: process.env.LANGSMITH_API_KEY,
-    debug: process.env.NODE_ENV !== "production",
+  let body: unknown;
+  try {
+    body = await request.json();
+  } catch {
+    return badRequest("Expected a JSON request body containing a non-empty messages array");
+  }
+  const requestBody = (typeof body === "object" && body !== null ? body : {}) as Record<
+    string,
+    unknown
+  >;
+
+  const messages = requestBody.messages;
+  if (!Array.isArray(messages) || messages.length === 0) {
+    return badRequest("Expected a JSON request body containing a non-empty messages array");
+  }
+  const last = messages[messages.length - 1] as LangChainRequestMessage;
+  if (last?.type !== "human") {
+    return badRequest("Expected the latest message to be a human message");
+  }
+
+  const stream = await graph.stream(
+    { messages },
+    { streamMode: "messages", encoding: "text/event-stream", signal: request.signal },
+  );
+
+  return new Response(stream, {
+    headers: {
+      "Content-Type": "text/event-stream",
+      "Cache-Control": "no-cache, no-transform",
+    },
   });
 }

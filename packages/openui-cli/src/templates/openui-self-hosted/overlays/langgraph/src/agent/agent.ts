@@ -1,7 +1,6 @@
 import { tool } from "@langchain/core/tools";
 import { ChatOpenAI } from "@langchain/openai";
 import { generateSystemPrompt } from "@openuidev/lang-core";
-import { openUIStreamTransformer } from "@openuidev/langchain/transformer";
 import { createAgent } from "langchain";
 import { z } from "zod";
 import librarySpec from "../generated/spec.json";
@@ -27,12 +26,12 @@ const model = new ChatOpenAI({
 });
 
 /**
- * A standalone LangGraph agent: LangGraph owns orchestration and tool execution,
- * while the application supplies its OpenAI-compatible model provider.
+ * A LangGraph agent, invoked in-process by the /api/chat route: LangGraph owns
+ * orchestration and tool execution, while the application supplies its
+ * OpenAI-compatible model provider.
  */
 export const graph = createAgent({
   model,
   tools: [getWeatherTool],
   systemPrompt: generateSystemPrompt({ library: librarySpec, promptOptions }),
-  streamTransformers: [openUIStreamTransformer],
 });

@@ -2,7 +2,6 @@ import { AIMessage, type BaseMessage, isToolMessage } from "@langchain/core/mess
 import { type ServerTool, tool } from "@langchain/core/tools";
 import { StateSchema } from "@langchain/langgraph";
 import { ChatOpenAI } from "@langchain/openai";
-import { openUIStreamTransformer } from "@openuidev/langchain/transformer";
 import { artifactTool, generateSystemPrompt } from "@openuidev/thesys-server";
 import { createAgent, createMiddleware } from "langchain";
 import { z } from "zod";
@@ -119,8 +118,9 @@ const cloudConversation = createMiddleware({
 });
 
 /**
- * A normal LangGraph agent: LangGraph owns orchestration and local
- * tool execution; OpenUI Cloud is the attached Responses provider.
+ * A normal LangGraph agent, invoked in-process by the /api/chat route:
+ * LangGraph owns orchestration and local tool execution; OpenUI Cloud is
+ * the attached Responses provider.
  */
 export const graph = createAgent({
   model: cloudModel(DEFAULT_MODEL),
@@ -128,5 +128,4 @@ export const graph = createAgent({
   systemPrompt: generateSystemPrompt(),
   stateSchema: CloudAgentState,
   middleware: [cloudConversation],
-  streamTransformers: [openUIStreamTransformer],
 });
