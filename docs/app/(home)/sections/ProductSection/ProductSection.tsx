@@ -128,17 +128,19 @@ export function ProductSection({
         ) : null}
       </div>
 
-      <div className={styles.cards}>
-        {cards.map(({ Icon: CardIcon, title, description: cardCopy }) => (
-          <div className={styles.card} key={title}>
-            <span className={styles.cardIcon} aria-hidden="true">
-              <CardIcon size={20} weight="light" />
-            </span>
-            <h4 className={styles.cardTitle}>{title}</h4>
-            <p className={styles.cardDescription}>{cardCopy}</p>
-          </div>
-        ))}
-      </div>
+{cards.length > 0 && (
+              <div className={styles.cards}>
+          {cards.map(({ Icon: CardIcon, title, description: cardCopy }) => (
+            <div className={styles.card} key={title}>
+              <span className={styles.cardIcon} aria-hidden="true">
+                <CardIcon size={20} weight="light" />
+              </span>
+              <h4 className={styles.cardTitle}>{title}</h4>
+              <p className={styles.cardDescription}>{cardCopy}</p>
+            </div>
+          ))}
+        </div>
+      )}
     </section>
   );
 }

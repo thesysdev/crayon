@@ -41,7 +41,8 @@ const FEATURES: GridFeature[] = [
   {
     Icon: Devices,
     title: "Cross-platform",
-    description: "One spec renders natively to React, React Native, Vue, and more.",
+    description:
+      "One response renders through React, Vue, Svelte, React Native, email, or a plain script tag.",
   },
   {
     Icon: Broadcast,
@@ -87,6 +88,7 @@ export function FeatureGridSection({
   showHeaderSeparator = true,
   showCompat = true,
   compatFirst = false,
+  gridFirst = false,
   header,
   showBottomSeparator = true,
   fadeColumnLines = false,
@@ -106,6 +108,8 @@ export function FeatureGridSection({
   showCompat?: boolean;
   /** Put that band above the header instead of below the grid. */
   compatFirst?: boolean;
+  /** Render the feature grid above the benchmark header instead of below it. */
+  gridFirst?: boolean;
   /** Custom headline above the grid (with a separator below it), e.g. a page tagline. */
   header?: ReactNode;
   /** The full-width separator at the very bottom of the section (default on). */
@@ -132,7 +136,7 @@ export function FeatureGridSection({
         title="Works with your stack"
         description={
           <>
-            OpenUI works with any LLM, UI library, and agent framework.{" "}
+            OpenUI works with any LLM, backend framework, client, and design library.{" "}
             <br className={styles.compatDescBreak} />
             Add generative UI without changing your stack.
           </>
@@ -141,8 +145,44 @@ export function FeatureGridSection({
     </div>
   ) : null;
 
+  const gridBlock = (
+    <div
+      className={`${styles.grid} ${fadeColumnLines ? styles.gridFadeLines : ""} ${
+        features.length <= desktopColumns ? styles.gridSingleRow : ""
+      } ${flushOuterCards ? styles.gridFlushOuterCards : ""} ${
+        balanceLastRow ? styles.gridBalancedLastRow : ""
+      } ${desktopColumns === 4 ? styles.gridFourColumns : ""}`.trim()}
+    >
+      {lead && <div className={styles.lead}>{lead}</div>}
+      {features.map(({ Icon, icon, title, description }, index) => {
+        const FeatureIcon = Icon ?? (icon ? FEATURE_ICONS[icon] : undefined);
+
+        return (
+          <div
+            className={`${styles.feature} ${FeatureIcon ? "" : styles.featureWithPlaceholder}`.trim()}
+            key={title}
+            {...accordion.getToggleProps(index)}
+          >
+            <span
+              className={`${styles.icon} ${FeatureIcon ? "" : styles.iconPlaceholder}`.trim()}
+              aria-hidden="true"
+            >
+              {FeatureIcon && <FeatureIcon size={28} weight="light" />}
+            </span>
+            <h3 className={styles.featureTitle}>{title}</h3>
+            <ExpandChevron className={styles.chevron} />
+            <p className={styles.featureDescription}>
+              <span className={styles.featureDescriptionInner}>{description}</span>
+            </p>
+          </div>
+        );
+      })}
+    </div>
+  );
+
   return (
     <section className={styles.section}>
+      {gridFirst && <div className={styles.gridLead}>{gridBlock}</div>}
       {compatFirst && compatBand && (
         /* No rule here: the space below the band separates it from the header,
            which reads quieter than a line across the page. */
@@ -154,11 +194,13 @@ export function FeatureGridSection({
             <SectionHeader
               title="Renders 3x faster"
               subtitle="with 67% fewer tokens"
-              caption="when compared to JSON-Render"
+              caption="when compared to JSON based formats"
             >
               <div className={styles.ctaWrap}>
                 <BevelButton
-                  href="/docs/openui-lang/benchmarks"
+                  /* The format view, not the model board: this claim is about how OpenUI
+                     compares with other formats, and the chart reads that param on load. */
+                  href="/benchmarks?view=formats"
                   label="View benchmarks"
                   badge={<ArrowUpRight size={16} weight="bold" />}
                 />
@@ -175,38 +217,7 @@ export function FeatureGridSection({
         </>
       )}
       {showTopSeparator && <div className={styles.separator} />}
-      <div
-        className={`${styles.grid} ${fadeColumnLines ? styles.gridFadeLines : ""} ${
-          features.length <= desktopColumns ? styles.gridSingleRow : ""
-        } ${flushOuterCards ? styles.gridFlushOuterCards : ""} ${
-          balanceLastRow ? styles.gridBalancedLastRow : ""
-        } ${desktopColumns === 4 ? styles.gridFourColumns : ""}`.trim()}
-      >
-        {lead && <div className={styles.lead}>{lead}</div>}
-        {features.map(({ Icon, icon, title, description }, index) => {
-          const FeatureIcon = Icon ?? (icon ? FEATURE_ICONS[icon] : undefined);
-
-          return (
-            <div
-              className={`${styles.feature} ${FeatureIcon ? "" : styles.featureWithPlaceholder}`.trim()}
-              key={title}
-              {...accordion.getToggleProps(index)}
-            >
-              <span
-                className={`${styles.icon} ${FeatureIcon ? "" : styles.iconPlaceholder}`.trim()}
-                aria-hidden="true"
-              >
-                {FeatureIcon && <FeatureIcon size={28} weight="light" />}
-              </span>
-              <h3 className={styles.featureTitle}>{title}</h3>
-              <ExpandChevron className={styles.chevron} />
-              <p className={styles.featureDescription}>
-                <span className={styles.featureDescriptionInner}>{description}</span>
-              </p>
-            </div>
-          );
-        })}
-      </div>
+      {!gridFirst && gridBlock}
       {!compatFirst && compatBand && (
         <>
           <div className={styles.separator} />

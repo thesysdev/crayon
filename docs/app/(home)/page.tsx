@@ -46,9 +46,12 @@ export default function HomePage() {
           </div>
           {/* The benchmark header and the compatibility band, without the feature
               grid that used to sit between them. */}
+          {/* No compatFirst: the benchmark claim leads and the compatibility band
+              follows it, so the page proves the point before saying what it
+              works with. The grid runs on its own six features — Live data and
+              Cross-platform are only stated here. */}
           <FeatureGridSection
-            features={[]}
-            compatFirst
+            gridFirst
             showHeaderSeparator={false}
             showBottomSeparator={false}
           />

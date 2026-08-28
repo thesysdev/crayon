@@ -13,8 +13,12 @@ import {
 } from "@phosphor-icons/react/dist/ssr";
 import type { ProductSectionProps } from "./ProductSection";
 
-/* The three product bands, in the order the page tells them: what OpenUI is,
-   then the two hosted things built on it.
+/* The product bands, in the order the page tells them: what OpenUI is, then
+   the hosted thing built on it.
+
+   OBSERVABILITY_PRODUCT is still defined but no longer rendered: while it is in
+   early access the home page gives it a line rather than a band. Its props are
+   kept here so promoting it back is a one-line change in CloudSection.
  *
  * ARTWORK PENDING. None of the three has a `shot` yet, so each stage renders
  * empty, holding its space. Add the images to /public and set `shot` to their
@@ -32,38 +36,32 @@ import type { ProductSectionProps } from "./ProductSection";
  * NO TAG on Gateway or Observability: the eyebrow chip was tried as "Cloud"
  * and again as "Managed", and removed both times. Only Lang carries one.
  *
- * HREFS: Gateway has no docs of its own yet, so its link points at the nearest
- * real destination. Repoint it when Gateway ships. */
+ * HREFS: Gateway points at its own page. Observability's still points at the
+ * nearest real destination; repoint it if that band comes back. */
 
 export const LANG_PRODUCT: ProductSectionProps = {
-  name: "OpenUI Lang",
+  /* "OpenUI", not "OpenUI Lang": the language/runtime split is a distinction the
+     docs make and the marketing pages do not. The const keeps its name because
+     it is internal. */
+  name: "OpenUI",
   tag: "Open Source",
-  headline: "Open-source language and runtime for Generative UI.",
-  description: "Make your AI agents stream live charts, forms, cards, tables, and dashboards.",
+  /* Shaped like A2UI's lockup — a category line, then a sentence that says what
+     it does and ends on the difference. "Open-source language and runtime"
+     described the machinery rather than the payoff, and open source is table
+     stakes here: A2UI and json-render are both Apache-licensed and neither
+     mentions it. The difference worth naming is the one they share and we do
+     not: they make the model write JSON. The numbers are the ones the benchmark
+     header below already uses, so the band and the section under it cite the
+     same comparison rather than two different ones. */
+  headline: "A framework for agent-driven interfaces.",
+  description:
+    "Not just chat: agents stream live dashboards, forms, tables, and charts as complete interfaces. Up to 3\u00d7 faster and 67% more token efficient than JSON, at higher structural validity.",
   secondaryCta: { label: "View docs", href: "/docs/openui-lang" },
   tone: "light",
-  cards: [
-    {
-      Icon: CursorClick,
-      title: "Interactive",
-      description: "Reactive state, inputs, and actions wired straight to your tools.",
-    },
-    {
-      Icon: Palette,
-      title: "Bring your UI library",
-      description: "Use your own components, styles, tokens, and interactions.",
-    },
-    {
-      Icon: ShieldCheck,
-      title: "Safe by default",
-      description: "The model composes your components, never arbitrary code.",
-    },
-    {
-      Icon: Lightning,
-      title: "Stream UI live",
-      description: "Render interfaces progressively as the model responds in real time.",
-    },
-  ],
+  /* No cards. Interactive, Bring your UI library, Safe by default and Stream UI
+     live all moved to the feature grid directly below this band, which states
+     them once alongside Live data and Cross-platform. */
+  cards: [],
 };
 
 export const GATEWAY_PRODUCT: ProductSectionProps = {
@@ -71,7 +69,15 @@ export const GATEWAY_PRODUCT: ProductSectionProps = {
   headline: "Reliability layer for Generative UI.",
   description:
     "Route model requests through a gateway built to catch broken outputs, recover failures, and keep generated UI working in production.",
-  secondaryCta: { label: "View docs", href: "/docs/agent/getting-started/openui-cloud" },
+  /* The demo booking used to sit on its own above the band, where it asked for
+     a sales call before the reader knew what the product was. Beside Learn more
+     it is one of two ways forward from the same block. */
+  primaryCta: {
+    label: "Talk to our team",
+    href: "https://zcal.co/t/thesys/demo",
+    external: true,
+  },
+  secondaryCta: { label: "Learn more", href: "/cloud/gateway" },
   tone: "dark",
   cards: [
     {

@@ -10,40 +10,42 @@ const FAQS: Faq[] = [
   {
     question: "What should I use to build a Generative UI app?",
     answer: [
-      "Start with OpenUI Lang, the free and open-source language and runtime for Generative UI.",
+      "Start with OpenUI, the free and open-source framework for Generative UI.",
       "For production, we recommend adding OpenUI Gateway for reliability and OpenUI Observability for monitoring and product analytics.",
     ],
   },
   {
-    question: "Is OpenUI Lang free and open source?",
+    /* Asked because people keep reading the hero screenshot as the whole
+       product. Stated plainly and near the top: the misunderstanding is common
+       enough that it is worth its own question rather than a clause elsewhere. */
+    question: "Is OpenUI only for chat?",
     answer: [
-      "Yes. OpenUI Lang is fully open source and works with your own models, infrastructure, components, and design system.",
+      "No. OpenUI renders whatever interface a response describes: dashboards, forms, tables, charts, and complete application screens, not only messages in a chat thread.",
+      "The same response renders through React, Vue, Svelte, React Native, email, or a plain script tag.",
+    ],
+  },
+  {
+    question: "Is OpenUI free and open source?",
+    answer: [
+      "Yes. OpenUI is fully open source and works with your own models, infrastructure, components, and design system.",
       "OpenUI Gateway and OpenUI Observability are managed services for teams running Generative UI in production.",
     ],
   },
   {
-    question: "Why should I use OpenUI Gateway?",
+    question: "Do I need OpenUI Gateway to use OpenUI?",
     answer: [
-      "You don't need Gateway to use OpenUI Lang. You can call any supported LLM directly.",
+      "No. You can call any supported LLM directly.",
       "For production applications, OpenUI Gateway is recommended because it adds GenUI-specific validation, automatic corrections, model routing, and provider fallbacks through an OpenAI-compatible API.",
       "You can usually adopt it by changing your base URL and model configuration.",
     ],
   },
   {
-    question: "How is OpenUI Observability different from tracing tools?",
-    answer: [
-      "Tracing tools tell you what your agent did.",
-      "OpenUI Observability shows what your users actually experienced, including generated UI, interactions, errors, corrections, fallbacks, and product behaviour.",
-      "It connects agent execution with whether the experience actually worked for the user.",
-    ],
-  },
-  {
+    /* The same answer both product pages give, so the advice does not change
+       with the door you came in through. */
     question: "Do I need both Gateway and Observability?",
     answer: [
       "No. They work independently.",
-      "Use Gateway to make generations more reliable.",
-      "Use Observability to understand sessions, users, errors, and behaviour.",
-      "Together, they give you the full picture from model generation to user experience.",
+      "We do recommend running both. Gateway makes generations more reliable, Observability shows you how they landed, and together they cover the whole path from the model to what the user actually experienced.",
     ],
   },
   {

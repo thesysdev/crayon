@@ -18,11 +18,12 @@ export function WhySection() {
         Generative UI fails silently in production
       </h2>
       <p className={styles.lead}>
-        OpenUI is the most reliable format we have measured, ahead of Google A2UI and Vercel
-        json-render. Better models lower the error rate further. Neither gets it to zero.
+        OpenUI matches or beats Google A2UI and Vercel json-render on structural validity, at about
+        half the tokens and half the streaming time. Better models lower the error rate further.
+        Neither gets it to zero.
       </p>
       <div className={styles.linkRow}>
-        <a className={styles.link} href="/benchmarks/language">
+        <a className={styles.link} href="/benchmarks?view=formats">
           Compare formats →
         </a>
         <a className={styles.link} href="/benchmarks">
