@@ -55,18 +55,6 @@ export function resolveOverlay(
   };
 }
 
-function removeEmptyParentDirs(projectDir: string, removedRelativePath: string) {
-  let dir = path.dirname(path.join(projectDir, removedRelativePath));
-
-  while (true) {
-    const relative = path.relative(projectDir, dir);
-    if (!relative || relative.startsWith("..")) break;
-    if (fs.readdirSync(dir).length > 0) break;
-    fs.rmdirSync(dir);
-    dir = path.dirname(dir);
-  }
-}
-
 export function applyOverlay(projectDir: string, overlay?: TemplateOverlay) {
   if (!overlay) return;
 
@@ -79,6 +67,5 @@ export function applyOverlay(projectDir: string, overlay?: TemplateOverlay) {
 
   for (const relativePath of overlay.manifest.files?.remove ?? []) {
     fs.rmSync(path.join(projectDir, relativePath), { recursive: true, force: true });
-    removeEmptyParentDirs(projectDir, relativePath);
   }
 }
