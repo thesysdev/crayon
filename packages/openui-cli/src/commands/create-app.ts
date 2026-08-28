@@ -3,7 +3,7 @@ import * as os from "node:os";
 import * as path from "node:path";
 
 import { resolveCloudApiKey, THESYS_KEYS_URL } from "../auth/mint";
-import { dumpFailureLog, QUIET_COMMAND_CAPTURE_LIMIT } from "../lib/command-output";
+import { printLogTail, QUIET_COMMAND_CAPTURE_LIMIT } from "../lib/command-output";
 import { aiSetupFromTemplate, createFunnelProps } from "../lib/create-telemetry";
 import type { CreateAppOptions, EnvResult, OverlayName, TemplateName } from "../lib/create-types";
 import {
@@ -456,7 +456,7 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
       });
     } else {
       if (!options.verbose) {
-        dumpFailureLog(installResult.diagnosticTail, "install log (tail)");
+        printLogTail(installResult.diagnosticTail, "install log (tail)");
       }
       const properties = processErrorProperties(installResult, "dependency_install", {
         error_class: "dependency",
