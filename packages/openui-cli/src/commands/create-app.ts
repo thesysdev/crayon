@@ -279,10 +279,7 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
     restoreDotfiles(targetDir);
     applyOverlay(targetDir, overlay);
     rewritePackageJson(targetDir, name, packageManager.name, overlay?.manifest.packageJson);
-    // npm ci needs package-lock.json. Keep it for npm scaffolds of the base
-    // template, or a backend overlay that ships its own. An overlay that
-    // changes dependencies without a lock must not keep the base lock — npm
-    // install resolves the new ranges instead. Other managers always drop it.
+    // An overlay that changes dependencies without a lock must not keep the base lock
     const overlayShipsNpmLock = Boolean(
       overlay && fs.existsSync(path.join(overlay.dir, "package-lock.json")),
     );
