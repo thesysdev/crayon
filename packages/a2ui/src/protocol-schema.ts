@@ -5,6 +5,9 @@ export const jsonObjectSchema = z.record(z.string(), jsonValueSchema);
 
 const versionSchema = z.literal("v1.0");
 const surfaceIdSchema = z.string();
+const extensionKeySchema = z.string().regex(/^[\p{XID_Start}_][\p{XID_Continue}]*$/u);
+const extensionsSchema = z.record(extensionKeySchema, jsonValueSchema);
+export const messageMetadataSchema = z.strictObject({ extensions: extensionsSchema.optional() });
 const langComponentsSchema = z
   .array(z.string().min(1))
   .min(1)
@@ -14,20 +17,29 @@ const langComponentsSchema = z
 
 export const a2uiFunctionCallSchema = z.strictObject({
   call: z.string(),
+  catalogId: z.string().optional(),
   args: jsonObjectSchema.optional(),
 });
+
+export const a2uiFunctionResponseSchema = z.union([
+  z.strictObject({ functionCallId: z.string(), value: jsonValueSchema }),
+  z.strictObject({
+    functionCallId: z.string(),
+    error: z.strictObject({ code: z.string(), message: z.string() }),
+  }),
+]);
 
 export const createSurfaceMessageSchema = z.strictObject({
   version: versionSchema,
   createSurface: z.strictObject({
     surfaceId: surfaceIdSchema,
     catalogId: z.string().optional(),
-    surfaceProperties: jsonObjectSchema.optional(),
     sendDataModel: z.boolean().optional().meta({ default: false }),
     components: langComponentsSchema
       .optional()
       .describe("Optional initial OpenUI Lang statements for single-message surface creation."),
     dataModel: jsonObjectSchema.optional(),
+    metadata: messageMetadataSchema.optional(),
   }),
 });
 
@@ -53,22 +65,17 @@ export const deleteSurfaceMessageSchema = z.strictObject({
   deleteSurface: z.strictObject({ surfaceId: surfaceIdSchema }),
 });
 
-export const callFunctionMessageSchema = z.strictObject({
+export const callRendererFunctionMessageSchema = z.strictObject({
   version: versionSchema,
-  functionCallId: z.string(),
-  wantResponse: z.boolean().optional().meta({ default: false }),
-  callFunction: a2uiFunctionCallSchema,
+  callRendererFunction: z.strictObject({
+    functionCallId: z.string(),
+    callFunction: a2uiFunctionCallSchema.extend({ catalogId: z.string() }),
+  }),
 });
 
-export const actionResponseMessageSchema = z.strictObject({
+export const agentFunctionResponseMessageSchema = z.strictObject({
   version: versionSchema,
-  actionId: z.string(),
-  actionResponse: z.union([
-    z.strictObject({ value: jsonValueSchema }),
-    z.strictObject({
-      error: z.strictObject({ code: z.string(), message: z.string() }),
-    }),
-  ]),
+  agentFunctionResponse: a2uiFunctionResponseSchema,
 });
 
 export const agentToRendererMessageSchema = z.union([
@@ -76,43 +83,56 @@ export const agentToRendererMessageSchema = z.union([
   updateComponentsMessageSchema,
   updateDataModelMessageSchema,
   deleteSurfaceMessageSchema,
-  callFunctionMessageSchema,
-  actionResponseMessageSchema,
+  callRendererFunctionMessageSchema,
+  agentFunctionResponseMessageSchema,
 ]);
 
 export const actionMessageSchema = z.strictObject({
   version: versionSchema,
   action: z.strictObject({
     name: z.string(),
+    userMessage: z.string().optional(),
     surfaceId: surfaceIdSchema,
     sourceComponentId: z.string(),
     timestamp: z.iso.datetime({ offset: true }),
     context: jsonObjectSchema,
-    wantResponse: z.boolean().optional().meta({ default: false }),
-    actionId: z.string().optional(),
+    metadata: messageMetadataSchema.optional(),
   }),
 });
 
-export const functionResponseMessageSchema = z.strictObject({
+export const callAgentFunctionMessageSchema = z.strictObject({
   version: versionSchema,
-  functionResponse: z.strictObject({
+  callAgentFunction: z.strictObject({
+    surfaceId: surfaceIdSchema,
     functionCallId: z.string(),
-    call: z.string(),
-    value: jsonValueSchema,
+    callFunction: a2uiFunctionCallSchema,
   }),
 });
+
+export const rendererFunctionResponseMessageSchema = z.strictObject({
+  version: versionSchema,
+  rendererFunctionResponse: a2uiFunctionResponseSchema,
+});
+
+const validationErrorCodeSchema = z.enum([
+  "VALIDATION_FAILED",
+  "UNALLOWED_PARENT",
+  "UNALLOWED_CHILD",
+]);
 
 export const validationFailedErrorMessageSchema = z.strictObject({
   version: versionSchema,
   error: z.strictObject({
-    code: z.literal("VALIDATION_FAILED"),
+    code: validationErrorCodeSchema,
     surfaceId: surfaceIdSchema,
     path: z.string(),
     message: z.string(),
   }),
 });
 
-const genericErrorCodeSchema = z.string().regex(/^(?!VALIDATION_FAILED$).*$/);
+const genericErrorCodeSchema = z
+  .string()
+  .refine((code) => !validationErrorCodeSchema.options.includes(code as never));
 
 export const genericErrorMessageSchema = z.union([
   z.strictObject({
@@ -135,7 +155,8 @@ export const genericErrorMessageSchema = z.union([
 
 export const rendererToAgentMessageSchema = z.union([
   actionMessageSchema,
-  functionResponseMessageSchema,
+  callAgentFunctionMessageSchema,
+  rendererFunctionResponseMessageSchema,
   validationFailedErrorMessageSchema,
   genericErrorMessageSchema,
 ]);

@@ -1,4 +1,5 @@
 import {
+  artifactViewId,
   useActiveDetailedView,
   useArtifactCategories,
   useArtifactList,
@@ -156,7 +157,7 @@ const WorkspaceSection = ({
 };
 
 const WorkspaceItem = ({ entry }: { entry: ArtifactEntry }) => {
-  const viewId = `${entry.id}:${entry.version}`;
+  const viewId = artifactViewId(entry.id, entry.version);
   const { isActive } = useDetailedView(viewId);
   const store = useDetailedViewStore();
   const onClick = () => store.getState().setActiveDetailedView(viewId);

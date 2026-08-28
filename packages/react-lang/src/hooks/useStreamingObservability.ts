@@ -1,6 +1,13 @@
 import type { OpenUIError, ParseResult } from "@openuidev/lang-core";
 import { observability } from "@openuidev/observability";
 import { useEffect, useRef } from "react";
+import {
+  STREAM_EVENT_KIND,
+  STREAM_PHASE_SETTLED,
+  STREAM_PHASE_STREAMING,
+  type SettledStreamEventDetail,
+  type StreamPhase,
+} from "./streamEvent";
 
 type CurrentRef<T> = { current: T };
 
@@ -10,6 +17,9 @@ export interface UseStreamingObservabilityOptions {
   result: ParseResult | null;
   errorsRef: CurrentRef<OpenUIError[]>;
   errorRevision: number;
+  publish?: boolean;
+  /** `createLibrary()` instance id, echoed on stream events for Debug matching. */
+  __libraryId?: string;
 }
 
 export interface StreamingObservabilityState {
@@ -19,11 +29,15 @@ export interface StreamingObservabilityState {
   hasPublishedStreamingSnapshot: boolean;
   settled: boolean;
   lastSettledErrorKey: string | null;
+  /** Epoch ms when this stream first published. Frozen across later snapshots. */
+  startedAt: number | null;
+  /** Frozen once the stream first settles, so later error republishes don't grow it. */
+  durationMs: number | null;
 }
 
 export interface StreamingObservabilityUpdate {
   id: string;
-  phase: "streaming" | "settled";
+  phase: StreamPhase;
   updateIndex: number;
 }
 
@@ -45,6 +59,21 @@ export function createStreamingObservabilityState(): StreamingObservabilityState
     hasPublishedStreamingSnapshot: false,
     settled: false,
     lastSettledErrorKey: null,
+    startedAt: null,
+    durationMs: null,
+  };
+}
+
+function captureStreamTiming(state: StreamingObservabilityState, now = Date.now()) {
+  state.startedAt ??= now;
+  if (state.settled) {
+    state.durationMs ??= Math.max(0, now - state.startedAt);
+  }
+  const elapsedMs = state.durationMs ?? Math.max(0, now - state.startedAt);
+  return {
+    startedAt: state.startedAt,
+    elapsedMs,
+    ...(state.durationMs != null ? { durationMs: state.durationMs } : {}),
   };
 }
 
@@ -67,7 +96,7 @@ export function advanceStreamingObservability(
     state.hasPublishedStreamingSnapshot = true;
     state.lastResponse = response;
     state.updateIndex += 1;
-    return { id: state.id, phase: "streaming", updateIndex: state.updateIndex };
+    return { id: state.id, phase: STREAM_PHASE_STREAMING, updateIndex: state.updateIndex };
   }
 
   // A Renderer mounted only for static or historical content never starts a stream.
@@ -79,9 +108,10 @@ export function advanceStreamingObservability(
     return null;
   }
 
+  state.updateIndex += 1;
   state.settled = true;
   state.lastSettledErrorKey = settledErrorKey;
-  return { id: state.id, phase: "settled", updateIndex: state.updateIndex };
+  return { id: state.id, phase: STREAM_PHASE_SETTLED, updateIndex: state.updateIndex };
 }
 
 function parserMetadata(result: ParseResult | null) {
@@ -104,10 +134,13 @@ export function useStreamingObservability({
   result,
   errorsRef,
   errorRevision,
+  publish = true,
+  __libraryId,
 }: UseStreamingObservabilityOptions): void {
   const streamRef = useRef<StreamingObservabilityState>(createStreamingObservabilityState());
 
   useEffect(() => {
+    if (!publish) return;
     const errors = errorsRef.current;
     const settledErrorKey = isStreaming ? null : JSON.stringify(errors);
     const update = advanceStreamingObservability(
@@ -116,39 +149,44 @@ export function useStreamingObservability({
       response,
       settledErrorKey,
     );
+    const libraryIdFields = __libraryId !== undefined ? { __libraryId } : {};
 
     if (isStreaming) {
       if (update) {
         observability.info({
           id: update.id,
-          kind: "react-lang:stream",
+          kind: STREAM_EVENT_KIND,
           phase: update.phase,
           updateIndex: update.updateIndex,
           response,
           responseLength: response?.length ?? 0,
           parser: parserMetadata(result),
+          ...captureStreamTiming(streamRef.current),
+          ...libraryIdFields,
           message: "OpenUI Lang is streaming",
         });
       }
       return;
     }
 
-    if (update?.phase === "settled") {
+    if (update?.phase === STREAM_PHASE_SETTLED) {
       observability(errors.length > 0 ? "error" : "info", {
         id: update.id,
-        kind: "react-lang:stream",
-        phase: update.phase,
+        kind: STREAM_EVENT_KIND,
+        phase: STREAM_PHASE_SETTLED,
         updateIndex: update.updateIndex,
         response,
         responseLength: response?.length ?? 0,
         parser: parserMetadata(result),
         errors,
         errorCount: errors.length,
+        ...captureStreamTiming(streamRef.current),
+        ...libraryIdFields,
         message:
           errors.length > 0
             ? `OpenUI Lang settled with ${errors.length} error${errors.length === 1 ? "" : "s"}`
             : "OpenUI Lang settled",
-      });
+      } satisfies SettledStreamEventDetail);
     }
-  }, [isStreaming, response, result, errorsRef, errorRevision]);
+  }, [publish, isStreaming, response, result, errorsRef, errorRevision, __libraryId]);
 }

@@ -21,7 +21,7 @@ const FEATURES: CloudFeature[] = [
     darkImage: "/cloud-features/reports-dark.webp",
   },
   {
-    title: "Presentation generation",
+    title: "Slides generation",
     lightImage: "/cloud-features/slides-light.webp",
     darkImage: "/cloud-features/slides-dark.webp",
   },
@@ -36,17 +36,17 @@ const FEATURES: CloudFeature[] = [
     darkImage: "/cloud-features/ui-component-library-dark.webp",
   },
   {
-    title: "Error detection and correction",
+    title: "Error correction",
     lightImage: "/cloud-features/error-correction-light.webp",
     darkImage: "/cloud-features/error-correction-dark.webp",
   },
   {
-    title: "Managed model access and fallbacks",
+    title: "Provider fallback",
     lightImage: "/cloud-features/model-fallbacks-light.webp",
     darkImage: "/cloud-features/model-fallbacks-dark.webp",
   },
   {
-    title: "Built-in conversation persistence",
+    title: "Conversation Persistence",
     lightImage: "/cloud-features/conversation-history-light.webp",
     darkImage: "/cloud-features/conversation-history-dark.webp",
   },

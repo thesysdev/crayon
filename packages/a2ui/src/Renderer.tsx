@@ -11,8 +11,8 @@ import {
 } from "@openuidev/react-lang";
 import { useCallback, useMemo, useSyncExternalStore } from "react";
 import type { A2UIClient } from "./client";
-import { dataModelToOpenUIState } from "./json-pointer";
-import type { JsonValue, MapOpenUIAction, OpenUIActionOptions, SurfaceSnapshot } from "./types";
+import { dataModelToOpenUIState, toJsonObject } from "./json-pointer";
+import type { MapOpenUIAction, OpenUIActionOptions, SurfaceSnapshot } from "./types";
 
 export interface A2UIRendererProps {
   client: A2UIClient;
@@ -20,8 +20,6 @@ export interface A2UIRendererProps {
   library: Library;
   mapAction?: MapOpenUIAction;
   onAction?: (event: ActionEvent, surface: SurfaceSnapshot) => void;
-  onActionResponse?: (value: JsonValue, event: ActionEvent) => void;
-  onActionResponseError?: (error: Error, event: ActionEvent) => void;
   /** Handles OpenUI @OpenUrl locally. Defaults to window.open in browsers. */
   onOpenUrl?: (url: string, event: ActionEvent, surface: SurfaceSnapshot) => void;
   onStateUpdate?: (state: Record<string, unknown>, surface: SurfaceSnapshot) => void;
@@ -62,8 +60,6 @@ export function A2UIRenderer({
   library,
   mapAction,
   onAction,
-  onActionResponse,
-  onActionResponseError,
   onOpenUrl,
   onStateUpdate,
   onParseResult,
@@ -81,6 +77,25 @@ export function A2UIRenderer({
     const keys = new Set([...collectFormStateKeys(surface.parseResult), ...(formStateKeys ?? [])]);
     return dataModelToOpenUIState(surface.dataModel, keys);
   }, [formStateKeys, surface]);
+  const agentToolProvider = useMemo<NonNullable<OpenUIRendererProps["toolProvider"]>>(
+    () => ({
+      async callTool({
+        name,
+        arguments: args,
+      }: {
+        name: string;
+        arguments?: Record<string, unknown>;
+      }) {
+        const value = await client.callAgentFunction({
+          surfaceId,
+          call: name,
+          args: toJsonObject(args),
+        });
+        return { content: [], structuredContent: value };
+      },
+    }),
+    [client, surfaceId],
+  );
 
   const handleAction = useCallback(
     (event: ActionEvent) => {
@@ -96,20 +111,10 @@ export function A2UIRenderer({
         return;
       }
       const options: OpenUIActionOptions = mapAction?.(event, current) ?? {};
-      const response = client.dispatchOpenUIAction(surfaceId, event, options);
-      if (response) {
-        void response
-          .then((value) => onActionResponse?.(value, event))
-          .catch((error: unknown) =>
-            onActionResponseError?.(
-              error instanceof Error ? error : new Error(String(error)),
-              event,
-            ),
-          );
-      }
+      client.dispatchOpenUIAction(surfaceId, event, options);
       onAction?.(event, current);
     },
-    [client, mapAction, onAction, onActionResponse, onActionResponseError, onOpenUrl, surfaceId],
+    [client, mapAction, onAction, onOpenUrl, surfaceId],
   );
 
   const handleStateUpdate = useCallback(
@@ -133,7 +138,7 @@ export function A2UIRenderer({
       onStateUpdate={handleStateUpdate}
       onParseResult={onParseResult}
       onError={onError}
-      toolProvider={toolProvider}
+      toolProvider={toolProvider ?? agentToolProvider}
       queryLoader={queryLoader}
     />
   );

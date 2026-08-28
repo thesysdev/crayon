@@ -1,4 +1,6 @@
 import {
+  artifactViewId,
+  parseArtifactViewId,
   useDetailedView,
   useDetailedViewStore,
   useThreadContextStore,
@@ -89,7 +91,7 @@ export function ToolActivityRenderer<Props>({
 
   // viewId derives from meta when present, otherwise from React's useId so
   // `controls.open` still works for an inline-only renderer.
-  const viewId = meta ? `${meta.id}:${meta.version}` : fallbackId;
+  const viewId = meta ? artifactViewId(meta.id, meta.version) : fallbackId;
 
   // Register entry on mount; unregister on unmount or when (id, version) changes.
   useEffect(() => {
@@ -126,9 +128,10 @@ export function ToolActivityRenderer<Props>({
     if (!meta) return;
     const dv = dvStore.getState();
     const active = dv.activeDetailedViewId;
-    if (!active || active === viewId || !active.startsWith(`${meta.id}:`)) return;
-    const activeVersion = Number(active.slice(meta.id.length + 1));
-    if (!Number.isFinite(activeVersion) || meta.version > activeVersion) {
+    if (!active || active === viewId) return;
+    const parsed = parseArtifactViewId(active);
+    if (!parsed || parsed.id !== meta.id) return;
+    if (meta.version > parsed.version) {
       dv.setActiveDetailedView(viewId);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

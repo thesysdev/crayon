@@ -174,8 +174,12 @@ openui/
 │   └── a2ui/             # A2UI protocol with OpenUI Lang component payloads
 ├── skills/
 │   └── openui/           # Claude Code skill for AI-assisted development
-├── examples/
-│   └── openui-chat/      # Full working example app (Next.js)
+├── examples/             # Capability and integration reference implementations
+│   ├── agent-frameworks/
+│   ├── app-frameworks/
+│   ├── design-systems/
+│   ├── harnesses/
+│   └── miscellaneous/
 ├── docs/                 # Documentation site (openui.com)
 └── benchmarks/           # Token efficiency benchmarks
 ```
@@ -183,7 +187,8 @@ openui/
 Good places to start:
 
 - [openui.com](https://openui.com) for the full docs
-- [`examples/openui-chat`](./examples/openui-chat) for a working app
+- [Quickstart](https://www.openui.com/docs/agent/getting-started/quickstart) to scaffold a working app
+- [`examples/README.md`](./examples/README.md) to find a focused reference implementation
 - [`CONTRIBUTING.md`](./CONTRIBUTING.md) if you want to contribute
 
 ## Community

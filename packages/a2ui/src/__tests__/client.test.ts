@@ -1,6 +1,6 @@
 import type { LibraryJSONSchema } from "@openuidev/lang-core";
 import { describe, expect, it, vi } from "vitest";
-import { A2UIActionError, createA2UIClient } from "../client";
+import { A2UIFunctionError, createA2UIClient } from "../client";
 import {
   applyDataModelUpdate,
   dataModelToOpenUIState,
@@ -189,80 +189,113 @@ describe("A2UIClient", () => {
     expect(wrongVersion).toMatchObject({ ok: false, outbound: [], issues: expect.any(Array) });
   });
 
-  it("emits A2UI actions, resolves actionResponse, and stores responsePath", async () => {
+  it("emits the current A2UI action shape", async () => {
     const messages: RendererToAgentMessage[] = [];
     const client = createA2UIClient({
       schema,
       onMessage: (message) => messages.push(message),
       now: () => new Date("2026-07-24T10:00:00.000Z"),
-      createId: () => "action-1",
     });
     await createSurface(client);
 
-    const response = client.dispatchAction({
+    client.dispatchAction({
       surfaceId: "main",
       sourceComponentId: "submitButton",
       name: "submit",
+      userMessage: "Save profile",
       context: { intent: "save" },
-      wantResponse: true,
-      responsePath: "/result",
+      metadata: { extensions: { trace_id: "trace-1" } },
     });
 
     expect(messages.at(-1)).toEqual({
       version: "v1.0",
       action: {
         name: "submit",
+        userMessage: "Save profile",
         surfaceId: "main",
         sourceComponentId: "submitButton",
         timestamp: "2026-07-24T10:00:00.000Z",
         context: { intent: "save" },
-        wantResponse: true,
-        actionId: "action-1",
+        metadata: { extensions: { trace_id: "trace-1" } },
+      },
+    });
+  });
+
+  it("calls agent functions and resolves agentFunctionResponse", async () => {
+    const messages: RendererToAgentMessage[] = [];
+    const client = createA2UIClient({
+      schema,
+      createId: () => "agent-call-1",
+      onMessage: (message) => messages.push(message),
+    });
+    await createSurface(client);
+    const response = client.callAgentFunction({
+      surfaceId: "main",
+      call: "lookup",
+      args: { id: 42 },
+    });
+
+    expect(messages.at(-1)).toEqual({
+      version: "v1.0",
+      callAgentFunction: {
+        surfaceId: "main",
+        functionCallId: "agent-call-1",
+        callFunction: { call: "lookup", args: { id: 42 } },
       },
     });
 
     await client.process({
       version: "v1.0",
-      actionId: "action-1",
-      actionResponse: { value: { saved: true } },
+      agentFunctionResponse: {
+        functionCallId: "agent-call-1",
+        value: { found: true },
+      },
     });
-    await expect(response).resolves.toEqual({ saved: true });
-    expect(client.getSurface("main")?.dataModel.result).toEqual({ saved: true });
+
+    await expect(response).resolves.toEqual({ found: true });
   });
 
-  it("rejects a pending action when actionResponse contains an error", async () => {
-    const client = createA2UIClient({ schema, createId: () => "action-2" });
+  it("rejects agent function errors", async () => {
+    const client = createA2UIClient({ schema, createId: () => "agent-call-2" });
     await createSurface(client);
-    const response = client.dispatchAction({
-      surfaceId: "main",
-      sourceComponentId: "button",
-      name: "submit",
-      wantResponse: true,
-    });
+    const response = client.callAgentFunction({ surfaceId: "main", call: "save" });
 
     await client.process({
       version: "v1.0",
-      actionId: "action-2",
-      actionResponse: { error: { code: "REJECTED", message: "Nope" } },
+      agentFunctionResponse: {
+        functionCallId: "agent-call-2",
+        error: { code: "REJECTED", message: "Nope" },
+      },
     });
 
     await expect(response).rejects.toEqual(
-      expect.objectContaining<A2UIActionError>({ code: "REJECTED", message: "Nope" }),
+      expect.objectContaining<A2UIFunctionError>({ code: "REJECTED", message: "Nope" }),
     );
   });
 
-  it("executes callFunction and returns the official functionResponse shape", async () => {
+  it("executes callRendererFunction and returns rendererFunctionResponse", async () => {
     const lookup = vi.fn(async ({ id }: { id?: unknown }) => ({ id: String(id), found: true }));
     const client = createA2UIClient({
       schema,
-      functions: { lookup: lookup as never },
+      functions: {
+        lookup: {
+          catalogId: "com.example:functions",
+          allowedCallers: "agentOnly",
+          handler: lookup as never,
+        },
+      },
     });
 
     const result = await client.process({
       version: "v1.0",
-      functionCallId: "function-1",
-      wantResponse: true,
-      callFunction: { call: "lookup", args: { id: 42 } },
+      callRendererFunction: {
+        functionCallId: "function-1",
+        callFunction: {
+          call: "lookup",
+          catalogId: "com.example:functions",
+          args: { id: 42 },
+        },
+      },
     });
 
     expect(lookup).toHaveBeenCalledWith({ id: 42 });
@@ -271,9 +304,8 @@ describe("A2UIClient", () => {
       outbound: [
         {
           version: "v1.0",
-          functionResponse: {
+          rendererFunctionResponse: {
             functionCallId: "function-1",
-            call: "lookup",
             value: { id: "42", found: true },
           },
         },
@@ -281,12 +313,13 @@ describe("A2UIClient", () => {
     });
   });
 
-  it("enforces callableFrom for agent-initiated function calls", async () => {
+  it("enforces allowedCallers and catalog identity for agent-initiated function calls", async () => {
     const client = createA2UIClient({
       schema,
       functions: {
         localOnly: {
-          callableFrom: "rendererOnly",
+          catalogId: "com.example:functions",
+          allowedCallers: "rendererOnly",
           handler: () => ({ ok: true }),
         },
       },
@@ -294,8 +327,10 @@ describe("A2UIClient", () => {
 
     const result = await client.process({
       version: "v1.0",
-      functionCallId: "function-local",
-      callFunction: { call: "localOnly" },
+      callRendererFunction: {
+        functionCallId: "function-local",
+        callFunction: { call: "localOnly", catalogId: "com.example:functions" },
+      },
     });
 
     expect(result.ok).toBe(false);

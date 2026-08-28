@@ -14,6 +14,10 @@ import { spawn } from "node:child_process";
 import { createHash } from "node:crypto";
 import { Readable, Writable } from "node:stream";
 import { systemPrompt } from "../library";
+import {
+  cancelGrokBuildInteractions,
+  requestGrokBuildInteraction,
+} from "./grok-build-interactions";
 
 const OPENUI_RULES = systemPrompt;
 const OPENUI_RULES_HASH = createHash("sha256").update(OPENUI_RULES).digest("hex");
@@ -45,10 +49,7 @@ interface GrokBuildTurnCompleted {
   usage?: Record<string, unknown>;
 }
 
-export type GrokBuildSessionUpdate =
-  | SessionUpdate
-  | GrokBuildRetryState
-  | GrokBuildTurnCompleted;
+export type GrokBuildSessionUpdate = SessionUpdate | GrokBuildRetryState | GrokBuildTurnCompleted;
 
 type UpdateListener = (update: GrokBuildSessionUpdate) => void;
 
@@ -67,10 +68,7 @@ export function decodeGrokSessionNotification(
   const sessionId = params.sessionId;
   const update = recordValue(params.update);
   const kind = update?.sessionUpdate;
-  if (
-    typeof sessionId !== "string" ||
-    (kind !== "retry_state" && kind !== "turn_completed")
-  ) {
+  if (typeof sessionId !== "string" || (kind !== "retry_state" && kind !== "turn_completed")) {
     return undefined;
   }
   return { sessionId, update: update as unknown as GrokBuildSessionUpdate };
@@ -203,6 +201,7 @@ class GrokBuildACPClient {
     this.child.on("error", (error) => {
       this.processError = error;
     });
+    this.child.on("exit", () => this.cancelPendingInteractions());
     this.child.stderr?.setEncoding("utf8");
     this.child.stderr?.on("data", (chunk: string) => {
       this.stderrTail = `${this.stderrTail}${chunk}`.slice(-12_000);
@@ -219,7 +218,7 @@ class GrokBuildACPClient {
     const client: Client = {
       requestPermission: (request) => this.requestPermission(request),
       sessionUpdate: (notification) => this.sessionUpdate(notification),
-      extMethod: (method) => this.extensionRequest(method),
+      extMethod: (method, params) => this.extensionRequest(method, params),
       extNotification: (method, params) => this.extensionNotification(method, params),
     };
     this.connection = new ClientSideConnection(() => client, stream);
@@ -290,7 +289,13 @@ class GrokBuildACPClient {
   }
 
   dispose(): void {
+    this.cancelPendingInteractions();
     if (this.child.exitCode === null) this.child.kill("SIGTERM");
+  }
+
+  private cancelPendingInteractions(): void {
+    const sessionIds = new Set([...this.residentSessions, ...this.openingSessions.keys()]);
+    for (const sessionId of sessionIds) cancelGrokBuildInteractions(sessionId);
   }
 
   private connectionClosedError(label: string): Error {
@@ -347,17 +352,15 @@ class GrokBuildACPClient {
     return { outcome: { outcome: "cancelled" } };
   }
 
-  private async extensionRequest(method: string): Promise<Record<string, unknown>> {
-    // Grok's conversational questions and plan approval are interactive ACP
-    // extension requests, independent of normal tool permissions. AgentInterface
-    // does not expose their response UI, so answer immediately and explicitly;
-    // leaving either request pending would hang the prompt turn.
-    if (method === "_x.ai/ask_user_question" || method === "x.ai/ask_user_question") {
-      return { outcome: "cancelled" };
-    }
-    if (method === "_x.ai/exit_plan_mode" || method === "x.ai/exit_plan_mode") {
-      return { outcome: "cancelled" };
-    }
+  private async extensionRequest(
+    method: string,
+    params: Record<string, unknown>,
+  ): Promise<Record<string, unknown>> {
+    // These blocking reverse-requests are answered through the web harness's
+    // interaction route. The browser polls while the main AG-UI stream remains
+    // open, then its response resolves this ACP method and resumes the turn.
+    const interaction = requestGrokBuildInteraction(method, params);
+    if (interaction) return interaction;
     throw RequestError.methodNotFound(method);
   }
 
@@ -464,31 +467,34 @@ class GrokBuildACPClient {
     sessionId: string;
     signal: AbortSignal;
   }): Promise<{ stopReason?: string }> {
-    await this.ensureSession(sessionId, hasHistory);
-    if (this.activeThreads.has(sessionId)) throw new GrokBuildBusyError();
     if (signal.aborted) throw new DOMException("The request was aborted.", "AbortError");
-
-    this.activeThreads.add(sessionId);
     let terminalError: string | undefined;
-    const unsubscribe = this.subscribe(sessionId, (update) => {
-      if (update.sessionUpdate === "retry_state" && update.type === "failed") {
-        terminalError = update.message || update.reason || terminalError;
-      } else if (
-        update.sessionUpdate === "turn_completed" &&
-        update.stop_reason === "error"
-      ) {
-        terminalError = update.agent_result || terminalError;
-      }
-      onUpdate(update);
-    });
     const cancel = () => {
+      cancelGrokBuildInteractions(sessionId);
       void this.request("Cancelling the Grok Build turn", () =>
         this.connection.cancel({ sessionId }),
       ).catch(() => undefined);
     };
     signal.addEventListener("abort", cancel, { once: true });
+    let unsubscribe: (() => void) | undefined;
+    let active = false;
 
     try {
+      await this.ensureSession(sessionId, hasHistory);
+      if (this.activeThreads.has(sessionId)) throw new GrokBuildBusyError();
+      if (signal.aborted) throw new DOMException("The request was aborted.", "AbortError");
+
+      this.activeThreads.add(sessionId);
+      active = true;
+      unsubscribe = this.subscribe(sessionId, (update) => {
+        if (update.sessionUpdate === "retry_state" && update.type === "failed") {
+          terminalError = update.message || update.reason || terminalError;
+        } else if (update.sessionUpdate === "turn_completed" && update.stop_reason === "error") {
+          terminalError = update.agent_result || terminalError;
+        }
+        onUpdate(update);
+      });
+
       const response = await this.request("Running the Grok Build turn", () =>
         this.connection.prompt({
           sessionId,
@@ -507,12 +513,12 @@ class GrokBuildACPClient {
       }
       return { stopReason };
     } catch (error) {
-      if (error instanceof GrokBuildTurnError) throw error;
+      if (error instanceof GrokBuildTurnError || error instanceof GrokBuildBusyError) throw error;
       throw new GrokBuildTurnError(terminalError ?? formatGrokBuildError(error), error);
     } finally {
       signal.removeEventListener("abort", cancel);
-      unsubscribe();
-      this.activeThreads.delete(sessionId);
+      unsubscribe?.();
+      if (active) this.activeThreads.delete(sessionId);
     }
   }
 }

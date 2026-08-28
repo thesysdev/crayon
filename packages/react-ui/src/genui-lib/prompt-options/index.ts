@@ -47,6 +47,7 @@ vueContent = [TextContent("Vue is a progressive framework by Evan You."), Callou
 ];
 
 export const openuiAdditionalRules: string[] = [
+  "When asked about data, generate realistic/plausible data",
   'For grid-like layouts, use Stack with direction "row" and wrap=true. Avoid justify="between" unless you specifically want large gutters.',
   "For forms, define one FormControl reference per field so controls can stream progressively.",
   "For forms, always provide the second Form argument with Buttons(...) actions: Form(name, buttons, fields).",
@@ -119,6 +120,7 @@ btns = Buttons([Button("Submit", Action([@ToAssistant("Submit")]), "primary")])`
 ];
 
 export const openuiChatAdditionalRules: string[] = [
+  "When asked about data, generate realistic/plausible data",
   "Every response is a single Card(children) — children stack vertically automatically. No layout params are needed on Card.",
   "Card is the only layout container. Do NOT use Stack. Use Tabs to switch between sections, Carousel for horizontal scroll.",
   "Use FollowUpBlock at the END of a Card to suggest what the user can do or ask next.",

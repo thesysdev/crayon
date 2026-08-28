@@ -12,7 +12,7 @@ An experimental A2UI v1.0 profile that keeps the protocol lifecycle and envelope
 }
 ```
 
-`updateDataModel`, `deleteSurface`, actions, `callFunction`, `functionResponse`, `actionResponse`, errors, capabilities, and renderer data-model metadata retain their A2UI v1.0 shapes. For v1.0 single-message creation, optional `createSurface.components` uses the same Lang statement array as `updateComponents.components`, so there is exactly one component representation on the wire.
+`updateDataModel`, `deleteSurface`, actions, `callRendererFunction`, `agentFunctionResponse`, `callAgentFunction`, `rendererFunctionResponse`, errors, capabilities, and renderer data-model metadata retain their A2UI v1.0 shapes. For v1.0 single-message creation, optional `createSurface.components` uses the same Lang statement array as `updateComponents.components`, so there is exactly one component representation on the wire.
 
 Incoming protocol messages are validated with the exported Zod schemas in the package. The public TypeScript message types are inferred from the same definitions, so runtime validation and static types stay aligned.
 
@@ -86,7 +86,9 @@ The client is framework-neutral: it owns surface lifecycle, runtime envelope val
 
 When `sendDataModel` is enabled, the second `onMessage` argument contains `a2uiRendererDataModel` metadata filtered to opted-in surfaces. Configured renderer capabilities are exposed in the same metadata object. The host transport decides where to attach this metadata.
 
-Renderer functions can be registered as a direct function shorthand or as `{ handler, callableFrom }`. Explicit registrations default to `rendererOnly`; incoming `callFunction` messages are accepted only for `agentOnly` and `rendererOrAgent` registrations.
+Renderer functions can be registered as a direct function shorthand or as `{ handler, catalogId, allowedCallers }`. Explicit registrations default to `rendererOnly`; incoming `callRendererFunction` messages are accepted only when the catalog ID matches and `allowedCallers` is `agentOnly` or `rendererOrAgent`.
+
+When no `toolProvider` is passed to `A2UIRenderer`, OpenUI Lang `Query()` and `Mutation()` calls automatically use A2UI `callAgentFunction` and settle from the matching `agentFunctionResponse`. Pass a `toolProvider` to handle those calls locally instead.
 
 Use `mapAction` to provide `sourceComponentId` when the host renderer does not include one in its action event. Otherwise actions fall back to the surface `root` ID.
 

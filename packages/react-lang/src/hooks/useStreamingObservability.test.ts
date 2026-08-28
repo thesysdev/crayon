@@ -36,7 +36,7 @@ describe("streaming observability lifecycle", () => {
     ).toEqual({
       id: "stream-1",
       phase: "settled",
-      updateIndex: 2,
+      updateIndex: 3,
     });
     expect(idFactory).toHaveBeenCalledOnce();
   });
@@ -70,7 +70,7 @@ describe("streaming observability lifecycle", () => {
     expect(advanceStreamingObservability(state, false, "first", "[]", idFactory)).toEqual({
       id: "stream-1",
       phase: "settled",
-      updateIndex: 1,
+      updateIndex: 2,
     });
     expect(advanceStreamingObservability(state, true, "second", null, idFactory)).toEqual({
       id: "stream-2",
@@ -80,12 +80,12 @@ describe("streaming observability lifecycle", () => {
     expect(advanceStreamingObservability(state, false, "second", "[]", idFactory)).toEqual({
       id: "stream-2",
       phase: "settled",
-      updateIndex: 1,
+      updateIndex: 2,
     });
     expect(idFactory).toHaveBeenCalledTimes(2);
   });
 
-  it("republishes settled when the error snapshot changes", () => {
+  it("republishes settled with a new updateIndex when the error snapshot changes", () => {
     const state = createStreamingObservabilityState();
     const idFactory = () => "stream-1";
 
@@ -103,7 +103,7 @@ describe("streaming observability lifecycle", () => {
     ).toEqual({
       id: "stream-1",
       phase: "settled",
-      updateIndex: 1,
+      updateIndex: 3,
     });
     expect(
       advanceStreamingObservability(
@@ -114,5 +114,14 @@ describe("streaming observability lifecycle", () => {
         idFactory,
       ),
     ).toBeNull();
+    expect(
+      advanceStreamingObservability(
+        state,
+        false,
+        "root = Card()",
+        '[{"code":"query-error"},{"code":"tool-failed"}]',
+        idFactory,
+      ),
+    ).toEqual({ id: "stream-1", phase: "settled", updateIndex: 4 });
   });
 });

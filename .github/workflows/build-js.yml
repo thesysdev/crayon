@@ -46,10 +46,10 @@ jobs:
         with:
           node-version: 20
           cache: pnpm
-          cache-dependency-path: "pnpm-lock.yaml"
+          cache-dependency-path: "examples/**/pnpm-lock.yaml"
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm examples:install
 
-      - name: Build examples
-        run: pnpm --filter "./examples/**" --workspace-concurrency=1 run build
+      - name: Verify examples
+        run: pnpm examples:verify

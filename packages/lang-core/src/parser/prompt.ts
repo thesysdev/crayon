@@ -124,7 +124,7 @@ function syntaxRules(
     '3. Expressions are: strings ("..."), numbers, booleans (true/false), null, arrays ([...]), objects ({...}), or component calls TypeName(arg1, arg2, ...)',
     "4. Use references for readability: define `name = ...` on one line, then use `name` later",
     "5. EVERY variable (except root) MUST be referenced by at least one other variable. Unreferenced variables are silently dropped and will NOT render. Always include defined variables in their parent's children/items array.",
-    '6. Arguments are POSITIONAL (order matters, not names). Write `Stack([children], "row", "l")` NOT `Stack([children], direction: "row", gap: "l")` — colon syntax is NOT supported and silently breaks',
+    '6. Arguments are POSITIONAL (order matters, not names). Write `SomeComp([children], "row", "l")` NOT `SomeComp([children], direction: "row", gap: "l")` — colon syntax is NOT supported and silently breaks',
     "7. Optional arguments can be omitted from the end",
   ];
 
@@ -321,8 +321,7 @@ The runtime merges by statement name: same name = replace, new name = append.
 Output ONLY statements that changed or are new. Everything else is kept automatically.
 
 ### Delete
-To remove a component, update the parent to exclude it from its children array. Orphaned statements are automatically garbage-collected.
-Example — remove chart: \`root = Stack([header, kpiRow, table])\` — chart is no longer in the children list, so it and any statements only it referenced are auto-deleted.
+To remove a component, re-declare its parent without that component in the parent's children array. The removed component and any statements only it referenced are automatically garbage-collected.
 
 ### Patch size guide
 - Changing a title or label: 1 statement
@@ -407,7 +406,7 @@ WRONG — you called a tool and got data back, but you inlined the results:
 openCount = 2
 item1 = SomeComp("first item title")
 item2 = SomeComp("second item title")
-list = Stack([item1, item2])
+list = SomeList([item1, item2])
 chart = SomeChart(["A", "B"], [12, 8])
 \`\`\`
 This is static — it shows stale data and won't update. Creating item1, item2, item3... manually is ALWAYS wrong when a tool exists.
@@ -439,9 +438,11 @@ function importantRules(
       `${flags.toolCalls ? "4" : "3"}. Every $binding appears in at least one component or expression.`,
     );
   }
+  if (flags.toolCalls && flags.bindings) {
+    verifyLines.push("5. Every visible filter $binding appears in at least one Query args object.");
+  }
 
   return `## Important Rules
-- When asked about data, generate realistic/plausible data
 - Choose components that best represent the content (tables for comparisons, charts for trends, forms for input, etc.)
 
 ## Final Verification

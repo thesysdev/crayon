@@ -2,7 +2,10 @@ import { describe, expect, it } from "vitest";
 import {
   actionMessageSchema,
   agentCapabilitiesSchema,
+  agentFunctionResponseMessageSchema,
   agentToRendererMessageSchema,
+  callAgentFunctionMessageSchema,
+  callRendererFunctionMessageSchema,
   genericErrorMessageSchema,
   rendererCapabilitiesSchema,
   rendererDataModelSchema,
@@ -41,8 +44,39 @@ describe("canonical A2UI protocol schemas", () => {
     expect(
       agentToRendererMessageSchema.safeParse({
         version: "v1.0",
-        callFunction: { call: "lookup", args: { id: 42 } },
-        functionCallId: "call-1",
+        callRendererFunction: {
+          functionCallId: "call-1",
+          callFunction: {
+            call: "lookup",
+            catalogId: "com.example:functions",
+            args: { id: 42 },
+          },
+        },
+      }).success,
+    ).toBe(true);
+    expect(
+      callRendererFunctionMessageSchema.safeParse({
+        version: "v1.0",
+        callRendererFunction: {
+          functionCallId: "call-1",
+          callFunction: { call: "lookup" },
+        },
+      }).success,
+    ).toBe(false);
+    expect(
+      agentFunctionResponseMessageSchema.safeParse({
+        version: "v1.0",
+        agentFunctionResponse: { functionCallId: "call-2", value: { ok: true } },
+      }).success,
+    ).toBe(true);
+    expect(
+      callAgentFunctionMessageSchema.safeParse({
+        version: "v1.0",
+        callAgentFunction: {
+          surfaceId: "main",
+          functionCallId: "call-2",
+          callFunction: { call: "lookup", args: { id: 42 } },
+        },
       }).success,
     ).toBe(true);
 
@@ -83,6 +117,12 @@ describe("canonical A2UI protocol schemas", () => {
       },
     };
     expect(validationFailedErrorMessageSchema.safeParse(validationFailure).success).toBe(true);
+    expect(
+      validationFailedErrorMessageSchema.safeParse({
+        ...validationFailure,
+        error: { ...validationFailure.error, code: "UNALLOWED_CHILD" },
+      }).success,
+    ).toBe(true);
     expect(genericErrorMessageSchema.safeParse(validationFailure).success).toBe(false);
     expect(
       genericErrorMessageSchema.safeParse({

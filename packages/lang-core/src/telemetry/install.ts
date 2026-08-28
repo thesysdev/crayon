@@ -14,29 +14,28 @@
  * proxy and PostHog can observe the source IP as transport metadata; the script does
  * not read it or add it to the payload.
  */
+import { id as ciInfoId, isCI as ciInfoIsCI } from "ci-info";
 import { execFileSync } from "node:child_process";
 import { createHash, randomBytes, randomUUID } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, writeFileSync, type WriteFileOptions } from "node:fs";
 import { homedir, release } from "node:os";
 import path from "node:path";
 import {
-  detectCI,
   getPostHogConfig,
   isTelemetryDisabled,
   isTruthyEnv,
   normalizeProjectIdentity,
   TELEMETRY_REQUEST_TIMEOUT_MS,
   TELEMETRY_SCHEMA_VERSION,
-  type CiName,
 } from "./shared";
 
-export { detectCI, isTelemetryDisabled, isTruthyEnv, normalizeProjectIdentity };
-export type { CiName };
+export { isTelemetryDisabled, isTruthyEnv, normalizeProjectIdentity };
 
 export const INSTALL_EVENT = "openui_lang_core_installed";
 
 export type ProjectIdSource = "git_origin" | "repository_url" | "install_root";
 export type PackageManagerName = "npm" | "pnpm" | "yarn" | "bun" | "unknown";
+
 export interface InstallTelemetryProperties extends Record<string, unknown> {
   telemetry_schema_version: number;
   project_id: string;
@@ -49,7 +48,7 @@ export interface InstallTelemetryProperties extends Record<string, unknown> {
   package_manager: PackageManagerName;
   package_manager_version?: string;
   ci: boolean;
-  ci_name?: CiName;
+  ci_name?: string;
   is_docker: boolean;
 }
 
@@ -141,7 +140,6 @@ export async function runInstallTelemetry(
     const projectRoot = path.resolve(env["INIT_CWD"] || io.cwd());
     const projectIdentity = resolveProjectIdentity(projectRoot, env, io);
     const packageManager = detectPackageManager(env);
-    const ci = detectCI(env);
 
     payload = {
       distinctId: state.distinctId,
@@ -158,8 +156,8 @@ export async function runInstallTelemetry(
         system_architecture: io.architecture,
         package_manager: packageManager.name,
         ...(packageManager.version ? { package_manager_version: packageManager.version } : {}),
-        ci: ci.ci,
-        ...(ci.name ? { ci_name: ci.name } : {}),
+        ci: ciInfoIsCI,
+        ...(ciInfoId ? { ci_name: ciInfoId } : {}),
         is_docker: io.isDocker(),
       },
     };

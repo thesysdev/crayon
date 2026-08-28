@@ -3,7 +3,7 @@ title: "@openuidev/a2ui"
 description: A2UI v1.0 protocol support with OpenUI Lang component updates and an optional React renderer.
 ---
 
-`@openuidev/a2ui` implements the [A2UI v1.0](https://a2ui.org/specification/v1.0-a2ui/) surface lifecycle while using OpenUI Lang for component payloads.
+`@openuidev/a2ui` implements the [A2UI v1.0 candidate](https://github.com/a2ui-project/a2ui/blob/main/specification/v1_0/docs/a2ui_protocol.md) surface lifecycle while using OpenUI Lang for component payloads.
 
 The package deliberately changes one part of the protocol: `createSurface.components` and `updateComponents.components` are arrays of OpenUI Lang statements instead of A2UI component JSON. All other lifecycle and message envelopes retain their A2UI v1.0 shapes, including surface creation and deletion, data-model updates, actions, function calls and responses, errors, capabilities, and renderer metadata.
 
@@ -62,24 +62,25 @@ A typical surface moves through the following lifecycle:
 2. The agent sends one or more `updateComponents` messages. Each message patches OpenUI Lang statements by statement ID.
 3. The agent can send `updateDataModel` at any time. Renderer state changes can flow back through action context or renderer metadata.
 4. User interactions produce A2UI `action` messages from the renderer to the agent.
-5. The agent can respond with more component or data-model updates, or with `actionResponse` when a response was requested.
+5. Either side can invoke catalog functions with `callRendererFunction` or `callAgentFunction` and settle them with the corresponding function-response envelope.
 6. The agent sends `deleteSurface` when the UI is no longer needed.
 
 The package owns protocol state, not transport. Your application is responsible for carrying messages over SSE, NDJSON, WebSocket, AG-UI, an agent SDK, or another channel, and for passing each decoded message to `client.process()`.
 
 ### Supported messages
 
-| Direction        | Message            | Purpose                                                        |
-| :--------------- | :----------------- | :------------------------------------------------------------- |
-| Agent → renderer | `createSurface`    | Creates a surface, optionally with components and a data model |
-| Agent → renderer | `updateComponents` | Adds, replaces, or removes OpenUI Lang statements              |
-| Agent → renderer | `updateDataModel`  | Applies a JSON Pointer update to surface data                  |
-| Agent → renderer | `deleteSurface`    | Removes a surface and rejects its pending actions              |
-| Agent → renderer | `callFunction`     | Invokes a registered renderer function                         |
-| Agent → renderer | `actionResponse`   | Resolves or rejects an action that requested a reply           |
-| Renderer → agent | `action`           | Reports a user or component interaction                        |
-| Renderer → agent | `functionResponse` | Returns the result of a requested renderer function            |
-| Renderer → agent | `error`            | Reports validation, lifecycle, or function errors              |
+| Direction        | Message                    | Purpose                                                        |
+| :--------------- | :------------------------- | :------------------------------------------------------------- |
+| Agent → renderer | `createSurface`            | Creates a surface, optionally with components and a data model |
+| Agent → renderer | `updateComponents`         | Adds, replaces, or removes OpenUI Lang statements              |
+| Agent → renderer | `updateDataModel`          | Applies a JSON Pointer update to surface data                  |
+| Agent → renderer | `deleteSurface`            | Removes a surface and rejects its pending function calls       |
+| Agent → renderer | `callRendererFunction`     | Invokes a registered renderer function                         |
+| Agent → renderer | `agentFunctionResponse`    | Settles a function call initiated by the renderer              |
+| Renderer → agent | `action`                   | Reports a user or component interaction                        |
+| Renderer → agent | `callAgentFunction`        | Invokes an agent function                                      |
+| Renderer → agent | `rendererFunctionResponse` | Returns the result of a requested renderer function            |
+| Renderer → agent | `error`                    | Reports validation, lifecycle, or function errors              |
 
 ## Create a client
 
@@ -109,11 +110,11 @@ const client = createA2UIClient({
 | :--------------------- | :----------------------------------------- | :------------------------------------------------------------------------------------- |
 | `schema`               | `LibraryJSONSchema`                        | Required OpenUI component schema, normally from `library.toJSONSchema()`               |
 | `rootName`             | `string`                                   | Expected root component name from the library                                          |
-| `functions`            | `Record<string, function \| registration>` | Renderer functions that incoming `callFunction` messages may invoke                    |
+| `functions`            | `Record<string, function \| registration>` | Renderer functions that incoming `callRendererFunction` messages may invoke            |
 | `rendererCapabilities` | `RendererCapabilities`                     | Catalog IDs and optional inline catalogs advertised in outgoing metadata               |
 | `onMessage`            | `(message, metadata) => void`              | Receives renderer-to-agent messages emitted by actions, functions, and protocol errors |
 | `now`                  | `() => Date`                               | Optional clock override, useful for deterministic action timestamps in tests           |
-| `createId`             | `() => string`                             | Optional ID generator for actions that request a response                              |
+| `createId`             | `() => string`                             | Optional ID generator for renderer-initiated agent function calls                      |
 
 The schema and the rendered library must describe the same components. `catalogId` is a protocol identifier and capability check; the client does not download a catalog or choose a component library from that ID.
 
@@ -239,7 +240,7 @@ Each snapshot has the following shape:
 interface SurfaceSnapshot {
   surfaceId: string;
   catalogId?: string;
-  surfaceProperties?: JsonObject;
+  metadata?: A2UIMessageMetadata;
   sendDataModel: boolean;
   source: string;
   dataModel: JsonObject;
@@ -310,27 +311,25 @@ The component subscribes to the client with `useSyncExternalStore`, reads the re
 
 ### `A2UIRendererProps`
 
-| Prop                    | Type                            | Description                                                                          |
-| :---------------------- | :------------------------------ | :----------------------------------------------------------------------------------- |
-| `client`                | `A2UIClient`                    | Required protocol client                                                             |
-| `surfaceId`             | `string`                        | Surface to subscribe to and render                                                   |
-| `library`               | `Library`                       | React component library matching the schema given to the client                      |
-| `isStreaming`           | `boolean`                       | Whether the surrounding transport is still delivering the current agent turn         |
-| `mapAction`             | `(event, surface) => options`   | Maps an OpenUI action to A2UI name, source component, context, and response behavior |
-| `onAction`              | `(event, surface) => void`      | Observes actions after built-in handling                                             |
-| `onActionResponse`      | `(value, event) => void`        | Receives a successful requested action response                                      |
-| `onActionResponseError` | `(error, event) => void`        | Receives a failed requested action response                                          |
-| `onOpenUrl`             | `(url, event, surface) => void` | Handles `@OpenUrl`; defaults to a safe `window.open` in browsers                     |
-| `onStateUpdate`         | `(state, surface) => void`      | Observes OpenUI state after it has been merged into the A2UI data model              |
-| `onParseResult`         | `(result) => void`              | Receives OpenUI Lang parse results                                                   |
-| `onError`               | `(errors) => void`              | Receives OpenUI parser/runtime errors                                                |
-| `formStateKeys`         | `readonly string[]`             | Adds top-level data-model keys that should also hydrate form namespaces              |
-| `toolProvider`          | `RendererProps["toolProvider"]` | Handles OpenUI Lang `Query()` and `Mutation()` calls                                 |
-| `queryLoader`           | `ReactNode`                     | UI shown while a query is loading                                                    |
+| Prop            | Type                            | Description                                                                               |
+| :-------------- | :------------------------------ | :---------------------------------------------------------------------------------------- |
+| `client`        | `A2UIClient`                    | Required protocol client                                                                  |
+| `surfaceId`     | `string`                        | Surface to subscribe to and render                                                        |
+| `library`       | `Library`                       | React component library matching the schema given to the client                           |
+| `isStreaming`   | `boolean`                       | Whether the surrounding transport is still delivering the current agent turn              |
+| `mapAction`     | `(event, surface) => options`   | Maps an OpenUI action to A2UI name, source component, user message, context, and metadata |
+| `onAction`      | `(event, surface) => void`      | Observes actions after built-in handling                                                  |
+| `onOpenUrl`     | `(url, event, surface) => void` | Handles `@OpenUrl`; defaults to a safe `window.open` in browsers                          |
+| `onStateUpdate` | `(state, surface) => void`      | Observes OpenUI state after it has been merged into the A2UI data model                   |
+| `onParseResult` | `(result) => void`              | Receives OpenUI Lang parse results                                                        |
+| `onError`       | `(errors) => void`              | Receives OpenUI parser/runtime errors                                                     |
+| `formStateKeys` | `readonly string[]`             | Adds top-level data-model keys that should also hydrate form namespaces                   |
+| `toolProvider`  | `RendererProps["toolProvider"]` | Overrides the default A2UI routing for OpenUI Lang `Query()` and `Mutation()` calls       |
+| `queryLoader`   | `ReactNode`                     | UI shown while a query is loading                                                         |
 
 `@OpenUrl` is handled locally and is not emitted as an A2UI action. Other OpenUI actions are converted to A2UI actions automatically.
 
-`toolProvider` and the client's `functions` option serve different layers: `toolProvider` executes `Query()` and `Mutation()` references inside OpenUI Lang, while `functions` handles A2UI `callFunction` messages sent by the agent.
+Without a `toolProvider`, the adapter routes OpenUI Lang `Query()` and `Mutation()` calls to the agent with `callAgentFunction`. Pass a `toolProvider` to execute those calls locally instead. The client's `functions` option handles the opposite direction: `callRendererFunction` messages sent by the agent.
 
 ## Actions
 
@@ -360,7 +359,7 @@ This emits an A2UI renderer-to-agent message through `onMessage`:
 }
 ```
 
-The React adapter calls `dispatchOpenUIAction()` for you. By default it uses the OpenUI action type as `name`, includes action params and form state in `context`, and uses the event's component ID or `"root"` as the source. Customize that mapping when your agent expects domain-specific action names:
+The React adapter calls `dispatchOpenUIAction()` for you. By default it uses the OpenUI action type as `name`, forwards the human-friendly message as `userMessage`, includes action params and form state in `context`, and uses `"root"` as the source component. Customize that mapping when your agent expects a more specific component ID or domain-specific action name:
 
 ```tsx
 <A2UIRenderer
@@ -375,33 +374,49 @@ The React adapter calls `dispatchOpenUIAction()` for you. By default it uses the
 />
 ```
 
-### Request an action response
+## Agent functions
 
-Set `wantResponse` when the renderer needs a correlated reply:
+Use `callAgentFunction()` when the renderer needs a correlated result from an agent-side function:
 
 ```ts
-const response = await client.dispatchAction({
+const response = client.callAgentFunction({
   surfaceId: "main",
-  sourceComponentId: "saveButton",
-  name: "save",
-  wantResponse: true,
-  responsePath: "/lastSave",
+  call: "saveProfile",
+  args: { section: "profile" },
 });
 ```
 
-The outgoing action receives an `actionId`. Later, pass the agent's response back to the client:
+The client emits the current renderer-to-agent envelope:
+
+```json
+{
+  "version": "v1.0",
+  "callAgentFunction": {
+    "surfaceId": "main",
+    "functionCallId": "generated-call-id",
+    "callFunction": {
+      "call": "saveProfile",
+      "args": { "section": "profile" }
+    }
+  }
+}
+```
+
+Pass the matching agent response back to the client:
 
 ```ts
 await client.process({
   version: "v1.0",
-  actionId: "the-action-id",
-  actionResponse: {
+  agentFunctionResponse: {
+    functionCallId: "generated-call-id",
     value: { saved: true },
   },
 });
+
+await response; // { saved: true }
 ```
 
-The promise resolves with `value`. If `responsePath` was supplied, that value is also written into the surface data model. An error response rejects with `A2UIActionError`, whose `code` matches the protocol error code.
+An `agentFunctionResponse.error` rejects the promise with `A2UIFunctionError`. The React adapter uses this same path for OpenUI Lang `Query()` and `Mutation()` calls when no local `toolProvider` is supplied.
 
 ## Renderer functions
 
@@ -412,7 +427,8 @@ const client = createA2UIClient({
   schema: openuiLibrary.toJSONSchema(),
   functions: {
     getLocation: {
-      callableFrom: "agentOnly",
+      catalogId: "com.example:functions",
+      allowedCallers: "agentOnly",
       async handler() {
         return { latitude: 37.7749, longitude: -122.4194 };
       },
@@ -429,29 +445,30 @@ Incoming call:
 ```json
 {
   "version": "v1.0",
-  "functionCallId": "call-1",
-  "wantResponse": true,
-  "callFunction": {
-    "call": "getLocation",
-    "args": {}
+  "callRendererFunction": {
+    "functionCallId": "call-1",
+    "callFunction": {
+      "call": "getLocation",
+      "catalogId": "com.example:functions",
+      "args": {}
+    }
   }
 }
 ```
 
-When `wantResponse` is true, the client emits:
+The client always emits a correlated result:
 
 ```json
 {
   "version": "v1.0",
-  "functionResponse": {
+  "rendererFunctionResponse": {
     "functionCallId": "call-1",
-    "call": "getLocation",
     "value": { "latitude": 37.7749, "longitude": -122.4194 }
   }
 }
 ```
 
-Registrations support `"rendererOnly"`, `"agentOnly"`, and `"rendererOrAgent"`. Object registrations default to `"rendererOnly"`, so set the boundary explicitly for agent-callable functions. A direct function value is supported as shorthand and is callable by incoming agent messages; prefer object registrations when the trust boundary matters.
+Registrations support `"rendererOnly"`, `"agentOnly"`, and `"rendererOrAgent"`. Object registrations default to `"rendererOnly"`, so set `allowedCallers` and `catalogId` explicitly for agent-callable functions. A direct function value is renderer-only shorthand and is never callable by an incoming agent message.
 
 Unknown functions, disallowed calls, and handler failures produce protocol error messages correlated by `functionCallId`.
 
@@ -516,12 +533,13 @@ The package exports runtime Zod schemas for every message and shared protocol st
 | `getSurfaces()`                                    | Returns all current surface snapshots                                   |
 | `subscribe(listener)`                              | Subscribes to surface-store changes and returns an unsubscribe function |
 | `subscribeMessages(listener)`                      | Subscribes to emitted renderer-to-agent messages and metadata           |
-| `dispatchAction(input)`                            | Emits an A2UI action and optionally returns a response promise          |
+| `dispatchAction(input)`                            | Emits an A2UI action                                                    |
 | `dispatchOpenUIAction(surfaceId, event, options?)` | Converts an OpenUI action event into an A2UI action                     |
+| `callAgentFunction(input)`                         | Emits `callAgentFunction` and returns its correlated response promise   |
 | `updateSurfaceFromOpenUIState(surfaceId, state)`   | Merges OpenUI bindings and form state into a surface data model         |
 | `getRendererDataModel()`                           | Returns opted-in surface models in the A2UI renderer-data-model shape   |
 | `getRendererMetadata()`                            | Returns configured capabilities and opted-in data-model metadata        |
-| `dispose()`                                        | Rejects pending actions, clears surfaces, and removes listeners         |
+| `dispose()`                                        | Rejects pending function calls, clears surfaces, and removes listeners  |
 
 ## Errors and cleanup
 
@@ -533,7 +551,7 @@ Call `dispose()` when the client is no longer needed:
 client.dispose();
 ```
 
-Deleting a surface or disposing the client rejects any pending action-response promises for that surface with `A2UIActionError`.
+Deleting a surface or disposing the client rejects pending agent-function promises for that surface with `A2UIFunctionError`.
 
 ## Compatibility notes
 

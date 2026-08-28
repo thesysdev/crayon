@@ -39,10 +39,12 @@ function Harness({
   isStreaming,
   queryErrors,
   currentResponse = response,
+  publish,
 }: {
   isStreaming: boolean;
   queryErrors: OpenUIError[];
   currentResponse?: string;
+  publish?: boolean;
 }) {
   const parseExceptionRef = useRef<OpenUIError | null>(null);
   const runtimeErrorsRef = useRef<OpenUIError[]>([]);
@@ -71,6 +73,7 @@ function Harness({
     result,
     errorsRef,
     errorRevision,
+    publish,
   });
   return null;
 }
@@ -144,6 +147,23 @@ describe("streaming observability integration", () => {
     expect(streamIds[0]).toBe(streamIds[1]);
     expect(streamIds[2]).toBe(streamIds[3]);
     expect(streamIds[2]).not.toBe(streamIds[0]);
+  });
+
+  it("stays off the bus when publishing is disabled", () => {
+    const events: ObservabilityEvent[] = [];
+    const removeListener = observability.listenAll((event) => {
+      if (event.detail.kind === "react-lang:stream") events.push(event);
+    });
+
+    act(() =>
+      root.render(createElement(Harness, { isStreaming: true, queryErrors: [], publish: false })),
+    );
+    act(() =>
+      root.render(createElement(Harness, { isStreaming: false, queryErrors: [], publish: false })),
+    );
+    removeListener();
+
+    expect(events).toEqual([]);
   });
 
   it("republishes settled with the same id when a query error arrives later", () => {

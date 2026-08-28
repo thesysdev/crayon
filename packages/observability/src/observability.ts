@@ -63,5 +63,11 @@ function createObservability(): Observability {
   return bus;
 }
 
-/** The shared observability bus. Import this everywhere — there is one per app. */
-export const observability: Observability = createObservability();
+/**
+ * The shared observability bus. Keyed on globalThis via `Symbol.for` so
+ * duplicate copies of this module (ESM/CJS dual builds, nested package
+ * versions) still share one instance.
+ */
+const BUS_KEY = Symbol.for("openui.observability");
+const store = globalThis as { [BUS_KEY]?: Observability };
+export const observability: Observability = (store[BUS_KEY] ??= createObservability());

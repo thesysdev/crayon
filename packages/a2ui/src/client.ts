@@ -11,8 +11,9 @@ import { mergeComponentStatements } from "./statement-patch";
 import type {
   A2UIClientOptions,
   ActionMessage,
-  ActionResponseMessage,
+  AgentFunctionResponseMessage,
   AgentToRendererMessage,
+  CallAgentFunctionInput,
   DispatchActionInput,
   GenericErrorMessage,
   JsonObject,
@@ -30,19 +31,18 @@ import type {
 type SurfaceListener = () => void;
 type MessageListener = (message: RendererToAgentMessage, metadata: RendererMetadata) => void;
 
-interface PendingAction {
+interface PendingAgentFunction {
   surfaceId: string;
-  responsePath?: string;
   resolve: (value: JsonValue) => void;
   reject: (error: Error) => void;
 }
 
-export class A2UIActionError extends Error {
+export class A2UIFunctionError extends Error {
   readonly code: string;
 
   constructor(code: string, message: string) {
     super(message);
-    this.name = "A2UIActionError";
+    this.name = "A2UIFunctionError";
     this.code = code;
   }
 }
@@ -88,10 +88,10 @@ function isDeleteSurface(
   return "deleteSurface" in message;
 }
 
-function isCallFunction(
+function isCallRendererFunction(
   message: AgentToRendererMessage,
-): message is Extract<AgentToRendererMessage, { callFunction: unknown }> {
-  return "callFunction" in message;
+): message is Extract<AgentToRendererMessage, { callRendererFunction: unknown }> {
+  return "callRendererFunction" in message;
 }
 
 function record(value: unknown): Record<string, unknown> | undefined {
@@ -106,15 +106,19 @@ function validationTarget(input: unknown): {
 } {
   const message = record(input);
   if (!message) return {};
-  const functionCallId =
-    typeof message.functionCallId === "string" ? message.functionCallId : undefined;
   for (const key of ["createSurface", "updateComponents", "updateDataModel", "deleteSurface"]) {
     const payload = record(message[key]);
     if (typeof payload?.surfaceId === "string") {
-      return { surfaceId: payload.surfaceId, functionCallId };
+      return { surfaceId: payload.surfaceId };
     }
   }
-  return { functionCallId };
+  for (const key of ["callRendererFunction", "agentFunctionResponse"]) {
+    const payload = record(message[key]);
+    if (typeof payload?.functionCallId === "string") {
+      return { functionCallId: payload.functionCallId };
+    }
+  }
+  return {};
 }
 
 export class A2UIClient {
@@ -127,7 +131,7 @@ export class A2UIClient {
   readonly #surfaces = new Map<string, SurfaceSnapshot>();
   readonly #surfaceListeners = new Set<SurfaceListener>();
   readonly #messageListeners = new Set<MessageListener>();
-  readonly #pendingActions = new Map<string, PendingAction>();
+  readonly #pendingAgentFunctions = new Map<string, PendingAgentFunction>();
   #revision = 0;
 
   constructor(options: A2UIClientOptions) {
@@ -193,8 +197,10 @@ export class A2UIClient {
       if (isUpdateComponents(message)) return this.#updateComponents(message, outbound);
       if (isUpdateDataModel(message)) return this.#updateDataModel(message, outbound);
       if (isDeleteSurface(message)) return this.#deleteSurface(message, outbound);
-      if (isCallFunction(message)) return await this.#callFunction(message, outbound);
-      return this.#actionResponse(message, outbound);
+      if (isCallRendererFunction(message)) {
+        return await this.#callRendererFunction(message, outbound);
+      }
+      return this.#agentFunctionResponse(message, outbound);
     } finally {
       this.#messageListeners.delete(capture);
     }
@@ -216,7 +222,7 @@ export class A2UIClient {
     surfaceId: string,
     event: ActionEvent,
     options: OpenUIActionOptions = {},
-  ): Promise<JsonValue> | undefined {
+  ): void {
     const eventSourceComponentId = (event as ActionEvent & { sourceComponentId?: unknown })
       .sourceComponentId;
     const context: JsonObject = {
@@ -224,58 +230,77 @@ export class A2UIClient {
       ...(event.formState ? { formState: toJsonObject(event.formState) } : {}),
       ...options.context,
     };
-    return this.dispatchAction({
+    this.dispatchAction({
       surfaceId,
       sourceComponentId:
         options.sourceComponentId ??
         (typeof eventSourceComponentId === "string" ? eventSourceComponentId : "root"),
       name: options.name ?? event.type,
+      userMessage: (options.userMessage ?? event.humanFriendlyMessage) || undefined,
       context,
-      wantResponse: options.wantResponse,
-      responsePath: options.responsePath,
+      metadata: options.metadata,
     });
   }
 
-  dispatchAction(input: DispatchActionInput): Promise<JsonValue> | undefined {
+  dispatchAction(input: DispatchActionInput): void {
     if (!this.#surfaces.has(input.surfaceId)) {
       this.#emitGenericError(
         "SURFACE_NOT_FOUND",
         `Unknown surface: ${input.surfaceId}`,
         input.surfaceId,
       );
-      return undefined;
+      return;
     }
 
-    const actionId = input.wantResponse ? this.#createId() : undefined;
     const message: ActionMessage = {
       version: "v1.0",
       action: {
         name: input.name,
+        ...(input.userMessage ? { userMessage: input.userMessage } : {}),
         surfaceId: input.surfaceId,
         sourceComponentId: input.sourceComponentId,
         timestamp: this.#now().toISOString(),
         context: input.context ?? {},
-        ...(input.wantResponse ? { wantResponse: true, actionId } : {}),
+        ...(input.metadata ? { metadata: input.metadata } : {}),
       },
     };
     this.#emit(message);
+  }
 
-    if (!actionId) return undefined;
+  callAgentFunction(input: CallAgentFunctionInput): Promise<JsonValue> {
+    if (!this.#surfaces.has(input.surfaceId)) {
+      const message = `Unknown surface: ${input.surfaceId}`;
+      this.#emitGenericError("SURFACE_NOT_FOUND", message, input.surfaceId);
+      return Promise.reject(new A2UIFunctionError("SURFACE_NOT_FOUND", message));
+    }
+
+    const functionCallId = this.#createId();
     return new Promise<JsonValue>((resolve, reject) => {
-      this.#pendingActions.set(actionId, {
+      this.#pendingAgentFunctions.set(functionCallId, {
         surfaceId: input.surfaceId,
-        responsePath: input.responsePath,
         resolve,
         reject,
+      });
+      this.#emit({
+        version: "v1.0",
+        callAgentFunction: {
+          surfaceId: input.surfaceId,
+          functionCallId,
+          callFunction: {
+            call: input.call,
+            ...(input.catalogId ? { catalogId: input.catalogId } : {}),
+            ...(input.args ? { args: input.args } : {}),
+          },
+        },
       });
     });
   }
 
   dispose(): void {
-    for (const pending of this.#pendingActions.values()) {
-      pending.reject(new A2UIActionError("CLIENT_DISPOSED", "A2UI client was disposed"));
+    for (const pending of this.#pendingAgentFunctions.values()) {
+      pending.reject(new A2UIFunctionError("CLIENT_DISPOSED", "A2UI client was disposed"));
     }
-    this.#pendingActions.clear();
+    this.#pendingAgentFunctions.clear();
     this.#surfaces.clear();
     this.#surfaceListeners.clear();
     this.#messageListeners.clear();
@@ -326,7 +351,7 @@ export class A2UIClient {
     this.#replaceSurface({
       surfaceId: input.surfaceId,
       catalogId: input.catalogId,
-      surfaceProperties: input.surfaceProperties,
+      metadata: input.metadata,
       sendDataModel: input.sendDataModel ?? false,
       source,
       dataModel: structuredClone(input.dataModel ?? {}),
@@ -403,100 +428,94 @@ export class A2UIClient {
     const surfaceId = message.deleteSurface.surfaceId;
     if (!this.#requireSurface(surfaceId)) return { ok: false, outbound };
     this.#surfaces.delete(surfaceId);
-    for (const [actionId, pending] of this.#pendingActions) {
+    for (const [functionCallId, pending] of this.#pendingAgentFunctions) {
       if (pending.surfaceId === surfaceId) {
-        pending.reject(new A2UIActionError("SURFACE_DELETED", `Surface was deleted: ${surfaceId}`));
-        this.#pendingActions.delete(actionId);
+        pending.reject(
+          new A2UIFunctionError("SURFACE_DELETED", `Surface was deleted: ${surfaceId}`),
+        );
+        this.#pendingAgentFunctions.delete(functionCallId);
       }
     }
     this.#notify();
     return { ok: true, outbound };
   }
 
-  async #callFunction(
-    message: Extract<AgentToRendererMessage, { callFunction: unknown }>,
+  async #callRendererFunction(
+    message: Extract<AgentToRendererMessage, { callRendererFunction: unknown }>,
     outbound: RendererToAgentMessage[],
   ): Promise<ProcessResult> {
-    const { call, args = {} } = message.callFunction;
+    const { functionCallId, callFunction } = message.callRendererFunction;
+    const { call, catalogId, args = {} } = callFunction;
     const registration = this.#functions?.[call];
     if (!registration) {
       this.#emitGenericError(
         "INVALID_FUNCTION_CALL",
         `Renderer function is not registered: ${call}`,
         undefined,
-        message.functionCallId,
+        functionCallId,
       );
       return { ok: false, outbound };
     }
     const fn = typeof registration === "function" ? registration : registration.handler;
     if (
-      typeof registration !== "function" &&
-      (registration.callableFrom ?? "rendererOnly") === "rendererOnly"
+      typeof registration === "function" ||
+      (registration.allowedCallers ?? "rendererOnly") === "rendererOnly" ||
+      registration.catalogId !== catalogId
     ) {
       this.#emitGenericError(
         "INVALID_FUNCTION_CALL",
-        `Renderer function is not callable from the agent: ${call}`,
+        `Renderer function is not callable from catalog ${catalogId}: ${call}`,
         undefined,
-        message.functionCallId,
+        functionCallId,
       );
       return { ok: false, outbound };
     }
     try {
       const value = await fn(args);
-      if (message.wantResponse) {
-        this.#emit({
-          version: "v1.0",
-          functionResponse: { functionCallId: message.functionCallId, call, value },
-        });
-      }
+      this.#emit({
+        version: "v1.0",
+        rendererFunctionResponse: { functionCallId, value },
+      });
       return { ok: true, outbound };
     } catch (error) {
-      this.#emitGenericError(
-        "FUNCTION_CALL_FAILED",
-        error instanceof Error ? error.message : String(error),
-        undefined,
-        message.functionCallId,
-      );
+      this.#emit({
+        version: "v1.0",
+        rendererFunctionResponse: {
+          functionCallId,
+          error: {
+            code: "EXECUTION_FAILED",
+            message: error instanceof Error ? error.message : String(error),
+          },
+        },
+      });
       return { ok: false, outbound };
     }
   }
 
-  #actionResponse(
-    message: ActionResponseMessage,
+  #agentFunctionResponse(
+    message: AgentFunctionResponseMessage,
     outbound: RendererToAgentMessage[],
   ): ProcessResult {
-    const pending = this.#pendingActions.get(message.actionId);
+    const response = message.agentFunctionResponse;
+    const pending = this.#pendingAgentFunctions.get(response.functionCallId);
     if (!pending) {
       return {
         ok: false,
         outbound,
-        issues: [{ path: "/actionId", message: `Unknown actionId: ${message.actionId}` }],
+        issues: [
+          {
+            path: "/agentFunctionResponse/functionCallId",
+            message: `Unknown functionCallId: ${response.functionCallId}`,
+          },
+        ],
       };
     }
-    this.#pendingActions.delete(message.actionId);
-    if ("error" in message.actionResponse) {
-      pending.reject(
-        new A2UIActionError(
-          message.actionResponse.error.code,
-          message.actionResponse.error.message,
-        ),
-      );
+    this.#pendingAgentFunctions.delete(response.functionCallId);
+    if ("error" in response) {
+      pending.reject(new A2UIFunctionError(response.error.code, response.error.message));
       return { ok: true, outbound };
     }
-    const value = message.actionResponse.value;
-    if (pending.responsePath) {
-      const surface = this.#surfaces.get(pending.surfaceId);
-      if (surface) {
-        try {
-          const dataModel = applyDataModelUpdate(surface.dataModel, pending.responsePath, value);
-          this.#replaceSurface({ ...surface, dataModel });
-        } catch (error) {
-          pending.reject(error instanceof Error ? error : new Error(String(error)));
-          return { ok: false, outbound };
-        }
-      }
-    }
-    pending.resolve(value);
+    pending.resolve(response.value);
     return { ok: true, outbound };
   }
 

@@ -9,7 +9,49 @@ Use this package for the prebuilt `AgentInterface` chat surface and default comp
 
 ```ts
 import { AgentInterface } from "@openuidev/react-ui";
+import "@openuidev/react-ui/styles/index.css";
 ```
+
+## Styling
+
+Import one complete React UI stylesheet exactly once, normally from your application's global entry point.
+
+| Import                                         | Cascade behavior                                                                       |
+| ---------------------------------------------- | -------------------------------------------------------------------------------------- |
+| `@openuidev/react-ui/styles/index.css`         | Default, unlayered styles. Override them with normal CSS specificity.                  |
+| `@openuidev/react-ui/layered/styles/index.css` | The same component styles wrapped in `@layer openui` for cascade-layered applications. |
+
+Choose one variant. Do not import `@openuidev/react-ui/components.css` or the default `styles/index.css` alongside the layered stylesheet. The unlayered rules would take precedence over every named layer and defeat the intended ordering. Importing `components.css` with the default full stylesheet also duplicates the component rules in current releases.
+
+For a single component, use `@openuidev/react-ui/styles/<Component>.css` or its layered counterpart at `@openuidev/react-ui/layered/styles/<Component>.css` instead of a full stylesheet.
+
+### Tailwind v4
+
+Put the layer-order declaration and both imports at the top of the application's global stylesheet:
+
+```css
+@layer theme, base, openui, components, utilities;
+@import "tailwindcss";
+@import "@openuidev/react-ui/layered/styles/index.css";
+```
+
+This places Tailwind Preflight in `base` below OpenUI components, while Tailwind component and utility classes remain above OpenUI and can override it. The first layer-order declaration establishes precedence, so it must appear before other imports or rules that register those layers.
+
+Keep the React UI import in one global entry point. Importing it again from a component or route can cause chunk-splitting bundlers to register `openui` before the intended global order, creating differences between development and production.
+
+Put application-wide resets in a lower layer, normally `base`:
+
+```css
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+}
+```
+
+An unlayered reset wins over every named layer regardless of selector specificity. The recipe above is specific to Tailwind v4; for Tailwind v3, preserve the same effective precedence using its directives and emitted CSS instead of copying the v4 imports.
+
+The layered variant requires browser support for [CSS cascade layers](https://developer.mozilla.org/en-US/docs/Web/CSS/@layer). Use the default unlayered stylesheet when supporting browsers that do not implement `@layer`.
 
 ## Chat interface
 
@@ -149,20 +191,20 @@ import { Skeleton, TableSkeleton } from "@openuidev/react-ui";
 
 A generic skeleton bar. Use standalone or with `count` for stacked bars.
 
-| Prop       | Type     | Default      | Description |
-|------------|----------|--------------|-------------|
-| `count`    | `number` | `1`          | Number of bars to stack |
-| `height`   | `string` | `"16px"`     | Bar height |
-| `width`    | `string` | `"100%"`     | Bar width |
+| Prop           | Type     | Default     | Description                                          |
+| -------------- | -------- | ----------- | ---------------------------------------------------- |
+| `count`        | `number` | `1`         | Number of bars to stack                              |
+| `height`       | `string` | `"16px"`    | Bar height                                           |
+| `width`        | `string` | `"100%"`    | Bar width                                            |
 | `borderRadius` | `string` | `undefined` | Bar border radius (defaults to `--openui-radius-xs`) |
 
 ### `TableSkeleton`
 
 A table-shaped placeholder used by the genui `Table` component while queries load.
 
-| Prop    | Type     | Default | Description |
-|---------|----------|---------|-------------|
-| `rows`  | `number` | `5`     | Number of skeleton rows |
-| `columns` | `number` | `4`   | Number of skeleton columns |
+| Prop      | Type     | Default | Description                |
+| --------- | -------- | ------- | -------------------------- |
+| `rows`    | `number` | `5`     | Number of skeleton rows    |
+| `columns` | `number` | `4`     | Number of skeleton columns |
 
 Built-in genui components like `Table` automatically render `TableSkeleton` when `useIsQueryLoading()` is `true` and no data rows exist yet.

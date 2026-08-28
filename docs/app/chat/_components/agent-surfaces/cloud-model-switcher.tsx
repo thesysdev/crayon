@@ -1,67 +1,57 @@
 "use client";
 
-import { MODEL_OPTIONS, type ModelOption } from "@/lib/openui-cloud/models";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-} from "@openuidev/react-ui";
+import { MODEL_OPTIONS, type ModelOption as CloudModelOption } from "@/lib/openui-cloud/models";
+import { ModelSwitcher, type ModelOption } from "@openuidev/react-ui";
 import { useMemo } from "react";
 import styles from "../../chat-page.module.css";
+
+const PROVIDER_ORDER: CloudModelOption["provider"][] = ["Anthropic", "OpenAI", "Google"];
 
 interface CloudModelSwitcherProps {
   selectedModel: string;
   onModelChange: (model: string) => void;
+  disabled?: boolean;
+  disabledReason?: string;
 }
 
-export function CloudModelSwitcher({ selectedModel, onModelChange }: CloudModelSwitcherProps) {
-  const selectedOption =
-    MODEL_OPTIONS.find((model) => model.id === selectedModel) ?? MODEL_OPTIONS[0];
-  const groupedModels = useMemo(() => groupByProvider(MODEL_OPTIONS), []);
+export function CloudModelSwitcher({
+  selectedModel,
+  onModelChange,
+  disabled = false,
+  disabledReason,
+}: CloudModelSwitcherProps) {
+  const models = useMemo(() => createModelOptions(MODEL_OPTIONS), []);
 
   return (
     <div className={styles.modelSwitcher}>
-      <Select value={selectedModel} onValueChange={onModelChange} size="sm">
-        <SelectTrigger
-          aria-label="Select model"
-          className={styles.modelSwitcherTrigger}
-          title={selectedOption?.id ?? selectedModel}
-        >
-          <span className={styles.modelSwitcherValue}>{selectedOption?.name ?? selectedModel}</span>
-        </SelectTrigger>
-        <SelectContent align="start" className={styles.modelSwitcherContent}>
-          {groupedModels.map(([provider, providerModels]) => (
-            <SelectGroup key={provider}>
-              <SelectLabel>{provider}</SelectLabel>
-              {providerModels.map((model) => (
-                <SelectItem key={model.id} value={model.id}>
-                  <span className={styles.modelOption}>
-                    <span className={styles.modelOptionHeading}>
-                      <span className={styles.modelOptionName}>{model.name}</span>
-                    </span>
-                    <span className={styles.modelOptionId}>{model.id}</span>
-                  </span>
-                </SelectItem>
-              ))}
-            </SelectGroup>
-          ))}
-        </SelectContent>
-      </Select>
+      <fieldset
+        className={styles.modelSwitcherFieldset}
+        disabled={disabled}
+        title={disabled ? disabledReason : undefined}
+      >
+        <ModelSwitcher models={models} value={selectedModel} onValueChange={onModelChange} />
+      </fieldset>
     </div>
   );
 }
 
-function groupByProvider(models: readonly ModelOption[]): [string, ModelOption[]][] {
-  const grouped = new Map<string, ModelOption[]>();
+function createModelOptions(models: readonly CloudModelOption[]): ModelOption[] {
+  return PROVIDER_ORDER.flatMap((provider) =>
+    models.filter((model) => model.provider === provider),
+  ).map((model) => ({
+    id: model.id,
+    name: model.name,
+    group: model.provider,
+    logo: <ProviderLogo provider={model.provider} />,
+  }));
+}
 
-  for (const model of models) {
-    const group = grouped.get(model.provider) ?? [];
-    group.push(model);
-    grouped.set(model.provider, group);
-  }
-
-  return [...grouped.entries()];
+function ProviderLogo({ provider }: { provider: CloudModelOption["provider"] }) {
+  return (
+    <span
+      className={styles.modelProviderLogo}
+      data-provider={provider.toLowerCase()}
+      aria-hidden="true"
+    />
+  );
 }

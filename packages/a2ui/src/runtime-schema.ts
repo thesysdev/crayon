@@ -1,7 +1,7 @@
 import {
-  actionResponseMessageSchema,
+  agentFunctionResponseMessageSchema,
   agentToRendererMessageSchema,
-  callFunctionMessageSchema,
+  callRendererFunctionMessageSchema,
   createSurfaceMessageSchema,
   deleteSurfaceMessageSchema,
   updateComponentsMessageSchema,
@@ -31,8 +31,8 @@ export function validateAgentToRendererMessage(
     "updateComponents",
     "updateDataModel",
     "deleteSurface",
-    "callFunction",
-    "actionResponse",
+    "callRendererFunction",
+    "agentFunctionResponse",
   ] as const;
   const presentKeys = object
     ? messageKeys.filter((key) => Object.prototype.hasOwnProperty.call(object, key))
@@ -44,8 +44,8 @@ export function validateAgentToRendererMessage(
           updateComponents: updateComponentsMessageSchema,
           updateDataModel: updateDataModelMessageSchema,
           deleteSurface: deleteSurfaceMessageSchema,
-          callFunction: callFunctionMessageSchema,
-          actionResponse: actionResponseMessageSchema,
+          callRendererFunction: callRendererFunctionMessageSchema,
+          agentFunctionResponse: agentFunctionResponseMessageSchema,
         }[presentKeys[0]!]
       : agentToRendererMessageSchema;
   const result = selectedSchema.safeParse(input);

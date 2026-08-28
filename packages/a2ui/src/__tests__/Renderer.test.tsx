@@ -12,6 +12,7 @@ import { describe, expect, it, vi } from "vitest";
 import { z } from "zod/v4";
 import { createA2UIClient } from "../client";
 import { A2UIRenderer } from "../Renderer";
+import type { RendererToAgentMessage } from "../types";
 
 const TextContent = defineComponent({
   name: "TextContent",
@@ -193,6 +194,56 @@ describe("A2UIRenderer", () => {
     });
     expect(container.querySelector("button")?.disabled).toBe(true);
     expect(container.querySelector("button")?.dataset.streaming).toBe("true");
+
+    await act(async () => root.unmount());
+  });
+
+  it("routes OpenUI Query calls through A2UI callAgentFunction by default", async () => {
+    const messages: RendererToAgentMessage[] = [];
+    const client = createA2UIClient({
+      schema: library.toJSONSchema(),
+      rootName: library.root,
+      createId: () => "query-call-1",
+      onMessage: (message) => messages.push(message),
+    });
+    await client.process({
+      version: "v1.0",
+      createSurface: {
+        surfaceId: "main",
+        components: [
+          'data = Query("lookup", {id: 42}, {text: "Loading"})',
+          "root = Stack([greeting])",
+          "greeting = TextContent(data.text)",
+        ],
+      },
+    });
+    const container = document.createElement("div");
+    const root = createRoot(container);
+
+    await act(async () => {
+      root.render(<A2UIRenderer client={client} surfaceId="main" library={library} />);
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+    expect(messages.at(-1)).toEqual({
+      version: "v1.0",
+      callAgentFunction: {
+        surfaceId: "main",
+        functionCallId: "query-call-1",
+        callFunction: { call: "lookup", args: { id: 42 } },
+      },
+    });
+
+    await act(async () => {
+      await client.process({
+        version: "v1.0",
+        agentFunctionResponse: {
+          functionCallId: "query-call-1",
+          value: { text: "Loaded from agent" },
+        },
+      });
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    });
+    expect(container.textContent).toContain("Loaded from agent");
 
     await act(async () => root.unmount());
   });
