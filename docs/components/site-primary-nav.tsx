@@ -127,9 +127,9 @@ export const PRIMARY_SITE_NAV_ITEMS: NavItem[] = [
         label: "Managed",
         children: [
           {
-            title: "OpenUI Cloud",
-            description: "Production agent interfaces, hosted and managed.",
-            href: "/cloud",
+            title: "Gateway",
+            description: "One endpoint for generative UI across every model.",
+            href: "/cloud/gateway",
           },
           {
             title: "Observability",

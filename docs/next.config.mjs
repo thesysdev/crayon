@@ -29,6 +29,15 @@ const config = {
   },
   async redirects() {
     return [
+      // /cloud was the OpenUI Cloud product page; its pitch now lives on the
+      // home page, and the managed products have pages of their own. Temporary
+      // while the marketing restructure settles — make it permanent once the
+      // home page has actually absorbed the cloud sections.
+      {
+        source: "/cloud",
+        destination: "/",
+        permanent: false,
+      },
       {
         source: "/AGENTS.md",
         destination: "/",
