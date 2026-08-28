@@ -1,4 +1,4 @@
-import styles from "./sections.module.css";
+import styles from "../sections.module.css";
 
 type Faq = {
   question: string;
@@ -55,10 +55,13 @@ const FAQS: Faq[] = [
     ],
   },
   {
-    question: "Do I need both Gateway and Observability?",
+    /* Deliberately the mirror of the same question on the Observability page,
+       asked from this side and answered with the same second paragraph. The two
+       pages should give the same advice however you arrive at them. */
+    question: "Do I need OpenUI Observability as well?",
     answer: [
-      "No. They work independently.",
-      "Use Gateway to make generations more reliable, and Observability to understand sessions, users, errors, and behaviour.",
+      "No. They work independently, and Gateway does not require Observability.",
+      "We do recommend running both. Gateway makes generations more reliable, Observability shows you how they landed, and together they cover the whole path from the model to what the user actually experienced.",
     ],
   },
 ];

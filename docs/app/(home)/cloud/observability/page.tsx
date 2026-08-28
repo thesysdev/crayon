@@ -3,10 +3,44 @@ import Image from "next/image";
 import styles from "../../page.module.css";
 import { Footer } from "../../sections/Footer/Footer";
 import { HeroSection, Tagline } from "../../sections/HeroSection/HeroSection";
+import { ListSection } from "../ListSection";
 import { CloudCtaSection } from "./CloudCtaSection";
 import { EarlyAccessForm } from "./EarlyAccessForm";
+import { FaqSection } from "./FaqSection";
 import { FeaturesSection } from "./FeaturesSection";
+import { IntegrateSection } from "./IntegrateSection";
 import cloudStyles from "./page.module.css";
+import { WhySection } from "./WhySection";
+
+/* Three rows, not seven. An earlier version walked through capture modes, the
+   beforeSend hook and sampling one at a time, which is a docs page wearing a
+   marketing page's clothes. What a reader needs here is that it is secure,
+   compliant, and that they decide what is sent; the API that makes the third
+   one true belongs in the SDK reference. */
+const TRUST_ITEMS = [
+  {
+    term: "You control what is sent",
+    description:
+      "One option limits the SDK to metadata, so the generated response never leaves the browser. A hook can rewrite or drop any event before it does.",
+  },
+  {
+    term: "Secure by default",
+    description:
+      "Your data is not used to train models. Private deployments, including self-hosting and VPC, are available on Scale.",
+  },
+  {
+    term: "Compliant",
+    description: (
+      <>
+        GDPR, SOC 2, and ISO 27001. Details at{" "}
+        <a href="https://trust.thesys.dev" target="_blank" rel="noreferrer">
+          trust.thesys.dev
+        </a>
+        .
+      </>
+    ),
+  },
+];
 
 export const metadata: Metadata = {
   title: "OpenUI Observability - User insights for AI agents",
@@ -101,14 +135,28 @@ export default function ObservabilityPage() {
           }
         />
 
-        {/* The large centred statement. */}
+        {/* The large centred statement, with its caption underneath. No audience
+            named: PM, developer and domain expert overlap in practice, and
+            picking one narrows the page for no gain. The traces contrast is left
+            as a caption because the section below argues it properly. */}
         <Tagline>
-          Product Analytics that goes beyond traces.
-          <br />
-          For Product teams and SMEs.
+          <span className={cloudStyles.taglineText}>Product analytics for AI agents,</span>
+          <span className={cloudStyles.taglineNote}>not just traces</span>
         </Tagline>
 
+        {/* Problem, then the features that answer it, then what it costs to adopt
+            and what it costs you in data — the Gateway page's spine. */}
+        <WhySection />
         <FeaturesSection />
+        <IntegrateSection />
+
+        <ListSection
+          id="observability-trust"
+          title="Secure, compliant, and under your control"
+          items={TRUST_ITEMS}
+        />
+
+        <FaqSection />
         <CloudCtaSection />
       </div>
       <Footer />

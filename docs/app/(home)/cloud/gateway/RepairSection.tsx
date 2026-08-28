@@ -1,6 +1,6 @@
 import { ProofLine } from "../../components/ProofLine/ProofLine";
 import { production } from "@/lib/benchmark-data";
-import styles from "./sections.module.css";
+import styles from "../sections.module.css";
 
 /* PLACEHOLDER — do not ship. Both halves of this claim are still open: the
    figure itself, and its denominator. "Of all generations" is the strong

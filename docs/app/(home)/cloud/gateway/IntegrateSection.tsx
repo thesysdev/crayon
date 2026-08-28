@@ -1,5 +1,5 @@
 import { CloudCodeBlock } from "../CloudCodeBlock";
-import styles from "./sections.module.css";
+import styles from "../sections.module.css";
 
 /* Each step carries its own sample rather than sharing one block, so the change
    a step describes is the only change visible beside it. `highlight` indices are

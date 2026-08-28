@@ -1,5 +1,5 @@
 import { MarketingTable } from "@/components/marketing-table";
-import styles from "./sections.module.css";
+import styles from "../sections.module.css";
 
 /* Mirrors thesys.dev/pricing, which stays the upstream source of truth even
    though this page no longer links to it: this site is self-contained, so the

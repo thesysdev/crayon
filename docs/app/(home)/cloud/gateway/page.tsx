@@ -7,7 +7,7 @@ import { HeroSection } from "../../sections/HeroSection/HeroSection";
 import { CloudCtaSection } from "../CloudCtaSection";
 import { FaqSection } from "./FaqSection";
 import { IntegrateSection } from "./IntegrateSection";
-import { ListSection } from "./ListSection";
+import { ListSection } from "../ListSection";
 import gatewayStyles from "./page.module.css";
 import { PricingSection } from "./PricingSection";
 import { RepairSection } from "./RepairSection";

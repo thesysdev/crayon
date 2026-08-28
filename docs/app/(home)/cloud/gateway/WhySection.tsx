@@ -1,5 +1,5 @@
 import { failureTaxonomy, production } from "@/lib/benchmark-data";
-import styles from "./sections.module.css";
+import styles from "../sections.module.css";
 
 /* The problem, with no product in it. Every number is read from the benchmark
    dataset rather than restated, so this page cannot drift from what /benchmarks
