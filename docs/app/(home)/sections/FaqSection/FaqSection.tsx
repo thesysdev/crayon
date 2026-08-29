@@ -55,6 +55,13 @@ const FAQS: Faq[] = [
       "You can bring your own OpenAI, Anthropic, or Google keys, use custom component libraries, and run OpenUI Gateway behind other OpenAI-compatible gateways such as Portkey.",
     ],
   },
+  {
+    question: "How is Thesys related to OpenUI?",
+    answer: [
+      "Thesys is the company behind OpenUI, much like Vercel is the company behind Next.js.",
+      "Thesys maintains the open-source OpenUI framework and operates OpenUI Cloud.",
+    ],
+  },
 ];
 
 /* Closing FAQ. Title and contact note on the left, the questions on the right.

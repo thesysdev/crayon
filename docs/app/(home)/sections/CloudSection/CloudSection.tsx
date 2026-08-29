@@ -1,4 +1,6 @@
 /* ssr entry: this is a server component now that the grid's accordion is gone. */
+import { ArrowRight } from "@phosphor-icons/react/dist/ssr";
+import { BevelButton } from "../../components/Button/BevelButton";
 import { ProductSection } from "../ProductSection/ProductSection";
 import { GATEWAY_PRODUCT } from "../ProductSection/products";
 import styles from "./CloudSection.module.css";
@@ -10,10 +12,12 @@ export function CloudSection() {
     <section id={CLOUD_SECTION_ID} className={styles.section}>
       <div className={styles.inner}>
         <div className={styles.contact}>
-          {/* Opens the production half of the page. The demo booking that used to
-              sit here has moved onto the Gateway band below, next to Learn more,
-              so this block is a heading rather than a heading plus an ask. */}
-          <p className={styles.contactText}>Ship with confidence in production.</p>
+          <p className={styles.contactEyebrow}>OpenUI Cloud</p>
+          <h2 className={styles.contactText}>Ship with confidence in production.</h2>
+          <p className={styles.contactDescription}>
+            Gateway keeps generated UI reliable. Observability shows what users experienced and
+            where your agent needs to improve.
+          </p>
         </div>
 
         {/* Wrapped rather than spaced by the bands themselves: .header and
@@ -24,17 +28,25 @@ export function CloudSection() {
           <ProductSection {...GATEWAY_PRODUCT} />
         </div>
 
-        {/* Observability is deliberately a line rather than a band: it is in
-            early access, and giving it equal weight here would promise more than
-            it can currently deliver. Promote it back to a ProductSection (the
-            props are still in products.ts) when it ships. */}
-        <p className={styles.aside}>
-          Understanding how those responses landed is{" "}
-          <a className={styles.asideLink} href="/cloud/observability">
-            OpenUI Observability
-          </a>
-          , now in early access.
-        </p>
+        <div className={styles.observabilityBand}>
+          <div className={styles.observabilityCopy}>
+            <p className={styles.observabilityEyebrow}>OpenUI Observability</p>
+            <h3 className={styles.observabilityTitle}>
+              Understand what users are doing with your agent.
+            </h3>
+            <p className={styles.observabilityDescription}>
+              See what users saw, find the sessions worth opening, and turn problematic responses
+              into feedback and evals.
+            </p>
+          </div>
+          <BevelButton
+            className={styles.observabilityCta}
+            variant="dark"
+            href="/cloud/observability"
+            label="Get early access"
+            badge={<ArrowRight size={16} weight="bold" />}
+          />
+        </div>
       </div>
     </section>
   );

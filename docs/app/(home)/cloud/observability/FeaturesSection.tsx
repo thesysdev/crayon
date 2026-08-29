@@ -90,7 +90,6 @@ const FEATURES: Feature[] = [
   },
   {
     title: "Triage",
-    shot: "insights",
     headline: "Find the sessions worth opening",
     description:
       "Ask for the sessions that went wrong and get them back grouped by what went wrong. The same view shows which capabilities users reach for most, and which they ask for and never find.",

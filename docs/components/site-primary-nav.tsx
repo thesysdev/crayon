@@ -124,7 +124,7 @@ export const PRIMARY_SITE_NAV_ITEMS: NavItem[] = [
         ],
       },
       {
-        label: "Managed",
+        label: "Cloud",
         children: [
           {
             title: "Gateway",

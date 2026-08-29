@@ -69,12 +69,9 @@ export const GATEWAY_PRODUCT: ProductSectionProps = {
   headline: "Reliability layer for Generative UI.",
   description:
     "Route model requests through a gateway built to catch broken outputs, recover failures, and keep generated UI working in production.",
-  /* The demo booking used to sit on its own above the band, where it asked for
-     a sales call before the reader knew what the product was. Beside Learn more
-     it is one of two ways forward from the same block. */
   primaryCta: {
-    label: "Talk to our team",
-    href: "https://zcal.co/t/thesys/demo",
+    label: "Generate API key",
+    href: "https://console.thesys.dev/keys",
     external: true,
   },
   secondaryCta: { label: "Learn more", href: "/cloud/gateway" },
