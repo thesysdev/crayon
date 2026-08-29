@@ -13,7 +13,12 @@ export function CloudCtaSection() {
               is a reason to act, and it belongs where the acting happens. What
               happens after early access is left to the FAQ, so the last thing
               read before the form is not a future bill. */}
-          <p className={styles.note}>Free while in early access.</p>
+          <p className={styles.note}>
+            Free while in early access.{" "}
+            <a className={styles.pricingLink} href="/pricing">
+              View all pricing
+            </a>
+          </p>
         </div>
         {/* The same capture as the hero, so the page opens and closes on the
             one action. */}

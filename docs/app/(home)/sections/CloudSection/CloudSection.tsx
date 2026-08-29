@@ -18,6 +18,10 @@ export function CloudSection() {
             Gateway keeps generated UI reliable. Observability shows what users experienced and
             where your agent needs to improve.
           </p>
+          <a className={styles.pricingLink} href="/pricing">
+            View pricing
+            <ArrowRight size={16} weight="bold" aria-hidden="true" />
+          </a>
         </div>
 
         {/* Wrapped rather than spaced by the bands themselves: .header and

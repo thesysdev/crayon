@@ -76,6 +76,9 @@ export function PricingSection() {
       <p className={styles.note}>
         Correction calls are included in your plan and are not billed separately.
       </p>
+      <a className={styles.link} href="/pricing">
+        View full pricing
+      </a>
     </section>
   );
 }

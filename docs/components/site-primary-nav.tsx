@@ -10,6 +10,7 @@ import {
   ChartPieSlice,
   ChatCenteredText,
   Code,
+  CreditCard,
   DeviceMobileCamera,
   MagnifyingGlass,
   Monitor,
@@ -231,6 +232,12 @@ export const PRIMARY_SITE_NAV_ITEMS: NavItem[] = [
             description: "Compare how Generative UI frameworks perform across models",
             href: "/benchmarks",
             icon: PresentationChart,
+          },
+          {
+            title: "Pricing",
+            description: "OpenUI, Gateway, and Observability pricing",
+            href: "/pricing",
+            icon: CreditCard,
           },
           {
             title: "Blogs",
