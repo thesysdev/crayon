@@ -43,11 +43,20 @@ async function persistAssistantFromStream(
  * Returns the two independent adapters AgentInterface needs: an AG-UI-backed
  * LLM transport and a localStorage-backed thread store.
  */
-export function createGrokBuildChatProps(
-  storage: KVStorage = getClientStorage(),
-  store: ThreadStore = createThreadStore(storage),
-): { llm: ChatLLM; storage: ChatStorage } {
+export interface CreateGrokBuildChatOptions {
+  onThreadChange?: (threadId: string) => void;
+  storage?: KVStorage;
+  store?: ThreadStore;
+}
+
+export function createGrokBuildChatProps(options: CreateGrokBuildChatOptions = {}): {
+  llm: ChatLLM;
+  storage: ChatStorage;
+} {
+  const storage = options.storage ?? getClientStorage();
+  const store = options.store ?? createThreadStore(storage);
   const send: ChatLLM["send"] = async ({ messages, threadId, signal }): Promise<Response> => {
+    options.onThreadChange?.(threadId);
     store.saveMessages(threadId, messages);
 
     const response = await fetch("/api/chat", {
@@ -75,8 +84,15 @@ export function createGrokBuildChatProps(
     storage: {
       thread: {
         listThreads: () => store.fetchThreadList(),
-        createThread: (firstMessage) => store.createThread(firstMessage),
-        getMessages: (threadId) => store.loadThread(threadId),
+        createThread: async (firstMessage) => {
+          const thread = await store.createThread(firstMessage);
+          options.onThreadChange?.(thread.id);
+          return thread;
+        },
+        getMessages: (threadId) => {
+          options.onThreadChange?.(threadId);
+          return store.loadThread(threadId);
+        },
         updateThread: (thread) => store.updateThread(thread),
         deleteThread: (threadId) => store.deleteThread(threadId),
       },

@@ -1,5 +1,5 @@
-import { describe, expect, it } from "vitest";
-import { appendStarterPrompt } from "../_shared/utils/welcomePrefill";
+import { describe, expect, it, vi } from "vitest";
+import { appendStarterPrompt, submitStarterPrompt } from "../_shared/utils/welcomePrefill";
 
 describe("appendStarterPrompt", () => {
   it("returns the prompt alone for an empty draft", () => {
@@ -16,5 +16,25 @@ describe("appendStarterPrompt", () => {
     expect(appendStarterPrompt("Create a presentation about ", "a product launch plan")).toBe(
       "Create a presentation about a product launch plan",
     );
+  });
+});
+
+describe("submitStarterPrompt", () => {
+  it("submits the composed draft + prompt as a user message", () => {
+    const processMessage = vi.fn();
+    submitStarterPrompt(processMessage, "Create a presentation about ", "our Q2 business review");
+    expect(processMessage).toHaveBeenCalledExactlyOnceWith({
+      role: "user",
+      content: "Create a presentation about our Q2 business review",
+    });
+  });
+
+  it("submits the prompt alone when the draft is empty", () => {
+    const processMessage = vi.fn();
+    submitStarterPrompt(processMessage, "", "our Q2 business review");
+    expect(processMessage).toHaveBeenCalledExactlyOnceWith({
+      role: "user",
+      content: "our Q2 business review",
+    });
   });
 });

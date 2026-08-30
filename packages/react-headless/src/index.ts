@@ -21,21 +21,26 @@ export {
 } from "./store/ArtifactRenderersContext";
 export { defineArtifactRenderer } from "./store/artifactRendererTypes";
 export { useArtifactStorage } from "./store/ArtifactStorageContext";
+export { artifactViewId, parseArtifactViewId } from "./store/artifactViewId";
 export { ChatProvider } from "./store/ChatProvider";
 export { DetailedViewContext, useDetailedViewStore } from "./store/DetailedViewContext";
 export { ThreadContextContext, useThreadContextStore } from "./store/ThreadContextContext";
 export { pairToolActivity, partialJSONParse } from "./store/toolActivity";
 export {
+  EVE_INPUT_REQUESTED_EVENT,
   agUIAdapter,
+  eveAdapter,
   langGraphAdapter,
   openAIAdapter,
   openAIReadableStreamAdapter,
   openAIResponsesAdapter,
+  vercelAIAdapter,
 } from "./stream/adapters";
 export {
   langGraphMessageFormat,
   openAIConversationMessageFormat,
   openAIMessageFormat,
+  vercelAIMessageFormat,
 } from "./stream/formats";
 export { processStreamedMessage } from "./stream/processStreamedMessage";
 
@@ -99,6 +104,12 @@ export type {
   UserMessage,
 } from "./types/message";
 
+export type {
+  EveAdapterOptions,
+  EveInputOption,
+  EveInputRequest,
+  EveStreamEvent,
+} from "./stream/adapters/eve";
 export type { LangGraphAdapterOptions } from "./stream/adapters/langgraph";
 export type { LangGraphMessageFormat } from "./stream/formats/langgraph-message-format";
 export { identityMessageFormat } from "./types/messageFormat";

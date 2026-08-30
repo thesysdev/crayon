@@ -1,19 +1,31 @@
 "use client";
 
 import { BuildForFreeMenu } from "@/app/_components/build-for-free-menu";
+import { CHAT_DEMO_EVENTS, captureChatDemoEvent } from "@/lib/chat-demo-analytics";
 import { ToggleGroup } from "@openuidev/react-ui/ToggleGroup";
 import { ToggleItem } from "@openuidev/react-ui/ToggleItem";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Monitor, Smartphone, Tablet } from "lucide-react";
 import Link from "next/link";
 import styles from "../chat-page.module.css";
-import type { ChatMode } from "./chat-types";
+import { isViewportPreset, type ViewportPreset } from "./viewport-presets";
+
+const VIEWPORT_OPTIONS = [
+  { id: "mobile", label: "Mobile", icon: Smartphone },
+  { id: "tablet", label: "Tablet", icon: Tablet },
+  { id: "desktop", label: "Desktop", icon: Monitor },
+] as const;
 
 interface ChatPageHeaderProps {
-  mode: ChatMode;
-  onModeChange: (mode: ChatMode) => void;
+  viewport: ViewportPreset;
+  availableViewports: readonly ViewportPreset[];
+  onViewportChange: (viewport: ViewportPreset) => void;
 }
 
-export function ChatPageHeader({ mode, onModeChange }: ChatPageHeaderProps) {
+export function ChatPageHeader({
+  viewport,
+  availableViewports,
+  onViewportChange,
+}: ChatPageHeaderProps) {
   return (
     <header className={styles.header} aria-label="OpenUI chat controls">
       <div className={styles.headerRow}>
@@ -21,26 +33,49 @@ export function ChatPageHeader({ mode, onModeChange }: ChatPageHeaderProps) {
           <ArrowLeft aria-hidden="true" size={15} strokeWidth={2} />
         </Link>
 
-        <div className={styles.modeControl}>
-          <ToggleGroup
-            type="single"
-            value={mode}
-            aria-label="OpenUI implementation"
-            className={styles.modeGroup}
-            onValueChange={(value) => {
-              if (value === "oss" || value === "cloud") onModeChange(value);
-            }}
-          >
-            <ToggleItem id="chat-mode-oss" value="oss" className={styles.modeItem}>
-              OpenUI OSS
-            </ToggleItem>
-            <ToggleItem id="chat-mode-cloud" value="cloud" className={styles.modeItem}>
-              OpenUI Cloud
-            </ToggleItem>
-          </ToggleGroup>
+        <div className={styles.viewportControl}>
+          {availableViewports.length > 1 ? (
+            <ToggleGroup
+              type="single"
+              value={viewport}
+              aria-label="Preview width"
+              className={styles.viewportGroup}
+              onValueChange={(value) => {
+                if (isViewportPreset(value) && availableViewports.includes(value)) {
+                  onViewportChange(value);
+                }
+              }}
+            >
+              {VIEWPORT_OPTIONS.filter((option) => availableViewports.includes(option.id)).map(
+                ({ id, label, icon: Icon }) => (
+                  <ToggleItem
+                    key={id}
+                    id={`chat-viewport-${id}`}
+                    value={id}
+                    data-attribute-element="preview-option"
+                    className={
+                      id === "desktop"
+                        ? `${styles.viewportItem} ${styles.desktopViewportItem}`
+                        : styles.viewportItem
+                    }
+                    aria-label={`Preview ${id} width`}
+                    title={`${label} preview`}
+                  >
+                    <Icon aria-hidden="true" size={15} />
+                    <span className={styles.viewportItemLabel}>{label}</span>
+                  </ToggleItem>
+                ),
+              )}
+            </ToggleGroup>
+          ) : null}
         </div>
 
-        <BuildForFreeMenu analyticsSource="chat_navbar" className={styles.buildForFreeMenu} />
+        <BuildForFreeMenu
+          analyticsSource="chat_navbar"
+          className={styles.buildForFreeMenu}
+          dataAttributeElement="build-for-free"
+          onOpen={() => captureChatDemoEvent(CHAT_DEMO_EVENTS.buildMenuOpen, {})}
+        />
       </div>
     </header>
   );

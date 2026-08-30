@@ -1,20 +1,27 @@
+import {
+  captureParserParseException,
+  captureParserParseResult,
+  prepareParserParseTelemetry,
+} from "../telemetry/runtime";
 import type { ASTNode, Statement } from "./ast";
 import { isASTNode, walkAST } from "./ast";
 import { isBuiltin, RESERVED_CALLS } from "./builtins";
 import { parseExpression } from "./expressions";
 import { tokenize } from "./lexer";
-import { materializeValue, type MaterializeCtx } from "./materialize";
+import { materializeValue } from "./materialize";
 import { autoClose, split, type RawStmt } from "./statements";
 import { T } from "./tokens";
 import {
   isElementNode,
   type LibraryJSONSchema,
+  type MaterializeCtx,
   type MutationStatementInfo,
   type ParamMap,
   type ParseResult,
   type QueryStatementInfo,
   type ValidationError,
 } from "./types";
+import { getSchemaDefaultValue } from "./validation";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Result building
@@ -630,13 +637,6 @@ export interface Parser {
   parse(input: string): ParseResult;
 }
 
-function getSchemaDefaultValue(property: unknown): unknown {
-  if (!property || typeof property !== "object" || Array.isArray(property)) {
-    return undefined;
-  }
-  return (property as { default?: unknown }).default;
-}
-
 export function compileSchema(schema: LibraryJSONSchema): ParamMap {
   const map: ParamMap = new Map();
   const defs = schema.$defs ?? {};
@@ -648,6 +648,7 @@ export function compileSchema(schema: LibraryJSONSchema): ParamMap {
       name: key,
       required: required.includes(key),
       defaultValue: getSchemaDefaultValue(properties[key]),
+      schema: properties[key],
     }));
     map.set(name, { params });
   }
@@ -669,7 +670,15 @@ export function createParser(schema: LibraryJSONSchema, rootName?: string): Pars
   const paramMap = compileSchema(schema);
   return {
     parse(input: string): ParseResult {
-      return parse(input, paramMap, rootName);
+      const telemetry = prepareParserParseTelemetry();
+      try {
+        const result = parse(input, paramMap, rootName);
+        captureParserParseResult(telemetry, result);
+        return result;
+      } catch (error) {
+        captureParserParseException(telemetry);
+        throw error;
+      }
     },
   };
 }

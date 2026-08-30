@@ -1,13 +1,83 @@
 "use client";
 
-import { DemoCreditsDialog } from "@/components/DemoCreditsDialog";
+import {
+  CHAT_DEMO_EVENTS,
+  captureChatDemoEvent,
+  type ChatDemoHostBreakpoint,
+} from "@/lib/chat-demo-analytics";
 import { OPENUI_CLOUD_UNAVAILABLE_MESSAGE } from "@/lib/openui-cloud/errors";
 import dynamic from "next/dynamic";
-import { Component, useCallback, useState, type ReactNode } from "react";
+import {
+  Component,
+  useCallback,
+  useEffect,
+  useRef,
+  useSyncExternalStore,
+  type ReactNode,
+} from "react";
 import styles from "../chat-page.module.css";
-import { OssAgentSurface } from "./agent-surfaces/oss-agent-surface";
 import { ChatPageHeader } from "./chat-page-header";
-import type { ChatMode } from "./chat-types";
+import {
+  getCurrentUrlFormFactor,
+  getServerUrlFormFactor,
+  setCurrentUrlFormFactor,
+  subscribeToCurrentUrlFormFactor,
+  type ViewportPreset,
+} from "./viewport-presets";
+
+type HostViewport = "mobile" | "tablet" | "desktop";
+
+const HOST_VIEWPORT_PRESETS: Record<HostViewport, readonly ViewportPreset[]> = {
+  mobile: ["mobile"],
+  tablet: ["mobile", "tablet"],
+  desktop: ["mobile", "tablet", "desktop"],
+};
+
+const HOST_BREAKPOINTS: Record<HostViewport, ChatDemoHostBreakpoint> = {
+  mobile: "mobile_host",
+  tablet: "tablet_host",
+  desktop: "desktop_host",
+};
+
+function getHostViewport(): HostViewport {
+  if (window.matchMedia("(max-width: 767px)").matches) return "mobile";
+  if (window.matchMedia("(max-width: 1023px)").matches) return "tablet";
+  return "desktop";
+}
+
+function getServerHostViewport(): HostViewport {
+  return "desktop";
+}
+
+function subscribeToHostViewport(onStoreChange: () => void) {
+  const mediaQueries = [
+    window.matchMedia("(max-width: 767px)"),
+    window.matchMedia("(max-width: 1023px)"),
+  ];
+
+  mediaQueries.forEach((mediaQuery) => mediaQuery.addEventListener("change", onStoreChange));
+  return () => {
+    mediaQueries.forEach((mediaQuery) => mediaQuery.removeEventListener("change", onStoreChange));
+  };
+}
+
+function subscribeToBrowserState() {
+  return () => undefined;
+}
+
+function getBrowserState() {
+  return true;
+}
+
+function getServerBrowserState() {
+  return false;
+}
+
+function constrainViewport(viewport: ViewportPreset, hostViewport: HostViewport): ViewportPreset {
+  if (hostViewport === "mobile") return "mobile";
+  if (hostViewport === "tablet" && viewport === "desktop") return "tablet";
+  return viewport;
+}
 
 const CloudAgentSurface = dynamic(
   () => import("./agent-surfaces/cloud-agent-surface").then((module) => module.CloudAgentSurface),
@@ -38,49 +108,76 @@ class CloudSurfaceErrorBoundary extends Component<
 }
 
 export function ChatPageClient() {
-  const [mode, setMode] = useState<ChatMode>("oss");
-  const [announcement, setAnnouncement] = useState("");
-  const [creditsDialogOpen, setCreditsDialogOpen] = useState(false);
+  const hasCapturedExperience = useRef(false);
+  const isBrowserStateReady = useSyncExternalStore(
+    subscribeToBrowserState,
+    getBrowserState,
+    getServerBrowserState,
+  );
+  const preferredViewport =
+    useSyncExternalStore(
+      subscribeToCurrentUrlFormFactor,
+      getCurrentUrlFormFactor,
+      getServerUrlFormFactor,
+    ) ?? "desktop";
+  const hostViewport = useSyncExternalStore(
+    subscribeToHostViewport,
+    getHostViewport,
+    getServerHostViewport,
+  );
+  const availableViewports = HOST_VIEWPORT_PRESETS[hostViewport];
+  const viewport = constrainViewport(preferredViewport, hostViewport);
 
-  const handleCreditsExhausted = useCallback(() => {
-    setCreditsDialogOpen(true);
-  }, []);
+  useEffect(() => {
+    if (!isBrowserStateReady) return;
+    setCurrentUrlFormFactor(viewport);
+  }, [isBrowserStateReady, viewport]);
 
-  const requestModeChange = useCallback(
-    (nextMode: ChatMode) => {
-      if (nextMode === mode) return;
+  useEffect(() => {
+    if (!isBrowserStateReady || hasCapturedExperience.current) return;
+    hasCapturedExperience.current = true;
 
-      setMode(nextMode);
-      setAnnouncement(
-        `${nextMode === "oss" ? "OpenUI OSS" : "OpenUI Cloud"} mode selected. New chat started.`,
-      );
+    captureChatDemoEvent(CHAT_DEMO_EVENTS.experienceView, {
+      host_breakpoint: HOST_BREAKPOINTS[hostViewport],
+      available_preview_count: availableViewports.length as 1 | 2 | 3,
+      initial_preview: viewport,
+    });
+  }, [availableViewports.length, hostViewport, isBrowserStateReady, viewport]);
+
+  const handleViewportChange = useCallback(
+    (nextViewport: ViewportPreset) => {
+      if (nextViewport === viewport) return;
+
+      setCurrentUrlFormFactor(nextViewport);
+      captureChatDemoEvent(CHAT_DEMO_EVENTS.previewChange, {
+        from_preview: viewport,
+        to_preview: nextViewport,
+        host_breakpoint: HOST_BREAKPOINTS[hostViewport],
+      });
     },
-    [mode],
+    [hostViewport, viewport],
   );
 
   return (
     <main className={styles.page}>
-      <h1 className={styles.srOnly}>OpenUI Chat</h1>
-      <ChatPageHeader mode={mode} onModeChange={requestModeChange} />
+      <h1 className={styles.srOnly}>OpenUI Cloud Chat</h1>
+      <ChatPageHeader
+        viewport={viewport}
+        availableViewports={availableViewports}
+        onViewportChange={handleViewportChange}
+      />
 
       <section
         className={styles.agentViewport}
-        aria-label={`${mode === "oss" ? "OpenUI OSS" : "OpenUI Cloud"} chat`}
+        data-viewport={viewport}
+        aria-label="OpenUI Cloud chat"
       >
-        {mode === "oss" ? (
-          <OssAgentSurface onCreditsExhausted={handleCreditsExhausted} />
-        ) : (
+        <div className={styles.agentFrame} data-viewport={viewport}>
           <CloudSurfaceErrorBoundary>
             <CloudAgentSurface />
           </CloudSurfaceErrorBoundary>
-        )}
+        </div>
       </section>
-
-      <p className={styles.srOnly} aria-live="polite">
-        {announcement}
-      </p>
-
-      <DemoCreditsDialog open={creditsDialogOpen} onClose={() => setCreditsDialogOpen(false)} />
     </main>
   );
 }

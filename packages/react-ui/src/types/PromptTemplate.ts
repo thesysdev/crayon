@@ -4,8 +4,8 @@ import { ConversationStarterProps } from "./ConversationStarter";
 /**
  * A fill-in-the-blank prompt for the welcome screen, rendered as a chip:
  * clicking drops the incomplete `prompt` stem into the welcome composer
- * (instead of sending), then shows the template's `completions`, which append
- * to the draft on click.
+ * (instead of sending), then shows the template's `completions`, which submit
+ * the completed prompt on click.
  */
 export interface PromptTemplate {
   displayText: string;
@@ -13,6 +13,6 @@ export interface PromptTemplate {
   prompt: string;
   /** Optional icon; omit for none (chips render no default icon). */
   icon?: ReactNode;
-  /** Suggested completions shown once this template is in the composer. */
+  /** Suggested completions that submit with the prompt stem when selected. */
   completions: ConversationStarterProps[];
 }

@@ -76,6 +76,12 @@ const config = {
       },
       // Nav rename: Playground -> Demos, Projects -> Lab. Keep the old
       // paths working for external links and search results.
+      // Product rename: Paste → Debug. Keep the old path working.
+      {
+        source: "/paste",
+        destination: "/debug",
+        permanent: true,
+      },
       {
         source: "/playground",
         destination: "/demos",
@@ -94,6 +100,18 @@ const config = {
       {
         source: "/blog/should-chat-be-the-new-homepage-for-saas",
         destination: "/blog/beyond-the-chatbar",
+        permanent: true,
+      },
+      // Preserve the founder-shared singular spelling while keeping one
+      // canonical benchmark namespace for search engines and agents.
+      {
+        source: "/benchmark/framework",
+        destination: "/benchmarks/framework",
+        permanent: true,
+      },
+      {
+        source: "/benchmark/language",
+        destination: "/benchmarks/language",
         permanent: true,
       },
     ];

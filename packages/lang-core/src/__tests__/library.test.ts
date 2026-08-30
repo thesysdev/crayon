@@ -181,10 +181,14 @@ describe("per-library registry", () => {
     });
     expect(named.id).toBe("acme-support@3");
     expect(named.toSpec().id).toBe("acme-support@3");
+    expect(named.__libraryId).toEqual(expect.any(String));
+    expect(named.__libraryId).not.toBe("acme-support@3");
 
     const anonymous = createLibrary({ components: [Text], root: "TextContent" });
     expect(anonymous.id).toBeUndefined();
     expect("id" in anonymous.toSpec()).toBe(false);
+    expect(anonymous.__libraryId).toEqual(expect.any(String));
+    expect(anonymous.__libraryId).not.toBe(named.__libraryId);
   });
 
   it("toJSONSchema carries defineComponent descriptions on $defs entries", () => {

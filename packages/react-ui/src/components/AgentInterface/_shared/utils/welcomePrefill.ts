@@ -7,3 +7,16 @@ export const appendStarterPrompt = (draft: string, prompt: string): string => {
   const separator = draft.length > 0 && !draft.endsWith(" ") ? " " : "";
   return `${draft}${separator}${prompt}`;
 };
+
+type ProcessStarterMessage = (message: { role: "user"; content: string }) => void;
+
+/** Composes a contextual starter with the current draft and submits it. */
+export const submitStarterPrompt = (
+  processMessage: ProcessStarterMessage,
+  draft: string,
+  prompt: string,
+): void =>
+  processMessage({
+    role: "user",
+    content: appendStarterPrompt(draft, prompt),
+  });

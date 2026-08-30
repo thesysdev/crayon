@@ -48,6 +48,11 @@ export type ObservabilityLevel = "info" | "warning" | "error";
  * top-level type); everything else is optional or free extra fields.
  */
 export interface ObservabilityDetail {
+  /**
+   * Stable identity for successive snapshots of one logical event. Consumers
+   * may replace an earlier snapshot when another event uses the same id.
+   */
+  id?: string;
   /** Short descriptor of what happened, e.g. "fetch:error", "route:change". */
   kind: string;
   /** Optional human-readable message. */

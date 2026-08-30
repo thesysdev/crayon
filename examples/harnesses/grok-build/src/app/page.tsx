@@ -1,14 +1,21 @@
 "use client";
 
+import { GrokBuildInteractionDialog } from "@/components/grok-build-interaction-dialog";
+import { useGrokBuildInteraction } from "@/hooks/use-grok-build-interaction";
 import { useTheme } from "@/hooks/use-system-theme";
 import { createGrokBuildChatProps } from "@/lib/grok-build-chat";
 import { AgentInterface } from "@openuidev/react-ui";
 import { openuiChatLibrary } from "@openuidev/react-ui/genui-lib";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 
 export default function Page() {
   const mode = useTheme();
-  const { llm, storage } = useMemo(() => createGrokBuildChatProps(), []);
+  const [activeThreadId, setActiveThreadId] = useState<string>();
+  const { llm, storage } = useMemo(
+    () => createGrokBuildChatProps({ onThreadChange: setActiveThreadId }),
+    [],
+  );
+  const { error, interaction, respond, submitting } = useGrokBuildInteraction(activeThreadId);
 
   return (
     <div className="app-shell">
@@ -42,6 +49,17 @@ export default function Page() {
           },
         ]}
       />
+      {interaction ? (
+        <GrokBuildInteractionDialog
+          key={interaction.id}
+          interaction={interaction}
+          error={error}
+          submitting={submitting}
+          onRespond={respond}
+        />
+      ) : error ? (
+        <p className="grok-interaction-poll-error">{error}</p>
+      ) : null}
     </div>
   );
 }

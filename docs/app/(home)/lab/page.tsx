@@ -49,6 +49,19 @@ interface ProjectItem {
 
 const projects: ProjectItem[] = [
   {
+    name: "Curio",
+    description:
+      "An open-source reading companion that uses OpenUI generative UI to explore words and phrases without leaving the text.",
+    type: "App",
+    status: "Community",
+    accent: "green",
+    icon: MonitorSmartphone,
+    links: [
+      { label: "GitHub", href: "https://github.com/JoseEstevez520/curio", external: true },
+      { label: "Website", href: "https://curio-landing-phi.vercel.app", external: true },
+    ],
+  },
+  {
     name: "OpenUI Forge",
     description:
       "A coding-assistant toolkit for generating and wiring OpenUI integrations across common AI stacks.",
@@ -250,10 +263,14 @@ const projects: ProjectItem[] = [
     links: [
       {
         label: "GitHub",
-        href: "https://github.com/thesysdev/openui/tree/main/examples/openui-react-native",
+        href: "https://github.com/thesysdev/openui/tree/main/examples/app-frameworks/react-native",
         external: true,
       },
-      { label: "Docs", href: "/docs/openui-lang/examples/react-native", external: true },
+      {
+        label: "Docs",
+        href: "/docs/openui-lang/examples/app-frameworks/react-native",
+        external: true,
+      },
     ],
   },
   {
@@ -267,7 +284,7 @@ const projects: ProjectItem[] = [
     links: [
       {
         label: "GitHub",
-        href: "https://github.com/thesysdev/openui/tree/main/examples/fastapi-backend",
+        href: "https://github.com/thesysdev/openui/tree/main/examples/app-frameworks/fastapi",
         external: true,
       },
     ],

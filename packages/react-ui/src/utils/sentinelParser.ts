@@ -45,6 +45,15 @@ export function separateContentAndContext(raw: string): ParsedMessageContent {
   return { ...sections, content, ...(end ? { end: true } : {}) };
 }
 
+/**
+ * Whether the content carries recognizable OpenUI-lang syntax — the
+ * ```openui-lang ``` fence, or a top-level `root =` binding when emitted
+ * unfenced.
+ */
+export function hasLangSyntax(content: string | null | undefined): boolean {
+  return !!content && (content.includes("```openui-lang") || /(^|\n)\s*root\s*=/.test(content));
+}
+
 // The ordered section walk over the inline-sentinel format.
 function splitSections(raw: string): {
   content: string;

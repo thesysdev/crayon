@@ -253,7 +253,7 @@ export const WithWelcome = {
   ),
 };
 
-/** Welcome with prefill chips — chip click prefills the composer; contextual starters append. */
+/** Welcome with prompt templates — a chip prefills the composer; a completion submits it. */
 export const WelcomeWithPrefillChips = {
   render: () => (
     <AgentInterface

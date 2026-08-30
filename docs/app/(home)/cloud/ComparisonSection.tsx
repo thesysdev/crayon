@@ -1,3 +1,4 @@
+import { MarketingTable } from "@/components/marketing-table";
 import styles from "./ComparisonSection.module.css";
 
 const COMPARISON_ROWS = [
@@ -48,59 +49,55 @@ export function ComparisonSection() {
       <div className={styles.inner}>
         <h2 id="cloud-comparison-title" className={styles.title}>
           Purpose
-          <br className={styles.titleBreak} />
-          {" "}built for
-          <br className={styles.mobileTitleBreak} />
-          {" "}production use-cases
+          <br className={styles.titleBreak} /> built for
+          <br className={styles.mobileTitleBreak} /> production use-cases
         </h2>
 
-        <div className={styles.tableScroller}>
-          <table className={styles.table}>
-            <colgroup>
-              <col className={styles.capabilityColumn} />
-              <col />
-              <col />
-            </colgroup>
-            <thead>
-              <tr>
-                <th scope="col">Capability</th>
-                <th scope="col">OpenUI OSS</th>
-                <th scope="col">OpenUI Cloud</th>
-              </tr>
-            </thead>
-            <tbody>
-              {COMPARISON_ROWS.map(([capability, oss, cloud]) => (
-                <tr key={capability}>
-                  <th scope="row">{capability}</th>
-                  <td
-                    className={
-                      oss === "Manage yourself" ||
-                      oss === "Implement yourself" ||
-                      oss === "Basic components included"
-                        ? styles.selfManaged
-                        : undefined
-                    }
-                  >
-                    {capability === "OpenUI Lang" ? (
-                      <span className={styles.checkedValue}>
-                        <CloudCheckmark />
-                        <span>{oss}</span>
-                      </span>
-                    ) : (
-                      oss
-                    )}
-                  </td>
-                  <td>
+        <MarketingTable edgeToEdgeMobile>
+          <colgroup>
+            <col className={styles.capabilityColumn} />
+            <col />
+            <col />
+          </colgroup>
+          <thead>
+            <tr>
+              <th scope="col">Capability</th>
+              <th scope="col">OpenUI OSS</th>
+              <th scope="col">OpenUI Cloud</th>
+            </tr>
+          </thead>
+          <tbody>
+            {COMPARISON_ROWS.map(([capability, oss, cloud]) => (
+              <tr key={capability}>
+                <th scope="row">{capability}</th>
+                <td
+                  className={
+                    oss === "Manage yourself" ||
+                    oss === "Implement yourself" ||
+                    oss === "Basic components included"
+                      ? styles.selfManaged
+                      : undefined
+                  }
+                >
+                  {capability === "OpenUI Lang" ? (
                     <span className={styles.checkedValue}>
                       <CloudCheckmark />
-                      <span>{cloud}</span>
+                      <span>{oss}</span>
                     </span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+                  ) : (
+                    oss
+                  )}
+                </td>
+                <td>
+                  <span className={styles.checkedValue}>
+                    <CloudCheckmark />
+                    <span>{cloud}</span>
+                  </span>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </MarketingTable>
       </div>
     </section>
   );
