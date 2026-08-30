@@ -1,0 +1,235 @@
+.diagram {
+  margin: 0;
+  color: var(--openui-text-neutral-primary);
+  font-family: var(--home-font-text);
+  font-size: var(--home-body-size);
+  line-height: var(--home-body-leading);
+}
+
+.conversation {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 48px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.message {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.avatar {
+  display: flex;
+  flex-shrink: 0;
+  overflow: hidden;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--openui-background);
+}
+
+.avatar img {
+  object-fit: cover;
+}
+
+.agentAvatar {
+  border: 1px solid var(--openui-border-default);
+  background: var(--home-surface-ink);
+}
+
+.bubble {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  padding: 16px 20px;
+  border-radius: 16px;
+  background: var(--openui-background);
+}
+
+.bubble strong {
+  font-weight: 600;
+}
+
+.agentBubble {
+  border: 1px solid var(--openui-border-default);
+  background: transparent;
+}
+
+.arrow {
+  position: absolute;
+  top: 50%;
+  right: -35px;
+  color: var(--openui-text-neutral-secondary);
+  transform: translateY(-50%);
+}
+
+/* At 1280px, match the reviewed 1116px comparison and 400px cards. */
+.comparison {
+  --panel-inset: 64px;
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 36px minmax(0, 1fr);
+  align-items: stretch;
+  gap: 12px;
+  width: calc(100% - 20px);
+  margin-top: 80px;
+}
+
+.traceConnector,
+.outcomeConnector {
+  position: absolute;
+  top: -81px;
+  height: 82px;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  pointer-events: none;
+}
+
+.traceConnector {
+  left: calc((100% - 60px) / 4);
+  width: calc((100% + 60px) / 4 + 10px);
+  background-image: url("./assets/trace-connector.svg");
+}
+
+.outcomeConnector {
+  left: calc(50% + 10px);
+  width: calc((100% + 60px) / 4 - 10px);
+  background-image: url("./assets/outcome-connector.svg");
+  transform: scaleX(-1);
+}
+
+.panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  min-width: 0;
+  margin-inline: var(--panel-inset);
+  padding: 24px 24px 32px;
+  border: 1px solid var(--openui-border-default);
+  border-radius: 24px;
+  background: var(--home-color-surface);
+}
+
+.panelHeader h3 {
+  margin: 0;
+  font-family: var(--home-font-display);
+  font-size: var(--home-heading-size);
+  font-weight: var(--home-heading-weight);
+  line-height: var(--home-heading-leading);
+  letter-spacing: var(--home-heading-tracking);
+}
+
+.checklist {
+  display: grid;
+  grid-template-rows: repeat(3, minmax(min-content, 1fr));
+  flex: 1;
+  gap: 32px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.checklist li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  min-width: 0;
+}
+
+.checkCopy {
+  flex: 1;
+  min-width: 0;
+}
+
+.checkCopy p {
+  margin: 0;
+  color: var(--openui-text-neutral-secondary);
+}
+
+.statusIcon {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+}
+
+.failure {
+  color: var(--openui-text-danger-primary);
+}
+
+.notEqual {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--openui-text-neutral-secondary);
+}
+
+@media (max-width: 1199px) {
+  .comparison {
+    --panel-inset: clamp(0px, calc((100vw - 900px) / 4), 64px);
+  }
+}
+
+@media (max-width: 1023px) {
+  .conversation {
+    gap: 32px;
+  }
+
+  .bubble {
+    padding: 12px 16px;
+  }
+
+  .arrow {
+    right: -27px;
+  }
+}
+
+@media (max-width: 767px) {
+  .conversation {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 32px;
+  }
+
+  .arrow {
+    top: auto;
+    right: auto;
+    bottom: -27px;
+    left: calc(50% - 10px);
+    transform: rotate(90deg);
+  }
+
+  .comparison {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+    width: 100%;
+    margin-top: 40px;
+  }
+
+  .traceConnector,
+  .outcomeConnector {
+    display: none;
+  }
+
+  .panel {
+    gap: 28px;
+    padding: 20px;
+  }
+
+  .checklist {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .notEqual svg {
+    width: 28px;
+    height: 28px;
+  }
+}

@@ -1,12 +1,13 @@
+import type { ReactNode } from "react";
 import styles from "./FaqSection.module.css";
 
-type Faq = {
+export type MarketingFaq = {
   question: string;
   /* One entry per paragraph. */
   answer: string[];
 };
 
-const FAQS: Faq[] = [
+const FAQS: MarketingFaq[] = [
   {
     question: "What should I use to build a Generative UI app?",
     answer: [
@@ -71,30 +72,51 @@ const FAQS: Faq[] = [
  * the page get the full text even while every item is collapsed; and it keeps
  * working with no JavaScript.
  */
-export function FaqSection() {
+export function FaqSection({
+  faqs = FAQS,
+  title = "Frequently asked questions",
+  titleId = "faq-title",
+  contact,
+  firstOpen = false,
+}: {
+  faqs?: MarketingFaq[];
+  title?: string;
+  titleId?: string;
+  contact?: ReactNode;
+  firstOpen?: boolean;
+} = {}) {
   return (
-    <section className={styles.section} aria-labelledby="faq-title">
+    <section className={styles.section} aria-labelledby={titleId}>
       <div className={styles.lead}>
-        <h2 id="faq-title" className={styles.title}>
-          Frequently asked questions
+        <h2 id={titleId} className={styles.title}>
+          {title}
         </h2>
         <p className={styles.note}>
-          If you can&rsquo;t find your answer here, join our{" "}
-          <a
-            className={styles.noteLink}
-            href="https://discord.com/invite/Pbv5PsqUSv"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Discord
-          </a>
-          .
+          {contact ?? (
+            <>
+              If you can&rsquo;t find your answer here, join our{" "}
+              <a
+                className={styles.noteLink}
+                href="https://discord.com/invite/Pbv5PsqUSv"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Discord
+              </a>
+              .
+            </>
+          )}
         </p>
       </div>
 
       <div className={styles.list}>
-        {FAQS.map(({ question, answer }) => (
-          <details className={styles.item} key={question}>
+        {faqs.map(({ question, answer }, index) => (
+          <details
+            className={styles.item}
+            key={question}
+            name={`${titleId}-accordion`}
+            open={firstOpen && index === 0}
+          >
             <summary className={styles.question}>
               <span className={styles.questionText}>{question}</span>
               {/* Two bars making a plus; the upright one collapses when open,

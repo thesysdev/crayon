@@ -1,15 +1,47 @@
-import { ProofLine } from "../../components/ProofLine/ProofLine";
 import { production } from "@/lib/benchmark-data";
-import styles from "../sections.module.css";
+import Image from "next/image";
+import {
+  FeatureGridSection,
+  type GridFeature,
+} from "../../sections/FeatureGridSection/FeatureGridSection";
+import { GatewayDiagram } from "./GatewayDiagram";
+import styles from "./sections.module.css";
 
-/* PLACEHOLDER — do not ship. Both halves of this claim are still open: the
-   figure itself, and its denominator. "Of all generations" is the strong
-   reading and the one worth confirming; "of all errors" would mean the rest
-   went uncorrected, which reads worse than the 88% repair rate the platform
-   already publishes. Every other number on this page is read from
-   benchmark-data.ts — this one cannot be, because it is one customer's traffic
-   rather than ours, so it needs Entelligence to confirm it before it is real. */
 const ENTELLIGENCE_CORRECTION_RATE = "XX";
+
+const STACK_FEATURES: GridFeature[] = [
+  {
+    icon: "chart",
+    title: "No token markup",
+    description: "Tokens are billed at model providers’ standard rates.",
+  },
+  {
+    icon: "cloud",
+    title: "OpenAI-compatible",
+    description: "Chat Completions and Responses endpoints work with your existing SDKs.",
+  },
+  {
+    icon: "key",
+    title: "Bring your own API keys",
+    description:
+      "Use your existing OpenAI, Anthropic, or Google Vertex credentials and commitments.",
+  },
+  {
+    icon: "handshake",
+    title: "Works with other gateways",
+    description: "Run Gateway behind Portkey or any other OpenAI-compatible gateway.",
+  },
+  {
+    icon: "database",
+    title: "Keep your cache setup",
+    description: "Your existing upstream cache configuration continues to work.",
+  },
+  {
+    icon: "signal",
+    title: "Broad model support",
+    description: "Use any model string from models.dev, with more available through OpenRouter.",
+  },
+];
 
 /* The answer to the section above, and only that. It states the outcome and the
    one reason a general-purpose gateway cannot reach it; how the repair is built
@@ -21,42 +53,56 @@ const ENTELLIGENCE_CORRECTION_RATE = "XX";
    and scrolls, so it cannot lean on the section above for its subject. */
 export function RepairSection() {
   return (
-    <section className={styles.section} aria-labelledby="gateway-repair">
-      <h2 id="gateway-repair" className={styles.heading}>
-        Gateway repairs broken output before it renders
-      </h2>
-      <p className={styles.lead}>
-        Gateway validates every response against your component library and repairs the invalid ones
-        in the streaming path, not as a retry your user waits through. Under{" "}
-        {Math.ceil(production.userVisibleShare)}% of generations still reach a user broken.
-      </p>
-
-      {/* PLACEHOLDER — artwork pending. The diagram this stands in for: the
-          component schema and the prompt go into Gateway; a valid response
-          returns straight to the client; an invalid one goes to a small repair
-          model, which streams the delta. The schema arrow is the part that has
-          to be legible — it is the reason a general-purpose gateway cannot do
-          this, and nothing in the copy says so any more. */}
-      <div className={styles.artPlaceholder} aria-hidden="true">
-        <p className={styles.artPlaceholderLabel}>
-          Diagram: component schema + prompt → Gateway → valid response returns to the client;
-          invalid response goes to a small repair model, which streams the delta.
+    <section
+      className={`${styles.section} ${styles.repairSection}`}
+      aria-labelledby="gateway-repair"
+    >
+      <div className={styles.sectionLockup}>
+        <div>
+          <h2 id="gateway-repair" className={styles.heading}>
+            Fix invalid output before users see it
+          </h2>
+        </div>
+        <p className={styles.lead}>
+          Every response is validated against your component library. Invalid ones are repaired in
+          the streaming path. Over {Math.floor(100 - production.userVisibleShare)}% render
+          successfully.
         </p>
       </div>
 
+      <div className={styles.diagram}>
+        <GatewayDiagram />
+      </div>
 
-      {/* Proof sits inside this section rather than getting one of its own: it is
-          evidence for the claim above it, and a heading would give it more weight
-          than one line of copy can carry. */}
-      <div className={styles.proof}>
-        <ProofLine
-          logoSrc="/logos/entelligence.svg"
-          company="Entelligence"
-          href="https://www.thesys.dev/customers/entelligence"
-        >
-          ships Ask Ellie in production, where Gateway corrects {ENTELLIGENCE_CORRECTION_RATE}% of
-          all generations.
-        </ProofLine>
+      <aside className={styles.customerQuote}>
+        <p className={styles.quoteSentence}>
+          <a
+            className={styles.quoteBrand}
+            href="https://www.thesys.dev/customers/entelligence"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <span className={styles.quoteLogo}>
+              <Image src="/logos/entelligence-mark.svg" alt="" width={32} height={32} />
+            </span>
+            <span className={styles.quoteCompany}>Entelligence</span>
+          </a>{" "}
+          <span className={styles.quoteCopy}>
+            ships Ask Ellie in production, where Gateway corrects {ENTELLIGENCE_CORRECTION_RATE}% of
+            all generations.
+          </span>
+        </p>
+      </aside>
+
+      <div className={styles.repairGrid}>
+        <FeatureGridSection
+          features={STACK_FEATURES}
+          showHeader={false}
+          showCompat={false}
+          showBottomSeparator={false}
+          flushSectionPadding
+          flushOuterCards
+        />
       </div>
     </section>
   );

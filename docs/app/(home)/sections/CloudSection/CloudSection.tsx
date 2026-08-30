@@ -1,7 +1,8 @@
 /* ssr entry: this is a server component now that the grid's accordion is gone. */
 import { ArrowRight } from "@phosphor-icons/react/dist/ssr";
 import { BevelButton } from "../../components/Button/BevelButton";
-import { ProductSection } from "../ProductSection/ProductSection";
+import { SectionHeader } from "../../components/SectionHeader/SectionHeader";
+import { ProductLabel, ProductSection } from "../ProductSection/ProductSection";
 import { GATEWAY_PRODUCT } from "../ProductSection/products";
 import styles from "./CloudSection.module.css";
 
@@ -9,15 +10,19 @@ export const CLOUD_SECTION_ID = "openui-cloud";
 
 export function CloudSection() {
   return (
-    <section id={CLOUD_SECTION_ID} className={styles.section}>
+    <section id={CLOUD_SECTION_ID} className={styles.section} aria-labelledby="openui-cloud-title">
       <div className={styles.inner}>
         <div className={styles.contact}>
-          <p className={styles.contactEyebrow}>OpenUI Cloud</p>
-          <h2 className={styles.contactText}>Ship with confidence in production.</h2>
-          <p className={styles.contactDescription}>
-            Gateway keeps generated UI reliable. Observability shows what users experienced and
-            where your agent needs to improve.
-          </p>
+          <ProductLabel name="OpenUI" tag="Cloud" />
+          <div className={styles.contactHeading}>
+            <SectionHeader
+              titleId="openui-cloud-title"
+              title="Production reliability"
+              subtitle="and user insights"
+              caption="Gateway repairs invalid UI before users see it. Observability shows what users experienced and what to improve next."
+              tone="dark"
+            />
+          </div>
         </div>
 
         {/* Wrapped rather than spaced by the bands themselves: .header and
@@ -28,22 +33,26 @@ export function CloudSection() {
           <ProductSection {...GATEWAY_PRODUCT} />
         </div>
 
-        <div className={styles.observabilityBand}>
+        <div id="openui-observability-card" className={styles.observabilityBand}>
           <div className={styles.observabilityCopy}>
-            <p className={styles.observabilityEyebrow}>OpenUI Observability</p>
+            <ProductLabel
+              name="OpenUI"
+              tag="Observability"
+              className={styles.observabilityEyebrow}
+            />
             <h3 className={styles.observabilityTitle}>
-              Understand what users are doing with your agent.
+              Understand how users experience your agent
             </h3>
             <p className={styles.observabilityDescription}>
-              See what users saw, find the sessions worth opening, and turn problematic responses
-              into feedback and evals.
+              See what users saw, find issues and unmet needs, and turn failed responses into
+              feedback and evals.
             </p>
           </div>
           <BevelButton
             className={styles.observabilityCta}
             variant="dark"
             href="/cloud/observability"
-            label="Get early access"
+            label="Join the waitlist"
             badge={<ArrowRight size={16} weight="bold" />}
           />
         </div>

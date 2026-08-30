@@ -1,78 +1,71 @@
-import styles from "../sections.module.css";
+import {
+  FaqSection as MarketingFaqSection,
+  type MarketingFaq,
+} from "../../sections/FaqSection/FaqSection";
+import styles from "../../sections/FaqSection/FaqSection.module.css";
 
-type Faq = {
-  question: string;
-  /* One entry per paragraph, matching the home page's FAQ shape. */
-  answer: string[];
-};
-
-/* The tracing answer is kept close to the wording already published in the home
-   page FAQ — the two pages should not disagree about what this product is for.
-   The retention answer is the one the page cannot leave out: Observability and
-   zero data retention pull against each other, and a reader evaluating both
-   products deserves to hit that here rather than during an integration. */
-const FAQS: Faq[] = [
+const FAQS: MarketingFaq[] = [
   {
-    question: "How is this different from tracing tools like Braintrust?",
+    question: "How is OpenUI Observability different from tracing tools?",
     answer: [
-      "Tracing and eval tools like Braintrust tell you what your agent did.",
-      "OpenUI Observability shows what your users actually experienced, including the generated UI, interactions, errors, corrections, and fallbacks.",
-      "The two sit at different layers rather than competing, which is why the responses you flag here can be pushed into them as eval cases.",
+      "Tracing tools show how your agent ran. OpenUI Observability shows what users experienced, including generated UI, interactions, errors, corrections, and fallbacks.",
+      "They work together. Export flagged responses as eval cases to tools such as Braintrust or LangSmith.",
     ],
   },
   {
     question: "What does the SDK capture?",
     answer: [
-      "Settled render events from the OpenUI message bus: timestamps, update counts, error counts, and structured error entries such as the code, source, and component involved.",
-      "In full capture it also includes the generated response. In minimal capture it does not.",
+      "The SDK captures events from OpenUI when rendering settles, including timestamps, update counts, error counts, and error details such as code, source, and component.",
+      "Full capture includes the generated response and is enabled by default. Minimal capture excludes response content and error messages.",
     ],
   },
   {
-    question: "Is the frontend key safe to expose?",
+    question: "Can I control what data is sent?",
     answer: [
-      "Yes. Frontend keys are publishable by design, the same as an analytics key, and are meant to ship in client code.",
+      "Yes. Choose minimal capture to send metadata without generated responses. Use the beforeSend hook to edit or drop events before they’re sent to OpenUI Observability.",
     ],
   },
   {
-    question: "What does it cost?",
+    question: "Is the frontend API key safe to expose?",
     answer: [
-      "Nothing while OpenUI Observability is in early access.",
-      "Pricing will be published before that changes.",
+      "Yes. Frontend API keys are publishable and designed for use in browser code, like an analytics key.",
     ],
   },
   {
-    question: "Do I need OpenUI Gateway as well?",
+    question: "What does OpenUI Observability cost?",
     answer: [
-      "No. They work independently, and Observability does not require Gateway.",
-      "We do recommend running both. Gateway makes generations more reliable, Observability shows you how they landed, and together they cover the whole path from the model to what the user actually experienced.",
+      "OpenUI Observability is free during early access. Pricing will be published before paid access begins.",
+    ],
+  },
+  {
+    question: "Do I need OpenUI Gateway?",
+    answer: [
+      "No. OpenUI Observability and OpenUI Gateway work independently.",
+      "We recommend using both. Gateway makes generated UI more reliable. Observability shows what users experienced and whether it worked.",
     ],
   },
 ];
 
 export function FaqSection() {
   return (
-    <section className={styles.section} aria-labelledby="observability-faq">
-      <h2 id="observability-faq" className={styles.heading}>
-        Frequently asked questions
-      </h2>
-
-      <div className={styles.faqList}>
-        {FAQS.map(({ question, answer }) => (
-          <details className={styles.faqItem} key={question}>
-            <summary className={styles.faqQuestion}>
-              <span>{question}</span>
-              <span className={styles.faqMarker} aria-hidden="true">
-                +
-              </span>
-            </summary>
-            <div className={styles.faqAnswer}>
-              {answer.map((paragraph) => (
-                <p key={paragraph}>{paragraph}</p>
-              ))}
-            </div>
-          </details>
-        ))}
-      </div>
-    </section>
+    <MarketingFaqSection
+      faqs={FAQS}
+      titleId="observability-faq"
+      firstOpen
+      contact={
+        <>
+          Have another question? Join our{" "}
+          <a
+            className={styles.noteLink}
+            href="https://discord.com/invite/Pbv5PsqUSv"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Discord
+          </a>
+          .
+        </>
+      }
+    />
   );
 }

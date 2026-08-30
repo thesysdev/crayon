@@ -1,5 +1,6 @@
 import Image from "next/image";
 import type { ReactNode } from "react";
+import { SectionHeader } from "../../components/SectionHeader/SectionHeader";
 import styles from "./FeaturesSection.module.css";
 
 /* No docs to point at yet, so the copy column ends at the body text. Cloud's
@@ -84,22 +85,40 @@ const FEATURES: Feature[] = [
   {
     title: "Session replay",
     shot: "session-replay",
-    headline: "See exactly what your user saw",
+    headline: (
+      <>
+        See exactly
+        <br />
+        what users saw
+      </>
+    ),
     description:
-      "Replay conversations with the generative UI your users actually got, not just the text behind it, and follow the journey of queries, actions, and responses in the order they happened.",
+      "Replay conversations with the generated UI your users saw, not just the response text. Follow queries, actions, generated interface changes, and responses in order.",
   },
   {
     title: "Triage",
-    headline: "Find the sessions worth opening",
+    headline: (
+      <>
+        Find the sessions
+        <br />
+        worth opening
+      </>
+    ),
     description:
-      "Ask for the sessions that went wrong and get them back grouped by what went wrong. The same view shows which capabilities users reach for most, and which they ask for and never find.",
+      "Ask about failed sessions, grouped by issue. Identify the capabilities users request most often and the ones they expect to find but cannot locate.",
   },
   {
     title: "Annotations",
     shot: "annotations",
-    headline: "Turn a bad response into feedback",
+    headline: (
+      <>
+        Turn bad responses
+        <br />
+        into feedback
+      </>
+    ),
     description:
-      "Annotate the exact response that failed, set severity, and hand it to whoever can fix it with the session attached, so nobody has to reproduce it first.",
+      "Annotate the exact response, set severity, and share it with the session attached. Your team can investigate without reproducing the issue.",
   },
   {
     title: "Evals",
@@ -111,24 +130,34 @@ const FEATURES: Feature[] = [
 
 export function FeaturesSection() {
   return (
-    <section className={styles.section} aria-label="Features">
-      {FEATURES.map((feature, index) => (
-        /* Alternating sides, as on Cloud: art leads the odd cards, copy the
+    <section className={styles.section} aria-labelledby="observability-features">
+      <header className={styles.header}>
+        <SectionHeader
+          titleId="observability-features"
+          title="Product analytics for AI agents"
+          subtitle="not just traces"
+          caption="Connect each response to what users saw, what they did, and whether it met their needs."
+        />
+      </header>
+      <div className={styles.featureList}>
+        {FEATURES.map((feature, index) => (
+          /* Alternating sides, as on Cloud: art leads the odd cards, copy the
              even ones, so the page does not read as one column. */
-        <article key={feature.title} className={styles.card}>
-          {index % 2 === 0 ? (
-            <>
-              <FeatureShot shot={feature.shot} alt={`${feature.title} in OpenUI Observability`} />
-              <FeatureCopy {...feature} />
-            </>
-          ) : (
-            <>
-              <FeatureCopy {...feature} />
-              <FeatureShot shot={feature.shot} alt={`${feature.title} in OpenUI Observability`} />
-            </>
-          )}
-        </article>
-      ))}
+          <article key={feature.title} className={styles.card}>
+            {index % 2 === 0 ? (
+              <>
+                <FeatureShot shot={feature.shot} alt={`${feature.title} in OpenUI Observability`} />
+                <FeatureCopy {...feature} />
+              </>
+            ) : (
+              <>
+                <FeatureCopy {...feature} />
+                <FeatureShot shot={feature.shot} alt={`${feature.title} in OpenUI Observability`} />
+              </>
+            )}
+          </article>
+        ))}
+      </div>
     </section>
   );
 }

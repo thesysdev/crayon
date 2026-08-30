@@ -1,0 +1,280 @@
+.diagram {
+  --card-width: 320px;
+  --stack-logo-size: 40px;
+  --diagram-padding: 96px;
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) var(--card-width) minmax(0, 1fr);
+  align-items: center;
+  /* Break out of the content column so the connector rails run off-screen. */
+  width: 100vw;
+  min-height: calc(420px + var(--diagram-padding) * 2);
+  padding-block: var(--diagram-padding);
+  color: var(--openui-text-neutral-primary);
+}
+
+.card {
+  position: relative;
+  z-index: 1;
+  grid-column: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 160px;
+  padding: 32px 28px;
+  border: 1px solid var(--openui-border-default);
+  border-radius: 24px;
+  background: var(--openui-foreground);
+  text-align: center;
+}
+
+.card h2 {
+  margin: 0;
+  scroll-margin-top: 300px;
+  font-family: var(--home-font-display);
+  font-size: var(--home-heading-size);
+  font-weight: var(--home-heading-weight);
+  line-height: var(--home-heading-leading);
+  letter-spacing: var(--home-heading-tracking);
+  text-wrap: balance;
+}
+
+.card p {
+  margin: 0;
+  font-family: var(--home-font-text);
+  font-size: 1rem;
+  line-height: 1.4;
+  color: var(--openui-text-neutral-secondary);
+  text-wrap: pretty;
+}
+
+.branch {
+  position: absolute;
+  left: 0;
+  top: var(--diagram-padding);
+  width: calc((100% - var(--card-width)) / 2);
+  height: 210px;
+}
+
+.branch[data-side="right"] {
+  left: auto;
+  right: 0;
+}
+
+.branch[data-row="bottom"] {
+  top: calc(210px + var(--diagram-padding));
+}
+
+.connector {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* Exact exported curve. A mask keeps the rail on the site's theme tokens. */
+.connector::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -50%;
+  width: 150%;
+  height: 100%;
+  background: var(--openui-text-neutral-primary);
+  mask: url("./assets/stack-connector.svg") 0 0 / 100% 100% no-repeat;
+}
+
+.branch[data-side="right"] .connector {
+  transform: scaleX(-1);
+}
+
+.branch[data-row="bottom"] .connector {
+  transform: scaleY(-1);
+}
+
+.branch[data-side="right"][data-row="bottom"] .connector {
+  transform: scale(-1);
+}
+
+.category {
+  position: absolute;
+  z-index: 1;
+  top: 178px;
+  right: 16px;
+  transform: translateY(-50%);
+  margin: 0;
+  padding: 8px 14px;
+  border: 1px solid var(--openui-border-default);
+  border-radius: var(--openui-radius-full);
+  background: var(--openui-foreground);
+  font-family: var(--home-font-text);
+  font-size: var(--home-body-size);
+  font-weight: 500;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.branch[data-side="right"] .category {
+  right: auto;
+  left: 16px;
+}
+
+.branch[data-row="bottom"] .category {
+  top: 32px;
+}
+
+.logos {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.logos li {
+  position: absolute;
+  left: var(--logo-x);
+  top: var(--logo-y);
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-shrink: 0;
+  border-radius: var(--openui-radius-full);
+  background: var(--openui-foreground);
+}
+
+.branch[data-side="right"] .logos li {
+  left: calc(100% - var(--logo-x));
+}
+
+.branch[data-row="bottom"] .logos li {
+  top: calc(210px - var(--logo-y));
+}
+
+/* Keep the same card and four connected branches on narrower screens,
+   before the inner logos can collide with the category labels. */
+@media (max-width: 1199px) {
+  .diagram {
+    --stack-logo-size: 40px;
+    display: block;
+    width: 100%;
+    max-width: 560px;
+    min-height: 0;
+    margin-inline: auto;
+    padding-block: 64px;
+  }
+
+  .card {
+    margin-bottom: 32px;
+    padding: 28px 24px;
+  }
+
+  .card h2 {
+    /* Keep the compact desktop heading instead of jumping to the large
+       section-title token on tablets. */
+    font-size: min(var(--home-title-size), 1.375rem);
+    scroll-margin-top: 140px;
+  }
+
+  .card::after {
+    content: "";
+    position: absolute;
+    left: 20px;
+    bottom: -33px;
+    height: 32px;
+    border-left: 1px solid var(--openui-border-interactive);
+  }
+
+  .branch,
+  .branch[data-side="right"],
+  .branch[data-row="bottom"] {
+    position: relative;
+    inset: auto;
+    width: auto;
+    height: auto;
+    margin-left: 20px;
+    padding: 0 0 48px 24px;
+    border-left: 1px solid var(--openui-border-interactive);
+  }
+
+  .branch:last-child {
+    padding-bottom: 0;
+    border-left-color: transparent;
+  }
+
+  .branch:last-child::after {
+    content: "";
+    position: absolute;
+    left: -1px;
+    top: 0;
+    bottom: calc(var(--stack-logo-size) / 2);
+    border-left: 1px solid var(--openui-border-interactive);
+  }
+
+  .branch::before {
+    content: "";
+    position: absolute;
+    left: -1px;
+    top: 0;
+    width: 25px;
+    height: 20px;
+    border-left: 1px solid var(--openui-border-interactive);
+    border-bottom: 1px solid var(--openui-border-interactive);
+    border-bottom-left-radius: 12px;
+  }
+
+  .connector {
+    display: none;
+  }
+
+  .category,
+  .branch[data-side="right"] .category,
+  .branch[data-row="bottom"] .category {
+    position: relative;
+    inset: auto;
+    transform: none;
+    width: fit-content;
+    margin-bottom: 16px;
+  }
+
+  .logos,
+  .branch[data-side="right"] .logos,
+  .branch[data-row="bottom"] .logos {
+    position: relative;
+    inset: auto;
+    transform: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+    gap: clamp(8px, 2.5vw, 24px);
+  }
+
+  .logos li,
+  .branch[data-side="right"] .logos li,
+  .branch[data-row="bottom"] .logos li {
+    position: relative;
+    inset: auto;
+    transform: none;
+  }
+
+  .logos::before {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    top: calc(var(--stack-logo-size) / 2);
+    /* Join the vertical spine and continue through the viewport edge. */
+    left: -24px;
+    right: -100vw;
+    border-top: 1px solid var(--openui-border-interactive);
+  }
+}
+
+@media (max-width: 450px) {
+  .diagram {
+    --stack-logo-size: 32px;
+  }
+}

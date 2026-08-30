@@ -3,6 +3,10 @@
   padding: 0 var(--home-section-padding-inline);
 }
 
+.section.sectionFlushPadding {
+  padding-inline: 0;
+}
+
 .header {
   max-width: 46rem;
   margin: 0 auto clamp(1.25rem, 2.5vw, 2rem);
@@ -97,6 +101,11 @@
   font-size: var(--home-body-size);
   line-height: var(--home-body-leading);
   color: var(--openui-text-neutral-secondary);
+}
+
+.featureDescription a {
+  color: inherit;
+  text-underline-offset: 3px;
 }
 
 /* Mobile-only expand affordance; hidden on desktop. */
@@ -309,6 +318,14 @@
   }
 }
 
+/* Nested flush grids keep their content aligned with the parent illustration
+   while the desktop columns are stacked. Mobile already removes card padding. */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .sectionFlushPadding .gridFlushOuterCards > .feature {
+    padding-inline: 0;
+  }
+}
+
 /* Mobile-only: smaller header headings + compact feature rows. */
 @media (max-width: 767px) {
   /* Section separators run edge to edge and fade out on the left, matching the
@@ -445,6 +462,24 @@
 
   /* Gap only when open, so the collapsed 0fr row closes fully (no residual). */
   .feature[data-open] .featureDescriptionInner {
+    padding-top: 0.375rem;
+  }
+
+  .sectionStatic .feature {
+    cursor: default;
+  }
+
+  .sectionStatic .chevron {
+    display: none;
+  }
+
+  .sectionStatic .featureDescription {
+    grid-column: 2 / -1;
+    grid-template-rows: 1fr;
+    max-width: none;
+  }
+
+  .sectionStatic .featureDescriptionInner {
     padding-top: 0.375rem;
   }
 

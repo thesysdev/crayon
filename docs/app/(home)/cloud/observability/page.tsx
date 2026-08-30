@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import styles from "../../page.module.css";
+import type { GridFeature } from "../../sections/FeatureGridSection/FeatureGridSection";
 import { Footer } from "../../sections/Footer/Footer";
-import { HeroSection, Tagline } from "../../sections/HeroSection/HeroSection";
-import { ListSection } from "../ListSection";
+import { HeroSection } from "../../sections/HeroSection/HeroSection";
+import { EnterpriseSection } from "../EnterpriseSection";
 import { CloudCtaSection } from "./CloudCtaSection";
 import { EarlyAccessForm } from "./EarlyAccessForm";
 import { FaqSection } from "./FaqSection";
@@ -17,34 +18,29 @@ import { WhySection } from "./WhySection";
    marketing page's clothes. What a reader needs here is that it is secure,
    compliant, and that they decide what is sent; the API that makes the third
    one true belongs in the SDK reference. */
-const TRUST_ITEMS = [
+const TRUST_ITEMS: GridFeature[] = [
   {
-    term: "You control what is sent",
+    icon: "key",
+    title: "Control what you send",
     description:
-      "One option limits the SDK to metadata, so the generated response never leaves the browser. A hook can rewrite or drop any event before it does.",
+      "Choose metadata-only capture to keep generated responses in the browser. A hook lets you edit or drop events before they’re sent.",
   },
   {
-    term: "Secure by default",
+    icon: "shield",
+    title: "No training on your data",
     description:
-      "Your data is not used to train models. Private deployments, including self-hosting and VPC, are available on Scale.",
+      "Your data is not used to train models. Self-hosting and VPC deployments are available on Scale.",
   },
   {
-    term: "Compliant",
-    description: (
-      <>
-        GDPR, SOC 2, and ISO 27001. Details at{" "}
-        <a href="https://trust.thesys.dev" target="_blank" rel="noreferrer">
-          trust.thesys.dev
-        </a>
-        .
-      </>
-    ),
+    icon: "database",
+    title: "Compliance",
+    description: "GDPR, SOC 2, and ISO 27001 details are available in the Trust Center.",
   },
 ];
 
 export const metadata: Metadata = {
-  title: "OpenUI Observability - User insights for AI agents",
-  description: "Understand what users need, where your agent falls short, and what to build next.",
+  title: "OpenUI Observability - User analytics for AI agents",
+  description: "See what users saw and did, where your agent fell short, and what to build next.",
   alternates: { canonical: "/cloud/observability" },
 };
 
@@ -73,14 +69,14 @@ export default function ObservabilityPage() {
               {/* The break is real markup but only takes effect on the desktop
                   lockup; the mobile one shares this node and wraps on its own. */}
               <span className={cloudStyles.title}>
-                User insights <br className={cloudStyles.titleBreak} />
+                User analytics <br className={cloudStyles.titleBreak} />
                 for AI agents
               </span>
             </span>
           }
           subtitle={
             <span className={cloudStyles.subtitle}>
-              Understand what users need, where your agent falls short, and what to build next.
+              See what users saw and did, where your agent fell short, and what to build next.
             </span>
           }
           smallSubtitle
@@ -135,25 +131,17 @@ export default function ObservabilityPage() {
           }
         />
 
-        {/* The large centred statement, with its caption underneath. No audience
-            named: PM, developer and domain expert overlap in practice, and
-            picking one narrows the page for no gain. The traces contrast is left
-            as a caption because the section below argues it properly. */}
-        <Tagline>
-          <span className={cloudStyles.taglineText}>Product analytics for AI agents,</span>
-          <span className={cloudStyles.taglineNote}>not just traces</span>
-        </Tagline>
-
         {/* Problem, then the features that answer it, then what it costs to adopt
             and what it costs you in data — the Gateway page's spine. */}
         <WhySection />
         <FeaturesSection />
         <IntegrateSection />
 
-        <ListSection
-          id="observability-trust"
+        <EnterpriseSection
+          titleId="observability-trust"
           title="Secure, compliant, and under your control"
-          items={TRUST_ITEMS}
+          linkLabel="View the Trust Center"
+          features={TRUST_ITEMS}
         />
 
         <FaqSection />

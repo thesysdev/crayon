@@ -7,116 +7,26 @@ import { HeroSection } from "../../sections/HeroSection/HeroSection";
 import { CloudCtaSection } from "../CloudCtaSection";
 import { FaqSection } from "./FaqSection";
 import { IntegrateSection } from "./IntegrateSection";
-import { ListSection } from "../ListSection";
 import gatewayStyles from "./page.module.css";
 import { PricingSection } from "./PricingSection";
 import { RepairSection } from "./RepairSection";
+import { SecuritySection } from "./SecuritySection";
+import { UsageSection } from "./UsageSection";
 import { WhySection } from "./WhySection";
 
 export const metadata: Metadata = {
-  title: "OpenUI Gateway - Reliable Generative UI in production",
+  title: { absolute: "OpenUI Gateway | Production reliability for Generative UI" },
   description:
-    "An OpenAI-compatible API that validates every model response against your component library and corrects it in the streaming path.",
+    "An OpenAI-compatible API that validates model output against your component library and repairs it as it streams.",
   alternates: { canonical: "/cloud/gateway" },
   openGraph: {
-    title: "OpenUI Gateway — Reliable Generative UI in production",
+    title: "OpenUI Gateway | Production reliability for Generative UI",
     description:
-      "Validation, automatic correction, model routing, and provider fallbacks through an OpenAI-compatible API.",
+      "Add production reliability to OpenUI with validation, streaming repair, model routing, and provider fallbacks through an OpenAI-compatible API.",
     url: "/cloud/gateway",
     type: "website",
   },
 };
-
-/* Section order is the argument: the problem first and measured (WhySection),
-   then the mechanism (RepairSection), then what it costs to adopt, then the
-   trust material. Nothing above IntegrateSection mentions price, and nothing
-   below it re-argues the problem. */
-const DASHBOARD_ITEMS = [
-  {
-    term: "Corrections",
-    description: "Error and correction rates by model, so you can see what is being repaired.",
-  },
-  {
-    term: "Usage and cost",
-    description: "Spend and call volume by API key, without adding a separate tool.",
-  },
-];
-
-const COMPATIBILITY_ITEMS = [
-  {
-    term: "No markup",
-    description: "Provider list prices for tokens, the same rates you would pay going direct.",
-  },
-  {
-    term: "OpenAI-compatible",
-    description: "Chat Completions and Responses endpoints, so your existing SDK calls work as-is.",
-  },
-  {
-    term: "Your own keys",
-    description:
-      "Bring your own OpenAI, Anthropic, and Google Vertex keys. Existing commitments carry over.",
-  },
-  {
-    term: "Other gateways",
-    description:
-      "Runs behind Portkey or any other OpenAI-compatible gateway, since the endpoints are OpenAI-compliant.",
-  },
-  {
-    term: "Caching",
-    description: "Upstream cache configurations are honored.",
-  },
-  {
-    term: "Models",
-    description: "Any model string on models.dev, with more models available through OpenRouter.",
-  },
-];
-
-const SECURITY_ITEMS = [
-  {
-    term: "Data retention",
-    /* Named by endpoint rather than claimed across the board: ZDR is not
-       uniform, so the page says exactly where it holds. A blanket claim is the
-       kind of thing a security review catches. */
-    description: "Chat Completions is zero data retention by default on paid models.",
-  },
-  {
-    term: "Training",
-    description: "Your data is not used to train models, with the exception of free models.",
-  },
-  {
-    term: "Compliance",
-    description: (
-      <>
-        GDPR, SOC 2, and ISO 27001. Details at{" "}
-        <a href="https://trust.thesys.dev" target="_blank" rel="noreferrer">
-          trust.thesys.dev
-        </a>
-        .
-      </>
-    ),
-  },
-  {
-    term: "Fallbacks",
-    description:
-      "If a provider becomes unavailable, the same model is served from an alternate provider.",
-  },
-  {
-    term: "Uptime",
-    description: (
-      <>
-        Live and historical status at{" "}
-        <a href="https://status.thesys.dev" target="_blank" rel="noreferrer">
-          status.thesys.dev
-        </a>
-        .
-      </>
-    ),
-  },
-  {
-    term: "Deployment",
-    description: "Private deployments, including self-hosting and VPC, are available on Scale.",
-  },
-];
 
 export default function GatewayPage() {
   return (
@@ -126,18 +36,16 @@ export default function GatewayPage() {
           align="left"
           title={
             <span className={gatewayStyles.titleBlock}>
-              {/* The lockup Cloud and Observability share, with the product name
-                  in the tag. */}
               <span className={gatewayStyles.eyebrow}>
                 OpenUI <span className={gatewayStyles.cloudTag}>Gateway</span>
               </span>
-              <span className={gatewayStyles.title}>Ship OpenUI in production</span>
+              <span className={gatewayStyles.title}>Production reliability for OpenUI</span>
             </span>
           }
           subtitle={
             <span className={gatewayStyles.subtitle}>
-              An OpenAI-compatible API that validates every model response against your component
-              library and corrects it in the streaming path.
+              An OpenAI-compatible API that validates and repairs model output against your
+              component library as it streams.
             </span>
           }
           smallSubtitle
@@ -165,59 +73,41 @@ export default function GatewayPage() {
           showPlaygroundButton={false}
           showGitHubBanner={false}
           showTagline={false}
-          /* Empty placeholders rather than artwork. HeroSection falls back to the
-             home page's own preview whenever a slot is missing, which would put
-             the "Without / With OpenUI" hotel comparison on this page.
-
-             These are empty spans, not fragments: this is a server component and
-             HeroSection is a client one, and an childless fragment serializes to
-             null across that boundary — which reads as "no slot" and brings the
-             fallback straight back. Both wrappers are unstyled when empty, so
-             nothing is left behind. */
-          desktopPreviewSlot={<span aria-hidden="true" />}
-          mobilePreviewSlot={<span aria-hidden="true" />}
-        />
-
-        <WhySection />
-        <RepairSection />
-        <IntegrateSection />
-
-        <ListSection
-          id="gateway-dashboards"
-          title="Usage, cost, and corrections in a single view"
-          items={DASHBOARD_ITEMS}
-          closer={
-            <>
-              Gateway reports on generation and delivery. Understanding whether the experience
-              actually worked for the user is what{" "}
-              <a href="/cloud/observability">OpenUI Observability</a> is for.
-            </>
-          }
-        />
-
-        <ListSection
-          id="gateway-compatibility"
-          title="Works with your existing stack"
-          items={COMPATIBILITY_ITEMS}
-          tight
-        />
-
-        <ListSection
-          id="gateway-security"
-          title="Security and compliance"
-          items={SECURITY_ITEMS}
-          tight
-        />
-
-        <PricingSection />
-        <FaqSection />
-
-        <CloudCtaSection
-          title="Run OpenUI in production."
-          primary={{ label: "Get API Key", href: "https://console.thesys.dev/keys", external: true }}
-          secondary={{ label: "Get a demo", href: "https://zcal.co/t/thesys/demo", external: true }}
+          desktopPreviewSlot={<div className={gatewayStyles.heroArtSpace} aria-hidden="true" />}
+          mobilePreviewSlot={<div className={gatewayStyles.heroArtSpace} aria-hidden="true" />}
         />
       </div>
+
+      <main>
+        <div className={gatewayStyles.problemBand}>
+          <WhySection />
+        </div>
+        <div className={gatewayStyles.repairBand}>
+          <RepairSection />
+        </div>
+        <IntegrateSection />
+        <div className={gatewayStyles.usageBand}>
+          <UsageSection />
+        </div>
+        <SecuritySection />
+        <PricingSection />
+        <div className={gatewayStyles.faqBand}>
+          <FaqSection />
+        </div>
+        <CloudCtaSection
+          title="Run OpenUI in production."
+          primary={{
+            label: "Get API Key",
+            href: "https://console.thesys.dev/keys",
+            external: true,
+          }}
+          secondary={{
+            label: "Book a demo",
+            href: "https://zcal.co/t/thesys/demo",
+            external: true,
+          }}
+        />
+      </main>
       <Footer />
     </div>
   );

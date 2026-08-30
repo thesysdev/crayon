@@ -7,17 +7,14 @@ export function CloudCtaSection() {
       <div className={styles.inner}>
         <div className={styles.copy}>
           <h2 id="cloud-cta-title" className={styles.title}>
-            Join the waitlist
+            See your agent through your users’ eyes
           </h2>
-          {/* The cost answer lives here rather than in a section of its own: it
-              is a reason to act, and it belongs where the acting happens. What
-              happens after early access is left to the FAQ, so the last thing
-              read before the form is not a future bill. */}
-          <p className={styles.note}>Free while in early access.</p>
+          <p className={styles.note}>See what works, what’s missing, and what to build next.</p>
         </div>
         {/* The same capture as the hero, so the page opens and closes on the
             one action. */}
         <div className={styles.actions}>
+          <h3 className={styles.formTitle}>Join the waitlist</h3>
           <EarlyAccessForm />
         </div>
       </div>

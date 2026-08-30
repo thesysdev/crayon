@@ -1,0 +1,208 @@
+.stage {
+  --diagram-card: var(--openui-foreground);
+  --diagram-surface: rgba(10, 10, 10, 0.035);
+  --diagram-border: var(--openui-border-default);
+  --diagram-text: var(--openui-text-neutral-primary);
+  --diagram-muted: var(--openui-text-neutral-secondary);
+
+  display: grid;
+  grid-template-columns: minmax(12rem, 0.9fr) 2.75rem minmax(18rem, 1.25fr) 2.75rem minmax(
+      11rem,
+      0.8fr
+    );
+  align-items: center;
+  width: 100%;
+  min-height: 400px;
+  padding: clamp(1.5rem, 4vw, 3rem);
+  border: 1px solid var(--diagram-border);
+  border-radius: 24px;
+  background: var(--openui-background);
+  color: var(--diagram-text);
+}
+
+[data-theme="dark"] .stage {
+  --diagram-card: var(--home-surface-ink);
+  --diagram-surface: rgba(255, 255, 255, 0.055);
+  --diagram-border: rgba(255, 255, 255, 0.1);
+}
+
+.sources {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.sourceCard,
+.outputCard,
+.gateway {
+  border: 1px solid var(--diagram-border);
+  background: var(--diagram-card);
+  box-shadow: var(--home-shadow-card);
+}
+
+.sourceCard,
+.outputCard,
+.gatewayHeader,
+.route {
+  display: flex;
+  align-items: center;
+}
+
+.sourceCard {
+  gap: 0.75rem;
+  padding: 1rem;
+  border-radius: 14px;
+}
+
+.sourceCard > span:last-child,
+.outputCard > span:last-child,
+.gatewayHeader > span:last-child,
+.route > span {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.stage strong {
+  font-family: var(--home-font-display);
+  font-size: var(--home-body-size);
+  font-weight: var(--home-heading-weight);
+  line-height: 1.3;
+}
+
+.stage small {
+  color: var(--diagram-muted);
+  font-family: var(--home-font-text);
+  font-size: var(--home-label-size);
+  line-height: 1.4;
+}
+
+.iconTile,
+.gatewayMark,
+.outputIcon {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 1px solid var(--diagram-border);
+  border-radius: 12px;
+  background: var(--diagram-surface);
+  color: var(--diagram-muted);
+}
+
+.flowArrow {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  color: var(--diagram-muted);
+}
+
+.flowArrow::before {
+  position: absolute;
+  right: 0.75rem;
+  left: 0;
+  height: 1px;
+  background: var(--diagram-border);
+  content: "";
+}
+
+.flowArrow svg {
+  position: relative;
+  z-index: 1;
+}
+
+.gateway {
+  overflow: hidden;
+  border-radius: 18px;
+}
+
+.gatewayHeader {
+  gap: 0.875rem;
+  padding: 1.25rem;
+}
+
+.gatewayMark {
+  background: var(--openui-inverted-background);
+  color: var(--openui-background);
+}
+
+.routes {
+  display: grid;
+  grid-template-columns: minmax(0, 0.75fr) minmax(0, 1.25fr);
+  gap: 0.625rem;
+  padding: 0.625rem;
+  border-top: 1px solid var(--diagram-border);
+  background: var(--diagram-surface);
+}
+
+.route {
+  gap: 0.625rem;
+  min-height: 5.5rem;
+  padding: 0.875rem;
+  border: 1px solid var(--diagram-border);
+  border-radius: 12px;
+  background: var(--diagram-card);
+  color: #049156;
+}
+
+.repairRoute {
+  color: var(--diagram-text);
+}
+
+.route span {
+  color: var(--diagram-text);
+}
+
+.outputCard {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1.25rem;
+  border-radius: 16px;
+}
+
+@media (max-width: 1023px) {
+  .stage {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1rem;
+    min-height: 0;
+  }
+
+  .flowArrow {
+    width: 2.75rem;
+    height: 2.75rem;
+    justify-self: center;
+    transform: rotate(90deg);
+  }
+
+  .sources {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .outputCard {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
+@media (max-width: 600px) {
+  .stage {
+    padding: 1rem;
+    border-radius: 16px;
+  }
+
+  .sources,
+  .routes {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .sourceCard,
+  .outputCard {
+    padding: 0.875rem;
+  }
+}

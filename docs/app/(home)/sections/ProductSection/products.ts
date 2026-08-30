@@ -3,11 +3,8 @@ import {
   ArrowsLeftRight,
   CursorClick,
   Key,
-  Lightning,
   MagnifyingGlass,
-  Palette,
   PlayCircle,
-  ShieldCheck,
   WarningDiamond,
   Wrench,
 } from "@phosphor-icons/react/dist/ssr";
@@ -33,8 +30,7 @@ import type { ProductSectionProps } from "./ProductSection";
  *   Observability the OpenUI Console: a generated UI session on one side, its
  *                 events, interactions, errors and insights on the other
  *
- * NO TAG on Gateway or Observability: the eyebrow chip was tried as "Cloud"
- * and again as "Managed", and removed both times. Only Lang carries one.
+ * Homepage labels use the same outlined product-name chips as the product pages.
  *
  * HREFS: Gateway points at its own page. Observability's still points at the
  * nearest real destination; repoint it if that band comes back. */
@@ -65,12 +61,13 @@ export const LANG_PRODUCT: ProductSectionProps = {
 };
 
 export const GATEWAY_PRODUCT: ProductSectionProps = {
-  name: "OpenUI Gateway",
-  headline: "Reliability layer for Generative UI.",
+  name: "OpenUI",
+  tag: "Gateway",
+  headline: "Production reliability for OpenUI",
   description:
-    "Route model requests through a gateway built to catch broken outputs, recover failures, and keep generated UI working in production.",
+    "An OpenAI-compatible API that validates and repairs model output against your component library as it streams.",
   primaryCta: {
-    label: "Generate API key",
+    label: "Get API key",
     href: "https://console.thesys.dev/keys",
     external: true,
   },
@@ -79,23 +76,26 @@ export const GATEWAY_PRODUCT: ProductSectionProps = {
   cards: [
     {
       Icon: ArrowsLeftRight,
-      title: "One API",
-      description: "Use leading models through a single OpenAI-compatible endpoint.",
+      title: "OpenAI-compatible",
+      description: "Chat Completions and Responses endpoints work with your existing SDKs.",
     },
     {
       Icon: Wrench,
-      title: "Fix broken output",
-      description: "Validate and correct malformed UI before it reaches users.",
+      title: "Fix invalid output",
+      description:
+        "Invalid output is repaired in the streaming path, not through a retry your user waits for.",
     },
     {
       Icon: ArrowsClockwise,
-      title: "Automatic fallbacks",
-      description: "Recover from model and provider failures without breaking the experience.",
+      title: "Provider fallbacks",
+      description:
+        "If a provider is unavailable, Gateway serves the same model through another provider.",
     },
     {
       Icon: Key,
       title: "Bring your keys",
-      description: "Use your own provider keys or OpenUI-managed credits.",
+      description:
+        "Use your existing OpenAI, Anthropic, or Google Vertex credentials and commitments. Or use OpenUI-managed credits.",
     },
   ],
 };

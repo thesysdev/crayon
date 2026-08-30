@@ -1,13 +1,9 @@
 "use client";
 
 import svgPaths from "@/imports/svg-urruvoh2be";
-import { Stack } from "@phosphor-icons/react";
 import type { ReactNode } from "react";
-import {
-  StackChip,
-  stackChipStyles,
-  type StackChipItem,
-} from "../../components/StackChip/StackChip";
+import { stackChipStyles, type StackChipItem } from "../../components/StackChip/StackChip";
+import { CompatibilityDiagram } from "./CompatibilityDiagram";
 import styles from "./CompatibilitySection.module.css";
 
 interface StackRow {
@@ -15,21 +11,11 @@ interface StackRow {
   items: StackChipItem[];
 }
 
-function createMoreChip(): StackChipItem {
-  return {
-    name: "+ more",
-    iconKind: "more",
-    badgeClassName: stackChipStyles.badgeMore,
-    isBlurred: true,
-  };
-}
-
-/* Three rows, and the labels are the claim: any model, any backend, any place it
-   renders. UI libraries and render targets share the third row because a reader
-   asking "will this work where I work?" is asking one question, not two. */
+/* Keep the four existing compatibility groups and their supported integrations
+   together; every branch uses this same source at every screen size. */
 const STACK_ROWS: StackRow[] = [
   {
-    label: "Any LLM",
+    label: "LLM",
     items: [
       {
         name: "OpenAI",
@@ -73,11 +59,10 @@ const STACK_ROWS: StackRow[] = [
         iconColor: "ffffff",
         badgeClassName: stackChipStyles.badgeDeepSeek,
       },
-      createMoreChip(),
     ],
   },
   {
-    label: "Any backend framework",
+    label: "Backend",
     items: [
       {
         name: "Vercel AI SDK",
@@ -114,14 +99,13 @@ const STACK_ROWS: StackRow[] = [
         iconColor: "ffffff",
         badgeClassName: stackChipStyles.badgeAnthropic,
       },
-      createMoreChip(),
     ],
   },
   {
     /* Where it renders. Every entry is a package we publish (react-lang,
        vue-lang, svelte-lang, react-email) or a listed integration — no Flutter
        and no direct native, which A2UI has and we do not. */
-    label: "Any client",
+    label: "Client",
     items: [
       {
         name: "React",
@@ -164,11 +148,10 @@ const STACK_ROWS: StackRow[] = [
         iconText: "@",
         badgeClassName: stackChipStyles.badgeBlack,
       },
-      createMoreChip(),
     ],
   },
   {
-    label: "Any design library",
+    label: "Design library",
     items: [
       {
         name: "OpenUI Design system",
@@ -207,16 +190,20 @@ const STACK_ROWS: StackRow[] = [
         iconText: "B",
         badgeClassName: stackChipStyles.badgeBaseUi,
       },
-      createMoreChip(),
     ],
   },
 ];
 
 export function CompatibilitySection({
-  title,
-  description,
+  description = (
+    <>
+      Add Generative UI
+      <br />
+      without changing your stack.
+    </>
+  ),
   embedded = false,
-}: { title?: ReactNode; description?: ReactNode; embedded?: boolean } = {}) {
+}: { description?: ReactNode; embedded?: boolean } = {}) {
   return (
     <section
       className={styles.section}
@@ -225,44 +212,7 @@ export function CompatibilitySection({
     >
       <div className={styles.container}>
         <div className={styles.stack}>
-          <header className={styles.header}>
-            <span className={styles.titleIcon} aria-hidden="true">
-              <Stack size={18} weight="light" />
-            </span>
-            <div className={styles.headerText}>
-              <h2 id="favorite-stack-title" className={styles.title}>
-                {title ?? (
-                  <>
-                    Works with your stack.
-                    <br />
-                    <span className={styles.titleAccent}>
-                      Any LLM, backend, client, and design library.
-                    </span>
-                  </>
-                )}
-              </h2>
-              {description && <p className={styles.description}>{description}</p>}
-            </div>
-          </header>
-
-          {/* Static, not a marquee. The rows used to render three copies of
-              every chip and slide them past a mask, which meant the names a
-              reader wanted to check were always drifting away, each appeared
-              three times in the DOM, and an agent reading the page saw the
-              triplication rather than a list. Wrapping in place is plainer and
-              says the same thing once. */}
-          <div className={styles.rows}>
-            {STACK_ROWS.map((row) => (
-              <div key={row.label} className={styles.row}>
-                <span className={styles.label}>{row.label}</span>
-                <div className={styles.chips}>
-                  {row.items.map((item) => (
-                    <StackChip key={`${row.label}-${item.name}`} item={item} dense={embedded} />
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
+          <CompatibilityDiagram groups={STACK_ROWS} description={description} />
         </div>
       </div>
     </section>

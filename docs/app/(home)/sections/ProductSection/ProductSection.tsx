@@ -14,6 +14,29 @@ export type ProductCard = {
   description: string;
 };
 
+/** Shared OpenUI wordmark and outlined product-name chip. */
+export function ProductLabel({
+  name,
+  tag,
+  className,
+}: {
+  name: string;
+  tag?: string;
+  className?: string;
+}) {
+  return (
+    <p className={`${styles.eyebrow} ${className ?? ""}`.trim()}>
+      {name}
+      {tag ? (
+        <>
+          {" "}
+          <span className={styles.eyebrowTag}>{tag}</span>
+        </>
+      ) : null}
+    </p>
+  );
+}
+
 export type ProductSectionProps = {
   /* Product name, and an optional chip beside it: "OpenUI Lang" + "Open
      Source". Omit the tag for a band that needs no qualifier. */
@@ -60,10 +83,7 @@ export function ProductSection({
     <section className={`${styles.product} ${tone === "dark" ? styles.onDark : ""}`.trim()}>
       <div className={styles.lockup}>
         <div className={styles.lead}>
-          <p className={styles.eyebrow}>
-            {name}
-            {tag ? <span className={styles.eyebrowTag}>{tag}</span> : null}
-          </p>
+          <ProductLabel name={name} tag={tag} />
           <h3 className={styles.headline}>{headline}</h3>
           <div className={styles.ctas}>
             {primaryCta && (
@@ -128,8 +148,8 @@ export function ProductSection({
         ) : null}
       </div>
 
-{cards.length > 0 && (
-              <div className={styles.cards}>
+      {cards.length > 0 && (
+        <div className={styles.cards}>
           {cards.map(({ Icon: CardIcon, title, description: cardCopy }) => (
             <div className={styles.card} key={title}>
               <span className={styles.cardIcon} aria-hidden="true">

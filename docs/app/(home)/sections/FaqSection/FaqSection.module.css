@@ -53,13 +53,15 @@
   text-wrap: pretty;
 }
 
-.noteLink {
+.noteLink,
+.note a {
   color: var(--faq-text);
   text-decoration: none;
   border-bottom: 1px solid currentColor;
 }
 
-.noteLink:hover {
+.noteLink:hover,
+.note a:hover {
   opacity: 0.7;
 }
 
@@ -71,10 +73,27 @@
 }
 
 .item {
-  padding: clamp(1rem, 1.6vw, 1.5rem) clamp(1.125rem, 1.8vw, 1.75rem);
+  --faq-card-padding-block: clamp(1rem, 1.6vw, 1.5rem);
+  --faq-card-padding-inline: clamp(1.125rem, 1.8vw, 1.75rem);
+
+  overflow: hidden;
+  padding: 0;
   border: 1px solid var(--faq-border);
   border-radius: 16px;
   background: var(--faq-surface);
+  transition:
+    border-color 180ms ease,
+    background-color 180ms ease,
+    transform 180ms ease;
+}
+
+.item:hover,
+.item:focus-within {
+  border-color: var(--openui-border-interactive);
+}
+
+.item:active {
+  transform: translateY(1px);
 }
 
 .question {
@@ -82,8 +101,16 @@
   align-items: flex-start;
   justify-content: space-between;
   gap: 1.5rem;
+  width: 100%;
+  box-sizing: border-box;
+  padding: var(--faq-card-padding-block) var(--faq-card-padding-inline);
   cursor: pointer;
   list-style: none;
+  transition: color 180ms ease;
+}
+
+.item[open] .question {
+  padding-bottom: 0.75rem;
 }
 
 /* Safari draws its own triangle without this. */
@@ -137,7 +164,24 @@
   display: flex;
   flex-direction: column;
   gap: 0.875rem;
-  margin-top: 1rem;
+  margin: 0;
+  padding: 0 var(--faq-card-padding-inline) var(--faq-card-padding-block);
+}
+
+.item[open] .answer {
+  animation: faqAnswerIn 220ms ease-out both;
+}
+
+@keyframes faqAnswerIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .paragraph {
@@ -150,8 +194,12 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .item,
+  .question,
   .marker::before,
-  .marker::after {
+  .marker::after,
+  .item[open] .answer {
+    animation: none;
     transition-duration: 0.01s;
   }
 }

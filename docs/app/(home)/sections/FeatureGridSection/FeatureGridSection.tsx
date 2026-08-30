@@ -28,7 +28,7 @@ export type GridFeature = {
   Icon?: Icon;
   icon?: GridFeatureIcon;
   title: string;
-  description: string;
+  description: ReactNode;
 };
 
 const FEATURES: GridFeature[] = [
@@ -94,8 +94,10 @@ export function FeatureGridSection({
   fadeColumnLines = false,
   showTopSeparator = false,
   flushOuterCards = false,
+  flushSectionPadding = false,
   balanceLastRow = false,
   desktopColumns = 3,
+  mobileAccordion = true,
 }: {
   features?: GridFeature[];
   /** Optional content rendered as the first cell in the feature grid. */
@@ -120,10 +122,14 @@ export function FeatureGridSection({
   showTopSeparator?: boolean;
   /** Remove the outside padding from the edge cells in a two-row, three-column grid. */
   flushOuterCards?: boolean;
+  /** Remove this section's page gutter when it is nested inside an already padded section. */
+  flushSectionPadding?: boolean;
   /** Let the final two cards split the full grid width evenly. */
   balanceLastRow?: boolean;
   /** Number of columns used by the feature grid on desktop. */
   desktopColumns?: 3 | 4;
+  /** Keep short, essential descriptions visible without tapping on mobile. */
+  mobileAccordion?: boolean;
 } = {}) {
   // Mobile-only: all rows collapsed by default; one expands at a time and the
   // open one can be tapped to collapse. Desktop ignores this (CSS shows all).
@@ -131,17 +137,7 @@ export function FeatureGridSection({
 
   const compatBand = showCompat ? (
     <div className={styles.compat}>
-      <CompatibilitySection
-        embedded
-        title="Works with your stack"
-        description={
-          <>
-            OpenUI works with any LLM, backend framework, client, and design library.{" "}
-            <br className={styles.compatDescBreak} />
-            Add generative UI without changing your stack.
-          </>
-        }
-      />
+      <CompatibilitySection embedded />
     </div>
   ) : null;
 
@@ -161,7 +157,7 @@ export function FeatureGridSection({
           <div
             className={`${styles.feature} ${FeatureIcon ? "" : styles.featureWithPlaceholder}`.trim()}
             key={title}
-            {...accordion.getToggleProps(index)}
+            {...(mobileAccordion ? accordion.getToggleProps(index) : {})}
           >
             <span
               className={`${styles.icon} ${FeatureIcon ? "" : styles.iconPlaceholder}`.trim()}
@@ -181,7 +177,9 @@ export function FeatureGridSection({
   );
 
   return (
-    <section className={styles.section}>
+    <section
+      className={`${styles.section} ${flushSectionPadding ? styles.sectionFlushPadding : ""} ${!mobileAccordion ? styles.sectionStatic : ""}`.trim()}
+    >
       {gridFirst && <div className={styles.gridLead}>{gridBlock}</div>}
       {compatFirst && compatBand && (
         /* No rule here: the space below the band separates it from the header,
