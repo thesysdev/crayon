@@ -9,7 +9,12 @@ export function CloudCtaSection() {
           <h2 id="cloud-cta-title" className={styles.title}>
             See your agent through your users’ eyes
           </h2>
-          <p className={styles.note}>See what works, what’s missing, and what to build next.</p>
+          <p className={styles.note}>
+            See what works, what’s missing, and what to build next.{" "}
+            <a className={styles.pricingLink} href="/pricing">
+              View all pricing
+            </a>
+          </p>
         </div>
         {/* The same capture as the hero, so the page opens and closes on the
             one action. */}

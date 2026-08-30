@@ -23,6 +23,10 @@ export function CloudSection() {
               tone="dark"
             />
           </div>
+          <a className={styles.pricingLink} href="/pricing">
+            View pricing
+            <ArrowRight size={16} weight="bold" aria-hidden="true" />
+          </a>
         </div>
 
         {/* Wrapped rather than spaced by the bands themselves: .header and
