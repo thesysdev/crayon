@@ -22,7 +22,7 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ## Acceptance prompts
 
-Use the prompts shown next to the chat to exercise each integration path:
+Paste these prompts into the chat to exercise each integration path:
 
 1. Ask for a quarterly revenue comparison to render a chart and follow-up suggestions.
 2. Click a follow-up to add one user message and start one new CopilotKit agent run.
