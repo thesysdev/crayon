@@ -86,7 +86,11 @@ const integrationCatalog: Integration[] = [
     howItWorks:
       "Each shadcn component is registered with defineComponent and a Zod prop schema. createLibrary produces both the prompt vocabulary and the renderer mapping used by the example chat app.",
     links: [
-      { label: "Integration guide", href: "/docs/openui-lang/examples/design-systems/shadcn", kind: "Guide" },
+      {
+        label: "Integration guide",
+        href: "/docs/openui-lang/examples/design-systems/shadcn",
+        kind: "Guide",
+      },
       exampleLink("shadcn-chat"),
       { label: "shadcn/ui", href: "https://ui.shadcn.com", kind: "Website" },
     ],
@@ -246,6 +250,23 @@ const integrationCatalog: Integration[] = [
         href: "https://github.com/assistant-ui/assistant-ui/tree/main/examples/with-openui",
         kind: "Example",
       },
+    ],
+  },
+  {
+    slug: "copilotkit",
+    name: "CopilotKit",
+    logo: "/brand-icons/copilotkit-dark.svg",
+    category: "frontend-platforms",
+    type: "Agentic application framework",
+    summary:
+      "Render streaming OpenUI programs inside CopilotKit v2 tool calls while CopilotKit retains its chat and agent lifecycle.",
+    howItWorks:
+      "The @openuidev/copilotkit package registers matched frontend and human-in-the-loop tools, generates model instructions from the rendered component library, streams partial OpenUI Lang, and routes follow-ups or form submissions through CopilotKit's supported run and response APIs.",
+    install: "npm install @openuidev/copilotkit @copilotkit/react-core",
+    links: [
+      ...packageLinks("@openuidev/copilotkit", "copilotkit", "/docs/api-reference/copilotkit"),
+      exampleLink("frontend-platforms/copilotkit", "Runnable example"),
+      { label: "CopilotKit", href: "https://docs.copilotkit.ai", kind: "Website" },
     ],
   },
   {
@@ -451,7 +472,15 @@ const popularityOrder: Record<IntegrationCategoryId, string[]> = {
     "google-adk",
   ],
   "design-systems": ["shadcn-ui", "material-ui", "handsontable", "react-email"],
-  "frontend-platforms": ["vue", "svelte", "react-native", "lynx", "assistant-ui", "open-webui"],
+  "frontend-platforms": [
+    "vue",
+    "svelte",
+    "react-native",
+    "lynx",
+    "assistant-ui",
+    "copilotkit",
+    "open-webui",
+  ],
 };
 
 export const integrationBySlug = new Map(integrations.map((item) => [item.slug, item]));
