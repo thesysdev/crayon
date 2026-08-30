@@ -46,7 +46,15 @@ jobs:
         with:
           node-version: 20
           cache: pnpm
-          cache-dependency-path: "examples/**/pnpm-lock.yaml"
+          cache-dependency-path: |
+            pnpm-lock.yaml
+            examples/**/pnpm-lock.yaml
+
+      - name: Install local example dependency build tools
+        run: pnpm install --frozen-lockfile --filter @openuidev/copilotkit --ignore-scripts
+
+      - name: Build local example dependencies
+        run: pnpm --filter @openuidev/copilotkit build
 
       - name: Install dependencies
         run: pnpm examples:install
