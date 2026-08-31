@@ -1,7 +1,5 @@
 "use client";
 
-import "@openuidev/thesys/styles.css";
-
 import { AgentInterface, agUIAdapter, fetchLLM, useSystemThemeMode } from "@openuidev/react-ui";
 import { chatLibrary } from "@openuidev/thesys";
 import { useMemo } from "react";
@@ -22,7 +20,7 @@ export default function Page() {
   );
 
   return (
-    <div className="h-screen w-screen overflow-hidden relative">
+    <div className="app-shell">
       <AgentInterface
         llm={llm}
         componentLibrary={chatLibrary}
