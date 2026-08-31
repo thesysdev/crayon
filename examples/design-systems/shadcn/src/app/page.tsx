@@ -1,27 +1,41 @@
 "use client";
 
-import { useTheme } from "@/hooks/use-system-theme";
 import { shadcnChatLibrary } from "@/lib/shadcn-genui";
-import { AgentInterface, fetchLLM, openAIAdapter, openAIMessageFormat } from "@openuidev/react-ui";
-import { useMemo } from "react";
+import {
+  AgentInterface,
+  fetchLLM,
+  openAIConversationMessageFormat,
+  openAIResponsesAdapter,
+  useSystemThemeMode,
+} from "@openuidev/react-ui";
+import { useOpenuiCloudStorage } from "@openuidev/thesys";
+import { useEffect, useMemo } from "react";
 
 export default function Page() {
-  const mode = useTheme();
+  const mode = useSystemThemeMode();
+  useEffect(() => {
+    document.body.setAttribute("data-theme", mode);
+  }, [mode]);
 
   const llm = useMemo(
     () =>
       fetchLLM({
         url: "/api/chat",
-        streamAdapter: openAIAdapter(),
-        messageFormat: openAIMessageFormat,
+        streamAdapter: openAIResponsesAdapter(),
+        messageFormat: openAIConversationMessageFormat,
       }),
     [],
   );
+  const storage = useOpenuiCloudStorage({
+    token: "/api/frontend-token",
+    apiBaseUrl: "https://api.thesys.dev",
+  });
 
   return (
     <div className="h-screen w-screen overflow-hidden relative">
       <AgentInterface
         llm={llm}
+        storage={storage}
         componentLibrary={shadcnChatLibrary}
         agentName="shadcn/ui Chat"
         theme={{ mode }}

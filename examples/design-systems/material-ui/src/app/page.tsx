@@ -5,7 +5,8 @@ import LightModeIcon from "@mui/icons-material/LightMode";
 import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
-import { AgentInterface, fetchLLM, openAIAdapter, openAIMessageFormat } from "@openuidev/react-ui";
+import { AgentInterface, fetchLLM, openAIConversationMessageFormat, openAIResponsesAdapter } from "@openuidev/react-ui";
+import { useOpenuiCloudStorage } from "@openuidev/thesys";
 import { useMemo } from "react";
 
 import { useColorMode } from "@/hooks/use-system-theme";
@@ -18,11 +19,15 @@ export default function Page() {
     () =>
       fetchLLM({
         url: "/api/chat",
-        streamAdapter: openAIAdapter(),
-        messageFormat: openAIMessageFormat,
+        streamAdapter: openAIResponsesAdapter(),
+        messageFormat: openAIConversationMessageFormat,
       }),
     [],
   );
+  const storage = useOpenuiCloudStorage({
+    token: "/api/frontend-token",
+    apiBaseUrl: "https://api.thesys.dev",
+  });
 
   return (
     <Box sx={{ height: "100vh", width: "100vw", overflow: "hidden", position: "relative" }}>
@@ -40,6 +45,7 @@ export default function Page() {
 
       <AgentInterface
         llm={llm}
+        storage={storage}
         componentLibrary={muiChatLibrary}
         agentName="Material UI Chat"
         theme={{ mode }}
