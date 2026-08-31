@@ -1,5 +1,5 @@
 import type { FunctionToolExecutor } from "@/lib/tool-loop";
-import type { FunctionTool } from "openai/resources/responses/responses";
+import type { ChatCompletionTool } from "openai/resources/chat/completions";
 
 function getWeather({ location }: { location: string }): Promise<string> {
   return new Promise((resolve) => {
@@ -95,42 +95,45 @@ function parseArgs<T>(argsJson: string): T {
   return JSON.parse(argsJson || "{}") as T;
 }
 
-export const appToolDeclarations: FunctionTool[] = [
+export const appToolDeclarations: ChatCompletionTool[] = [
   {
     type: "function",
-    name: "get_weather",
-    description: "Get current weather for a location.",
-    parameters: {
-      type: "object",
-      properties: { location: { type: "string", description: "City name" } },
-      required: ["location"],
-      additionalProperties: false,
+    function: {
+      name: "get_weather",
+      description: "Get current weather for a location.",
+      parameters: {
+        type: "object",
+        properties: { location: { type: "string", description: "City name" } },
+        required: ["location"],
+        additionalProperties: false,
+      },
     },
-    strict: false,
   },
   {
     type: "function",
-    name: "get_stock_price",
-    description: "Get stock price for a ticker symbol.",
-    parameters: {
-      type: "object",
-      properties: { symbol: { type: "string", description: "Ticker symbol, e.g. AAPL" } },
-      required: ["symbol"],
-      additionalProperties: false,
+    function: {
+      name: "get_stock_price",
+      description: "Get stock price for a ticker symbol.",
+      parameters: {
+        type: "object",
+        properties: { symbol: { type: "string", description: "Ticker symbol, e.g. AAPL" } },
+        required: ["symbol"],
+        additionalProperties: false,
+      },
     },
-    strict: false,
   },
   {
     type: "function",
-    name: "search_web",
-    description: "Search the web for information.",
-    parameters: {
-      type: "object",
-      properties: { query: { type: "string", description: "Search query" } },
-      required: ["query"],
-      additionalProperties: false,
+    function: {
+      name: "search_web",
+      description: "Search the web for information.",
+      parameters: {
+        type: "object",
+        properties: { query: { type: "string", description: "Search query" } },
+        required: ["query"],
+        additionalProperties: false,
+      },
     },
-    strict: false,
   },
 ];
 

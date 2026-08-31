@@ -1,24 +1,21 @@
 import { appToolDeclarations, appToolExecutors } from "@/lib/app-tools";
 import { cloudInstructions } from "@/lib/cloud-prompt";
 import { CLOUD_EMBED_URL, DEFAULT_MODEL, requiredEnv } from "@/lib/env";
-import { runFunctionToolLoop } from "@/lib/tool-loop";
+import { runChatToolLoop } from "@/lib/tool-loop";
 import { NextResponse } from "next/server";
 import OpenAI from "openai";
-import type {
-  ResponseCreateParamsNonStreaming,
-  ResponseInputItem,
-  Tool,
-} from "openai/resources/responses/responses";
+import type { ChatCompletionMessageParam } from "openai/resources/chat/completions";
 
 export async function POST(req: Request) {
-  const { threadId, messages } = (await req.json()) as {
-    threadId?: string;
-    messages?: ResponseInputItem[];
+  const { messages } = (await req.json()) as {
+    messages?: ChatCompletionMessageParam[];
   };
 
-  if (!threadId) return badRequest("threadId is required — create the conversation first");
   if (!Array.isArray(messages) || messages.length === 0) {
-    return badRequest("messages must be a non-empty ResponseInputItem[]");
+    return NextResponse.json(
+      { error: { message: "messages must be a non-empty ChatCompletionMessageParam[]" } },
+      { status: 400 },
+    );
   }
 
   const client = new OpenAI({
@@ -26,50 +23,26 @@ export async function POST(req: Request) {
     apiKey: requiredEnv("THESYS_API_KEY"),
   });
 
-  const createParams: ResponseCreateParamsNonStreaming = {
-    model: DEFAULT_MODEL,
-    conversation: threadId,
-    input: messages.slice(-1),
-    store: true,
-    tools: appToolDeclarations as unknown as Tool[],
-    instructions: cloudInstructions(),
-  };
-
-  let stream: AsyncIterable<Record<string, unknown>>;
-  try {
-    stream = (await client.responses.create(
-      { ...createParams, stream: true },
-      { signal: req.signal },
-    )) as unknown as AsyncIterable<Record<string, unknown>>;
-  } catch (err) {
-    const e = err as { status?: number; error?: unknown; message?: string };
-    return NextResponse.json(
-      { error: e.error ?? { message: e.message ?? "upstream error" } },
-      { status: e.status ?? 502 },
-    );
-  }
-
   const encoder = new TextEncoder();
   const body = new ReadableStream<Uint8Array>({
     async start(controller) {
-      const enqueue = (event: Record<string, unknown>) => {
-        controller.enqueue(encoder.encode(`data: ${JSON.stringify(event)}\n\n`));
+      const enqueue = (chunk: unknown) => {
+        controller.enqueue(encoder.encode(`data: ${JSON.stringify(chunk)}\n\n`));
       };
       try {
-        await runFunctionToolLoop({
+        await runChatToolLoop({
           client,
-          createParams,
-          firstStream: stream,
-          tools: appToolExecutors,
+          model: DEFAULT_MODEL,
+          messages: [{ role: "system", content: cloudInstructions() }, ...messages],
+          tools: appToolDeclarations,
+          executors: appToolExecutors,
           enqueue,
           signal: req.signal,
         });
       } catch (err) {
-        enqueue({
-          type: "error",
-          message: err instanceof Error ? err.message : String(err),
-        });
+        enqueue({ error: err instanceof Error ? err.message : String(err) });
       } finally {
+        controller.enqueue(encoder.encode("data: [DONE]\n\n"));
         controller.close();
       }
     },
@@ -82,8 +55,4 @@ export async function POST(req: Request) {
       Connection: "keep-alive",
     },
   });
-}
-
-function badRequest(message: string): Response {
-  return NextResponse.json({ error: { message } }, { status: 400 });
 }

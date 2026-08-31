@@ -30,7 +30,7 @@ Card([
 ])
 ```
 
-On the client, the `<AgentInterface />` component from `@openuidev/react-ui` handles everything — thread history, conversation state, streaming, input, and rendering. You give it an `llm` describing how to call your backend and parse its stream, a `storage` adapter for OpenUI Cloud conversations, and a `componentLibrary`. It parses the incoming Responses SSE stream with `openAIResponsesAdapter()` and renders each OpenUI Lang node using `shadcnChatLibrary` — the custom 45-component library defined in `src/lib/shadcn-genui/`.
+On the client, the `<AgentInterface />` component from `@openuidev/react-ui` handles everything — thread history, conversation state, streaming, input, and rendering. You give it an `llm` describing how to call your backend and parse its stream, and a `componentLibrary`. Threads stay in memory (no Cloud storage). It parses Chat Completions SSE with `openAIAdapter()` and renders each OpenUI Lang node using `shadcnChatLibrary` — the custom 45-component library defined in `src/lib/shadcn-genui/`.
 
 ---
 
@@ -40,20 +40,20 @@ On the client, the `<AgentInterface />` component from `@openuidev/react-ui` han
 ┌────────────────────────────────────┐        ┌────────────────────────────────────┐
 │   Browser                          │  HTTP  │   Next.js API Route                │
 │                                    │ ──────►│                                    │
-│  • <AgentInterface /> manages UI   │        │  • OpenUI Cloud Responses proxy    │
-│  • openAIResponsesAdapter()        │◄────── │  • conversation + store: true      │
-│  • shadcnChatLibrary renders nodes │  SSE   │  • App tools via runFunctionToolLoop│
-│  • Cloud storage persists threads  │        │  • Streams Responses SSE events    │
+│  • <AgentInterface /> manages UI   │        │  • OpenUI Cloud Completions proxy  │
+│  • openAIAdapter()                 │◄────── │  • Full thread sent each turn      │
+│  • shadcnChatLibrary renders nodes │  SSE   │  • App tools via runChatToolLoop   │
+│  • In-memory threads               │        │  • Streams Completions SSE events  │
 └────────────────────────────────────┘        └────────────────────────────────────┘
 ```
 
 ### Request / Response Flow
 
-1. User types a message. `<AgentInterface />` calls `llm.send`, which sends `POST /api/chat` with the latest turn formatted via `openAIConversationMessageFormat`.
-2. The API route loads the generated library spec, wraps it with `generateSystemPrompt()`, and calls OpenUI Cloud's Responses API (`conversation: threadId`, `store: true`).
-3. If the model calls an app-owned tool, `runFunctionToolLoop` executes it on this server and continues the Cloud conversation.
-4. The model streams OpenUI Lang as Responses SSE events.
-5. On the client, `openAIResponsesAdapter()` parses the events and hands the accumulated text to `<AgentInterface />`.
+1. User types a message. `<AgentInterface />` calls `llm.send`, which sends `POST /api/chat` with the full thread formatted via `openAIMessageFormat`.
+2. The API route loads the generated library spec, wraps it with `generateSystemPrompt()`, and calls OpenUI Cloud's Chat Completions API with the full message history.
+3. If the model calls an app-owned tool, `runChatToolLoop` executes it on this server and continues until the model returns a final answer.
+4. The model streams OpenUI Lang as Chat Completions SSE events.
+5. On the client, `openAIAdapter()` parses the events and hands the accumulated text to `<AgentInterface />`.
 6. The renderer parses OpenUI Lang against `shadcnChatLibrary` and renders each node as a shadcn/ui component in real time.
 
 ---
@@ -64,13 +64,10 @@ On the client, the `<AgentInterface />` component from `@openuidev/react-ui` han
 shadcn/
 ├── src/
 │   ├── app/
-│   │   ├── api/chat/route.ts      # OpenUI Cloud Responses proxy + app tools
-│   │   ├── api/frontend-token/    # Mints the Cloud storage token
+│   │   ├── api/chat/route.ts      # OpenUI Cloud Completions proxy + app tools
 │   │   ├── page.tsx               # Single page — mounts <AgentInterface />
 │   │   └── layout.tsx             # Root layout with ThemeProvider
 │   ├── components/ui/             # Base shadcn/ui primitives (accordion, card, table, etc.)
-│   ├── hooks/
-│   │   └── use-system-theme.tsx   # Detects and provides system light/dark preference
 │   ├── lib/
 │   │   └── shadcn-genui/          # Custom OpenUI component library
 │   │       ├── index.tsx          # Library export — createLibrary() call
@@ -133,26 +130,24 @@ pnpm generate
 
 ### `src/app/api/chat/route.ts` — Backend
 
-The route proxies OpenUI Cloud's Responses API. History lives in the Cloud conversation (`conversation: threadId`, `store: true`); only the latest user turn is forwarded. App-owned tools run in `runFunctionToolLoop`.
+The route proxies OpenUI Cloud's Chat Completions API. Completions is message-based, so the full thread is sent every turn. App-owned tools run in `runChatToolLoop`.
 
-The response is streamed as **Responses SSE** for `openAIResponsesAdapter()`.
+The response is streamed as **Chat Completions SSE** for `openAIAdapter()`.
 
 ### `src/app/page.tsx` — Frontend
 
-The entire chat interface is the `<AgentInterface />` component from `@openuidev/react-ui`. You configure it with two core props:
+The entire chat interface is the `<AgentInterface />` component from `@openuidev/react-ui`. You configure it with:
 
 | Prop               | Value                      | Purpose                                                                   |
 | ------------------ | -------------------------- | ------------------------------------------------------------------------- |
 | `llm`              | `{ send, streamProtocol }` | How to call your backend (`send`) and parse its stream (`streamProtocol`) |
-| `storage`          | `useOpenuiCloudStorage()`  | Persist threads and artifacts in OpenUI Cloud                             |
 | `componentLibrary` | `shadcnChatLibrary`        | Which components to render OpenUI Lang nodes with                         |
 
-`llm` is created with `fetchLLM({ streamAdapter: openAIResponsesAdapter(), messageFormat: openAIConversationMessageFormat })`.
+`llm` is created with `fetchLLM({ streamAdapter: openAIAdapter(), messageFormat: openAIMessageFormat })`. Threads stay in memory — there is no `storage` prop.
 
 ```tsx
 <AgentInterface
   llm={llm}
-  storage={storage}
   componentLibrary={shadcnChatLibrary}
 />
 ```

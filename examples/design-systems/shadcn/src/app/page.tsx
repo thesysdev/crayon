@@ -4,11 +4,10 @@ import { shadcnChatLibrary } from "@/lib/shadcn-genui";
 import {
   AgentInterface,
   fetchLLM,
-  openAIConversationMessageFormat,
-  openAIResponsesAdapter,
+  openAIAdapter,
+  openAIMessageFormat,
   useSystemThemeMode,
 } from "@openuidev/react-ui";
-import { useOpenuiCloudStorage } from "@openuidev/thesys";
 import { useEffect, useMemo } from "react";
 
 export default function Page() {
@@ -21,21 +20,16 @@ export default function Page() {
     () =>
       fetchLLM({
         url: "/api/chat",
-        streamAdapter: openAIResponsesAdapter(),
-        messageFormat: openAIConversationMessageFormat,
+        streamAdapter: openAIAdapter(),
+        messageFormat: openAIMessageFormat,
       }),
     [],
   );
-  const storage = useOpenuiCloudStorage({
-    token: "/api/frontend-token",
-    apiBaseUrl: "https://api.thesys.dev",
-  });
 
   return (
     <div className="h-screen w-screen overflow-hidden relative">
       <AgentInterface
         llm={llm}
-        storage={storage}
         componentLibrary={shadcnChatLibrary}
         agentName="shadcn/ui Chat"
         theme={{ mode }}

@@ -14,10 +14,10 @@ header = CardHeader("Q1 Sales")
 tbl = Table([Col("Product"), Col("Revenue", "number")], [["Widget", 1200]])
 ```
 
-On the client, `<AgentInterface />` from `@openuidev/react-ui` provides the chat interface. It uses `openAIResponsesAdapter()` plus `useOpenuiCloudStorage()` for OpenUI Cloud persistence, and `muiChatLibrary` to render each OpenUI Lang node.
+On the client, `<AgentInterface />` from `@openuidev/react-ui` provides the chat interface. It uses `openAIAdapter()` for Chat Completions SSE. Threads stay in memory (no Cloud storage). `muiChatLibrary` renders each OpenUI Lang node.
 
 ```tsx
-<AgentInterface llm={llm} storage={storage} componentLibrary={muiChatLibrary} />
+<AgentInterface llm={llm} componentLibrary={muiChatLibrary} />
 ```
 
 ## Architecture
@@ -27,17 +27,17 @@ On the client, `<AgentInterface />` from `@openuidev/react-ui` provides the chat
 │   Browser                          │  HTTP  │   Next.js API Route                │
 │                                    │ ──────►│                                    │
 │  • <AgentInterface /> manages UI   │        │  • Loads spec.json                 │
-│  • openAIResponsesAdapter()        │◄────── │  • OpenUI Cloud Responses proxy    │
-│  • muiChatLibrary renders nodes    │  SSE   │  • App tools via runFunctionToolLoop│
-│  • MUI ThemeProvider + CssBaseline │        │  • Streams response as SSE events  │
+│  • openAIAdapter()                 │◄────── │  • OpenUI Cloud Completions proxy  │
+│  • muiChatLibrary renders nodes    │  SSE   │  • App tools via runChatToolLoop   │
+│  • MUI ThemeProvider + CssBaseline │        │  • Streams Completions SSE events  │
 └────────────────────────────────────┘        └────────────────────────────────────┘
 ```
 
-1. The user types a message. `<AgentInterface />` invokes `llm.send()`, which `POST`s to `/api/chat` with the latest turn formatted via `openAIConversationMessageFormat`.
-2. The API route loads the generated library spec, calls OpenUI Cloud's Responses API, and runs app-owned tools with `runFunctionToolLoop`.
-3. Tool calls run server-side; results are posted back into the Cloud conversation.
-4. The model streams OpenUI Lang as Responses SSE events.
-5. The client parses the events with `openAIResponsesAdapter()` and renders each node as a Material UI component as it streams in.
+1. The user types a message. `<AgentInterface />` invokes `llm.send()`, which `POST`s to `/api/chat` with the full thread formatted via `openAIMessageFormat`.
+2. The API route loads the generated library spec, calls OpenUI Cloud's Chat Completions API, and runs app-owned tools with `runChatToolLoop`.
+3. Tool calls run server-side; results are appended as `role: "tool"` messages and the loop continues until the model answers.
+4. The model streams OpenUI Lang as Chat Completions SSE events.
+5. The client parses the events with `openAIAdapter()` and renders each node as a Material UI component as it streams in.
 
 ## Project Structure
 
@@ -46,7 +46,7 @@ material-ui/
 ├── src/
 │   ├── library.ts                 # Entry the OpenUI CLI reads to generate the prompt
 │   ├── app/
-│   │   ├── api/chat/route.ts      # Streaming chat endpoint (OpenAI SDK + SSE)
+│   │   ├── api/chat/route.ts      # OpenUI Cloud Completions proxy + app tools
 │   │   ├── page.tsx               # Mounts <AgentInterface /> + color-mode toggle
 │   │   ├── layout.tsx             # Root layout with ColorModeProvider
 │   │   └── globals.css            # Minimal full-height reset
