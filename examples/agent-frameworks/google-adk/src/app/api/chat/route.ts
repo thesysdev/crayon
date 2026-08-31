@@ -10,8 +10,7 @@ const USER_ID = "demo-user";
 
 // A single Runner + in-memory session store, shared across requests. Sessions
 // are keyed by the chat threadId so multi-turn history is preserved for the
-// lifetime of the server process. Created lazily so `next build` does not
-// require THESYS_API_KEY.
+// lifetime of the server process.
 const sessionService = new InMemorySessionService();
 const sessions = new Map<string, string>();
 let runner: Runner | undefined;
