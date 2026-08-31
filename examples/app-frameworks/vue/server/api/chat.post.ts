@@ -1,7 +1,7 @@
 import { createOpenAI } from "@ai-sdk/openai";
 import { generateSystemPrompt } from "@openuidev/thesys-server";
 import { convertToModelMessages, stepCountIs, streamText } from "ai";
-import { library, promptOptions } from "~/lib/library";
+import { createOpenUILibrary, promptOptions } from "~/lib/define-library";
 import { tools } from "~/lib/tools";
 
 const openai = createOpenAI({
@@ -9,8 +9,10 @@ const openai = createOpenAI({
   baseURL: "https://api.thesys.dev/v1/embed",
 });
 
+const specLibrary = createOpenUILibrary();
+
 const systemPrompt = generateSystemPrompt({
-  library: library.toSpec(),
+  library: specLibrary.toSpec(),
   promptOptions: {
     examples: promptOptions.examples,
     preamble: promptOptions.preamble,
@@ -22,7 +24,7 @@ export default defineEventHandler(async (event) => {
   const { messages } = await readBody(event);
 
   const result = streamText({
-    model: openai.responses("google/gemini-3.6-flash-free"),
+    model: openai.chat("google/gemini-3.6-flash-free"),
     system: systemPrompt,
     messages: await convertToModelMessages(messages),
     tools,
