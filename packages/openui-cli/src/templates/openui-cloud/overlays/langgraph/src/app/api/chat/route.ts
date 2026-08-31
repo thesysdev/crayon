@@ -1,5 +1,5 @@
 import { graph } from "@/agent";
-import { DEFAULT_MODEL, resolveRequestedModel } from "@/lib/models";
+import { resolveRequestedModel } from "@/lib/models";
 
 export const runtime = "nodejs";
 
@@ -21,12 +21,20 @@ export async function POST(request: Request) {
     model?: unknown;
   };
 
+  if (!threadId) {
+    return Response.json(
+      { error: "threadId is required — create the conversation first" },
+      { status: 400 },
+    );
+  }
+
+  const model = resolveRequestedModel(requestedModel);
+  if (!model) {
+    return Response.json({ error: "model is not available in this agent" }, { status: 400 });
+  }
+
   const stream = await graph.stream(
-    {
-      messages: messages.slice(-1),
-      conversationId: threadId,
-      model: resolveRequestedModel(requestedModel) ?? DEFAULT_MODEL,
-    },
+    { messages: messages.slice(-1), conversationId: threadId, model },
     { streamMode: "messages", encoding: "text/event-stream", signal: request.signal },
   );
 
