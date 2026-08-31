@@ -50,9 +50,9 @@ const config = {
         permanent: true,
       },
       {
-        source: "/docs",
-        destination: "/docs/overview",
-        permanent: false,
+        source: "/docs/overview",
+        destination: "/docs",
+        permanent: true,
       },
       {
         source: "/docs/add-ons",
