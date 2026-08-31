@@ -36,7 +36,7 @@ The server (`src/app/api/chat/route.ts`) wraps a Mastra `Agent` with `@ag-ui/mas
 
 The frontend (`src/app/page.tsx`) renders OpenUI's `<AgentInterface />` (the artifact chat interface with thread history), passing it an `llm` whose `streamProtocol` is `agUIAdapter()` from `@openuidev/react-ui`. Storage is optional — `AgentInterface` defaults to in-memory storage (wiped on reload) — so no `storage` prop is needed. The adapter parses the SSE stream into internal chat events that drive the UI.
 
-To add more tools, define them with `createTool` in `src/app/api/chat/route.ts` and pass them to the `Agent`.
+To add more tools, define them with `createTool` in `src/tools.ts` and pass them to the `Agent`.
 
 ## Learn more
 
