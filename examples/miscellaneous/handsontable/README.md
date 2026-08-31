@@ -62,7 +62,7 @@ An AI-powered spreadsheet app that pairs a full-featured [Handsontable](https://
 ### Prerequisites
 
 - Node.js 18+
-- An [OpenAI API key](https://platform.openai.com/api-keys) (GPT-5.5 recommended)
+- An [OpenUI Cloud API key](https://console.thesys.dev/keys)
 
 ### Setup
 
@@ -71,7 +71,7 @@ cd examples/miscellaneous/handsontable
 
 # Copy the environment template and add your API key
 cp env.example .env
-# Edit .env and set OPENAI_API_KEY=sk-...
+# Edit .env and set THESYS_API_KEY=sk-th-...
 
 # Install dependencies
 pnpm install --ignore-workspace
@@ -86,8 +86,7 @@ Open [http://localhost:3000](http://localhost:3000) to see the spreadsheet with 
 
 | Variable         | Required | Default   | Description                       |
 | ---------------- | -------- | --------- | --------------------------------- |
-| `OPENAI_API_KEY` | Yes      | —         | Your OpenAI API key               |
-| `OPENAI_MODEL`   | No       | `gpt-5.5` | Model to use for chat completions |
+| `THESYS_API_KEY` | Yes      | —         | Your OpenUI Cloud API key               |
 
 ## Project Structure
 
@@ -110,10 +109,10 @@ hands-on-table-chat/
 │   │       └── table/
 │   │           └── route.ts           # GET/POST for client ↔ server table sync
 │   ├── generated/
-│   │   └── system-prompt.txt          # Auto-generated OpenUI Lang prompt
+│   │   └── spec.json                  # Auto-generated library spec
 │   └── lib/
 │       └── spreadsheet-library.tsx    # OpenUI component library with SpreadsheetTable
-├── env.example                        # Environment variable template
+├── .env.example                       # Environment variable template
 ├── package.json
 ├── tsconfig.json
 ├── next.config.ts
@@ -131,7 +130,7 @@ hands-on-table-chat/
 | [`@openuidev/react-ui`](https://openui.com/docs)                                           | OpenUI `AgentInterface` chat component             |
 | [`@openuidev/react-headless`](https://openui.com/docs)                                     | OpenUI adapter and message formatting              |
 | [`@openuidev/react-lang`](https://openui.com/docs)                                         | OpenUI Lang component library DSL                  |
-| [`openai`](https://www.npmjs.com/package/openai)                                           | OpenAI SDK for chat completions with tool calling  |
+| [`openai`](https://www.npmjs.com/package/openai)                                           | OpenAI SDK for the Responses API with tool calling |
 | [`next`](https://nextjs.org/)                                                              | React framework with API routes and SSE streaming. |
 
 ## Try These Prompts

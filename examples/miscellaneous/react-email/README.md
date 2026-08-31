@@ -18,7 +18,7 @@ Describe an email in natural language, and the AI generates a live preview with 
 
 - Node.js 20+
 - pnpm, npm, or Bun
-- An [OpenAI API key](https://platform.openai.com/api-keys)
+- An [OpenUI Cloud API key](https://console.thesys.dev/keys)
 
 ## Getting Started
 
@@ -30,7 +30,7 @@ cd openui/examples/miscellaneous/react-email
 pnpm install --ignore-workspace
 ```
 
-2. Copy `.env.example` to `.env.local` and add your OpenAI API key:
+2. Copy `.env.example` to `.env.local` and add your OpenUI Cloud API key:
 
 ```bash
 cp .env.example .env.local
@@ -39,7 +39,7 @@ cp .env.example .env.local
 Edit `.env.local`:
 
 ```
-OPENAI_API_KEY=sk-your-api-key-here
+THESYS_API_KEY=sk-th-...
 ```
 
 3. Start the development server:
