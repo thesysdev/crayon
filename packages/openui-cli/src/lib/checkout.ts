@@ -36,7 +36,10 @@ function gitEnv(): NodeJS.ProcessEnv {
   };
 }
 
-function runGit(args: string[], options: { cwd?: string; timeoutMs?: number } = {}): Promise<string> {
+function runGit(
+  args: string[],
+  options: { cwd?: string; timeoutMs?: number } = {},
+): Promise<string> {
   return new Promise((resolve, reject) => {
     const child = spawn("git", args, {
       cwd: options.cwd,
