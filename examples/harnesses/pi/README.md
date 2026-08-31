@@ -14,9 +14,9 @@ launch — see **Security** below.
 
 ```
  Browser (src/app/page.tsx)
-   AgentInterface   ──POST /api/chat ({ systemPrompt, messages })──►  route.ts (runtime=nodejs)
-   + openuiLibrary       x-conversation-id: <threadId>                     │
-   renderer  ◄──NDJSON OpenAI chunks (delta.content = OpenUI Lang)─────────┤
+   AgentInterface   ──POST /api/chat ({ systemPrompt, messages, threadId })──►  route.ts (runtime=nodejs)
+   + openuiLibrary                                                              │
+   renderer  ◄──NDJSON OpenAI chunks (delta.content = OpenUI Lang)───────────────┤
                                                                            ▼
                                                           src/lib/pi-session.ts
                                                           Map<threadId, AgentSession>
@@ -37,7 +37,7 @@ launch — see **Security** below.
   (`openuiLibrary.prompt(openuiPromptOptions)`) and sends it in the request body; the route
   injects it into Pi via `DefaultResourceLoader({ appendSystemPrompt: [...] })`, so the backend
   prompt and the frontend renderer always reference the same component library.
-- **Sessions:** each chat thread (a stable id sent as the `x-conversation-id` header) maps to
+- **Sessions:** each chat thread (a stable `threadId` from `fetchLLM`) maps to
   one persistent Pi `AgentSession`, so multi-turn context is preserved.
 
 ## Prerequisites

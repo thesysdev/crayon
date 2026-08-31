@@ -7,7 +7,7 @@ stdio mode for persistent coding sessions, live reasoning, tool activity, and ca
 
 ## What this demonstrates
 
-- A current OpenUI `<AgentInterface />` wired with `agUIAdapter()` and `openuiChatLibrary`.
+- A current OpenUI `<AgentInterface />` wired with `fetchLLM({ streamAdapter: agUIAdapter() })` and `openuiChatLibrary`.
 - One long-lived `grok agent --no-leader stdio` process hosting an isolated Grok session for each
   OpenUI thread.
 - ACP text, reasoning, and tool-call updates translated to AG-UI SSE events.
