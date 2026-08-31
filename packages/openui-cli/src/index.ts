@@ -62,7 +62,7 @@ program
   )
   .option(
     "--backend-framework <framework>",
-    "Backend framework: default | langgraph | vercel-ai-sdk",
+    "Backend framework: default | langgraph | vercel-ai-sdk | vercel-eve",
   )
   .option("--api-key <key>", "OpenUI Cloud API key (cloud template; skips sign-in)")
   .option("--auth <method>", "Cloud auth method: oauth | skip (manual is deprecated)")
@@ -91,6 +91,7 @@ Backend frameworks:
   default        Uses OpenAI SDK.
   langgraph      Bootstraps a LangGraph agent with the selected model backend.
   vercel-ai-sdk  Scaffolds a Vercel AI SDK agent with the selected model backend.
+  vercel-eve     Scaffolds a Vercel Eve agent with the selected model backend.
 `,
   )
   .action(

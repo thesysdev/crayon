@@ -202,6 +202,7 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
                   },
                   { value: "vercel-ai-sdk", name: "Vercel AI SDK" },
                   { value: "langgraph", name: "LangGraph" },
+                  { value: "vercel-eve", name: "Vercel Eve" },
                 ],
               },
               required: true,
