@@ -7,8 +7,8 @@
  * Mirrors mobile/library.tsx (same names, Zod schemas, and prop order) with
  * null renderers so this file can run in Node without react-native.
  */
-import type { PromptOptions } from "@openuidev/react-lang";
-import { createLibrary, defineComponent } from "@openuidev/react-lang";
+import type { PromptOptions } from "@openuidev/lang-core";
+import { createLibrary, defineComponent } from "@openuidev/lang-core";
 import { z } from "zod";
 
 const DataPointSchema = z.object({
