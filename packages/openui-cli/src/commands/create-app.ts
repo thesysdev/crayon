@@ -202,6 +202,7 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
                   },
                   { value: "vercel-ai-sdk", name: "Vercel AI SDK" },
                   { value: "langgraph", name: "LangGraph" },
+                  { value: "vercel-eve", name: "Vercel Eve" },
                 ],
               },
               required: true,
@@ -279,9 +280,11 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
     restoreDotfiles(targetDir);
     applyOverlay(targetDir, overlay);
     rewritePackageJson(targetDir, name, packageManager.name, overlay?.manifest.packageJson);
-    // npm ci needs package-lock.json. Keep it for npm scaffolds (base template or
-    // a backend overlay that ships its own). Other managers resolve from package.json.
-    if (packageManager.name !== "npm") {
+    // An overlay that changes dependencies without a lock must not keep the base lock
+    const overlayShipsNpmLock = Boolean(
+      overlay && fs.existsSync(path.join(overlay.dir, "package-lock.json")),
+    );
+    if (packageManager.name !== "npm" || (overlay && !overlayShipsNpmLock)) {
       fs.rmSync(path.join(targetDir, "package-lock.json"), { force: true });
     }
     // The Cloud template ships pnpm's lock/workspace files for reproducible pnpm

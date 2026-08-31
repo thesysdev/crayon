@@ -6,9 +6,10 @@ import { OPENUI_LOGOS, PROMPT_TEMPLATES, STARTERS } from "@/lib/starters";
 import {
   AgentInterface,
   ModelSwitcher,
-  agUIAdapter,
   defineArtifactCategories,
   fetchLLM,
+  langGraphAdapter,
+  langGraphMessageFormat,
   useSystemThemeMode,
 } from "@openuidev/react-ui";
 import {
@@ -35,11 +36,13 @@ const { artifactRenderers, artifactCategories } = defineArtifactCategories([
 export default function CloudChat() {
   const mode = useSystemThemeMode();
   const [selectedModel, setSelectedModel] = usePersistedModel();
-  // The LangGraph proxy emits AG-UI events, so no message format is needed:
-  // the Agent Server receives the conversation as graph input instead.
+  // The /api/chat route runs the LangGraph agent in-process and streams its
+  // native `messages`-mode SSE. Outgoing messages are converted to LangChain
+  // shape here so the route can pass them to the graph as-is.
   const llm = fetchLLM({
     url: "/api/chat",
-    streamAdapter: agUIAdapter(),
+    streamAdapter: langGraphAdapter(),
+    messageFormat: langGraphMessageFormat,
     body: { model: selectedModel },
   });
 
