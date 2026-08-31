@@ -1,17 +1,9 @@
-import { emailLibrary, emailPromptOptions } from "@openuidev/react-email";
-import { generateSystemPrompt } from "@openuidev/thesys-server";
+import { cloudInstructions } from "@/lib/cloud-prompt";
 import { NextRequest } from "next/server";
 import OpenAI from "openai";
 import type { ChatCompletionMessageParam } from "openai/resources/chat/completions.mjs";
 
-const systemPrompt = generateSystemPrompt({
-  library: emailLibrary.toSpec(),
-  promptOptions: {
-    examples: emailPromptOptions.examples,
-    preamble: emailPromptOptions.preamble,
-    additionalRules: emailPromptOptions.additionalRules,
-  },
-});
+const systemPrompt = cloudInstructions();
 
 export async function POST(req: NextRequest) {
   const { messages } = await req.json();

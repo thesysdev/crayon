@@ -1,0 +1,18 @@
+import {
+  generateSystemPrompt,
+  type ChatLibrary,
+  type PromptOptions,
+} from "@openuidev/thesys-server";
+import { readFileSync } from "fs";
+import { join } from "path";
+
+/** Load the generated email library spec and wrap it in Cloud's managed prompt block. */
+export function cloudInstructions(): string {
+  const library = JSON.parse(
+    readFileSync(join(process.cwd(), "src/generated/spec.json"), "utf-8"),
+  ) as ChatLibrary;
+  const promptOptions = JSON.parse(
+    readFileSync(join(process.cwd(), "src/generated/prompt-options.json"), "utf-8"),
+  ) as PromptOptions;
+  return generateSystemPrompt({ library, promptOptions });
+}
