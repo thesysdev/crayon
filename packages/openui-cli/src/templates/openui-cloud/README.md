@@ -32,10 +32,14 @@ presentations, web search, image search, and configured MCP servers.
 
 OpenUI Cloud is the only durable conversation and artifact store in every Cloud
 variant. The browser connects directly through `useOpenuiCloudStorage()` with a
-short-lived token from `/api/frontend-token`. The `threadId` sent to `/api/chat`
-is the Cloud conversation id, and the route appends each model turn to it with
-`conversation: threadId` and `store: true`.
-Browser `localStorage` holds only the selected model, not conversation messages.
+short-lived token from `/api/frontend-token`. For default, LangGraph, and
+Vercel AI SDK routes, the `threadId` sent to `/api/chat` is the Cloud
+conversation id, and the route appends each model turn to it with
+`conversation: threadId` and `store: true`. The Eve overlay uses that same Cloud
+thread store and maps each Cloud `threadId` to an Eve session cursor in the
+browser; it does not use `/api/chat`.
+Browser `localStorage` holds only the selected model (and, for Eve, the session
+cursor), not conversation messages.
 
 The Vercel AI SDK route does not create a second store. Add a LangGraph
 checkpointer separately only if the graph needs durable state, interrupts, or
