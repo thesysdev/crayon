@@ -49,7 +49,7 @@ Frameworks that integrate with, support, or generate OpenUI interfaces.
 - **LangChain** — Generates and renders interactive OpenUI dashboards and reports in LangChain and LangGraph applications.
 
   - Status: `Official integration`
-  - [Documentation](https://docs.langchain.com/oss/python/langchain/frontend/integrations/openui) · [Example](https://github.com/thesysdev/openui/tree/main/examples/agent-frameworks/langchain)
+  - [Documentation](https://docs.langchain.com/oss/python/langchain/frontend/integrations/openui) · [Example](https://github.com/thesysdev/openui/tree/main/examples/agent-frameworks/langgraph-platform)
 
 - **Mastra** — Connects Mastra agent backends to OpenUI's Agent Interface over AG-UI for streaming tool-powered generative interfaces.
   - Status: `Official integration`
