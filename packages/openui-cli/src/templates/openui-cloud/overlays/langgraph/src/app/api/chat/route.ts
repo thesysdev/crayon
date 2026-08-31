@@ -1,4 +1,4 @@
-import { graph } from "@/agent/agent";
+import { graph } from "@/agent";
 import { DEFAULT_MODEL, resolveRequestedModel } from "@/lib/models";
 
 export const runtime = "nodejs";

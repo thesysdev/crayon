@@ -1,4 +1,4 @@
-import { graph } from "@/agent/agent";
+import { graph } from "@/agent";
 
 export const runtime = "nodejs";
 
