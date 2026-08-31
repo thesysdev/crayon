@@ -1,19 +1,28 @@
-import { createLangChainStreamResponse } from "@openuidev/langchain";
+import { graph } from "@/agent";
 
 export const runtime = "nodejs";
 
-const API_URL = process.env.LANGGRAPH_API_URL || "http://localhost:2024";
-const ASSISTANT_ID = process.env.LANGGRAPH_ASSISTANT_ID || "agent";
-
 /**
- * Browser-to-Agent-Server proxy. The agent itself lives in src/agent/agent.ts
- * and can be run locally or deployed independently.
+ * Runs the LangGraph agent from src/agent/agent.ts in-process and returns its
+ * native `messages`-mode SSE stream untransformed. The browser converts
+ * outgoing messages with `langGraphMessageFormat` and parses the stream with
+ * `langGraphAdapter()`, so no conversion happens here. Nothing is stored
+ * server-side, so the full conversation history is sent as graph input.
  */
 export async function POST(request: Request) {
-  return createLangChainStreamResponse(request, {
-    apiUrl: API_URL,
-    assistantId: ASSISTANT_ID,
-    apiKey: process.env.LANGSMITH_API_KEY,
-    debug: process.env.NODE_ENV !== "production",
+  const { messages } = (await request.json()) as {
+    messages: { type: string; content: string }[];
+  };
+
+  const stream = await graph.stream(
+    { messages },
+    { streamMode: "messages", encoding: "text/event-stream", signal: request.signal },
+  );
+
+  return new Response(stream, {
+    headers: {
+      "Content-Type": "text/event-stream",
+      "Cache-Control": "no-cache, no-transform",
+    },
   });
 }
