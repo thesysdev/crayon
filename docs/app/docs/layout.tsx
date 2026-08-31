@@ -1,4 +1,4 @@
-import { C1DocsBanner } from "@/components/c1-docs-banner";
+import { C1DocsDialog } from "@/components/C1DocsDialog";
 import { DocsRouteLayout } from "@/components/docs-route-layout";
 import { WebsiteThemeProvider } from "@/components/website-theme-provider";
 import { source } from "@/lib/source";
@@ -6,7 +6,7 @@ import { source } from "@/lib/source";
 export default function Layout({ children }: LayoutProps<"/docs">) {
   return (
     <WebsiteThemeProvider>
-      <C1DocsBanner />
+      <C1DocsDialog />
       <DocsRouteLayout tree={source.getPageTree()}>{children}</DocsRouteLayout>
     </WebsiteThemeProvider>
   );
