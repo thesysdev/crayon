@@ -12,8 +12,8 @@ This is the first example in the repo using a non-Node.js backend — the same f
 │  (port 5173)           │ ──────► │  (port 8000)            │
 │                        │         │                         │
 │  • AgentInterface UI   │         │  • POST /api/chat       │
-│  • openAIReadable-     │  NDJSON │  • OpenAI streaming     │
-│    StreamAdapter()     │ ◄────── │  • AsyncOpenAI client   │
+│  • openAIResponses-    │   SSE   │  • OpenUI Cloud         │
+│    Adapter()           │ ◄────── │    Responses API        │
 └────────────────────────┘         └─────────────────────────┘
 ```
 
@@ -45,7 +45,7 @@ fastapi-backend/
 - Python 3.10+
 - [uv](https://docs.astral.sh/uv/) (or pip)
 - Node.js 18+
-- An OpenAI API key
+- An OpenUI Cloud API key (https://console.thesys.dev/keys)
 
 ### 1. Configure the backend
 
@@ -57,7 +57,7 @@ cp .env.example .env
 Add your key to `backend/.env`:
 
 ```
-OPENAI_API_KEY=sk-...
+THESYS_API_KEY=sk-th-...
 ```
 
 ### 2. Start the backend
@@ -92,13 +92,15 @@ Open [http://localhost:5173](http://localhost:5173).
 
 A FastAPI endpoint that:
 
-1. Receives `{ systemPrompt, messages }` as JSON
-2. Forwards the conversation to the OpenAI streaming API
-3. Yields each chunk as a NDJSON line — the same format the JavaScript SDK's `toReadableStream()` produces
+1. Receives `{ messages }` as JSON (OpenAI Responses `input` items)
+2. Calls OpenUI Cloud's Responses API (`POST /v1/embed/responses`)
+3. Yields each event as SSE — the same stream `openAIResponsesAdapter()` parses
+
+Chat Completions (`POST /v1/embed/chat/completions` via `chat.completions.create`) is the drop-in alternative if you already speak that protocol.
 
 ### `frontend/src/App.jsx`
 
-Identical to the one scaffolded by `npx @openuidev/cli create`. Uses `openAIReadableStreamAdapter()` to parse the NDJSON stream from the backend — no frontend changes were needed to switch from Next.js to FastAPI.
+Uses `fetchLLM` with `openAIResponsesAdapter()` and `openAIConversationMessageFormat()` to match the Responses stream from FastAPI.
 
 ## Learn More
 

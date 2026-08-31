@@ -15,7 +15,7 @@ A chat application built with [Nuxt 3](https://nuxt.com), [Vercel AI SDK](https:
 
 - Node.js 18+
 - pnpm, npm, or Bun
-- An OpenAI API key
+- An OpenUI Cloud API key (https://console.thesys.dev/keys)
 
 ### Install dependencies
 
@@ -31,10 +31,10 @@ pnpm install --ignore-workspace
 cp .env.example .env
 ```
 
-Edit `.env` and add your OpenAI API key:
+Edit `.env` and add your OpenUI Cloud API key:
 
 ```
-OPENAI_API_KEY=sk-...
+THESYS_API_KEY=sk-th-...
 ```
 
 ### Generate the system prompt (optional)

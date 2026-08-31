@@ -1,18 +1,28 @@
 import { createOpenAI } from "@ai-sdk/openai";
+import { generateSystemPrompt } from "@openuidev/thesys-server";
 import { convertToModelMessages, stepCountIs, streamText } from "ai";
-import { readFileSync } from "node:fs";
-import { resolve } from "node:path";
+import { library, promptOptions } from "~/lib/library";
 import { tools } from "~/lib/tools";
 
-const openai = createOpenAI({ apiKey: process.env.OPENAI_API_KEY ?? "" });
+const openai = createOpenAI({
+  apiKey: process.env.THESYS_API_KEY ?? "",
+  baseURL: "https://api.thesys.dev/v1/embed",
+});
 
-const systemPrompt = readFileSync(resolve(process.cwd(), "generated/system-prompt.txt"), "utf-8");
+const systemPrompt = generateSystemPrompt({
+  library: library.toSpec(),
+  promptOptions: {
+    examples: promptOptions.examples,
+    preamble: promptOptions.preamble,
+    additionalRules: promptOptions.additionalRules,
+  },
+});
 
 export default defineEventHandler(async (event) => {
   const { messages } = await readBody(event);
 
   const result = streamText({
-    model: openai("gpt-5.5"),
+    model: openai.responses("google/gemini-3.6-flash-free"),
     system: systemPrompt,
     messages: await convertToModelMessages(messages),
     tools,
