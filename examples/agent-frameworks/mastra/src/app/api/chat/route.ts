@@ -58,7 +58,7 @@ const agent = new MastraAgent({
     model: {
       id: "google/gemini-3.6-flash-free",
       apiKey: process.env.THESYS_API_KEY,
-      url: process.env.OPENUI_BASE_URL || "https://api.thesys.dev/v1/embed",
+      url: "https://api.thesys.dev/v1/embed",
     },
     tools: { getWeather, getStockPrice },
   }),

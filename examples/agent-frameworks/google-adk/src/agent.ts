@@ -44,7 +44,7 @@ export function createAgent() {
     name: "weather_assistant",
     model: Custom("google/gemini-3.6-flash-free", {
       name: "openui-adk-agent",
-      baseURL: process.env.OPENUI_BASE_URL || "https://api.thesys.dev/v1/embed",
+      baseURL: "https://api.thesys.dev/v1/embed",
       apiKey,
     }),
     instruction: generateSystemPrompt(),
