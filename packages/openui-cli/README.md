@@ -12,7 +12,7 @@ It currently supports two workflows:
 - scaffolding a new OpenUI app from one of two templates:
   - **OpenUI Cloud (recommended)** — hosted models with managed conversations, streaming, built-in tools, and ready-to-use report and presentation artifacts
   - **Self-hosted** — bring an OpenAI-compatible model key and own the AI route and persistence
-- keeping the default minimal SDK route or adding a LangGraph or Vercel AI SDK backend to either template
+- keeping the default minimal SDK route or adding a LangGraph, Vercel AI SDK, or Vercel Eve backend to either template
 - generating a system prompt or JSON Schema from a `createLibrary()` export
 
 ## Install
@@ -45,8 +45,10 @@ Choose a backend framework directly (the default is `default`, the template's mi
 ```bash
 npx @openuidev/cli@latest create --template openui-cloud --backend-framework langgraph
 npx @openuidev/cli@latest create --template openui-cloud --backend-framework vercel-ai-sdk
+npx @openuidev/cli@latest create --template openui-cloud --backend-framework vercel-eve
 npx @openuidev/cli@latest create --template openui-self-hosted --backend-framework langgraph
 npx @openuidev/cli@latest create --template openui-self-hosted --backend-framework vercel-ai-sdk
+npx @openuidev/cli@latest create --template openui-self-hosted --backend-framework vercel-eve
 ```
 
 Generate a prompt from a library file:
@@ -75,7 +77,7 @@ Options:
 
 - `-n, --name <string>`: Project name (interactive default: `openui-agent`)
 - `-t, --template <template>`: AI backend — `openui-cloud` (managed) or `openui-self-hosted` (bring your provider)
-- `--backend-framework <framework>`: API route implementation — `default`, `langgraph`, or `vercel-ai-sdk`
+- `--backend-framework <framework>`: API route implementation — `default`, `langgraph`, `vercel-ai-sdk`, or `vercel-eve`
 - `--skill`: Install the OpenUI agent skill for AI coding assistants
 - `--no-skill`: Skip installing the OpenUI agent skill
 - `--no-install`: Scaffold without running the package install
@@ -113,14 +115,15 @@ What it does:
 | `default`       | Direct OpenAI SDK Responses proxy            | Direct OpenAI SDK Chat Completions proxy |
 | `langgraph`     | LangGraph + Cloud provider                   | LangGraph + your provider                |
 | `vercel-ai-sdk` | Vercel AI SDK Next.js agent + Cloud provider | Vercel AI SDK `streamText()` route       |
+| `vercel-eve`    | Vercel Eve agent + Cloud provider            | Vercel Eve agent + your provider         |
 
 The default implementation is part of each base template. For LangGraph or Vercel AI SDK, the CLI applies a framework-specific set of files plus a manifest for its dependencies, scripts, removals, and onboarding text. Both Vercel AI SDK variants are standard Next.js deployments whose `streamText()` result returns `toUIMessageStreamResponse()` for `vercelAIAdapter()`.
 
-In both Cloud framework variants, the selected framework owns the agent orchestration and application tool loop. OpenUI Cloud is attached as the Responses model provider and conversation store. Reports, presentations, web search, image search, and configured MCP tools remain provider-executed Cloud tools, while application tools such as `get_weather` execute inside LangGraph or the Vercel AI SDK. Choosing a Cloud framework does not configure a user-owned model provider; choose `openui-self-hosted` for that.
+In Cloud framework variants, the selected framework owns the agent orchestration and application tool loop. OpenUI Cloud is attached as the model provider and conversation store. Reports, presentations, web search, image search, and configured MCP tools remain provider-executed Cloud tools on the default, LangGraph, and Vercel AI SDK Cloud routes, while application tools such as `get_weather` execute inside the selected framework. The Eve Cloud overlay uses Cloud as the Chat Completions provider and does not attach those provider-executed Cloud tools. Choosing a Cloud framework does not configure a user-owned model provider; choose `openui-self-hosted` for that.
 
 The Cloud graph needs `THESYS_API_KEY`; the self-hosted graph needs the selected provider credentials such as `OPENAI_API_KEY`.
 
-Every Cloud route includes `get_weather` as its example app-owned function tool. The LangGraph and Vercel AI SDK variants define and execute that tool through the selected framework while leaving Cloud-owned tools unchanged. The two self-hosted framework routes include the same weather example and run it through their native multi-step tool loops, making the selected backend directly testable after scaffolding.
+Every framework overlay includes `get_weather` as its example app-owned function tool. Ask “What’s the weather in Berlin?” to exercise the selected backend’s native tool loop.
 
 #### Conversation storage
 
@@ -146,9 +149,11 @@ openui create
 openui create --name my-app --template openui-self-hosted
 openui create --name my-app --template openui-self-hosted --backend-framework langgraph
 openui create --name my-app --template openui-self-hosted --backend-framework vercel-ai-sdk
+openui create --name my-app --template openui-self-hosted --backend-framework vercel-eve
 openui create --name my-app --template openui-cloud --auth oauth
 openui create --name my-app --template openui-cloud --backend-framework langgraph --auth oauth
 openui create --name my-app --template openui-cloud --backend-framework vercel-ai-sdk --auth oauth
+openui create --name my-app --template openui-cloud --backend-framework vercel-eve --auth oauth
 openui create --name my-app --template openui-cloud --api-key tk_your_key
 openui create --name my-app --template openui-self-hosted
 openui create --name my-app --template openui-cloud --immediate

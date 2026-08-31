@@ -62,7 +62,7 @@ program
   )
   .option(
     "--backend-framework <framework>",
-    "Backend framework: default | langgraph | vercel-ai-sdk",
+    "Backend framework: default | langgraph | vercel-ai-sdk | vercel-eve",
   )
   .option("--api-key <key>", "OpenUI Cloud API key (cloud template; skips sign-in)")
   .option("--auth <method>", "Cloud auth method: oauth | skip (manual is deprecated)")
@@ -72,6 +72,7 @@ program
   .option("--no-install", "Scaffold without running the package install")
   .option("-i, --immediate", "Start the development server after installing dependencies")
   .option("--no-immediate", "Install dependencies without starting the development server")
+  .option("--verbose", "Stream full dependency install logs")
   .addHelpText(
     "after",
     `
@@ -90,6 +91,7 @@ Backend frameworks:
   default        Uses OpenAI SDK.
   langgraph      Bootstraps a LangGraph agent with the selected model backend.
   vercel-ai-sdk  Scaffolds a Vercel AI SDK agent with the selected model backend.
+  vercel-eve     Scaffolds a Vercel Eve agent with the selected model backend.
 `,
   )
   .action(
@@ -103,6 +105,7 @@ Backend frameworks:
       interactive: boolean;
       install: boolean;
       immediate?: boolean;
+      verbose?: boolean;
     }) => {
       try {
         rejectConflictingImmediateFlags(process.argv.slice(2));
@@ -116,6 +119,7 @@ Backend frameworks:
           noInteractive: !options.interactive,
           noInstall: !options.install,
           immediate: options.immediate,
+          verbose: options.verbose,
         });
       } catch (e) {
         handleCliError(e, "cli_create_failed");
