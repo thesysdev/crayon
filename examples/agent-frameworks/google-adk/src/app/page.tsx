@@ -1,26 +1,17 @@
 "use client";
 
-import "@openuidev/thesys/styles.css";
-
-import { AgentInterface, openAIAdapter, type ChatLLM, useSystemThemeMode } from "@openuidev/react-ui";
+import { AgentInterface, fetchLLM, openAIAdapter, useSystemThemeMode } from "@openuidev/react-ui";
 import { chatLibrary } from "@openuidev/thesys";
 import { useMemo } from "react";
 
 export default function Page() {
   const mode = useSystemThemeMode();
-
-  // The ADK backend streams OpenAI-style chat-completion chunks
-  const llm = useMemo<ChatLLM>(
-    () => ({
-      send: ({ messages, threadId, signal }) =>
-        fetch("/api/chat", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ messages, threadId }),
-          signal,
-        }),
-      streamProtocol: openAIAdapter(),
-    }),
+  const llm = useMemo(
+    () =>
+      fetchLLM({
+        url: "/api/chat",
+        streamAdapter: openAIAdapter(),
+      }),
     [],
   );
 

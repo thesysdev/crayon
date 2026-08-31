@@ -48,8 +48,7 @@ Open [http://localhost:3000](http://localhost:3000) and try a starter such as
 - `src/app/api/chat/route.ts` runs the agent with a `Runner`, keys ADK sessions
   by chat `threadId` (so multi-turn history is preserved), and streams the
   assistant text as OpenAI chat-completion SSE chunks.
-- `src/app/page.tsx` renders `<AgentInterface />`, sending `{ messages, threadId }`
-  to `/api/chat` and parsing the stream with `openAIAdapter()`.
+- `src/app/page.tsx` renders `<AgentInterface />` with `fetchLLM` + `openAIAdapter()`.
 
 To add more tools, define them with `FunctionTool` in `src/agent.ts` and pass
 them to the `Agent`.
