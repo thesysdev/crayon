@@ -151,11 +151,6 @@ export function PricingSection() {
             </div>
           </div>
         </div>
-        <div className={styles.linkRow}>
-          <a className={styles.link} href="/pricing">
-            View full pricing
-          </a>
-        </div>
       </section>
     </div>
   );

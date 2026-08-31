@@ -51,7 +51,7 @@ export const LANG_PRODUCT: ProductSectionProps = {
      same comparison rather than two different ones. */
   headline: "A framework for agent-driven interfaces.",
   description:
-    "Not just chat: agents stream live dashboards, forms, tables, and charts as complete interfaces. Up to 3\u00d7 faster and 67% more token efficient than JSON, at higher structural validity.",
+    "Not just chat: agents stream live dashboards, forms, tables, and charts as complete interfaces. Up to 3\u00d7 faster and 67% more token efficient than JSON, with fewer invalid UI responses.",
   secondaryCta: { label: "View docs", href: "/docs/openui-lang" },
   tone: "light",
   /* No cards. Interactive, Bring your UI library, Safe by default and Stream UI

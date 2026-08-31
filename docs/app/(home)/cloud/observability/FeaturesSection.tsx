@@ -105,7 +105,7 @@ const FEATURES: Feature[] = [
       </>
     ),
     description:
-      "Ask about failed sessions, grouped by issue. Identify the capabilities users request most often and the ones they expect to find but cannot locate.",
+      "Ask for failed sessions, grouped by issue. See which capabilities users want most and which they can’t find.",
   },
   {
     title: "Annotations",
@@ -122,9 +122,9 @@ const FEATURES: Feature[] = [
   },
   {
     title: "Evals",
-    headline: "Stop it happening twice",
+    headline: "Catch repeat issues before users do",
     description:
-      "Turn the responses you flagged into eval cases and push them wherever your evals already live, like Braintrust or LangSmith.",
+      "Turn flagged responses into eval cases for Braintrust, LangSmith, or your existing eval tools.",
   },
 ];
 
@@ -136,7 +136,12 @@ export function FeaturesSection() {
           titleId="observability-features"
           title="Product analytics for AI agents"
           subtitle="not just traces"
-          caption="Connect each response to what users saw, what they did, and whether it met their needs."
+          caption={
+            <>
+              Connect each response to what users saw, <br className={styles.captionBreak} />
+              what they did, and whether it met their needs.
+            </>
+          }
         />
       </header>
       <div className={styles.featureList}>

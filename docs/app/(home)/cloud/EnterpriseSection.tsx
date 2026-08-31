@@ -1,5 +1,4 @@
-import { ArrowRight } from "lucide-react";
-import Link from "next/link";
+import { ExternalTextLink } from "../components/ExternalTextLink/ExternalTextLink";
 import {
   FeatureGridSection,
   type GridFeature,
@@ -45,28 +44,27 @@ export function EnterpriseSection({
   title = "Built for production-scale enterprise use",
   titleId = "enterprise-section-title",
   features = ENTERPRISE_FEATURES,
-  linkLabel = "View trust center",
+  linkLabel = "View trust centre",
+  className,
 }: {
   title?: string;
   titleId?: string;
   features?: GridFeature[];
   linkLabel?: string;
+  className?: string;
 } = {}) {
   return (
-    <section className={styles.section} aria-labelledby={titleId}>
+    <section
+      className={[styles.section, className].filter(Boolean).join(" ")}
+      aria-labelledby={titleId}
+    >
       <div className={styles.header}>
         <h2 id={titleId} className={styles.title}>
           {title}
         </h2>
-        <Link
-          className={styles.link}
-          href="https://trust.thesys.dev/"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
+        <ExternalTextLink className={styles.link} href="https://trust.thesys.dev/">
           {linkLabel}
-          <ArrowRight aria-hidden="true" size={16} strokeWidth={2} />
-        </Link>
+        </ExternalTextLink>
       </div>
       <FeatureGridSection
         features={features}

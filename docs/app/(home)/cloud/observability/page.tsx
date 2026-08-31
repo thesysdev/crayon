@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import { ExternalTextLink } from "../../components/ExternalTextLink/ExternalTextLink";
 import styles from "../../page.module.css";
 import type { GridFeature } from "../../sections/FeatureGridSection/FeatureGridSection";
 import { Footer } from "../../sections/Footer/Footer";
@@ -23,7 +24,7 @@ const TRUST_ITEMS: GridFeature[] = [
     icon: "key",
     title: "Control what you send",
     description:
-      "Choose metadata-only capture to keep generated responses in the browser. A hook lets you edit or drop events before they’re sent.",
+      "Choose metadata-only capture to keep generated responses in the browser. Edit or drop events before they’re sent.",
   },
   {
     icon: "shield",
@@ -34,7 +35,12 @@ const TRUST_ITEMS: GridFeature[] = [
   {
     icon: "database",
     title: "Compliance",
-    description: "GDPR, SOC 2, and ISO 27001 details are available in the Trust Center.",
+    description: (
+      <>
+        GDPR, SOC 2, and ISO 27001 details are available in the{" "}
+        <ExternalTextLink href="https://trust.thesys.dev">Trust centre</ExternalTextLink>.
+      </>
+    ),
   },
 ];
 
@@ -57,7 +63,7 @@ export const metadata: Metadata = {
 export default function ObservabilityPage() {
   return (
     <div className={styles.page}>
-      <div className={styles.heroShell}>
+      <div className={`${styles.heroShell} ${cloudStyles.sectionRhythm}`}>
         <HeroSection
           align="left"
           title={
@@ -140,11 +146,13 @@ export default function ObservabilityPage() {
         <EnterpriseSection
           titleId="observability-trust"
           title="Secure, compliant, and under your control"
-          linkLabel="View the Trust Center"
+          className={cloudStyles.trustSection}
           features={TRUST_ITEMS}
         />
 
-        <FaqSection />
+        <div className={cloudStyles.faqBand}>
+          <FaqSection />
+        </div>
         <CloudCtaSection />
       </div>
       <Footer />

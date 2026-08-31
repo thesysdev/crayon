@@ -58,14 +58,14 @@ export default function GatewayPage() {
                 href="https://console.thesys.dev/keys"
                 external
                 variant="primary"
-                label="Get API Key"
+                label="Get API key"
                 badge={<ArrowUpRight size={16} strokeWidth={2.25} />}
               />
               <BevelButton
                 href="https://zcal.co/t/thesys/demo"
                 external
                 variant="secondary"
-                label="Get a demo"
+                label="Book a demo"
                 badge={<ArrowUpRight size={16} strokeWidth={2.25} />}
               />
             </div>
@@ -97,7 +97,7 @@ export default function GatewayPage() {
         <CloudCtaSection
           title="Run OpenUI in production."
           primary={{
-            label: "Get API Key",
+            label: "Get API key",
             href: "https://console.thesys.dev/keys",
             external: true,
           }}

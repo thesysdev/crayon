@@ -15,7 +15,10 @@ const TRACE_STEPS = [
 const BLIND_SPOTS = [
   { title: "User goal met", description: "The requested comparison is missing" },
   { title: "User experience captured", description: "Logs miss the rendered UI and user actions" },
-  { title: "Missing capabilities identified", description: "Latency and errors miss unmet needs" },
+  {
+    title: "Missing capabilities identified",
+    description: "Latency and errors don’t reveal unmet needs",
+  },
 ];
 
 function StatusMark({ failed = false }: { failed?: boolean }) {

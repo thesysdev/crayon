@@ -14,7 +14,7 @@ export function UsageSection() {
         imageAlt="OpenUI Gateway usage, cost, and correction dashboard"
         title="Usage, cost, and corrections"
         headline="in a single view"
-        description="See how generations are delivered, what they cost, and how often Gateway corrects them."
+        description="See usage and costs across generation and delivery, along with how often Gateway repairs invalid output."
       />
     </section>
   );

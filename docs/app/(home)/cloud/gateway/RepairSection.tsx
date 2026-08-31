@@ -1,10 +1,11 @@
 import { production } from "@/lib/benchmark-data";
 import Image from "next/image";
+import { ExternalTextLink } from "../../components/ExternalTextLink/ExternalTextLink";
 import {
   FeatureGridSection,
   type GridFeature,
 } from "../../sections/FeatureGridSection/FeatureGridSection";
-import { GatewayDiagram } from "./GatewayDiagram";
+import placeholderStyles from "../sections.module.css";
 import styles from "./sections.module.css";
 
 const ENTELLIGENCE_CORRECTION_RATE = "XX";
@@ -39,7 +40,14 @@ const STACK_FEATURES: GridFeature[] = [
   {
     icon: "signal",
     title: "Broad model support",
-    description: "Use any model string from models.dev, with more available through OpenRouter.",
+    description: (
+      <>
+        Use models listed on{" "}
+        <ExternalTextLink href="https://models.dev">models.dev</ExternalTextLink>, with more
+        available through{" "}
+        <ExternalTextLink href="https://openrouter.ai">OpenRouter</ExternalTextLink>.
+      </>
+    ),
   },
 ];
 
@@ -70,8 +78,12 @@ export function RepairSection() {
         </p>
       </div>
 
-      <div className={styles.diagram}>
-        <GatewayDiagram />
+      {/* Reserve the artwork space and brief until the illustration is ready in P2. */}
+      <div className={placeholderStyles.artPlaceholder} aria-hidden="true">
+        <p className={placeholderStyles.artPlaceholderLabel}>
+          Diagram: component schema + prompt → Gateway → valid response returns to the client;
+          invalid response goes to a small repair model, which streams the delta.
+        </p>
       </div>
 
       <aside className={styles.customerQuote}>

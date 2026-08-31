@@ -1,3 +1,4 @@
+import { ExternalTextLink } from "../../components/ExternalTextLink/ExternalTextLink";
 import type { GridFeature } from "../../sections/FeatureGridSection/FeatureGridSection";
 import { EnterpriseSection } from "../EnterpriseSection";
 
@@ -9,7 +10,7 @@ const FEATURES: GridFeature[] = [
   },
   {
     icon: "database",
-    title: "Data training controls",
+    title: "No training on your data",
     description: "Your data is not used for training, except with free models.",
   },
   {
@@ -18,10 +19,7 @@ const FEATURES: GridFeature[] = [
     description: (
       <>
         GDPR, SOC 2, and ISO 27001 details are available in the{" "}
-        <a href="https://trust.thesys.dev" target="_blank" rel="noreferrer">
-          Trust Center
-        </a>
-        .
+        <ExternalTextLink href="https://trust.thesys.dev">Trust centre</ExternalTextLink>.
       </>
     ),
   },
@@ -36,11 +34,8 @@ const FEATURES: GridFeature[] = [
     title: "Service uptime",
     description: (
       <>
-        View current and historical status at{" "}
-        <a href="https://status.thesys.dev" target="_blank" rel="noreferrer">
-          status.thesys.dev
-        </a>
-        .
+        View current and historical uptime on our{" "}
+        <ExternalTextLink href="https://status.thesys.dev">service status page</ExternalTextLink>.
       </>
     ),
   },
@@ -57,7 +52,6 @@ export function SecuritySection() {
       title="Built for enterprise requirements"
       titleId="gateway-security"
       features={FEATURES}
-      linkLabel="View the Trust Center"
     />
   );
 }

@@ -36,7 +36,7 @@ const FAQS: MarketingFaq[] = [
     question: "Do I need OpenUI Gateway to use OpenUI?",
     answer: [
       "No. You can call any supported LLM directly.",
-      "For production applications, OpenUI Gateway is recommended because it adds GenUI-specific validation, automatic corrections, model routing, and provider fallbacks through an OpenAI-compatible API.",
+      "For production applications, OpenUI Gateway adds validation and automatic corrections for generated UI, model routing, and provider fallbacks through an OpenAI-compatible API.",
       "You can usually adopt it by changing your base URL and model configuration.",
     ],
   },
@@ -46,7 +46,7 @@ const FAQS: MarketingFaq[] = [
     question: "Do I need both Gateway and Observability?",
     answer: [
       "No. They work independently.",
-      "We do recommend running both. Gateway makes generations more reliable, Observability shows you how they landed, and together they cover the whole path from the model to what the user actually experienced.",
+      "We recommend using both. Gateway makes generated UI more reliable. Observability shows what users experienced and whether it worked.",
     ],
   },
   {
@@ -94,7 +94,7 @@ export function FaqSection({
         <p className={styles.note}>
           {contact ?? (
             <>
-              If you can&rsquo;t find your answer here, join our{" "}
+              Have another question? Join our{" "}
               <a
                 className={styles.noteLink}
                 href="https://discord.com/invite/Pbv5PsqUSv"

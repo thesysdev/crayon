@@ -52,7 +52,8 @@ const FEATURES: GridFeature[] = [
   {
     Icon: CursorClick,
     title: "Interactive",
-    description: "Reactive state, inputs, and actions wired straight to your tools.",
+    description:
+      "Connect inputs and actions to your tools, with UI that updates as users interact.",
   },
   {
     Icon: ShieldCheck,
