@@ -113,23 +113,23 @@ What it does:
 | Value           | OpenUI Cloud route                           | Self-hosted route                        |
 | --------------- | -------------------------------------------- | ---------------------------------------- |
 | `default`       | Direct OpenAI SDK Responses proxy            | Direct OpenAI SDK Chat Completions proxy |
-| `langgraph`     | LangGraph Agent Server + Cloud provider      | LangGraph Agent Server + your provider   |
+| `langgraph`     | LangGraph + Cloud provider                   | LangGraph + your provider                |
 | `vercel-ai-sdk` | Vercel AI SDK Next.js agent + Cloud provider | Vercel AI SDK `streamText()` route       |
 | `vercel-eve`    | Vercel Eve agent + Cloud provider            | Vercel Eve agent + your provider         |
 
-The default implementation is part of each base template. For LangGraph, Vercel AI SDK, or Vercel Eve, the CLI applies a framework-specific set of files plus a manifest for its dependencies, scripts, removals, and onboarding text. Both Vercel AI SDK variants are standard Next.js deployments whose `streamText()` result returns `toUIMessageStreamResponse()` for `vercelAIAdapter()`. Both LangGraph variants separate the Agent Server described by `langgraph.json` from the Next.js frontend/proxy. The proxy uses `@openuidev/langchain`, and the browser consumes its AG-UI stream with `agUIAdapter()`. Both Eve variants wrap Next.js with `withEve()` and talk to Eve's native `/eve/v1/session*` protocol from the browser; a small client adapter maps Eve events to AG-UI for `agUIAdapter()`.
+The default implementation is part of each base template. For LangGraph or Vercel AI SDK, the CLI applies a framework-specific set of files plus a manifest for its dependencies, scripts, removals, and onboarding text. Both Vercel AI SDK variants are standard Next.js deployments whose `streamText()` result returns `toUIMessageStreamResponse()` for `vercelAIAdapter()`.
 
 In Cloud framework variants, the selected framework owns the agent orchestration and application tool loop. OpenUI Cloud is attached as the model provider and conversation store. Reports, presentations, web search, image search, and configured MCP tools remain provider-executed Cloud tools on the default, LangGraph, and Vercel AI SDK Cloud routes, while application tools such as `get_weather` execute inside the selected framework. The Eve Cloud overlay uses Cloud as the Chat Completions provider and does not attach those provider-executed Cloud tools. Choosing a Cloud framework does not configure a user-owned model provider; choose `openui-self-hosted` for that.
 
-For either generated LangGraph app, `pnpm dev` starts both Next.js and the local Agent Server. Deploy the Next.js frontend to Vercel, then point `LANGGRAPH_API_URL` at wherever the Agent Server runs. The Cloud graph needs `THESYS_API_KEY`; the self-hosted graph needs the selected provider credentials such as `OPENAI_API_KEY`. Eve embeds in the Next.js process, so `pnpm dev` is enough for both Eve variants.
+The Cloud graph needs `THESYS_API_KEY`; the self-hosted graph needs the selected provider credentials such as `OPENAI_API_KEY`.
 
 Every framework overlay includes `get_weather` as its example app-owned function tool. Ask “What’s the weather in Berlin?” to exercise the selected backend’s native tool loop.
 
 #### Conversation storage
 
-Every OpenUI Cloud variant uses OpenUI Cloud as its only durable conversation and artifact store. The browser connects directly through `useOpenuiCloudStorage()` with a short-lived frontend token. Default, LangGraph, and Vercel AI SDK Cloud routes append each turn to the same Cloud conversation from `/api/chat` with `conversation: threadId` and `store: true`. The Eve Cloud overlay keeps that Cloud thread store and maps each Cloud `threadId` to an Eve session cursor in the browser; it does not use `/api/chat`. The Cloud LangGraph relay creates a temporary Agent Server thread for each run and deletes it afterward; that thread is not the chat-history store. Configure a LangGraph checkpointer separately only when the graph itself needs durable state, interrupts, or resumable runs.
+Every OpenUI Cloud variant uses OpenUI Cloud as its only durable conversation and artifact store. The browser connects directly through `useOpenuiCloudStorage()` with a short-lived frontend token, and `/api/chat` appends each turn to the same Cloud conversation with `conversation: threadId` and `store: true`. Vercel does not add a second store. Configure a LangGraph checkpointer separately only when the graph itself needs durable state, interrupts, or resumable runs.
 
-The self-hosted variants do not configure durable storage. `AgentInterface` keeps the conversation in memory for the current page session; refreshing the page loses it. Default, Vercel AI SDK, and LangGraph send that history to `/api/chat`. The self-hosted LangGraph relay also creates and deletes a temporary Agent Server thread for each run. Eve maps follow-ups onto its session protocol for the page session only. Pass a storage implementation to `AgentInterface` and back it with your own database when persistence is required; add a LangGraph checkpointer only for graph-specific durable state.
+The self-hosted variants do not configure durable storage. `AgentInterface` keeps the conversation in memory for the current page session and sends that history to `/api/chat`; refreshing the page loses it. Pass a storage implementation to `AgentInterface` and back it with your own database when persistence is required; add a LangGraph checkpointer only for graph-specific durable state.
 
 #### Template-specific `.env`
 
