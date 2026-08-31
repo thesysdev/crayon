@@ -3,9 +3,9 @@ import { ChatOpenAI } from "@langchain/openai";
 import { generateSystemPrompt } from "@openuidev/lang-core";
 import { createAgent } from "langchain";
 import { z } from "zod";
-import librarySpec from "../generated/spec.json";
-import { promptOptions } from "../lib/prompt-options";
-import { getWeather, WEATHER_TOOL_DESCRIPTION } from "../lib/tools/get-weather";
+import librarySpec from "./generated/spec.json";
+import { promptOptions } from "./lib/prompt-options";
+import { getWeather, WEATHER_TOOL_DESCRIPTION } from "./lib/tools/get-weather";
 
 const getWeatherTool = tool(
   async ({ location }, config) =>

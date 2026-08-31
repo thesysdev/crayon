@@ -5,10 +5,9 @@ import { ChatOpenAI } from "@langchain/openai";
 import { artifactTool, generateSystemPrompt } from "@openuidev/thesys-server";
 import { createAgent, createMiddleware } from "langchain";
 import { z } from "zod";
-
-import { requiredEnv } from "../lib/env";
-import { DEFAULT_MODEL } from "../lib/models";
-import { executeGetWeather, getWeatherTool } from "../lib/tools/get-weather";
+import { requiredEnv } from "./lib/env";
+import { DEFAULT_MODEL } from "./lib/models";
+import { executeGetWeather, getWeatherTool } from "./lib/tools/get-weather";
 
 const getWeather = tool(
   async ({ location }, config) =>
