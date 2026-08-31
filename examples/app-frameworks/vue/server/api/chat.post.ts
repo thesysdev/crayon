@@ -1,5 +1,5 @@
 import { createOpenAI } from "@ai-sdk/openai";
-import { generateSystemPrompt, type ChatLibrary } from "@openuidev/thesys-server";
+import { generateSystemPrompt } from "@openuidev/thesys-server";
 import { convertToModelMessages, stepCountIs, streamText } from "ai";
 import { library, promptOptions } from "~/lib/library";
 import { tools } from "~/lib/tools";
@@ -9,12 +9,8 @@ const openai = createOpenAI({
   baseURL: "https://api.thesys.dev/v1/embed",
 });
 
-const { components: _components, ...chatLibrary } = library.toSpec() as ChatLibrary & {
-  components?: unknown;
-};
-
 const systemPrompt = generateSystemPrompt({
-  library: chatLibrary,
+  library: library.toSpec(),
   promptOptions: {
     examples: promptOptions.examples,
     preamble: promptOptions.preamble,

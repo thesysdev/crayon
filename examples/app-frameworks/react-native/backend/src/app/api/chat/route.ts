@@ -1,14 +1,10 @@
 import { library, promptOptions } from "@/library";
-import { generateSystemPrompt, type ChatLibrary } from "@openuidev/thesys-server";
+import { generateSystemPrompt } from "@openuidev/thesys-server";
 import { NextRequest } from "next/server";
 import OpenAI from "openai";
 
-const { components: _components, ...chatLibrary } = library.toSpec() as ChatLibrary & {
-  components?: unknown;
-};
-
 const SYSTEM_PROMPT = generateSystemPrompt({
-  library: chatLibrary,
+  library: library.toSpec(),
   promptOptions: {
     examples: promptOptions.examples,
     preamble: promptOptions.preamble,

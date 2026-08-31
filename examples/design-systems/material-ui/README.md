@@ -26,7 +26,7 @@ On the client, `<AgentInterface />` from `@openuidev/react-ui` provides the chat
 ┌────────────────────────────────────┐        ┌────────────────────────────────────┐
 │   Browser                          │  HTTP  │   Next.js API Route                │
 │                                    │ ──────►│                                    │
-│  • <AgentInterface /> manages UI   │        │  • Loads system-prompt.txt         │
+│  • <AgentInterface /> manages UI   │        │  • Loads spec.json                 │
 │  • openAIResponsesAdapter()        │◄────── │  • OpenUI Cloud Responses proxy    │
 │  • muiChatLibrary renders nodes    │  SSE   │  • App tools via runFunctionToolLoop│
 │  • MUI ThemeProvider + CssBaseline │        │  • Streams response as SSE events  │
@@ -62,7 +62,7 @@ material-ui/
 │   │       ├── unions.ts          # Zod union types for component children
 │   │       └── components/        # One file per component (MUI wrappers)
 │   └── generated/
-│       └── system-prompt.txt      # Auto-generated — do not edit manually
+│       └── spec.json              # Auto-generated library spec — do not edit manually
 └── package.json
 ```
 
@@ -80,7 +80,7 @@ The library exposes a representative subset of Material UI components mapped to 
 | Layout     | `Tabs` / `TabItem`, `Accordion` / `AccordionItem`                                             |
 | Follow-ups | `FollowUpBlock` / `FollowUpItem`                                                              |
 
-Each component is defined with `defineComponent({ name, props, description, component })` where `props` is a Zod schema. The schema and description are serialized into the system prompt by `pnpm generate:prompt` (the OpenUI CLI reads `src/library.ts`), and `component` renders the node with Material UI primitives.
+Each component is defined with `defineComponent({ name, props, description, component })` where `props` is a Zod schema. The schema and description are serialized into `src/generated/spec.json` by `pnpm generate` (the OpenUI CLI reads `src/library.ts`), and `component` renders the node with Material UI primitives.
 
 ## Theming
 
@@ -116,14 +116,14 @@ cp .env.example .env.local
 pnpm dev
 ```
 
-`pnpm dev` first runs `generate:prompt` to (re)generate `src/generated/system-prompt.txt` from the library, then starts Next.js on http://localhost:3000.
+`pnpm dev` first runs `generate` to (re)write `src/generated/spec.json` from the library, then starts Next.js on http://localhost:3000.
 
 ### Regenerate the system prompt
 
-Whenever you add or change a component, regenerate the prompt:
+Whenever you add or change a component, regenerate the spec:
 
 ```bash
-pnpm generate:prompt
+pnpm generate
 ```
 
 ### Build
@@ -137,7 +137,7 @@ pnpm build
 1. Create `src/lib/mui-genui/components/<name>.tsx` and export a `defineComponent({ ... })`.
 2. If it can appear inside other containers, add its `.ref` to `ContentChildUnion` in `unions.ts`.
 3. Register it in the `components` array (and a `componentGroups` entry) in `index.tsx`.
-4. Run `pnpm generate:prompt` so the LLM learns about it.
+4. Run `pnpm generate` so the LLM learns about it.
 
 ## Verify
 

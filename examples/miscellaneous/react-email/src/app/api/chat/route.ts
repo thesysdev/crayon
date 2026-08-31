@@ -1,15 +1,11 @@
 import { emailLibrary, emailPromptOptions } from "@openuidev/react-email";
-import { generateSystemPrompt, type ChatLibrary } from "@openuidev/thesys-server";
+import { generateSystemPrompt } from "@openuidev/thesys-server";
 import { NextRequest } from "next/server";
 import OpenAI from "openai";
 import type { ChatCompletionMessageParam } from "openai/resources/chat/completions.mjs";
 
-const { components: _components, ...chatLibrary } = emailLibrary.toSpec() as ChatLibrary & {
-  components?: unknown;
-};
-
 const systemPrompt = generateSystemPrompt({
-  library: chatLibrary,
+  library: emailLibrary.toSpec(),
   promptOptions: {
     examples: emailPromptOptions.examples,
     preamble: emailPromptOptions.preamble,

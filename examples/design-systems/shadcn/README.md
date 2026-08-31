@@ -80,7 +80,7 @@ shadcn/
 │   │       ├── unions.ts          # Zod union types for component children
 │   │       └── components/        # One file per component (45+ total)
 │   └── generated/
-│       └── system-prompt.txt      # Auto-generated — do not edit manually
+│       └── spec.json              # Auto-generated library spec — do not edit manually
 └── package.json
 ```
 
@@ -115,7 +115,7 @@ THESYS_API_KEY=sk-th-...
 pnpm dev
 ```
 
-This runs `generate:prompt` first (compiles the component library → `src/generated/system-prompt.txt`) then starts the Next.js dev server at `http://localhost:3000`.
+This runs `generate` first (compiles the component library → `src/generated/spec.json`) then starts the Next.js dev server at `http://localhost:3000`.
 
 ---
 
@@ -123,12 +123,12 @@ This runs `generate:prompt` first (compiles the component library → `src/gener
 
 ### System Prompt Generation
 
-The `src/lib/shadcn-genui/index.tsx` file defines the entire component library using `createLibrary()`. At dev time, the OpenUI CLI reads this library and generates `src/generated/system-prompt.txt` — a text file containing every component's name, prop schema, description, and usage examples. This is what the LLM receives as its system prompt.
+The `src/lib/shadcn-genui/index.tsx` file defines the entire component library using `createLibrary()`. At dev time, the OpenUI CLI reads this library and writes `src/generated/spec.json`. Cloud's `generateSystemPrompt({ library })` turns that spec into the managed system prompt.
 
 Re-run generation any time you change component definitions:
 
 ```bash
-pnpm generate:prompt
+pnpm generate
 ```
 
 ### `src/app/api/chat/route.ts` — Backend
@@ -256,7 +256,7 @@ Returns mock search results for any query.
 | Script                 | Description                                                  |
 | ---------------------- | ------------------------------------------------------------ |
 | `pnpm dev`             | Generate system prompt, then start the Next.js dev server    |
-| `pnpm generate:prompt` | Recompile `shadcn-genui` → `src/generated/system-prompt.txt` |
+| `pnpm generate` | Recompile `shadcn-genui` → `src/generated/spec.json` |
 | `pnpm build`           | Build for production                                         |
 | `pnpm start`           | Start the production server                                  |
 

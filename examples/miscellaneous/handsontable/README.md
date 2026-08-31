@@ -109,7 +109,7 @@ hands-on-table-chat/
 │   │       └── table/
 │   │           └── route.ts           # GET/POST for client ↔ server table sync
 │   ├── generated/
-│   │   └── system-prompt.txt          # Auto-generated OpenUI Lang prompt
+│   │   └── spec.json                  # Auto-generated library spec
 │   └── lib/
 │       └── spreadsheet-library.tsx    # OpenUI component library with SpreadsheetTable
 ├── .env.example                       # Environment variable template
