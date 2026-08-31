@@ -25,7 +25,7 @@ Each example has one primary home based on the integration seam it is intended t
 | [Google ADK](./agent-frameworks/google-adk)       | A Google ADK TypeScript agent streaming OpenUI Lang to a Next.js client |
 | [LangGraph Platform](./agent-frameworks/langgraph-platform) | A DeepAgents graph on LangGraph Platform, streamed to OpenUI through the LangChain adapter |
 | [Mastra](./agent-frameworks/mastra)               | A Mastra agent connected to OpenUI through AG-UI                        |
-| [Vercel AI SDK](./agent-frameworks/vercel-ai-sdk) | `streamText`, tools, and OpenUI rendering with the Vercel AI SDK        |
+| [Vercel AI SDK](./agent-frameworks/vercel-ai-sdk) | AgentInterface over a Vercel AI SDK `streamText` backend              |
 | [Vercel Eve](./agent-frameworks/vercel-eve)       | An Eve agent rendered through Agent Interface                           |
 
 ### App frameworks

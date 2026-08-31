@@ -1,10 +1,9 @@
 import type { Metadata } from "next";
-import { ThemeShell } from "@/components/theme-shell";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Vercel AI Chat",
-  description: "Generative UI Chat with Vercel AI SDK + OpenUI Renderer",
+  title: "OpenUI + Vercel AI SDK",
+  description: "Generative UI chat with the Vercel AI SDK and Agent Interface",
 };
 
 export default function RootLayout({
@@ -14,9 +13,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>
-        <ThemeShell>{children}</ThemeShell>
-      </body>
+      <body>{children}</body>
     </html>
   );
 }

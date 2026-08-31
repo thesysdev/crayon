@@ -1,26 +1,10 @@
 import { MastraAgent } from "@ag-ui/mastra";
-import { Agent } from "@mastra/core/agent";
 import type { Message } from "@ag-ui/core";
-import { generateSystemPrompt } from "@openuidev/thesys-server";
 import { NextRequest } from "next/server";
-import { getStockPrice, getWeather } from "@/tools";
+import { openuiAgent } from "@/mastra";
 
 const agent = new MastraAgent({
-  agent: new Agent({
-    id: "openui-agent",
-    name: "OpenUI Agent",
-    instructions: generateSystemPrompt({
-      instructions:
-        "You are a helpful assistant. Use tools when relevant and help the user with their requests. Always format your responses cleanly.",
-    }),
-    // Mastra's OpenAI-compatible client → POST /v1/embed/chat/completions
-    model: {
-      id: "google/gemini-3.6-flash-free",
-      apiKey: process.env.THESYS_API_KEY,
-      url: "https://api.thesys.dev/v1/embed",
-    },
-    tools: { getWeather, getStockPrice },
-  }),
+  agent: openuiAgent,
   resourceId: "chat-user",
 });
 
