@@ -12,6 +12,14 @@ export type CommandResult = {
 
 export type RunCommandOptions = {
   env?: NodeJS.ProcessEnv;
+  /** When false, capture stdout/stderr without writing them to the parent. Default true. */
+  echo?: boolean;
+  /** Default inherit so interactive CLIs can prompt. Use ignore for login probes. */
+  stdin?: "inherit" | "ignore";
+  /** Inherit stdout/stderr so the child sees a TTY (needed for `vercel login`). */
+  inheritOutput?: boolean;
+  /** Max bytes retained in `diagnosticTail` when output is piped. Default 16KiB. */
+  captureLimit?: number;
 };
 
 /**
@@ -31,10 +39,17 @@ export function runCommand(
 ): Promise<CommandResult> {
   return new Promise((resolve) => {
     const startedAt = Date.now();
+    const echo = options.echo !== false;
+    const inheritOutput = Boolean(options.inheritOutput);
+    const captureLimit = options.captureLimit ?? DIAGNOSTIC_TAIL_LIMIT;
     const child = spawn(command, args, {
       cwd,
       env: options.env,
-      stdio: ["inherit", "pipe", "pipe"],
+      stdio: [
+        options.stdin === "ignore" ? "ignore" : "inherit",
+        inheritOutput ? "inherit" : "pipe",
+        inheritOutput ? "inherit" : "pipe",
+      ],
     });
     let diagnosticTail = "";
     let settled = false;
@@ -42,16 +57,18 @@ export function runCommand(
     let forceKillTimer: NodeJS.Timeout | undefined;
 
     const observe = (chunk: Buffer) => {
-      diagnosticTail = (diagnosticTail + chunk.toString("utf8")).slice(-DIAGNOSTIC_TAIL_LIMIT);
+      diagnosticTail = (diagnosticTail + chunk.toString("utf8")).slice(-captureLimit);
     };
-    child.stdout?.on("data", (chunk: Buffer) => {
-      process.stdout.write(chunk);
-      observe(chunk);
-    });
-    child.stderr?.on("data", (chunk: Buffer) => {
-      process.stderr.write(chunk);
-      observe(chunk);
-    });
+    if (!inheritOutput) {
+      child.stdout?.on("data", (chunk: Buffer) => {
+        if (echo) process.stdout.write(chunk);
+        observe(chunk);
+      });
+      child.stderr?.on("data", (chunk: Buffer) => {
+        if (echo) process.stderr.write(chunk);
+        observe(chunk);
+      });
+    }
 
     const finish = (result: Omit<CommandResult, "diagnosticTail" | "durationMs">) => {
       if (settled) return;
