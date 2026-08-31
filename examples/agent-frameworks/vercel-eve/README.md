@@ -25,7 +25,7 @@ agent. Eve keeps its native session and resumable-streaming protocol. OpenUI's
    cp .env.example .env
    ```
 
-   Set `THESYS_API_KEY` in `.env`. The Eve agent calls OpenUI Cloud as its model provider.
+   Set `THESYS_API_KEY` in `.env`. The Eve agent calls OpenUI Cloud Chat Completions as its model provider. Ask "What's the weather in Berlin?" to exercise the included Eve tool.
 
 3. Start the Next.js application and embedded Eve development server:
 
@@ -54,7 +54,9 @@ Eve session events ──► eveAdapter() ──► OpenUI renderer
 - `src/eve-chat.ts` delivers turns through Eve's HTTP session protocol, returns the raw NDJSON
   stream, and persists session cursors per OpenUI thread. `eveAdapter()` maps that stream to AG-UI.
 - `agent/instructions/openui.ts` injects the generated OpenUI Lang prompt when an Eve session
-  starts.
+  starts. `agent/instructions/identity.md` is the agent's standing identity.
+- `agent/tools/get_weather.ts` is an example Eve tool (Open-Meteo). Eve's built-in
+  `ask_question` is disabled so clarifying questions stay in chat text.
 - `src/thread-store.ts` stores thread metadata, transcripts, continuation tokens, and stream
   positions in browser `localStorage`.
 
@@ -62,7 +64,8 @@ Eve session events ──► eveAdapter() ──► OpenUI renderer
 
 | Environment variable | Default                                          | Purpose                                        |
 | -------------------- | ------------------------------------------------ | ---------------------------------------------- |
-| `THESYS_API_KEY` | —                                                | OpenUI Cloud API key.                          |
+| `THESYS_API_KEY`     | —                                                | OpenUI Cloud API key.                          |
+| `OPENUI_MODEL`       | `google/gemini-3.6-flash-free`                   | Cloud model id for Eve's Chat Completions call. |
 
 ## Eve commands
 
@@ -85,10 +88,12 @@ pnpm start
 
 ```text
 examples/agent-frameworks/vercel-eve/
-|- agent/agent.ts                    # Eve model and build configuration
+|- agent/agent.ts                    # Eve model (Cloud Completions) and build config
 |- agent/channels/eve.ts             # Eve HTTP session channel
+|- agent/instructions/identity.md    # Standing agent identity
 |- agent/instructions/openui.ts      # Generated OpenUI Lang instructions
-|- agent/tools/get_current_time.ts   # Example Eve tool
+|- agent/tools/get_weather.ts        # Example Eve tool
+|- agent/tools/ask_question.ts       # Disables Eve's built-in ask_question
 |- src/app/page.tsx                  # OpenUI AgentInterface chat
 |- src/eve-chat.ts                   # Eve session transport, eveAdapter, persistence
 |- src/thread-store.ts               # Browser thread and transcript storage

@@ -22,6 +22,10 @@ export default function Page() {
         starterVariant="short"
         starters={[
           {
+            displayText: "Berlin weather",
+            prompt: "What's the weather in Berlin?",
+          },
+          {
             displayText: "Launch checklist",
             prompt: "Create a launch checklist for a new AI feature.",
           },

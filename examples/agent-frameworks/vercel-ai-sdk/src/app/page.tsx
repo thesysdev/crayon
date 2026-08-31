@@ -1,7 +1,5 @@
 "use client";
 
-import "@openuidev/thesys/styles.css";
-
 import {
   AgentInterface,
   fetchLLM,
@@ -28,7 +26,7 @@ export default function Page() {
   );
 
   return (
-    <div className="h-screen w-screen overflow-hidden relative">
+    <div className="app-shell">
       <AgentInterface
         llm={llm}
         componentLibrary={chatLibrary}

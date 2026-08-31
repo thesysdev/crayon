@@ -60,14 +60,6 @@ export async function POST(req: Request) {
 
   result.text.then((text) => {
     conversationLog.push({ role: "assistant", content: text });
-    console.info(
-      "[OpenUI Lang] Conversation:\n",
-      JSON.stringify(
-        conversationLog.map((m) => ({ ...m, content: m.content.replace(/\n/g, " ") })),
-        null,
-        2,
-      ),
-    );
   });
 
   return result.toUIMessageStreamResponse();
