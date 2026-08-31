@@ -9,6 +9,7 @@ export const dynamic = "force-dynamic";
 interface ChatBody {
   systemPrompt?: string;
   messages?: Array<{ role?: string; content?: unknown }>;
+  threadId?: string;
 }
 
 /**
@@ -60,7 +61,7 @@ function extractText(content: unknown): string {
 
 export async function POST(req: NextRequest) {
   const body = (await req.json().catch(() => ({}))) as ChatBody;
-  const conversationId = req.headers.get("x-conversation-id") || crypto.randomUUID();
+  const conversationId = body.threadId?.trim() || crypto.randomUUID();
   const cwd = process.env.PI_AGENT_CWD || process.cwd();
 
   // The frontend re-sends the full thread, but Pi keeps its own transcript, so
