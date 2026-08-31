@@ -56,6 +56,7 @@ export async function POST(req: NextRequest) {
     return Response.json({ error: "THESYS_API_KEY is not configured" }, { status: 500 });
   }
 
+  // Chat Completions → POST /v1/embed/chat/completions (plain-text deltas for RN)
   const openai = new OpenAI({
     apiKey,
     baseURL: "https://api.thesys.dev/v1/embed",
@@ -67,7 +68,7 @@ export async function POST(req: NextRequest) {
   if (lastUserMsg) conversationLog.push({ role: "user", content: extractText(lastUserMsg) });
 
   const completion = await openai.chat.completions.create({
-    model: process.env.OPENUI_MODEL || "google/gemini-3.6-flash-free",
+    model: "google/gemini-3.6-flash-free",
     stream: true,
     messages: [{ role: "system", content: SYSTEM_PROMPT }, ...messages],
   });

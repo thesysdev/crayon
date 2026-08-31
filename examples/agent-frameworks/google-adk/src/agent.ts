@@ -33,8 +33,8 @@ export const getWeather = new FunctionTool({
 });
 
 /**
- * ADK still owns tools, sessions, and the Runner. The model is OpenUI Cloud
- * (Gemini over the OpenAI-compatible embed API) via a BaseLlm adapter.
+ * ADK still owns tools, sessions, and the Runner. Custom() speaks Chat
+ * Completions (POST /v1/embed/chat/completions) via the embed base URL.
  */
 export function createAgent() {
   const apiKey = process.env.THESYS_API_KEY;
@@ -42,7 +42,7 @@ export function createAgent() {
 
   return new Agent({
     name: "weather_assistant",
-    model: Custom(process.env.OPENUI_MODEL || "google/gemini-3.6-flash-free", {
+    model: Custom("google/gemini-3.6-flash-free", {
       name: "openui-adk-agent",
       baseURL: process.env.OPENUI_BASE_URL || "https://api.thesys.dev/v1/embed",
       apiKey,

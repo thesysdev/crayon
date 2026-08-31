@@ -46,7 +46,6 @@ the Next.js app (serves the UI). The default dev script starts both.
 
    ```env
    THESYS_API_KEY=sk-th-...
-   OPENUI_MODEL=google/gemini-3.6-flash-free
    LANGGRAPH_API_URL=http://localhost:2024
    LANGGRAPH_ASSISTANT_ID=agent
    ```

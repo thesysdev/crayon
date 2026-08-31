@@ -67,7 +67,6 @@ cp .env.local.example .env.local
 | `NEXT_PUBLIC_SUPABASE_URL`      | Supabase dashboard → Settings → API → Project URL     |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase dashboard → Settings → API → anon/public key |
 | `THESYS_API_KEY`            | [console.thesys.dev/keys](https://console.thesys.dev/keys) |
-| `OPENUI_MODEL` _(optional)_ | Defaults to `google/gemini-3.6-flash-free`                |
 
 ### 5. Install and run
 

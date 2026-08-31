@@ -54,8 +54,9 @@ const agent = new MastraAgent({
       instructions:
         "You are a helpful assistant. Use tools when relevant and help the user with their requests. Always format your responses cleanly.",
     }),
+    // Mastra's OpenAI-compatible client → POST /v1/embed/chat/completions
     model: {
-      id: (process.env.OPENUI_MODEL as `${string}/${string}`) || "google/gemini-3.6-flash-free",
+      id: "google/gemini-3.6-flash-free",
       apiKey: process.env.THESYS_API_KEY,
       url: process.env.OPENUI_BASE_URL || "https://api.thesys.dev/v1/embed",
     },

@@ -10,4 +10,4 @@ export function envOr(name: string, fallback: string): string {
 
 export const CLOUD_EMBED_URL = "https://api.thesys.dev/v1/embed";
 export const CLOUD_API_ORIGIN = "https://api.thesys.dev";
-export const DEFAULT_MODEL = process.env.OPENUI_MODEL || "google/gemini-3.6-flash-free";
+export const DEFAULT_MODEL = "google/gemini-3.6-flash-free";

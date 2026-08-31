@@ -25,8 +25,7 @@ translates Eve events into AG-UI events that OpenUI renders as live React compon
    cp .env.example .env
    ```
 
-   Set `THESYS_API_KEY` in `.env`. Optionally set `OPENUI_MODEL` (defaults to
-   `google/gemini-3.6-flash-free`). The Eve agent calls OpenUI Cloud as its model provider.
+   Set `THESYS_API_KEY` in `.env`. The Eve agent calls OpenUI Cloud as its model provider.
 
 3. Start the Next.js application and embedded Eve development server:
 
@@ -65,7 +64,6 @@ Eve session events ──► AG-UI adapter ──► OpenUI renderer
 | Environment variable | Default                                          | Purpose                                        |
 | -------------------- | ------------------------------------------------ | ---------------------------------------------- |
 | `THESYS_API_KEY` | —                                                | OpenUI Cloud API key.                          |
-| `OPENUI_MODEL`   | `google/gemini-3.6-flash-free`                   | Model used by the Eve agent.                   |
 
 ## Eve commands
 

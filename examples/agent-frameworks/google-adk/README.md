@@ -8,8 +8,8 @@ An [OpenUI](https://openui.com) example showing how to wire a
 
 - A Google ADK `Agent` with a `FunctionTool` (weather) running inside a Next.js
   API route via an `InMemorySessionService` + `Runner`
-- The model is OpenUI Cloud (Gemini over the OpenAI-compatible embed API). ADK
-  JS has no first-party OpenAI client, so `adk-llm-bridge`'s `Custom()` adapter
+- The model is OpenUI Cloud via Chat Completions (`POST /v1/embed/chat/completions`).
+  ADK JS has no first-party OpenAI client, so `adk-llm-bridge`'s `Custom()` adapter
   supplies a `BaseLlm`
 - Bridging ADK's `runAsync` event stream into OpenAI-style chat-completion SSE
   chunks so OpenUI's `openAIAdapter()` can parse them
@@ -44,7 +44,7 @@ Open [http://localhost:3000](http://localhost:3000) and try a starter such as
 
 - `src/agent.ts` defines the `get_weather` tool and a `createAgent()` builder.
   The instruction is Cloud's `generateSystemPrompt()`. The model is Cloud's
-  Gemini (`google/gemini-3.6-flash-free` by default; override with `OPENUI_MODEL`).
+  Gemini (`google/gemini-3.6-flash-free`).
 - `src/app/api/chat/route.ts` runs the agent with a `Runner`, keys ADK sessions
   by chat `threadId` (so multi-turn history is preserved), and streams the
   assistant text as OpenAI chat-completion SSE chunks.

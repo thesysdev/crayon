@@ -8,7 +8,6 @@ First, create a `.env` file:
 
 ```env
 THESYS_API_KEY=sk-th-...
-OPENUI_MODEL=google/gemini-3.6-flash-free
 ```
 
 Then run the development server:

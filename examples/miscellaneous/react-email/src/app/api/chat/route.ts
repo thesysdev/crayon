@@ -20,6 +20,8 @@ const systemPrompt = generateSystemPrompt({
 export async function POST(req: NextRequest) {
   const { messages } = await req.json();
 
+  // Chat Completions → POST /v1/embed/chat/completions
+  // Matches the frontend's openAIAdapter + openAIMessageFormat.
   const client = new OpenAI({
     apiKey: process.env.THESYS_API_KEY,
     baseURL: "https://api.thesys.dev/v1/embed",
@@ -42,7 +44,7 @@ export async function POST(req: NextRequest) {
   ];
 
   const stream = await client.chat.completions.create({
-    model: process.env.OPENUI_MODEL || "google/gemini-3.6-flash-free",
+    model: "google/gemini-3.6-flash-free",
     messages: chatMessages,
     stream: true,
   });

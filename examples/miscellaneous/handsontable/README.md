@@ -87,7 +87,6 @@ Open [http://localhost:3000](http://localhost:3000) to see the spreadsheet with 
 | Variable         | Required | Default   | Description                       |
 | ---------------- | -------- | --------- | --------------------------------- |
 | `THESYS_API_KEY` | Yes      | —         | Your OpenUI Cloud API key               |
-| `OPENUI_MODEL`   | No       | `google/gemini-3.6-flash-free` | Model id on OpenUI Cloud          |
 
 ## Project Structure
 
@@ -131,7 +130,7 @@ hands-on-table-chat/
 | [`@openuidev/react-ui`](https://openui.com/docs)                                           | OpenUI `AgentInterface` chat component             |
 | [`@openuidev/react-headless`](https://openui.com/docs)                                     | OpenUI adapter and message formatting              |
 | [`@openuidev/react-lang`](https://openui.com/docs)                                         | OpenUI Lang component library DSL                  |
-| [`openai`](https://www.npmjs.com/package/openai)                                           | OpenAI SDK for chat completions with tool calling  |
+| [`openai`](https://www.npmjs.com/package/openai)                                           | OpenAI SDK for the Responses API with tool calling |
 | [`next`](https://nextjs.org/)                                                              | React framework with API routes and SSE streaming. |
 
 ## Try These Prompts

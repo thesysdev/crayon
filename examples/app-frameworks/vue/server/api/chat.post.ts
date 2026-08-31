@@ -26,7 +26,7 @@ export default defineEventHandler(async (event) => {
   const { messages } = await readBody(event);
 
   const result = streamText({
-    model: openai.chat(process.env.OPENUI_MODEL || "google/gemini-3.6-flash-free"),
+    model: openai.responses("google/gemini-3.6-flash-free"),
     system: systemPrompt,
     messages: await convertToModelMessages(messages),
     tools,

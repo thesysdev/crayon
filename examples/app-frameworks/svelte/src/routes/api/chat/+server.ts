@@ -27,7 +27,7 @@ export async function POST({ request }: { request: Request }) {
   const { messages } = await request.json();
 
   const result = streamText({
-    model: openai.chat(env.OPENUI_MODEL || "google/gemini-3.6-flash-free"),
+    model: openai.responses("google/gemini-3.6-flash-free"),
     system: systemPrompt,
     messages: await convertToModelMessages(messages),
     tools,

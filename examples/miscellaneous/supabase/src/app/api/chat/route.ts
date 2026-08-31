@@ -4,7 +4,7 @@ import { NextRequest } from "next/server";
 import OpenAI from "openai";
 import type { ChatCompletionMessageParam } from "openai/resources/chat/completions.mjs";
 
-const MODEL = process.env.OPENUI_MODEL ?? "google/gemini-3.6-flash-free";
+const MODEL = "google/gemini-3.6-flash-free";
 
 /**
  * POST /api/chat
@@ -24,6 +24,8 @@ export async function POST(req: NextRequest) {
   // (cookies) is still available when we persist messages afterwards.
   const supabase = await createSupabaseServer();
 
+  // Chat Completions → POST /v1/embed/chat/completions
+  // Matches openAIAdapter / openAIMessageFormat and the Postgres message rows.
   const client = new OpenAI({
     apiKey: process.env.THESYS_API_KEY,
     baseURL: "https://api.thesys.dev/v1/embed",

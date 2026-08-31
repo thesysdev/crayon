@@ -5,8 +5,9 @@ import { createDeepAgent } from "deepagents";
 
 import { getStockPrice, getWeather, searchWeb } from "./tools";
 
-const MODEL = process.env.OPENUI_MODEL || "google/gemini-3.6-flash-free";
+const MODEL = "google/gemini-3.6-flash-free";
 
+// ChatOpenAI → POST /v1/embed/chat/completions
 const model = new ChatOpenAI({
   model: MODEL,
   apiKey: process.env.THESYS_API_KEY,
