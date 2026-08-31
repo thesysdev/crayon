@@ -185,7 +185,7 @@ export async function resolveCloudApiKey(opts: {
 
   if (method === "manual") {
     console.warn(
-      "⚠ --auth manual is deprecated. Use browser sign-in or pass --api-key for scripted setup.",
+      "[!] --auth manual is deprecated. Use browser sign-in or pass --api-key for scripted setup.",
     );
     const { password } = await import("@inquirer/prompts");
     const key = await cloudAuthPrompt("manual_key_prompt", "MANUAL_KEY_PROMPT_FAILED", () =>
