@@ -2,13 +2,12 @@
 import "@openuidev/react-ui/components.css";
 import "@openuidev/thesys/styles.css";
 
-import { useTheme } from "@/hooks/use-system-theme";
-import { AgentInterface, agUIAdapter, fetchLLM } from "@openuidev/react-ui";
+import { AgentInterface, agUIAdapter, fetchLLM, useSystemThemeMode } from "@openuidev/react-ui";
 import { chatLibrary } from "@openuidev/thesys";
 import { useMemo } from "react";
 
 export default function Page() {
-  const mode = useTheme();
+  const mode = useSystemThemeMode();
 
   const llm = useMemo(
     () =>

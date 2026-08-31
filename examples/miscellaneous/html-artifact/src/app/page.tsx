@@ -1,18 +1,18 @@
 "use client";
 
-import { useTheme } from "@/hooks/use-system-theme";
 import { library } from "@/library";
 import {
   AgentInterface,
   fetchLLM,
   openAIConversationMessageFormat,
   openAIResponsesAdapter,
+  useSystemThemeMode,
 } from "@openuidev/react-ui";
 import { useOpenuiCloudStorage } from "@openuidev/thesys";
 import { useMemo } from "react";
 
 export default function Page() {
-  const mode = useTheme();
+  const mode = useSystemThemeMode();
 
   const llm = useMemo(
     () =>

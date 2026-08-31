@@ -2,14 +2,13 @@
 
 import { GrokBuildInteractionDialog } from "@/components/grok-build-interaction-dialog";
 import { useGrokBuildInteraction } from "@/hooks/use-grok-build-interaction";
-import { useTheme } from "@/hooks/use-system-theme";
 import { createGrokBuildChatProps } from "@/lib/grok-build-chat";
-import { AgentInterface } from "@openuidev/react-ui";
+import { AgentInterface, useSystemThemeMode } from "@openuidev/react-ui";
 import { openuiChatLibrary } from "@openuidev/react-ui/genui-lib";
 import { useMemo, useState } from "react";
 
 export default function Page() {
-  const mode = useTheme();
+  const mode = useSystemThemeMode();
   const [activeThreadId, setActiveThreadId] = useState<string>();
   const { llm, storage } = useMemo(
     () => createGrokBuildChatProps({ onThreadChange: setActiveThreadId }),

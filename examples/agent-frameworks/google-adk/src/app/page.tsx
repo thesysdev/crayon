@@ -1,16 +1,15 @@
 "use client";
 
-import { useTheme } from "@/hooks/use-system-theme";
-import { AgentInterface, openAIAdapter, type ChatLLM } from "@openuidev/react-ui";
-import { openuiChatLibrary } from "@openuidev/react-ui/genui-lib";
+import "@openuidev/thesys/styles.css";
+
+import { AgentInterface, openAIAdapter, type ChatLLM, useSystemThemeMode } from "@openuidev/react-ui";
+import { chatLibrary } from "@openuidev/thesys";
 import { useMemo } from "react";
 
 export default function Page() {
-  const mode = useTheme();
+  const mode = useSystemThemeMode();
 
-  // The ADK backend streams OpenAI-style chat-completion chunks, so we parse
-  // them with `openAIAdapter()`. Storage is omitted, so AgentInterface uses its
-  // built-in in-memory default (conversations are wiped on reload).
+  // The ADK backend streams OpenAI-style chat-completion chunks
   const llm = useMemo<ChatLLM>(
     () => ({
       send: ({ messages, threadId, signal }) =>
@@ -29,7 +28,7 @@ export default function Page() {
     <div className="h-screen w-screen overflow-hidden relative">
       <AgentInterface
         llm={llm}
-        componentLibrary={openuiChatLibrary}
+        componentLibrary={chatLibrary}
         agentName="OpenUI + Google ADK Chat"
         theme={{ mode }}
         starterVariant="short"

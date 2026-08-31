@@ -4,7 +4,6 @@ import "@openuidev/thesys/styles.css";
 
 import { useChat } from "@ai-sdk/react";
 import { useRef, useEffect, useState } from "react";
-import { useTheme } from "@/hooks/use-system-theme";
 import { useThreads } from "@/hooks/use-threads";
 import { ChatHeader } from "@/components/chat-header";
 import { ChatInput } from "@/components/chat-input";
@@ -15,7 +14,6 @@ import { ThinkingIndicator } from "@/components/thinking-indicator";
 import { Sidebar } from "@/components/sidebar";
 
 export default function Page() {
-  useTheme();
   const scrollRef = useRef<HTMLDivElement>(null);
   const [input, setInput] = useState("");
 

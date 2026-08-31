@@ -2,14 +2,13 @@
 
 import "@openuidev/thesys/styles.css";
 
-import { useTheme } from "@/hooks/use-system-theme";
-import { AgentInterface } from "@openuidev/react-ui";
+import { AgentInterface, useSystemThemeMode } from "@openuidev/react-ui";
 import { chatLibrary } from "@openuidev/thesys";
 import { useMemo } from "react";
 import { createEveChatProps } from "../eve-chat";
 
 export default function Page() {
-  const mode = useTheme();
+  const mode = useSystemThemeMode();
   const { llm, storage } = useMemo(() => createEveChatProps(), []);
 
   return (
