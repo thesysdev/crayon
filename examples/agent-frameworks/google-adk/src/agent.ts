@@ -41,7 +41,7 @@ export function createAgent() {
   if (!apiKey) throw new Error("Missing required env var: THESYS_API_KEY");
 
   return new Agent({
-    name: "weather_assistant",
+    name: "openui-adk-agent",
     model: Custom("google/gemini-3.6-flash-free", {
       name: "openui-adk-agent",
       baseURL: "https://api.thesys.dev/v1/embed",

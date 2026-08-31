@@ -1,6 +1,6 @@
 "use client";
 
-import { AgentInterface, fetchLLM, openAIAdapter, useSystemThemeMode } from "@openuidev/react-ui";
+import { AgentInterface, agUIAdapter, fetchLLM, useSystemThemeMode } from "@openuidev/react-ui";
 import { chatLibrary } from "@openuidev/thesys";
 import { useMemo } from "react";
 
@@ -10,7 +10,7 @@ export default function Page() {
     () =>
       fetchLLM({
         url: "/api/chat",
-        streamAdapter: openAIAdapter(),
+        streamAdapter: agUIAdapter(),
       }),
     [],
   );
