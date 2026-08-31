@@ -1,8 +1,6 @@
-import { InMemorySessionService, Runner, StreamingMode } from "@google/adk";
-import { readFileSync } from "fs";
-import { NextRequest } from "next/server";
-import { join } from "path";
 import { createAgent } from "@/agent";
+import { InMemorySessionService, Runner, StreamingMode } from "@google/adk";
+import { NextRequest } from "next/server";
 
 // @google/adk relies on Node APIs, so pin this route to the Node.js runtime.
 export const runtime = "nodejs";
@@ -10,21 +8,21 @@ export const runtime = "nodejs";
 const APP_NAME = "openui-adk-chat";
 const USER_ID = "demo-user";
 
-const systemPrompt = readFileSync(
-  join(process.cwd(), "src/generated/system-prompt.txt"),
-  "utf-8",
-);
-
 // A single Runner + in-memory session store, shared across requests. Sessions
 // are keyed by the chat threadId so multi-turn history is preserved for the
 // lifetime of the server process.
 const sessionService = new InMemorySessionService();
-const runner = new Runner({
-  appName: APP_NAME,
-  agent: createAgent(systemPrompt),
-  sessionService,
-});
 const sessions = new Map<string, string>();
+let runner: Runner | undefined;
+
+function getRunner(): Runner {
+  runner ??= new Runner({
+    appName: APP_NAME,
+    agent: createAgent(),
+    sessionService,
+  });
+  return runner;
+}
 
 // ----- AG-UI message helpers -----
 interface AGUIMessage {
@@ -104,7 +102,7 @@ export async function POST(req: NextRequest) {
           // whenever partials were already sent.
           let sawPartial = false;
 
-          for await (const event of runner.runAsync({
+          for await (const event of getRunner().runAsync({
             userId: USER_ID,
             sessionId,
             newMessage: { parts: [{ text: prompt }] },

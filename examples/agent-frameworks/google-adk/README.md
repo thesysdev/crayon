@@ -2,28 +2,27 @@
 
 An [OpenUI](https://openui.com) example showing how to wire a
 [Google Agent Development Kit (ADK)](https://github.com/google/adk-js) agent
-(TypeScript) to OpenUI's generative UI frontend.
+(TypeScript) to OpenUI Cloud.
 
 ## What this demonstrates
 
 - A Google ADK `Agent` with a `FunctionTool` (weather) running inside a Next.js
   API route via an `InMemorySessionService` + `Runner`
+- The model is OpenUI Cloud via Chat Completions (`POST /v1/embed/chat/completions`).
+  ADK JS has no first-party OpenAI client, so `adk-llm-bridge`'s `Custom()` adapter
+  supplies a `BaseLlm`
 - Bridging ADK's `runAsync` event stream into OpenAI-style chat-completion SSE
   chunks so OpenUI's `openAIAdapter()` can parse them
-- Rendering the streamed OpenUI Lang with OpenUI's `<AgentInterface />` and the
-  built-in `openuiChatLibrary`
-
-The ADK agent is prompted with OpenUI's generated system prompt
-(`src/generated/system-prompt.txt`), so its replies are OpenUI Lang that the
-frontend renders as live generative UI (cards, tables, forms, charts…).
+- Rendering streamed OpenUI Lang with `<AgentInterface />` and Cloud's
+  `chatLibrary`
 
 ## Getting started
 
-1. Create a `.env.local` file with your Gemini key
-   (get a free one at https://aistudio.google.com/apikey):
+1. Create a `.env.local` file with your OpenUI Cloud key
+   (https://console.thesys.dev/keys):
 
    ```bash
-   echo "GEMINI_API_KEY=your-key-here" > .env.local
+   echo "THESYS_API_KEY=sk-th-your-key-here" > .env.local
    ```
 
 2. Install dependencies from this example directory:
@@ -43,17 +42,13 @@ Open [http://localhost:3000](http://localhost:3000) and try a starter such as
 
 ## How it works
 
-- `src/agent.ts` defines the `get_weather` tool and a `createAgent()` builder
-  that appends OpenUI's generated system prompt to the agent's instruction.
+- `src/agent.ts` defines the `get_weather` tool and a `createAgent()` builder.
+  The instruction is Cloud's `generateSystemPrompt()`. The model is Cloud's
+  Gemini (`google/gemini-3.6-flash-free`).
 - `src/app/api/chat/route.ts` runs the agent with a `Runner`, keys ADK sessions
   by chat `threadId` (so multi-turn history is preserved), and streams the
   assistant text as OpenAI chat-completion SSE chunks.
-- `src/app/page.tsx` renders `<AgentInterface />`, sending `{ messages, threadId }`
-  to `/api/chat` and parsing the stream with `openAIAdapter()`.
-
-The `dev` script regenerates `src/generated/system-prompt.txt` from
-`src/library.ts` before starting Next.js (`pnpm generate:prompt`). Re-run it
-after changing the component library.
+- `src/app/page.tsx` renders `<AgentInterface />` with `fetchLLM` + `openAIAdapter()`.
 
 To add more tools, define them with `FunctionTool` in `src/agent.ts` and pass
 them to the `Agent`.

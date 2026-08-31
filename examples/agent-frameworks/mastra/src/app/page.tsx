@@ -1,12 +1,13 @@
 "use client";
 
-import { useTheme } from "@/hooks/use-system-theme";
-import { AgentInterface, agUIAdapter, fetchLLM } from "@openuidev/react-ui";
-import { openuiChatLibrary } from "@openuidev/react-ui/genui-lib";
+import "@openuidev/thesys/styles.css";
+
+import { AgentInterface, agUIAdapter, fetchLLM, useSystemThemeMode } from "@openuidev/react-ui";
+import { chatLibrary } from "@openuidev/thesys";
 import { useMemo } from "react";
 
 export default function Page() {
-  const mode = useTheme();
+  const mode = useSystemThemeMode();
 
   // fetchLLM's default message format POSTs { messages, threadId, ... } —
   // exactly what the Mastra route expects. Storage is omitted, so
@@ -24,7 +25,7 @@ export default function Page() {
     <div className="h-screen w-screen overflow-hidden relative">
       <AgentInterface
         llm={llm}
-        componentLibrary={openuiChatLibrary}
+        componentLibrary={chatLibrary}
         agentName="OpenUI + Mastra Chat"
         theme={{ mode }}
         starterVariant="short"

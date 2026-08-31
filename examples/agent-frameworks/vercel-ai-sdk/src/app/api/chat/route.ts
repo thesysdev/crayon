@@ -1,10 +1,12 @@
 import { tools } from "@/lib/tools";
-import { openai } from "@ai-sdk/openai";
+import { createOpenAI } from "@ai-sdk/openai";
+import { generateSystemPrompt } from "@openuidev/thesys-server";
 import { convertToModelMessages, stepCountIs, streamText } from "ai";
-import { readFileSync } from "fs";
-import { join } from "path";
 
-const systemPrompt = readFileSync(join(process.cwd(), "src/generated/system-prompt.txt"), "utf-8");
+const openai = createOpenAI({
+  baseURL: "https://api.thesys.dev/v1/embed",
+  apiKey: process.env.THESYS_API_KEY,
+});
 
 const conversationLog: Array<{ role: string; content: string }> = [];
 
@@ -49,8 +51,8 @@ export async function POST(req: Request) {
   const modelMessages = await convertToModelMessages(messages);
 
   const result = streamText({
-    model: openai("gpt-5.5"),
-    system: systemPrompt,
+    model: openai.chat("google/gemini-3.6-flash-free"),
+    system: generateSystemPrompt(),
     messages: modelMessages,
     tools,
     stopWhen: stepCountIs(5),
