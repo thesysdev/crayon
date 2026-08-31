@@ -2,7 +2,6 @@
 
 import * as Dialog from "@radix-ui/react-dialog";
 import { X } from "lucide-react";
-import Link from "next/link";
 import { useEffect, useState, useSyncExternalStore } from "react";
 import "./C1DocsDialog.css";
 
@@ -61,26 +60,22 @@ export function C1DocsDialog() {
           </Dialog.Close>
 
           <Dialog.Title asChild>
-            <h2>Looking for the Thesys C1 docs?</h2>
+            <h2>Looking for C1 by Thesys documentation?</h2>
           </Dialog.Title>
           <Dialog.Description asChild>
             <p>
-              OpenUI is the successor to C1 and these are its docs. C1 is still supported, and its
-              documentation is archived at docs.thesys.dev/legacy — the{" "}
-              <Link href="/docs/agent/guides/migrating" onClick={() => setDismissed(true)}>
-                migration guide
-              </Link>{" "}
-              covers what changes when you move over.
+              OpenUI Cloud is the successor to C1 by Thesys. C1 remains supported, and its
+              documentation is available in our <a href={LEGACY_DOCS_URL}>legacy archive</a>.
             </p>
           </Dialog.Description>
 
           <div className="c1-docs-dialog-actions">
-            <Dialog.Close asChild>
-              <button className="c1-docs-dialog-secondary">Stay on the OpenUI docs</button>
-            </Dialog.Close>
-            <a className="c1-docs-dialog-primary" href={LEGACY_DOCS_URL}>
-              Go to the C1 docs
+            <a className="c1-docs-dialog-secondary" href={LEGACY_DOCS_URL}>
+              View C1 Legacy Docs
             </a>
+            <Dialog.Close asChild>
+              <button className="c1-docs-dialog-primary">Continue to OpenUI Cloud Docs</button>
+            </Dialog.Close>
           </div>
         </Dialog.Content>
       </Dialog.Portal>
