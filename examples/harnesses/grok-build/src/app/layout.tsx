@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
+import "@openuidev/react-ui/components.css";
 import "@openuidev/react-ui/styles/index.css";
+import "@openuidev/thesys/styles.css";
 import "./globals.css";
 
 export const metadata: Metadata = {

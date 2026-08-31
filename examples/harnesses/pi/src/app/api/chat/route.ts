@@ -7,7 +7,6 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 interface ChatBody {
-  systemPrompt?: string;
   messages?: Array<{ role?: string; content?: unknown }>;
   threadId?: string;
 }
@@ -72,10 +71,7 @@ export async function POST(req: NextRequest) {
   let session: Awaited<ReturnType<typeof getOrCreateSession>>["session"];
   let modelFallbackMessage: string | undefined;
   try {
-    const entry = await getOrCreateSession(conversationId, {
-      cwd,
-      systemPrompt: body.systemPrompt,
-    });
+    const entry = await getOrCreateSession(conversationId, { cwd });
     session = entry.session;
     modelFallbackMessage = entry.modelFallbackMessage;
   } catch (err) {

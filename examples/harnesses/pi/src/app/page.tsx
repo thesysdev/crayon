@@ -1,36 +1,53 @@
 "use client";
+
 import "@openuidev/react-ui/components.css";
 import "@openuidev/react-ui/styles/index.css";
+import "@openuidev/thesys/styles.css";
 
 import {
   AgentInterface,
   fetchLLM,
   openAIMessageFormat,
   openAIReadableStreamAdapter,
+  useSystemThemeMode,
 } from "@openuidev/react-ui";
-import { openuiLibrary, openuiPromptOptions } from "@openuidev/react-ui/genui-lib";
+import { chatLibrary } from "@openuidev/thesys";
 import { useMemo } from "react";
 
-const systemPrompt = openuiLibrary.prompt(openuiPromptOptions);
-
 export default function Home() {
+  const mode = useSystemThemeMode();
   // AgentInterface uses its built-in in-memory storage default (wiped on reload).
-  // fetchLLM POSTs { threadId, messages, systemPrompt }; the route keys a
-  // persistent pi AgentSession on that threadId.
+  // fetchLLM POSTs { threadId, messages }; the route keys a persistent pi
+  // AgentSession on that threadId. The Cloud system prompt is attached server-side.
   const llm = useMemo(
     () =>
       fetchLLM({
         url: "/api/chat",
         streamAdapter: openAIReadableStreamAdapter(),
         messageFormat: openAIMessageFormat,
-        body: { systemPrompt },
       }),
     [],
   );
 
   return (
     <div className="h-screen w-screen overflow-hidden">
-      <AgentInterface llm={llm} componentLibrary={openuiLibrary} agentName="OpenUI Agent Harness" />
+      <AgentInterface
+        llm={llm}
+        componentLibrary={chatLibrary}
+        agentName="OpenUI Agent Harness"
+        theme={{ mode }}
+        starterVariant="short"
+        starters={[
+          {
+            displayText: "Summarize this directory",
+            prompt: "Show me a card summarizing the files in this directory.",
+          },
+          {
+            displayText: "List package scripts",
+            prompt: "Read package.json and list its scripts.",
+          },
+        ]}
+      />
     </div>
   );
 }
