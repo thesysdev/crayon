@@ -15,6 +15,8 @@ const model = openai.chat(
 
 export default defineAgent({
   model,
+  // Thesys embed model ids are not in the Vercel AI Gateway catalog; without
+  // this override Eve can't size compaction and agent compile fails (no /eve routes).
   modelContextWindowTokens: 1_048_576,
   build: {
     externalDependencies: ["@openuidev/thesys-server"],
