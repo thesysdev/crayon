@@ -228,12 +228,7 @@ export function normalizeTemplate(t?: string): TemplateName | undefined {
   const v = t.toLowerCase();
   if (v === "self-hosted" || v === "openui-self-hosted") return "openui-self-hosted";
   if (v === "cloud" || v === "openui-cloud") return "openui-cloud";
-  throw new CreateError(
-    "args_resolution",
-    `unknown template "${t}". Use: openui-self-hosted | openui-cloud.`,
-    "invalid_input",
-    "INVALID_TEMPLATE",
-  );
+  return v;
 }
 
 export function normalizeAuth(a?: string): CloudAuthMethod | undefined {
