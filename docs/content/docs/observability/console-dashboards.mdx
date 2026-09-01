@@ -1,0 +1,23 @@
+---
+title: Console Dashboards
+description: Use hosted dashboards to find recurring OpenUI errors and inspect affected generations.
+---
+
+After production setup, open the [Reliability dashboard](https://console.thesys.dev/reliability) to understand how generated interfaces behave across real requests.
+
+Use the dashboards to answer three questions:
+
+1. **How often does generation fail?** Track the share of responses with OpenUI parsing, validation, or rendering errors.
+2. **What fails repeatedly?** Group failures by error kind to identify components, schemas, prompt rules, or model choices that need attention.
+3. **Which generations were affected?** Inspect the context attached to an event so the failure can be reproduced in development.
+
+## A practical review order
+
+- Start with failures that leave users without a usable interface.
+- Group repeated errors before investigating isolated incidents.
+- Compare error rates after changing a component schema, prompt, or model.
+- Use request and event identifiers to connect application logs with Observability records.
+
+The Gateway may correct some invalid OpenUI Lang before it reaches the application. Dashboard errors therefore represent the failures and warnings observed after that generation layer, not a complete count of every correction the Gateway performed.
+
+See [Optimizing with Observability](/docs/observability/optimizing) for a repeatable improvement loop.

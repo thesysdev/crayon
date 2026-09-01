@@ -1,0 +1,68 @@
+---
+title: Quickstart
+description: Send an OpenUI generation request through the Gateway and connect the stream to your application.
+---
+
+This quickstart creates a server-side Gateway client and sends a Responses API request. Keep the API key on your server and relay the resulting stream to your UI.
+
+## 1. Create an API key
+
+Create a key in the [Thesys Console](https://console.thesys.dev/keys), then add it to your server environment:
+
+```bash
+THESYS_API_KEY=sk-th-your-key-here
+```
+
+Never expose this key to browser code.
+
+## 2. Install the client
+
+```bash tab="pnpm" tab-group="pkg"
+pnpm add openai @openuidev/thesys-server
+```
+
+```bash tab="bun" tab-group="pkg"
+bun add openai @openuidev/thesys-server
+```
+
+```bash tab="yarn" tab-group="pkg"
+yarn add openai @openuidev/thesys-server
+```
+
+```bash tab="npm" tab-group="pkg"
+npm install openai @openuidev/thesys-server
+```
+
+## 3. Create a Gateway client
+
+```ts title="lib/gateway.ts"
+import OpenAI from "openai";
+
+export const gateway = new OpenAI({
+  apiKey: process.env.THESYS_API_KEY,
+  baseURL: "https://api.thesys.dev/v1/embed",
+});
+```
+
+## 4. Generate OpenUI Lang
+
+```ts title="server.ts"
+import { generateSystemPrompt } from "@openuidev/thesys-server";
+import { gateway } from "./lib/gateway";
+
+const response = await gateway.responses.create({
+  model: "openai/gpt-5",
+  input: "Compare quarterly revenue by region.",
+  instructions: generateSystemPrompt(),
+  stream: true,
+});
+```
+
+The response uses the OpenAI Responses streaming shape. Forward it through your server route without changing the event structure, then connect the matching adapter and OpenUI renderer in the browser.
+
+## Next steps
+
+- Connect the stream through [Agent Interface](/docs/agent/agent-interface/getting-started/quickstart) or another [agent integration](/docs/agent).
+- Read the [Responses API](/docs/gateway/api/responses) reference for state and streaming options.
+- Choose a model in [Models](/docs/gateway/models), or configure a provider key with [BYOK](/docs/gateway/byok).
+- Add [Observability](/docs/observability/production-setup) before deploying to production.

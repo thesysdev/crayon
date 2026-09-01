@@ -1,6 +1,7 @@
 import type * as PageTree from "fumadocs-core/page-tree";
 
-export type NestedDocsRoot = "openui-lang" | "agent" | "openui-cloud" | "api-reference";
+export type NestedDocsRoot =
+  "openui-lang" | "agent" | "gateway" | "observability" | "api-reference";
 
 export type SidebarMode =
   | { kind: "global" }
@@ -23,13 +24,18 @@ export const NESTED_DOCS_SECTIONS: Record<NestedDocsRoot, NestedSection> = {
   },
   agent: {
     title: "Build Agents",
-    entryUrl: "/docs/agent/getting-started/introduction",
+    entryUrl: "/docs/agent",
     pathPrefix: "/docs/agent",
   },
-  "openui-cloud": {
-    title: "OpenUI Cloud",
-    entryUrl: "/docs/openui-cloud",
-    pathPrefix: "/docs/openui-cloud",
+  gateway: {
+    title: "Gateway",
+    entryUrl: "/docs/gateway",
+    pathPrefix: "/docs/gateway",
+  },
+  observability: {
+    title: "Observability",
+    entryUrl: "/docs/observability",
+    pathPrefix: "/docs/observability",
   },
   "api-reference": {
     title: "API Reference",
@@ -40,7 +46,7 @@ export const NESTED_DOCS_SECTIONS: Record<NestedDocsRoot, NestedSection> = {
 
 const promotedGlobalUrls = new Set([
   "/docs",
-  "/docs/openui-lang/quickstart",
+  "/docs/generative-ui",
   "/docs/openui-lang/comparison",
 ]);
 
@@ -49,12 +55,12 @@ export const GLOBAL_DOCS_TREE: PageTree.Root = {
   $id: "docs:global",
   name: "OpenUI",
   children: [
-    { type: "separator", name: "Start" },
-    { type: "page", name: "Overview", url: "/docs" },
+    { type: "separator", name: "Overview" },
+    { type: "page", name: "Introduction", url: "/docs" },
     {
       type: "page",
-      name: "Build your first UI",
-      url: "/docs/openui-lang/quickstart",
+      name: "What is Generative UI",
+      url: "/docs/generative-ui",
     },
     {
       type: "page",
@@ -75,8 +81,13 @@ export const GLOBAL_DOCS_TREE: PageTree.Root = {
     { type: "separator", name: "Production" },
     {
       type: "page",
-      name: NESTED_DOCS_SECTIONS["openui-cloud"].title,
-      url: NESTED_DOCS_SECTIONS["openui-cloud"].entryUrl,
+      name: NESTED_DOCS_SECTIONS.gateway.title,
+      url: NESTED_DOCS_SECTIONS.gateway.entryUrl,
+    },
+    {
+      type: "page",
+      name: NESTED_DOCS_SECTIONS.observability.title,
+      url: NESTED_DOCS_SECTIONS.observability.entryUrl,
     },
     { type: "separator", name: "Reference" },
     {
@@ -104,7 +115,9 @@ export function getNestedRootForPathname(pathname: string): NestedDocsRoot | und
 }
 
 export function getDefaultSidebarMode(pathname: string): SidebarMode {
-  if (pathname === "/docs" || pathname === "/docs/overview") return { kind: "global" };
+  if (pathname === "/docs/overview" || promotedGlobalUrls.has(pathname)) {
+    return { kind: "global" };
+  }
 
   const root = getNestedRootForPathname(pathname);
   return root ? { kind: "nested", root } : { kind: "global" };

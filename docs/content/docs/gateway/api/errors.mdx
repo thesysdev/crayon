@@ -1,0 +1,30 @@
+---
+title: Errors
+description: Handle authentication, billing, limits, provider, and OpenUI generation failures returned by Gateway APIs.
+---
+
+Gateway APIs return structured errors with an HTTP status and a message suitable for server-side handling. Preserve the request identifier in application logs so a failure can be traced across your backend and the Gateway.
+
+## Error classes
+
+| Class              | Typical cause                                       | Application response                                                               |
+| ------------------ | --------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| Authentication     | Missing, invalid, or expired credential             | Stop the request and correct the server or frontend-token configuration.           |
+| Authorization      | The credential cannot access the requested resource | Check organization, project, user, and application scope.                          |
+| Billing            | Managed credits are unavailable                     | Add credits, configure BYOK, or prevent the request.                               |
+| Limits             | The request or account exceeded an active limit     | Back off when retryable and surface a useful application state.                    |
+| Provider           | The selected route failed upstream                  | Let configured fallbacks run; retry only when the returned error is retryable.     |
+| Request validation | A field, model, or tool declaration is invalid      | Correct the request rather than retrying unchanged.                                |
+| Generation         | OpenUI output could not be corrected                | Fall back to an application-safe response and record the failure in Observability. |
+
+## Handling guidance
+
+- Keep API errors on the server; return a product-appropriate error shape to the browser.
+- Do not retry authentication, authorization, billing, or request-validation errors unchanged.
+- Use bounded retries with backoff for explicitly retryable provider failures.
+- Capture OpenUI runtime failures with [Observability](/docs/observability) so they can be investigated alongside the generated response.
+
+<Callout type="info">
+  The complete error-code catalog is being finalized. This page will be expanded with stable codes
+  and retry semantics when that contract is published.
+</Callout>

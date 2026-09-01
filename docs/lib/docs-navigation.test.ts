@@ -19,13 +19,9 @@ describe("global docs navigation", () => {
     }));
 
     assert.deepEqual(entries, [
-      { type: "separator", name: "Start", url: undefined },
-      { type: "page", name: "Overview", url: "/docs" },
-      {
-        type: "page",
-        name: "Build your first UI",
-        url: "/docs/openui-lang/quickstart",
-      },
+      { type: "separator", name: "Overview", url: undefined },
+      { type: "page", name: "Introduction", url: "/docs" },
+      { type: "page", name: "What is Generative UI", url: "/docs/generative-ui" },
       {
         type: "page",
         name: "Feature Comparison",
@@ -36,10 +32,11 @@ describe("global docs navigation", () => {
       {
         type: "page",
         name: "Build Agents",
-        url: "/docs/agent/getting-started/introduction",
+        url: "/docs/agent",
       },
       { type: "separator", name: "Production", url: undefined },
-      { type: "page", name: "OpenUI Cloud", url: "/docs/openui-cloud" },
+      { type: "page", name: "Gateway", url: "/docs/gateway" },
+      { type: "page", name: "Observability", url: "/docs/observability" },
       { type: "separator", name: "Reference", url: undefined },
       { type: "page", name: "API Reference", url: "/docs/api-reference" },
     ]);
@@ -47,8 +44,9 @@ describe("global docs navigation", () => {
 
   it("treats nested roots as navigation sections rather than products", () => {
     assert.equal(getNestedRootForEntryUrl("/docs/openui-lang"), "openui-lang");
-    assert.equal(getNestedRootForEntryUrl("/docs/agent/getting-started/introduction"), "agent");
-    assert.equal(getNestedRootForEntryUrl("/docs/openui-cloud"), "openui-cloud");
+    assert.equal(getNestedRootForEntryUrl("/docs/agent"), "agent");
+    assert.equal(getNestedRootForEntryUrl("/docs/gateway"), "gateway");
+    assert.equal(getNestedRootForEntryUrl("/docs/observability"), "observability");
     assert.equal(getNestedRootForEntryUrl("/docs/api-reference"), "api-reference");
     assert.equal(getNestedRootForEntryUrl("/docs/openui-lang/quickstart"), undefined);
   });
@@ -56,6 +54,8 @@ describe("global docs navigation", () => {
   it("uses a nested sidebar for direct links into a nested section", () => {
     assert.deepEqual(getDefaultSidebarMode("/docs"), { kind: "global" });
     assert.deepEqual(getDefaultSidebarMode("/docs/overview"), { kind: "global" });
+    assert.deepEqual(getDefaultSidebarMode("/docs/generative-ui"), { kind: "global" });
+    assert.deepEqual(getDefaultSidebarMode("/docs/openui-lang/comparison"), { kind: "global" });
     assert.deepEqual(getDefaultSidebarMode("/docs/openui-lang/quickstart"), {
       kind: "nested",
       root: "openui-lang",
@@ -64,20 +64,30 @@ describe("global docs navigation", () => {
       kind: "nested",
       root: "api-reference",
     });
+    assert.deepEqual(getDefaultSidebarMode("/docs/gateway/reliability/error-correction"), {
+      kind: "nested",
+      root: "gateway",
+    });
+    assert.deepEqual(getDefaultSidebarMode("/docs/observability/production-setup"), {
+      kind: "nested",
+      root: "observability",
+    });
     assert.deepEqual(getDefaultSidebarMode("/docs/mcp"), { kind: "global" });
   });
 
-  it("promotes the quickstart and comparison ahead of their nested root", () => {
-    assert.equal(
-      getGlobalActiveItemUrl("/docs/openui-lang/quickstart"),
-      "/docs/openui-lang/quickstart",
-    );
+  it("promotes overview pages while grouping product pages under their roots", () => {
+    assert.equal(getGlobalActiveItemUrl("/docs/generative-ui"), "/docs/generative-ui");
     assert.equal(
       getGlobalActiveItemUrl("/docs/openui-lang/comparison"),
       "/docs/openui-lang/comparison",
     );
+    assert.equal(getGlobalActiveItemUrl("/docs/openui-lang/quickstart"), "/docs/openui-lang");
     assert.equal(getGlobalActiveItemUrl("/docs/openui-lang/renderer"), "/docs/openui-lang");
-    assert.equal(getGlobalActiveItemUrl("/docs/openui-cloud/api/responses"), "/docs/openui-cloud");
+    assert.equal(getGlobalActiveItemUrl("/docs/gateway/api/responses"), "/docs/gateway");
+    assert.equal(
+      getGlobalActiveItemUrl("/docs/observability/console-dashboards"),
+      "/docs/observability",
+    );
   });
 });
 
@@ -125,8 +135,8 @@ describe("nested docs navigation", () => {
 
   it("fails clearly when the requested nested root is absent", () => {
     assert.throws(
-      () => getNestedDocsTree(fullTree, "openui-cloud"),
-      /Nested docs root "openui-cloud" was not found/,
+      () => getNestedDocsTree(fullTree, "gateway"),
+      /Nested docs root "gateway" was not found/,
     );
   });
 });

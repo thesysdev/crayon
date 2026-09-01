@@ -1,0 +1,37 @@
+---
+title: Gateway
+description: Connect Agent Interface to the recommended Gateway generation and conversation APIs.
+---
+
+Agent Interface connects to the Gateway through a server-side generation route. The browser posts messages to your application, your route calls Gateway Responses, and the compatible stream is relayed back to Agent Interface.
+
+## Generation
+
+Configure `fetchLLM()` with the Responses stream adapter:
+
+```tsx
+import {
+  AgentInterface,
+  fetchLLM,
+  openAIConversationMessageFormat,
+  openAIResponsesAdapter,
+} from "@openuidev/react-ui";
+
+const llm = fetchLLM({
+  url: "/api/chat",
+  streamAdapter: openAIResponsesAdapter(),
+  messageFormat: openAIConversationMessageFormat,
+});
+
+export function Chat() {
+  return <AgentInterface llm={llm} componentLibrary={componentLibrary} />;
+}
+```
+
+The `/api/chat` route holds `THESYS_API_KEY` and calls `https://api.thesys.dev/v1/embed/responses`. Forward the response stream without changing its event shape.
+
+## Conversations
+
+If the application uses Gateway-managed threads, create or load a conversation through the [Conversations API](/docs/gateway/api/conversations) and pass its identifier on stored Responses calls. Browser access to conversation data should use the short-lived frontend-token flow described in [Authentication](/docs/gateway/authentication).
+
+Agent Interface can also use an application-owned storage adapter. The generation path can remain on the Gateway even when conversation state lives in your database.

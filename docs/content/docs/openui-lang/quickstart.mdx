@@ -1,334 +1,132 @@
 ---
 title: Quick Start
-description: Build a Recipe Remix agent with OpenUI Cloud in about 10 minutes.
+description: Define an OpenUI component library, generate through the Gateway, and render the response in React.
 ---
 
-import { CopyableDiff } from "@/components/copyable-diff";
+This guide builds the smallest complete OpenUI path: application-owned components, a serialized library contract, Gateway generation, and a React renderer.
 
-Build a Recipe Remix agent that reads your pantry, searches for real recipes,
-finds an image, and renders the results as interactive Generative UI.
+## 1. Install OpenUI
 
-![Recipe Remix calling the pantry tool and rendering three interactive recipe cards](/images/openui-lang/recipe-remix-quickstart.gif)
-
-The Cloud starter already includes streaming chat, conversation history, web
-search, image search, reports, presentations, and an example function tool.
-You will keep those features and add one tool and one component.
-
-You need Node.js 20 or later and a Thesys account.
-
-## 1. Create the app
-
-```bash
-npx @openuidev/cli@latest create \
-  --name recipe-remix \
-  --template openui-cloud
+```bash tab="pnpm" tab-group="pkg"
+pnpm add @openuidev/react-lang @openuidev/thesys-server openai zod
+pnpm add -D @openuidev/cli
 ```
 
-Follow the prompts. The CLI signs you in, creates the project, installs its
-dependencies, starts the agent, and opens it in your browser. Open the generated
-`recipe-remix` folder in your editor for the next steps.
+```bash tab="npm" tab-group="pkg"
+npm install @openuidev/react-lang @openuidev/thesys-server openai zod
+npm install -D @openuidev/cli
+```
 
-## 2. Replace the starter prompts
+## 2. Define the components
 
-Open `src/lib/starters.tsx` and replace the existing `STARTERS` array with:
+Create `src/lib/openui.tsx`:
 
 ```tsx
-export const STARTERS = [
-  {
-    displayText: "Cook from my pantry",
-    prompt: "What can I make for dinner with what I already have?",
-    icon: <></>,
-  },
-  {
-    displayText: "Find a high-protein dinner",
-    prompt: "What are three quick, high-protein vegetarian dinners I could make?",
-    icon: <></>,
-  },
-  {
-    displayText: "Remix a comfort food",
-    prompt: "Can you give me three lighter or quicker spins on mac and cheese?",
-    icon: <></>,
-  },
-];
+import { createLibrary, defineComponent } from "@openuidev/react-lang";
+import { z } from "zod/v4";
+
+const Metric = defineComponent({
+  name: "Metric",
+  description: "Displays one labeled business metric.",
+  props: z.object({
+    label: z.string(),
+    value: z.string(),
+    change: z.string().optional(),
+  }),
+  component: ({ props }) => (
+    <article className="rounded-lg border p-4">
+      <p>{props.label}</p>
+      <strong>{props.value}</strong>
+      {props.change ? <small>{props.change}</small> : null}
+    </article>
+  ),
+});
+
+const Dashboard = defineComponent({
+  name: "Dashboard",
+  description: "A titled collection of metrics.",
+  props: z.object({
+    title: z.string(),
+    metrics: z.array(Metric.ref),
+  }),
+  component: ({ props, renderNode }) => (
+    <section>
+      <h2>{props.title}</h2>
+      <div className="grid gap-3 sm:grid-cols-3">{renderNode(props.metrics)}</div>
+    </section>
+  ),
+});
+
+export const library = createLibrary({
+  root: "Dashboard",
+  components: [Dashboard, Metric],
+});
 ```
 
-Update these lines in `src/components/cloud-chat.tsx`:
+The Zod schemas are the contract shared by the model, Gateway correction layer, parser, and renderer.
 
-<CopyableDiff
-  code={`=<AgentInterface.Welcome
--  title="Good to see you"
--  description="What's on your mind today?"
--  promptTemplates={PROMPT_TEMPLATES}
-+  title="Recipe Remix"
-+  description="Turn what you have into something delicious."
-=  glowAnimation
-=/>`}
-/>
+## 3. Generate the server contract
 
-This removes the general-purpose prompt templates while keeping the three
-recipe starters.
+Serialize the component library so the server can send it with generation instructions:
 
-## 3. Add a pantry tool
+```bash
+npx openui generate src/lib/openui.tsx --spec --out src/lib/openui.spec.json
+```
 
-Create `src/lib/tools/get-recipe-profile.ts`:
+Regenerate this file whenever component names or schemas change.
 
-```ts
-export const getRecipeProfileTool = {
-  type: "function" as const,
-  name: "get_recipe_profile",
-  description:
-    "Read the cook's pantry and recipe preferences. Call this before recommending pantry recipes.",
-  parameters: {
-    type: "object",
-    properties: {},
-    required: [],
-    additionalProperties: false,
-  },
-  strict: true,
-};
+## 4. Generate through the Gateway
 
-export async function executeGetRecipeProfile(): Promise<string> {
-  return JSON.stringify({
-    pantry: ["black beans", "corn", "canned tomatoes", "rice", "cheddar"],
-    diet: "vegetarian",
-    cuisine: "American",
-    maxMinutes: 30,
-    servings: 2,
+Create a Gateway API key in the [Thesys Console](https://console.thesys.dev/keys) and store it as `THESYS_API_KEY` on the server.
+
+```ts title="src/lib/generate.ts"
+import library from "./openui.spec.json";
+import { generateSystemPrompt } from "@openuidev/thesys-server";
+import OpenAI from "openai";
+
+const gateway = new OpenAI({
+  apiKey: process.env.THESYS_API_KEY,
+  baseURL: "https://api.thesys.dev/v1/embed",
+});
+
+export function generateInterface(input: string) {
+  return gateway.responses.create({
+    model: "openai/gpt-5",
+    input,
+    instructions: generateSystemPrompt({ library }),
+    stream: true,
   });
 }
 ```
 
-Change the values in `executeGetRecipeProfile()` to match your kitchen.
+Call `generateInterface()` from a server route and relay its Responses API stream to the browser. The Gateway validates the OpenUI Lang against the supplied library and corrects invalid output while it streams.
 
-Open `src/app/api/chat/route.ts` and update the imports:
+## 5. Render the stream
 
-<CopyableDiff
-  code={`=import { runFunctionToolLoop } from "@/lib/tool-loop";
-+import { executeGetRecipeProfile, getRecipeProfileTool } from "@/lib/tools/get-recipe-profile";
-=import { executeGetWeather, getWeatherTool } from "@/lib/tools/get-weather";`}
-/>
-
-Register the executor beside the existing weather tool:
-
-<CopyableDiff
-  code={`=const functionTools = {
-=  [getWeatherTool.name]: executeGetWeather,
-+  [getRecipeProfileTool.name]: executeGetRecipeProfile,
-=};`}
-/>
-
-Then add its declaration to the existing `tools` array:
-
-<CopyableDiff
-  code={`=tools: [
-=  artifactTool({ artifacts: ["slides", "report"] }) as unknown as Tool,
-=  { type: "web_search" },
-=  { type: "image_search" } as unknown as Tool,
-=  getWeatherTool,
-+  getRecipeProfileTool,
-=],`}
-/>
-
-The generated route already runs the tool loop. Adding the declaration and
-executor is enough.
-
-## 4. Add a recipe component
-
-Create `src/lib/recipe-library.tsx`:
-
-<div className="[&_.fd-scroll-container]:overflow-x-hidden [&_.fd-scroll-container]:overflow-y-auto [&_pre]:!w-full [&_pre]:!min-w-0 [&_pre]:whitespace-pre-wrap [&_code]:break-words">
+Pass the accumulated OpenUI Lang text to `<Renderer />`. Set `isStreaming` until the server stream closes.
 
 ```tsx
-import { createLibrary, defineComponent, useTriggerAction } from "@openuidev/react-lang";
-import { chatLibrary } from "@openuidev/thesys";
-import { z } from "zod/v4";
+"use client";
 
-const cardStyle = {
-  display: "grid",
-  gridTemplateRows: "120px auto 66px 1fr auto",
-  gap: 8,
-  height: "100%",
-  padding: 12,
-  border: "1px solid #e5e7eb",
-  borderRadius: 12,
-} as const;
-const actionStyle = {
-  padding: "5px 8px",
-  borderRadius: 8,
-  fontSize: 13,
-  fontWeight: 600,
-  textDecoration: "none",
-  cursor: "pointer",
-} as const;
+import { Renderer } from "@openuidev/react-lang";
+import { library } from "@/lib/openui";
 
-const RecipeRemix = defineComponent({
-  name: "RecipeRemix",
-  description: "Three sourced recipe suggestions.",
-  props: z.object({
-    recipes: z.array(
-      z.object({
-        title: z.string(),
-        time: z.string(),
-        servings: z.number().int().positive(),
-        ingredients: z.array(z.string()),
-        sourceUrl: z.string(),
-        imageUrl: z.string().optional(),
-      }),
-    ),
-  }),
-  component: function RecipeRemix({ props }) {
-    const triggerAction = useTriggerAction();
-
-    return (
-      <section
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-          gap: 12,
-          width: "100%",
-        }}
-      >
-        <h2 style={{ gridColumn: "1 / -1", margin: 0, fontSize: 24, fontWeight: 600 }}>
-          Recipe Remix
-        </h2>
-        {props.recipes.map((recipe) => (
-          <article key={recipe.title} style={cardStyle}>
-            <div style={{ overflow: "hidden", borderRadius: 8, background: "#f3f4f6" }}>
-              {recipe.imageUrl?.startsWith("https://") && (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={recipe.imageUrl}
-                  alt=""
-                  onError={(event) => (event.currentTarget.hidden = true)}
-                  style={{ display: "block", width: "100%", height: "100%", objectFit: "cover" }}
-                />
-              )}
-            </div>
-            <div style={{ display: "flex", gap: 6 }}>
-              <span
-                style={{
-                  padding: "2px 8px",
-                  borderRadius: 999,
-                  background: "#eff6ff",
-                  color: "#1d4ed8",
-                }}
-              >
-                {recipe.time}
-              </span>
-              <span style={{ padding: "2px 8px", borderRadius: 999, background: "#f3f4f6" }}>
-                Serves {recipe.servings}
-              </span>
-            </div>
-            <h3 style={{ margin: 0 }}>{recipe.title}</h3>
-            <div>
-              <strong>Ingredients</strong>
-              <ul style={{ margin: 0, paddingLeft: 20, fontSize: 14 }}>
-                {recipe.ingredients.map((ingredient) => (
-                  <li key={ingredient}>{ingredient}</li>
-                ))}
-              </ul>
-            </div>
-            <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: "auto" }}>
-              <a
-                href={recipe.sourceUrl}
-                target="_blank"
-                rel="noreferrer"
-                style={{ ...actionStyle, border: "1px solid #d1d5db", color: "#111827" }}
-              >
-                Source ↗
-              </a>
-              <button
-                style={{ ...actionStyle, border: 0, background: "#111827", color: "white" }}
-                onClick={() => triggerAction(`Make ${recipe.title} faster and simpler`)}
-              >
-                Remix this
-              </button>
-            </div>
-          </article>
-        ))}
-      </section>
-    );
-  },
-});
-
-export const recipeLibrary = createLibrary({
-  root: chatLibrary.root ?? "Card",
-  componentGroups: chatLibrary.componentGroups,
-  components: [...Object.values(chatLibrary.components), RecipeRemix],
-});
+export function GeneratedInterface({ response, isStreaming }) {
+  return (
+    <Renderer
+      response={response}
+      library={library}
+      isStreaming={isStreaming}
+      onAction={(action) => console.log(action)}
+    />
+  );
+}
 ```
 
-</div>
+As soon as the model defines `root`, the renderer can display the dashboard shell. Referenced metrics fill in as later statements arrive.
 
-Generate the serializable component specification used by the API route:
+## Add a conversation UI
 
-```bash
-npx @openuidev/cli@latest generate \
-  --spec src/lib/recipe-library.tsx \
-  --out src/lib/recipe-library-spec.json
-```
+The renderer does not require a particular message or agent framework. Connect this same library through [assistant-ui](/docs/agent/assistant-ui), [Agent Interface](/docs/agent/agent-interface/getting-started/introduction), [Vercel AI SDK](/docs/agent/vercel-ai-sdk), [LangChain](/docs/agent/langchain), or [your own UI](/docs/agent/build-your-own-ui).
 
-Now update the imports in `src/app/api/chat/route.ts`:
-
-<CopyableDiff
-  code={`=import { requiredEnv } from "@/lib/env";
-=import { resolveRequestedModel } from "@/lib/models";
-+import recipeLibrarySpec from "@/lib/recipe-library-spec.json";
-=import { runFunctionToolLoop } from "@/lib/tool-loop";`}
-/>
-
-Below the imports, add:
-
-```ts
-const recipeInstructions = `
-You are a practical recipe remix assistant.
-Use web search before recommending recipes and include real source URLs.
-Use image search to include a relevant recipe image when available.
-For each recipe, set imageUrl to an HTTPS URL returned by image search when available.
-Call get_recipe_profile when the user asks what they can cook from their pantry.
-Use the profile's servings value for every recipe.
-Return exactly three concise recipes and clearly label substitutions.
-Render the final recipe recommendations using exactly one RecipeRemix component.
-Do not return recipe recommendations as a prose-only response.
-Never claim that a recipe is allergen-safe.
-`;
-```
-
-Update the `instructions` field inside `createParams`:
-
-<CopyableDiff
-  code={`-instructions: generateSystemPrompt(),
-+instructions: generateSystemPrompt({
-+  library: recipeLibrarySpec,
-+  instructions: recipeInstructions,
-+}),`}
-/>
-
-Finally, update `src/components/cloud-chat.tsx`:
-
-<CopyableDiff code={`+import { recipeLibrary } from "@/lib/recipe-library";`} />
-
-Then update the `componentLibrary` prop:
-
-<CopyableDiff
-  code={`-componentLibrary={chatLibrary}
-+componentLibrary={recipeLibrary}`}
-/>
-
-<Callout type="info">
-  `recipeLibrary` extends the built-in `chatLibrary`, so the existing inline components remain
-  available alongside `RecipeRemix`. Cloud's search tools and artifact renderers also remain
-  available. See [Extend a built-in library](/docs/openui-lang/overview#extend-a-built-in-library).
-</Callout>
-
-## 5. Try it
-
-The agent is already running. Return to the browser and click **Cook from my
-pantry**. It should call your pantry tool, search for recipes, and render three
-recipe cards. Click **Remix this** to start a follow-up turn.
-
-## Next steps
-
-- [Add more tools](/docs/agent/core-concepts/tools)
-- [Define more components](/docs/openui-lang/defining-components)
-- [Add component interactions](/docs/openui-lang/interactivity)
+Continue with [Core Concepts](/docs/openui-lang/overview), [System Prompts](/docs/openui-lang/system-prompts), and [Gateway Reliability](/docs/gateway/reliability).

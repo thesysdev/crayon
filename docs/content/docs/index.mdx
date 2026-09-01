@@ -1,9 +1,55 @@
 ---
-title: Overview
-description: "OpenUI is a generative UI toolkit for building agents that respond with interactive interfaces, not just text. Agents compose the interface best suited to each request, from inline forms and data visualizations to dashboards, reports, and presentations."
-full: true
+title: Introduction
+description: "OpenUI is an open, framework-agnostic system for agents that respond with live, interactive interfaces instead of only text."
 ---
 
-import { OpenUIArchitectureOverview } from "@/components/openui-architecture-overview";
+OpenUI gives agents a way to compose application UI at runtime. You define the components your product supports, the model selects and combines them for each request, and an OpenUI renderer turns the streamed response into a native interface.
 
-<OpenUIArchitectureOverview />
+The system is designed as three independent layers. Start with the open-source language, add the Gateway when you want reliable production generation, and add Observability when you need to understand failures across real traffic.
+
+## The OpenUI stack
+
+<Cards>
+  <Card title="OpenUI Lang" href="/docs/openui-lang">
+    A compact, streaming-first language that any model can use to describe interfaces built from
+    your components. It is open source and independent of UI framework, model provider, and chat
+    library.
+  </Card>
+  <Card title="Gateway" href="/docs/gateway">
+    The recommended production path for generating OpenUI Lang. It routes requests to models,
+    corrects invalid UI while it streams, and falls back when a model or provider fails.
+  </Card>
+  <Card title="Observability" href="/docs/observability">
+    Production visibility into OpenUI generation and rendering errors. Use it with the Gateway or
+    connect it to an application that calls a model provider directly.
+  </Card>
+</Cards>
+
+## How a response becomes an interface
+
+1. Your application describes its components and behavior with OpenUI Lang schemas.
+2. The agent sends the conversation and component instructions through the Gateway.
+3. A model streams an OpenUI Lang program for the current request.
+4. The Gateway validates the stream and corrects malformed OpenUI Lang before it reaches the user.
+5. The renderer maps the program to your components, preserving your design system and application behavior.
+6. Observability captures runtime failures so you can improve component definitions, prompts, and model choices.
+
+The language and renderer also work without the hosted products. The Gateway is the default path in these docs because it removes the reliability work that otherwise sits in every production application.
+
+## Choose where to start
+
+<Cards>
+  <Card title="Understand generative UI" href="/docs/generative-ui">
+    Learn how generated interfaces differ from markdown, fixed response templates, and unrestricted
+    generated code.
+  </Card>
+  <Card title="Build your first interface" href="/docs/openui-lang/quickstart">
+    Define a component library, generate OpenUI Lang, and stream it through a renderer.
+  </Card>
+  <Card title="Connect an agent" href="/docs/agent">
+    Use assistant-ui, Agent Interface, CopilotKit, Vercel AI SDK, LangChain, or your own chat UI.
+  </Card>
+  <Card title="Prepare for production" href="/docs/gateway/quickstart">
+    Put the Gateway on the generation path, then add Observability to close the reliability loop.
+  </Card>
+</Cards>

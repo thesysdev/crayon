@@ -1,0 +1,46 @@
+---
+title: What is Generative UI?
+description: Learn how agents create purpose-built, interactive interfaces from a controlled component library.
+---
+
+Generative UI lets an agent choose the best interface for the task instead of returning every answer through the same text layout. A request can become a comparison table, a form, a chart, a set of filters, or a combination of components assembled for that moment.
+
+The agent does not generate and execute arbitrary application code. It composes components that the application has already defined and approved.
+
+## From fixed responses to generated interfaces
+
+Traditional agent applications usually expose one of two surfaces:
+
+- **Markdown responses** adapt their content but remain mostly text.
+- **Prebuilt response views** can be interactive, but the developer must predict every response shape in advance.
+
+Generative UI keeps the application's control over components while letting the model decide which components to use, how to combine them, and what data to place in them.
+
+| Approach           | What the model controls                          | What the application controls                   |
+| ------------------ | ------------------------------------------------ | ----------------------------------------------- |
+| Markdown           | Text and basic formatting                        | The surrounding chat layout                     |
+| Fixed UI responses | Values in a predefined response type             | The complete response structure                 |
+| Generative UI      | Selection and composition of approved components | Components, validation, behavior, and rendering |
+| Generated code     | Potentially the whole interface implementation   | The execution boundary and sandbox              |
+
+## The generation loop
+
+1. The application supplies a component library and instructions.
+2. The model responds with a structured description of an interface.
+3. The description streams into a renderer.
+4. The renderer resolves it against the approved component library.
+5. User interactions can update local state or call application tools.
+
+OpenUI implements this loop with [OpenUI Lang](/docs/openui-lang), a compact language designed for models and progressive rendering. For production applications, the [Gateway](/docs/gateway) sits between the application and model to correct invalid OpenUI Lang during the stream. [Observability](/docs/observability) shows the errors that still occur at runtime.
+
+## What generative UI is good for
+
+Generative UI works best when the shape of a useful answer changes with the user's request but the building blocks should remain consistent with the product:
+
+- Data exploration and operational dashboards
+- Forms and guided workflows
+- Comparisons, recommendations, and decision support
+- Support and account-management agents
+- Domain-specific copilots built from an existing design system
+
+Continue with [What is OpenUI?](/docs), compare the major approaches in [Feature Comparison](/docs/openui-lang/comparison), or build an interface in the [OpenUI Lang Quick Start](/docs/openui-lang/quickstart).

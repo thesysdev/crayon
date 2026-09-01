@@ -1,0 +1,36 @@
+---
+title: Build Your Own UI
+description: Add OpenUI rendering to a custom chat interface without adopting a chat UI SDK.
+---
+
+Use this path when your application already owns its message list, composer, thread state, and streaming transport. OpenUI only needs the accumulated OpenUI Lang response, a component library, and a way to send interactions back to the agent.
+
+## Recommended architecture
+
+1. Your composer posts the new turn to an application server route.
+2. The route calls the [Gateway Responses API](/docs/gateway/api/responses).
+3. The browser accumulates the streamed assistant text.
+4. `<Renderer />` parses and renders the response against your component library.
+5. `onAction` converts component interactions into the next application event or conversation turn.
+
+## Render a streamed response
+
+```tsx
+import { Renderer } from "@openuidev/react-lang";
+import { appLibrary } from "./library";
+
+export function GeneratedMessage({ text, isStreaming }) {
+  return (
+    <Renderer
+      response={text}
+      library={appLibrary}
+      isStreaming={isStreaming}
+      onAction={(action) => handleGeneratedAction(action)}
+    />
+  );
+}
+```
+
+Your message store decides which assistant messages contain OpenUI Lang and retains the text needed to replay them. The renderer remains stateless with respect to the surrounding conversation.
+
+Continue with [Defining Components](/docs/openui-lang/defining-components), [The Renderer](/docs/openui-lang/renderer), and the [Gateway Quickstart](/docs/gateway/quickstart).

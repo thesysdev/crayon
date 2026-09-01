@@ -1,0 +1,46 @@
+---
+title: Overview
+description: Find and understand OpenUI generation and rendering errors across production traffic.
+---
+
+OpenUI Observability shows how generated interfaces behave after deployment. It collects runtime signals from OpenUI applications and turns them into dashboards for finding recurring generation and rendering failures.
+
+Observability is independent of the Gateway. Use both for the recommended production setup, or connect Observability to an application that sends model requests directly to a provider.
+
+## The reliability loop
+
+<Mermaid
+  chart={`
+flowchart LR
+    A["Generate OpenUI Lang"] --> R["Render and interact"]
+    R --> E["Capture runtime events"]
+    E --> D["Inspect dashboards"]
+    D --> I["Improve schemas, prompts, and models"]
+    I --> A
+`}
+/>
+
+The [Gateway](/docs/gateway) corrects invalid OpenUI Lang during generation. Observability captures the failures and warnings visible in the application runtime, including problems that depend on a specific component library or browser environment.
+
+## Two packages, two responsibilities
+
+| Package                          | Responsibility                                                                                          |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| `@openuidev/observability`       | A framework-agnostic local event bus. It emits and subscribes to typed events but does not upload them. |
+| `@openuidev/observability-cloud` | The official SDK for sending supported OpenUI runtime telemetry to the hosted Observability product.    |
+
+The open-source event bus is useful for local tools and custom sinks such as Sentry or Datadog. Install the hosted SDK when you want the OpenUI-specific production dashboards described in this section.
+
+## Start here
+
+<Cards>
+  <Card title="Developer Tools" href="/docs/observability/developer-tools">
+    Inspect streams and events locally before shipping.
+  </Card>
+  <Card title="Production Setup" href="/docs/observability/production-setup">
+    Initialize the hosted SDK and send runtime signals from a deployed application.
+  </Card>
+  <Card title="Console Dashboards" href="/docs/observability/console-dashboards">
+    Find error rates, recurring failure types, and affected generations.
+  </Card>
+</Cards>

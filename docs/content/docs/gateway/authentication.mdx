@@ -1,0 +1,51 @@
+---
+title: Authentication
+description: Authenticate server-side generation and scoped browser access to Gateway conversations.
+---
+
+Gateway applications use two credential types with different trust boundaries.
+
+## Server API keys
+
+Create an API key in the [Thesys Console](https://console.thesys.dev/keys) and store it in your server environment as `THESYS_API_KEY`.
+
+Server requests authenticate with a bearer token:
+
+```http
+Authorization: Bearer $THESYS_API_KEY
+```
+
+Use the server key for Responses, Chat Completions, Conversations operations, and frontend-token minting. Never include it in a client bundle or send it to the browser.
+
+```ts
+import OpenAI from "openai";
+
+export const gateway = new OpenAI({
+  apiKey: process.env.THESYS_API_KEY,
+  baseURL: "https://api.thesys.dev/v1/embed",
+});
+```
+
+## Frontend tokens
+
+Applications that read persistent conversations directly from the browser use short-lived frontend tokens. Your backend mints a token with the server API key and returns only the scoped token to the authenticated user.
+
+<Mermaid
+  chart={`
+sequenceDiagram
+    participant Browser
+    participant App as Application backend
+    participant Gateway as OpenUI Gateway
+
+    Browser->>App: Request frontend token
+    App->>Gateway: Mint token with server API key
+    Gateway-->>App: Short-lived scoped token
+    App-->>Browser: Frontend token
+    Browser->>Gateway: Read allowed conversations
+
+`}
+/>
+
+Frontend tokens expire within minutes. Mint them only for users your application has already authenticated, and bind them to the appropriate user and application identifiers.
+
+Continue with the [Conversations API](/docs/gateway/api/conversations) for the storage endpoints that use these credentials.

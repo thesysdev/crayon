@@ -58,8 +58,8 @@ openui create [options]
 | `-n, --name <string>`             | Project name (interactive default: `openui-agent`)               |
 | `-t, --template <template>`       | AI backend: `openui-cloud` (recommended) or `openui-self-hosted` |
 | `--backend-framework <framework>` | Backend integration: `default`, `langgraph`, or `vercel-ai-sdk`  |
-| `--api-key <key>`                 | OpenUI Cloud API key; skips sign-in for the Cloud setup          |
-| `--auth <method>`                 | Cloud auth method: `oauth` or `skip`; `manual` is deprecated     |
+| `--api-key <key>`                 | OpenUI Gateway API key; skips sign-in for the Gateway setup      |
+| `--auth <method>`                 | Gateway auth method: `oauth` or `skip`; `manual` is deprecated   |
 | `--skill`                         | Install the OpenUI agent skill for AI coding assistants          |
 | `--no-skill`                      | Skip installing the OpenUI agent skill                           |
 | `--no-install`                    | Scaffold without running dependency installation                 |
@@ -68,7 +68,7 @@ openui create [options]
 | `--no-interactive`                | Fail instead of prompting for missing input                      |
 | `--agent-name <name>`             | Declare the invoking coding-agent slug (default: `unknown`)      |
 
-When run interactively (default), the CLI prompts for any missing options, including the backend framework, then asks whether to start the development server after installing dependencies with the detected package manager. The start prompt defaults to yes; answering no preserves the existing install-and-exit behavior and prints the `cd` and dev commands. For most prototypes and evaluations, start with **OpenUI Cloud, the recommended default**: hosted models, managed conversation history and streaming, built-in tools, and ready-to-use reports and presentations without operating the model, storage, or artifact infrastructure. Choose **self-hosted** when owning the OpenAI-compatible provider, AI route, and persistence is a requirement.
+When run interactively (default), the CLI prompts for any missing options, including the backend framework, then asks whether to start the development server after installing dependencies with the detected package manager. The start prompt defaults to yes; answering no preserves the existing install-and-exit behavior and prints the `cd` and dev commands. For most prototypes and evaluations, start with **OpenUI Gateway, the recommended default**: hosted models, managed conversation history, streaming correction, fallbacks, and hosted tools without operating the model-routing infrastructure. Choose **self-hosted** only when owning the OpenAI-compatible provider integration is a requirement.
 
 In non-interactive mode, dependencies are installed without starting the long-running development server. Pass `--immediate` to install, start, and open the app, or `--no-install` to scaffold only.
 
@@ -79,28 +79,28 @@ In non-interactive mode, dependencies are installed without starting the long-ru
 1. Resolves the project name, AI setup, and backend framework
 2. Copies the selected Next.js template into `<name>/`
 3. Rewrites `workspace:*` dependency versions to `latest`
-4. Writes the relevant `.env` values, including Thesys sign-in/API-key setup for OpenUI Cloud
-5. Optionally installs the [OpenUI agent skill](/docs/openui-lang/agent-skill) for AI coding assistants (e.g. Claude, Cursor, Copilot)
+4. Writes the relevant `.env` values, including Thesys sign-in/API-key setup for OpenUI Gateway
+5. Optionally installs the [OpenUI agent skill](/docs/mcp) for AI coding assistants (e.g. Claude, Cursor, Copilot)
 6. Auto-detects your package manager (npm, pnpm, yarn, bun)
 7. Installs dependencies unless skipped, then optionally starts the development server in the generated directory
 
 **Backend frameworks**
 
-| Value           | OpenUI Cloud route                           | Self-hosted route                        |
-| --------------- | -------------------------------------------- | ---------------------------------------- |
-| `default`       | Direct OpenAI SDK Responses proxy            | Direct OpenAI SDK Chat Completions proxy |
-| `langgraph`     | LangGraph Agent Server + Cloud provider      | LangGraph Agent Server + your provider   |
-| `vercel-ai-sdk` | Vercel AI SDK Next.js agent + Cloud provider | Vercel AI SDK `streamText()` route       |
+| Value           | OpenUI Gateway route                           | Self-hosted route                        |
+| --------------- | ---------------------------------------------- | ---------------------------------------- |
+| `default`       | Direct OpenAI SDK Responses proxy              | Direct OpenAI SDK Chat Completions proxy |
+| `langgraph`     | LangGraph Agent Server + Gateway provider      | LangGraph Agent Server + your provider   |
+| `vercel-ai-sdk` | Vercel AI SDK Next.js agent + Gateway provider | Vercel AI SDK `streamText()` route       |
 
 The CLI applies the selected framework's final route/page files, dependencies, and deployment configuration over the base template. Both Vercel AI SDK variants are standard Next.js deployments with `streamText()`, `toUIMessageStreamResponse()`, and `vercelAIAdapter()`. Both LangGraph variants separate the Agent Server described by `langgraph.json` from the Next.js frontend/proxy. The proxy uses `@openuidev/langchain`, and the browser consumes its AG-UI stream with `agUIAdapter()`.
 
-For both Cloud variants, the framework owns orchestration and application tool execution. OpenUI Cloud is attached as the Responses model provider and conversation store. Reports, presentations, web search, image search, and configured MCP tools remain provider-executed Cloud tools. For either LangGraph template, `pnpm dev` starts the local Agent Server and Next.js together. Deploy the Next.js frontend to Vercel and point `LANGGRAPH_API_URL` at wherever the Agent Server runs.
+For both Gateway variants, the framework owns orchestration and application tool execution. OpenUI Gateway is attached as the Responses model provider and conversation store. Web search, image search, and configured MCP tools remain Gateway-hosted tools. For either LangGraph template, `pnpm dev` starts the local Agent Server and Next.js together. Deploy the Next.js frontend to Vercel and point `LANGGRAPH_API_URL` at wherever the Agent Server runs.
 
 All four framework routes include a `get_weather` example backed by Open-Meteo. Ask “What’s the weather in Berlin?” to verify the selected framework’s native multi-step tool loop.
 
 **Conversation storage**
 
-Every OpenUI Cloud variant uses OpenUI Cloud as its only durable conversation and artifact store. The browser connects directly through `useOpenuiCloudStorage()` with a short-lived frontend token. The `threadId` sent to `/api/chat` is the Cloud conversation id, and each backend appends model turns to it with `conversation: threadId` and `store: true`. The Vercel AI SDK route does not create a second store. The Cloud LangGraph relay creates and deletes a temporary Agent Server thread for each run; configure a separate LangGraph checkpointer only when graph state, interrupts, or resumable runs must persist independently.
+Every OpenUI Gateway variant can use Gateway-managed conversations. The browser reads allowed conversation data with a short-lived frontend token. The `threadId` sent to `/api/chat` is the Gateway conversation ID, and each backend appends model turns to it with `conversation: threadId` and `store: true`. The Vercel AI SDK route does not create a second store. The Gateway LangGraph relay creates and deletes a temporary Agent Server thread for each run; configure a separate LangGraph checkpointer only when graph state, interrupts, or resumable runs must persist independently.
 
 The self-hosted variants do not configure durable storage. `AgentInterface` keeps messages in memory for the current page session and sends that history to `/api/chat`; refreshing the page loses it. The self-hosted LangGraph relay also creates and deletes a temporary Agent Server thread for each run. Pass a storage implementation to `AgentInterface` and back it with your own database when persistence is required; add a LangGraph checkpointer only for graph-specific durable state.
 
@@ -380,7 +380,7 @@ its events can be correlated. For `create`, analytics also include `package_mana
 immediate-start selection, and best-effort dev-command start and result events. Failure events use
 bounded `failure_stage`, `error_class`, and `error_code` values instead of raw error messages.
 Dependency failures distinguish peer, registry, network, install-script, workspace, and
-package-compatibility errors. Process failures include duration, exit code, and signal; Cloud-auth
+package-compatibility errors. Process failures include duration, exit code, and signal; Gateway-auth
 failures include a bounded auth substage and HTTP status when known; cancellations use separate
 events. Dev-command events contain status, duration, exit code, and signal—not project paths,
 command output, code, or environment values. Use `--no-telemetry` or `DO_NOT_TRACK=1` to disable

@@ -1,0 +1,40 @@
+---
+title: Generative UI
+description: Render streamed OpenUI Lang as interactive application components inside a conversation.
+---
+
+An assistant message is normally markdown text. With OpenUI Lang, the agent can compose the
+components your application defines: tables, forms, charts, cards, or domain-specific controls.
+The interface renders progressively as the response streams.
+
+Build the component library with OpenUI Lang, then pass the same library to Agent Interface:
+
+```tsx
+import { AgentInterface } from "@openuidev/react-ui";
+import { library } from "./library";
+
+<AgentInterface llm={llm} componentLibrary={library} />;
+```
+
+The component definitions remain in your application. They determine what the model may generate,
+how each element renders, and which interactions are available. Start with the
+[OpenUI Lang Quick Start](/docs/openui-lang/quickstart) to create that contract.
+
+<video
+  src="/videos/agent/generative-ui-chart-inline.mp4"
+  autoPlay
+  loop
+  muted
+  playsInline
+  className="w-full rounded-lg border"
+/>
+
+## Interactivity
+
+Generated components can continue the conversation or update locally:
+
+- **Continue the conversation:** Send an interaction and its current values back as the next turn.
+- **Update in place:** Refresh data, change state, or open a link without another model request.
+
+Form state is tracked with the thread, so an in-progress interaction can survive navigation and
+reloads. See [Interactivity](/docs/openui-lang/interactivity) for the language and renderer behavior.

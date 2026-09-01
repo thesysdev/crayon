@@ -1,0 +1,20 @@
+---
+title: Prompt Caching
+description: Reduce repeated prompt work for requests that reuse stable OpenUI component instructions.
+---
+
+OpenUI requests often share a large stable prefix: the language specification, component signatures, examples, and application rules. Prompt caching can let a provider reuse work for this repeated prefix, reducing latency and input processing on compatible routes.
+
+## Design prompts for reuse
+
+- Keep stable OpenUI and component instructions before conversation-specific content.
+- Avoid changing the component library or system instructions between otherwise similar requests.
+- Put dynamic user and tool content after the reusable prefix.
+- Measure cache behavior per model because provider implementations differ.
+
+<Callout type="info">
+  Gateway caching controls and per-model support are still being finalized. This page will gain the
+  exact request fields and billing behavior when that contract is published.
+</Callout>
+
+Prompt caching does not change Gateway error correction. Generated OpenUI Lang is still validated as it streams.
