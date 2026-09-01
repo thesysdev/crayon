@@ -1,4 +1,4 @@
-"""Minimal FastAPI backend — streams OpenUI Cloud Responses as SSE."""
+"""Minimal FastAPI backend — streams OpenUI Cloud completions as NDJSON."""
 import os
 
 from dotenv import load_dotenv
@@ -9,13 +9,12 @@ from starlette.responses import StreamingResponse
 
 load_dotenv()
 
-# Embed client: Responses → POST /v1/embed/responses
-# (Chat Completions would be POST /v1/embed/chat/completions via chat.completions.create)
+# Embed client: Chat Completions → POST /v1/embed/chat/completions
 client = AsyncOpenAI(
     api_key=os.environ.get("THESYS_API_KEY"),
     base_url="https://api.thesys.dev/v1/embed",
 )
-MODEL = "google/gemini-3.6-flash-free"
+MODEL = os.environ.get("OPENUI_MODEL", "google/gemini-3.6-flash-free")
 
 # Same payload as generateSystemPrompt() from @openuidev/thesys-server.
 CLOUD_SYSTEM_PROMPT = ']]>openui:config\n{"libraryVersion": "0.1.0"}'
@@ -27,22 +26,14 @@ app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], all
 @app.post("/api/chat")
 async def chat(body: dict):
     messages = body.get("messages") or []
-    stream = await client.responses.create(
+    stream = await client.chat.completions.create(
         model=MODEL,
-        instructions=CLOUD_SYSTEM_PROMPT,
-        input=messages,
+        messages=[{"role": "system", "content": CLOUD_SYSTEM_PROMPT}, *messages],
         stream=True,
     )
 
-    async def sse():
-        async for event in stream:
-            yield f"data: {event.model_dump_json(exclude_none=True)}\n\n"
+    async def ndjson_stream():
+        async for chunk in stream:
+            yield chunk.model_dump_json(exclude_none=True, exclude_unset=True) + "\n"
 
-    return StreamingResponse(
-        sse(),
-        media_type="text/event-stream",
-        headers={
-            "Cache-Control": "no-cache, no-transform",
-            "Connection": "keep-alive",
-        },
-    )
+    return StreamingResponse(ndjson_stream(), media_type="application/x-ndjson")

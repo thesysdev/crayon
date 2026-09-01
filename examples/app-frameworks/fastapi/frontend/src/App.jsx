@@ -5,21 +5,21 @@ import "@openuidev/thesys/styles.css";
 import {
   AgentInterface,
   fetchLLM,
-  openAIConversationMessageFormat,
-  openAIResponsesAdapter,
+  openAIMessageFormat,
+  openAIReadableStreamAdapter,
 } from "@openuidev/react-ui";
 import { chatLibrary } from "@openuidev/thesys";
 import { useMemo } from "react";
 
 export default function App() {
   // Storage is AgentInterface's built-in in-memory default (wiped on reload).
-  // The Cloud system prompt is attached on the FastAPI side via Responses `instructions`.
+  // The Cloud system prompt is attached on the FastAPI side as a system message.
   const llm = useMemo(
     () =>
       fetchLLM({
         url: "/api/chat",
-        streamAdapter: openAIResponsesAdapter(),
-        messageFormat: openAIConversationMessageFormat,
+        streamAdapter: openAIReadableStreamAdapter(),
+        messageFormat: openAIMessageFormat,
       }),
     [],
   );
