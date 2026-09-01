@@ -57,7 +57,7 @@ openui create [options]
 | --------------------------------- | ----------------------------------------------------------------------------- |
 | `-n, --name <string>`             | Project name (interactive default: `openui-agent`)                            |
 | `-t, --template <template>`       | AI backend: `openui-cloud` (recommended) or `openui-self-hosted`              |
-| `--backend-framework <framework>` | Backend integration: `default`, `langgraph`, `vercel-ai-sdk`, or `vercel-eve` |
+| `--backend-framework <framework>` | Overlay from `templates/<template>/overlays`, or `default` for the base template |
 | `--api-key <key>`                 | OpenUI Cloud API key; skips sign-in for the Cloud setup                       |
 | `--auth <method>`                 | Cloud auth method: `oauth` or `skip`; `manual` is deprecated                  |
 | `--skill`                         | Install the OpenUI agent skill for AI coding assistants                       |
@@ -76,8 +76,8 @@ In non-interactive mode, dependencies are installed without starting the long-ru
 
 **What it does**
 
-1. Resolves the project name, AI setup, and backend framework
-2. Copies the selected Next.js template into `<name>/`
+1. Resolves the project name and AI setup, then fetches the template and lists its backend-framework overlays
+2. Copies the selected Next.js template from the OpenUI repo into `<name>/`
 3. Rewrites `workspace:*` dependency versions to `latest`
 4. Writes the relevant `.env` values, including Thesys sign-in/API-key setup for OpenUI Cloud
 5. Optionally installs the [OpenUI agent skill](/docs/openui-lang/agent-skill) for AI coding assistants (e.g. Claude, Cursor, Copilot)
@@ -85,6 +85,8 @@ In non-interactive mode, dependencies are installed without starting the long-ru
 7. Installs dependencies unless skipped, then optionally starts the development server in the generated directory
 
 **Backend frameworks**
+
+The CLI fetches starter apps from [`templates/`](https://github.com/thesysdev/openui/tree/main/templates) in the OpenUI repo. Overlay choices are `default` plus each directory under the selected template's `overlays/`.
 
 | Value           | OpenUI Cloud route                           | Self-hosted route                        |
 | --------------- | -------------------------------------------- | ---------------------------------------- |

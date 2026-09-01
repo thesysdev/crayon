@@ -77,7 +77,7 @@ Options:
 
 - `-n, --name <string>`: Project name (interactive default: `openui-agent`)
 - `-t, --template <template>`: AI backend — `openui-cloud` (managed) or `openui-self-hosted` (bring your provider)
-- `--backend-framework <framework>`: API route implementation — `default`, `langgraph`, `vercel-ai-sdk`, or `vercel-eve`
+- `--backend-framework <framework>`: API route overlay from `templates/<template>/overlays` (plus `default` for the base template)
 - `--skill`: Install the OpenUI agent skill for AI coding assistants
 - `--no-skill`: Skip installing the OpenUI agent skill
 - `--no-install`: Scaffold without running the package install
@@ -94,8 +94,8 @@ What it does:
 
 - prompts for the project name, defaulting to `openui-agent`, if you do not pass `--name`
 - uses the `openui-cloud` template when you do not pass `--template` (interactive runs no longer ask; `--template openui-self-hosted` still works)
-- prompts for a backend framework after the template; non-interactive usage defaults to `default`
-- copies the bundled template into a new directory
+- prompts for a backend framework after fetching the template; overlay names come from `templates/<template>/overlays`. Non-interactive usage defaults to `default`
+- copies the selected template from the local OpenUI checkout when the CLI can see `templates/`, otherwise from GitHub with sparse-checkout
 - rewrites monorepo-local dependencies (`workspace:`, `file:`, `catalog:`) in the generated `package.json` to `latest`
 - installs dependencies automatically using the detected package manager (unless `--no-install`)
 - in interactive sessions, starts the development server and opens its local URL in the default browser; pass `--no-immediate` to install and exit instead
@@ -109,6 +109,8 @@ What it does:
 - **Self-hosted** — choose this when owning the OpenAI-compatible provider integration, AI route, and persistence is a requirement. It is not offered as an interactive choice; request it with `--template openui-self-hosted`.
 
 #### Backend frameworks
+
+Overlay names are loaded from the fetched template's `overlays/` directory (`default` is the base template with no overlay). Current templates ship:
 
 | Value           | OpenUI Cloud route                           | Self-hosted route                        |
 | --------------- | -------------------------------------------- | ---------------------------------------- |

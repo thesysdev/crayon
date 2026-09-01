@@ -6,12 +6,14 @@ on:
     paths:
       - ".github/workflows/cli-e2e.yml"
       - "packages/openui-cli/**"
+      - "templates/**"
       - "tsconfig.json"
   pull_request:
     branches: [main]
     paths:
       - ".github/workflows/cli-e2e.yml"
       - "packages/openui-cli/**"
+      - "templates/**"
       - "tsconfig.json"
 
 permissions:
@@ -35,7 +37,7 @@ jobs:
       - name: Install workspace dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Build CLI and templates
+      - name: Build CLI
         run: pnpm --filter @openuidev/cli build
 
       - name: Pack CLI
@@ -146,6 +148,8 @@ jobs:
             package-manager-version: "11"
 
     steps:
+      - uses: actions/checkout@v6
+
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ matrix.node-version }}
@@ -196,6 +200,8 @@ jobs:
       - name: Run CLI with npm
         if: matrix.package-manager == 'npm'
         working-directory: ${{ runner.temp }}/cli-e2e
+        env:
+          OPENUI_CLI_SOURCE_ROOT: ${{ github.workspace }}
         run: >-
           npm exec --yes --package="${{ steps.cli-package.outputs.path }}" --
           openui --no-telemetry create
@@ -208,6 +214,8 @@ jobs:
       - name: Run CLI with pnpm
         if: matrix.package-manager == 'pnpm'
         working-directory: ${{ runner.temp }}/cli-e2e
+        env:
+          OPENUI_CLI_SOURCE_ROOT: ${{ github.workspace }}
         run: >-
           pnpm dlx "${{ steps.cli-package.outputs.path }}"
           --no-telemetry create

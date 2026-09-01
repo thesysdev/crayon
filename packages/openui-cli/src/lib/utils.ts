@@ -266,9 +266,6 @@ export function normalizeBackendFramework(framework?: string): OverlayName | und
     case "vercel-eve":
       return "vercel-eve";
     default:
-      throw new CreateError(
-        "bad_args",
-        `unknown backend framework "${framework}". Use: default | langgraph | vercel-ai-sdk | vercel-eve.`,
-      );
+      return framework.toLowerCase();
   }
 }
