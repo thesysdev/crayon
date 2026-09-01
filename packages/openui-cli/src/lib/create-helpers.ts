@@ -75,7 +75,7 @@ export async function runDependencyInstall(params: {
     : await withSpinner("Installing dependencies...", runInstall);
 
   const ok = !result.error && result.status === 0;
-  if (ok && !verbose) console.info("✓ Dependencies installed\n");
+  if (ok && !verbose) console.info("✓ Dependencies installed");
   if (!ok && !verbose) printLogTail(result.diagnosticTail, "install log (tail)");
   return result;
 }

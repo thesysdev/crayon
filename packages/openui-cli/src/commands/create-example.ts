@@ -1,6 +1,7 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 
+import { QUIET_COMMAND_CAPTURE_LIMIT } from "../lib/command-output";
 import {
   promptForProviderKey,
   resolveImmediate,
@@ -58,28 +59,32 @@ export async function runCreateExample(params: {
     selection_source: immediateResolution.source,
   });
 
-  console.info(`\nScaffolding example ${example.label} into "${name}"...\n`);
+  console.info();
   telemetry.capture("cli_scaffold_started", {
     ...createFunnelProps("scaffold_started"),
     example: example.name,
   });
   try {
     await withProgress(
-      "Fetching example...",
-      () =>
-        scaffoldExample({
+      "Scaffolding...",
+      async () => {
+        await scaffoldExample({
           example,
           targetDir,
           name,
           packageManager: packageManager.name,
-        }),
+        });
+        if (packageManager.name !== "npm") {
+          fs.rmSync(path.join(targetDir, "package-lock.json"), { force: true });
+        }
+        if (packageManager.name !== "pnpm") {
+          fs.rmSync(path.join(targetDir, "pnpm-lock.yaml"), { force: true });
+        }
+      },
       options.verbose,
     );
-    if (packageManager.name !== "npm") {
-      fs.rmSync(path.join(targetDir, "package-lock.json"), { force: true });
-    }
-    if (packageManager.name !== "pnpm") {
-      fs.rmSync(path.join(targetDir, "pnpm-lock.yaml"), { force: true });
+    if (!options.verbose) {
+      console.info("✓ Scaffolded");
     }
   } catch (err) {
     const properties = cliErrorProperties(err, {
@@ -127,51 +132,6 @@ export async function runCreateExample(params: {
     env_written: envResult.envWritten,
   });
 
-  let skillInstalled = false;
-  if (installSkill) {
-    telemetry.capture("cli_skill_install_started", {
-      ...createFunnelProps("skill_install_started"),
-      skill_installed: installSkill,
-    });
-    const skillResult = await runSkillInstall(targetDir);
-    skillInstalled = !skillResult.error && skillResult.status === 0;
-    if (skillInstalled) {
-      telemetry.capture("cli_skill_install_finished", {
-        ...createFunnelProps("skill_install_finished"),
-        skill_installed: true,
-        duration_ms: skillResult.durationMs,
-        exit_code: skillResult.status,
-      });
-    } else {
-      const properties = processErrorProperties(skillResult, "skill_install", {
-        error_class: "dependency",
-        error_code: "SKILL_INSTALL_FAILED",
-      });
-      if (properties.error_class === "user_cancelled") {
-        telemetry.capture("cli_skill_install_cancelled", {
-          ...createFunnelProps("skill_install_cancelled"),
-          skill_installed: false,
-          ...properties,
-        });
-        throw new CliCancelledError(
-          "skill_install",
-          properties.cancellation_exit_code ?? 0,
-          properties,
-        );
-      }
-      telemetry.capture("cli_skill_install_failed", {
-        ...createFunnelProps("skill_install_failed"),
-        skill_installed: false,
-        ...properties,
-      });
-      console.warn(
-        "\nCould not install the OpenUI agent skill automatically.\n" +
-          "You can install it manually later with:\n\n" +
-          "  npx skills add thesysdev/skills --skill openui\n",
-      );
-    }
-  }
-
   const hasNpmLock = fs.existsSync(path.join(targetDir, "package-lock.json"));
   const installCmd =
     packageManager.name === "npm" && !hasNpmLock
@@ -191,7 +151,7 @@ export async function runCreateExample(params: {
     telemetry.capture("cli_dependency_install_skipped", {
       skip_reason: "no_install_flag",
     });
-    console.info(`Skipping dependency install (--no-install). Run \`${installCmd}\` later.\n`);
+    console.info(`Skipping dependency install (--no-install). Run \`${installCmd}\` later.`);
   } else {
     telemetry.capture("cli_dependency_install_started", {
       ...createFunnelProps("dependency_install_started"),
@@ -242,6 +202,66 @@ export async function runCreateExample(params: {
         error_class,
         error_code,
         metadata,
+      );
+    }
+  }
+
+  let skillInstalled = false;
+  if (installSkill) {
+    telemetry.capture("cli_skill_install_started", {
+      ...createFunnelProps("skill_install_started"),
+      skill_installed: installSkill,
+    });
+    const runSkill = () =>
+      options.verbose
+        ? runSkillInstall(targetDir)
+        : runSkillInstall(targetDir, {
+            echo: false,
+            stdin: "ignore",
+            captureLimit: QUIET_COMMAND_CAPTURE_LIMIT,
+          });
+    const skillResult = await withProgress(
+      "Installing OpenUI agent skill...",
+      runSkill,
+      options.verbose,
+    );
+    skillInstalled = !skillResult.error && skillResult.status === 0;
+    if (skillInstalled) {
+      if (!options.verbose) {
+        console.info("✓ OpenUI agent skill installed");
+      }
+      telemetry.capture("cli_skill_install_finished", {
+        ...createFunnelProps("skill_install_finished"),
+        skill_installed: true,
+        duration_ms: skillResult.durationMs,
+        exit_code: skillResult.status,
+      });
+    } else {
+      const properties = processErrorProperties(skillResult, "skill_install", {
+        error_class: "dependency",
+        error_code: "SKILL_INSTALL_FAILED",
+      });
+      if (properties.error_class === "user_cancelled") {
+        telemetry.capture("cli_skill_install_cancelled", {
+          ...createFunnelProps("skill_install_cancelled"),
+          skill_installed: false,
+          ...properties,
+        });
+        throw new CliCancelledError(
+          "skill_install",
+          properties.cancellation_exit_code ?? 0,
+          properties,
+        );
+      }
+      telemetry.capture("cli_skill_install_failed", {
+        ...createFunnelProps("skill_install_failed"),
+        skill_installed: false,
+        ...properties,
+      });
+      console.warn(
+        "\nCould not install the OpenUI agent skill automatically.\n" +
+          "You can install it manually later with:\n\n" +
+          "  npx skills add thesysdev/skills --skill openui\n",
       );
     }
   }
@@ -372,5 +392,5 @@ function getStartedMessage(o: {
         `> ${o.devCmd} run dev`,
       ].join("\n");
 
-  return `${[skillMessage.trim(), "Done!", envNote, nextStep].filter(Boolean).join("\n\n")}\n`;
+  return `\n${[skillMessage.trim(), "Done!", envNote, nextStep].filter(Boolean).join("\n\n")}\n`;
 }
