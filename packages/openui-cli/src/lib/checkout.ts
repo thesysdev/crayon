@@ -29,13 +29,6 @@ function posixRepoPath(repoPath: string): string {
   return repoPath.replace(/\\/g, "/").replace(/^\/+/, "");
 }
 
-function gitEnv(): NodeJS.ProcessEnv {
-  return {
-    ...process.env,
-    GIT_TERMINAL_PROMPT: "0",
-  };
-}
-
 function runGit(
   args: string[],
   options: { cwd?: string; timeoutMs?: number } = {},
@@ -43,7 +36,10 @@ function runGit(
   return new Promise((resolve, reject) => {
     const child = spawn("git", args, {
       cwd: options.cwd,
-      env: gitEnv(),
+      env: {
+        ...process.env,
+        GIT_TERMINAL_PROMPT: "0",
+      },
       stdio: ["ignore", "pipe", "pipe"],
     });
     let stdout = "";
