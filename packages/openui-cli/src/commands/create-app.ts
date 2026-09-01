@@ -26,6 +26,7 @@ import {
   type TemplateOverlay,
 } from "../lib/overlays";
 import {
+  findExample,
   rejectConflictingScaffoldSelectors,
   resolveProject,
   templatesFromOverlays,
@@ -183,14 +184,38 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
     immediate_arg: options.immediate,
   });
 
-  const catalogPromise = loadTemplatesCatalog();
-  const featuredExamplesPromise = loadFeaturedExamples();
-
   rejectConflictingScaffoldSelectors({
     example: options.example,
     backendFramework: options.backendFramework,
     template: options.template,
   });
+
+  // Interactive runs always scaffold the Cloud backend; openui-self-hosted stays
+  // available, but only when requested explicitly with --template.
+  if (!options.example && !options.template && !interactive) {
+    throw new CreateError(
+      "args_resolution",
+      "Missing required argument --template",
+      "invalid_input",
+      "MISSING_REQUIRED_ARG",
+    );
+  }
+
+  const [catalog, featuredExamples] = await Promise.all([
+    loadTemplatesCatalog(),
+    loadFeaturedExamples(),
+  ]);
+  requireFeaturedExamples(featuredExamples, options.example);
+
+  const template: TemplateName | undefined = options.example
+    ? undefined
+    : (options.template ?? DEFAULT_TEMPLATE_KEY);
+  const templateEntry = template ? findCatalogTemplate(catalog, template) : undefined;
+  if (options.example) {
+    findExample(options.example, featuredExamples);
+  } else if (options.backendFramework && templateEntry) {
+    findCatalogOverlay(templateEntry, options.backendFramework);
+  }
 
   const nameArgs = await resolveArgs(
     {
@@ -207,25 +232,6 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
     (nameArgs as { name: string }).name,
     interactive,
   );
-
-  const [catalog, featuredExamples] = await Promise.all([catalogPromise, featuredExamplesPromise]);
-  requireFeaturedExamples(featuredExamples, options.example);
-
-  // Interactive runs always scaffold the Cloud backend; openui-self-hosted stays
-  // available, but only when requested explicitly with --template.
-  if (!options.example && !options.template && !interactive) {
-    throw new CreateError(
-      "args_resolution",
-      "Missing required argument --template",
-      "invalid_input",
-      "MISSING_REQUIRED_ARG",
-    );
-  }
-
-  const template: TemplateName | undefined = options.example
-    ? undefined
-    : (options.template ?? DEFAULT_TEMPLATE_KEY);
-  const templateEntry = template ? findCatalogTemplate(catalog, template) : undefined;
 
   const project = await resolveProject({
     backendFramework: options.backendFramework,
