@@ -56,8 +56,8 @@ openui create [options]
 | Flag                              | Description                                                                   |
 | --------------------------------- | ----------------------------------------------------------------------------- |
 | `-n, --name <string>`             | Project name (interactive default: `openui-agent`)                            |
-| `-t, --template <template>`       | Template `key` from `templates/templates.json` (interactive default: `openui-cloud`) |
-| `--backend-framework <framework>` | Overlay `key` from that template's `overlays` list, or `default` for the base template |
+| `-t, --template <template>`       | AI backend: `openui-cloud` (recommended) or `openui-self-hosted`              |
+| `--backend-framework <framework>` | Backend integration: `default`, `langgraph`, `vercel-ai-sdk`, or `vercel-eve` |
 | `--api-key <key>`                 | OpenUI Cloud API key; skips sign-in for the Cloud setup                       |
 | `--auth <method>`                 | Cloud auth method: `oauth` or `skip`; `manual` is deprecated                  |
 | `--skill`                         | Install the OpenUI agent skill for AI coding assistants                       |
@@ -76,8 +76,8 @@ In non-interactive mode, dependencies are installed without starting the long-ru
 
 **What it does**
 
-1. Resolves the project name, prefetches `templates/templates.json`, and picks a backend-framework overlay from that catalog
-2. Copies the selected Next.js template from the OpenUI repo into `<name>/`
+1. Resolves the project name, AI setup, and backend framework
+2. Copies the selected Next.js template into `<name>/`
 3. Rewrites `workspace:*` dependency versions to `latest`
 4. Writes the relevant `.env` values, including Thesys sign-in/API-key setup for OpenUI Cloud
 5. Optionally installs the [OpenUI agent skill](/docs/openui-lang/agent-skill) for AI coding assistants (e.g. Claude, Cursor, Copilot)
@@ -85,8 +85,6 @@ In non-interactive mode, dependencies are installed without starting the long-ru
 7. Installs dependencies unless skipped, then optionally starts the development server in the generated directory
 
 **Backend frameworks**
-
-The CLI prefetches [`templates/templates.json`](https://github.com/thesysdev/openui/blob/main/templates/templates.json) for template keys, descriptions, and overlay lists, then copies the matching directory from [`templates/`](https://github.com/thesysdev/openui/tree/main/templates).
 
 | Value           | OpenUI Cloud route                           | Self-hosted route                        |
 | --------------- | -------------------------------------------- | ---------------------------------------- |

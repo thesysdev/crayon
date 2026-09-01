@@ -76,8 +76,8 @@ openui create [options]
 Options:
 
 - `-n, --name <string>`: Project name (interactive default: `openui-agent`)
-- `-t, --template <template>`: AI backend `key` from `templates/templates.json` — interactive default `openui-cloud`
-- `--backend-framework <framework>`: Overlay `key` from that template's `overlays` list (plus `default` for the base template)
+- `-t, --template <template>`: AI backend — `openui-cloud` (managed) or `openui-self-hosted` (bring your provider)
+- `--backend-framework <framework>`: API route implementation — `default`, `langgraph`, `vercel-ai-sdk`, or `vercel-eve`
 - `--skill`: Install the OpenUI agent skill for AI coding assistants
 - `--no-skill`: Skip installing the OpenUI agent skill
 - `--no-install`: Scaffold without running the package install
@@ -94,8 +94,8 @@ What it does:
 
 - prompts for the project name, defaulting to `openui-agent`, if you do not pass `--name`
 - uses the `openui-cloud` template when you do not pass `--template` (interactive runs no longer ask; `--template openui-self-hosted` still works)
-- prefetches `templates/templates.json` and prompts for a backend framework from that template's `overlays` list. Non-interactive usage defaults to `default`
-- copies the selected template from GitHub with sparse-checkout
+- prompts for a backend framework after the template; non-interactive usage defaults to `default`
+- copies the bundled template into a new directory
 - rewrites monorepo-local dependencies (`workspace:`, `file:`, `catalog:`) in the generated `package.json` to `latest`
 - installs dependencies automatically using the detected package manager (unless `--no-install`)
 - in interactive sessions, starts the development server and opens its local URL in the default browser; pass `--no-immediate` to install and exit instead
