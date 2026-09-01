@@ -3,17 +3,10 @@ import * as path from "node:path";
 
 import { fetchSourceFile } from "./checkout";
 import type { ExampleProject } from "./projects";
+import { openUiSourceRoots } from "./source-roots";
 import { CreateError } from "./telemetry";
 
 export const EXAMPLES_CATALOG_PATH = "examples/examples.json";
-
-export function openUiSourceRoots(sourceRoot?: string): string[] {
-  return [
-    sourceRoot,
-    process.env["OPENUI_CLI_SOURCE_ROOT"],
-    path.resolve(__dirname, "..", "..", "..", ".."),
-  ].filter((root): root is string => Boolean(root));
-}
 
 type CatalogExample = {
   title?: unknown;

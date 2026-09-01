@@ -28,41 +28,24 @@ export interface ExampleProject {
 
 export type ProjectMetadata = TemplateProject | ExampleProject;
 
-export const STARTER_TEMPLATES: TemplateProject[] = [
-  {
-    name: "default",
-    label: "Default",
-    description: "Minimal SDK route",
+export function templatesFromOverlays(
+  overlays: Array<{ name: string; label: string; description?: string }>,
+): TemplateProject[] {
+  return overlays.map((overlay) => ({
+    name: overlay.name,
+    label: overlay.label,
+    description: overlay.description ?? overlay.label,
     category: "template",
-  },
-  {
-    name: "vercel-ai-sdk",
-    label: "Vercel AI SDK",
-    description: "Vercel AI SDK agent with the selected model backend",
-    category: "template",
-  },
-  {
-    name: "langgraph",
-    label: "LangGraph",
-    description: "LangGraph agent with the selected model backend",
-    category: "template",
-  },
-  {
-    name: "vercel-eve",
-    label: "Vercel Eve",
-    description: "Eve agent rendered through Agent Interface",
-    category: "template",
-  },
-];
+  }));
+}
 
-export const templateNames = STARTER_TEMPLATES.map((project) => project.name);
-
-export function findTemplate(name: OverlayName): TemplateProject {
-  const project = STARTER_TEMPLATES.find((entry) => entry.name === name);
+export function findTemplate(name: OverlayName, templates: TemplateProject[]): TemplateProject {
+  const project = templates.find((entry) => entry.name === name);
   if (!project) {
+    const available = templates.map((entry) => entry.name).join(" | ") || "(none loaded)";
     throw new CreateError(
       "args_resolution",
-      `unknown backend framework "${name}". Use: ${templateNames.join(" | ")}.`,
+      `unknown backend framework "${name}". Use: ${available}.`,
       "invalid_input",
       "INVALID_BACKEND_FRAMEWORK",
     );
@@ -116,19 +99,20 @@ export async function resolveProject(params: {
   backendFramework?: OverlayName;
   example?: string;
   examples: ExampleProject[];
+  templates: TemplateProject[];
   interactive: boolean;
 }): Promise<ProjectMetadata> {
-  const { backendFramework, example, examples, interactive } = params;
+  const { backendFramework, example, examples, templates, interactive } = params;
 
   if (example) return findExample(example, examples);
-  if (backendFramework) return findTemplate(backendFramework);
-  if (!interactive) return findTemplate("default");
+  if (backendFramework) return findTemplate(backendFramework, templates);
+  if (!interactive) return findTemplate("default", templates);
 
   const { select, Separator } = await import("@inquirer/prompts");
   try {
     const choices = [
       new Separator("────── Starter Templates ──────"),
-      ...STARTER_TEMPLATES.map((project) => ({
+      ...templates.map((project) => ({
         value: `template:${project.name}`,
         name: project.label,
         description: project.description,
@@ -153,7 +137,7 @@ export async function resolveProject(params: {
     if (selected.startsWith("example:")) {
       return findExample(selected.slice("example:".length), examples);
     }
-    return findTemplate(selected.slice("template:".length) as OverlayName);
+    return findTemplate(selected.slice("template:".length) as OverlayName, templates);
   } catch (err) {
     const { ExitPromptError } = await import("@inquirer/core");
     if (err instanceof ExitPromptError) {

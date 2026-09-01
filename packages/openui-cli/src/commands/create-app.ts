@@ -22,7 +22,11 @@ import {
   type TemplateOverlay,
 } from "../lib/overlays";
 import { runCommand } from "../lib/process-runner";
-import { rejectConflictingScaffoldSelectors, resolveProject } from "../lib/projects";
+import {
+  rejectConflictingScaffoldSelectors,
+  resolveProject,
+  templatesFromOverlays,
+} from "../lib/projects";
 import { resolveArgs } from "../lib/resolve-args";
 import { resolveTemplateSource } from "../lib/scaffold-template";
 import { withSpinner } from "../lib/spinner";
@@ -176,31 +180,14 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
     immediate_arg: options.immediate,
   });
 
-  // Interactive runs always scaffold the Cloud backend; openui-self-hosted stays
-  // available, but only when requested explicitly with --template.
-  if (!options.template && !interactive) {
-    throw new CreateError(
-      "args_resolution",
-      "Missing required argument --template",
-      "invalid_input",
-      "MISSING_REQUIRED_ARG",
-    );
-  }
-
-  const catalog = await loadTemplatesCatalog();
-  const template: TemplateName = options.template ?? DEFAULT_TEMPLATE_KEY;
-  const templateEntry = findCatalogTemplate(catalog, template);
-  if (options.backendFramework) {
-    findCatalogOverlay(templateEntry, options.backendFramework);
-  }
+  const catalogPromise = loadTemplatesCatalog();
+  const featuredExamplesPromise = loadFeaturedExamples({});
 
   rejectConflictingScaffoldSelectors({
     example: options.example,
     backendFramework: options.backendFramework,
     template: options.template,
   });
-
-  const featuredExamplesPromise = loadFeaturedExamples({});
 
   const nameArgs = await resolveArgs(
     {
@@ -218,13 +205,36 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
     interactive,
   );
 
-  const featuredExamples = await featuredExamplesPromise;
+  const [catalog, featuredExamples] = await Promise.all([catalogPromise, featuredExamplesPromise]);
   requireFeaturedExamples(featuredExamples, options.example);
+
+  // Interactive runs always scaffold the Cloud backend; openui-self-hosted stays
+  // available, but only when requested explicitly with --template.
+  if (!options.example && !options.template && !interactive) {
+    throw new CreateError(
+      "args_resolution",
+      "Missing required argument --template",
+      "invalid_input",
+      "MISSING_REQUIRED_ARG",
+    );
+  }
+
+  const template: TemplateName | undefined = options.example
+    ? undefined
+    : (options.template ?? DEFAULT_TEMPLATE_KEY);
+  const templateEntry = template ? findCatalogTemplate(catalog, template) : undefined;
 
   const project = await resolveProject({
     backendFramework: options.backendFramework,
     example: options.example,
     examples: featuredExamples,
+    templates: templatesFromOverlays(
+      (templateEntry?.overlays ?? []).map((overlay) => ({
+        name: overlay.key,
+        label: overlay.name,
+        description: overlay.description,
+      })),
+    ),
     interactive,
   });
 
@@ -239,6 +249,15 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
       example: project,
     });
     return;
+  }
+
+  if (!template || !templateEntry) {
+    throw new CreateError(
+      "args_resolution",
+      "Missing required argument --template",
+      "invalid_input",
+      "MISSING_REQUIRED_ARG",
+    );
   }
 
   const backendFramework = project.name;
