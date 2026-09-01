@@ -94,6 +94,7 @@ Try it yourself in the [Playground](https://www.openui.com/playground): generate
 | Package                                                                                                    | Best for                                         | Description                                                                                                  |
 | :--------------------------------------------------------------------------------------------------------- | :----------------------------------------------- | :----------------------------------------------------------------------------------------------------------- |
 | [`@openuidev/lang-core`](./packages/lang-core)                                                             | Framework-agnostic parsing and prompt generation | Core parser, prompt-generation, runtime-evaluation, and type layer with no React, Vue, or Svelte dependency  |
+| [`@openuidev/cli`](./packages/openui-cli)                                                                  | Project scaffolding and prompt generation        | CLI for creating new apps and generating system prompts or JSON schema from a library definition             |
 | [`@openuidev/langchain`](./packages/langchain)                                                             | LangChain and LangGraph agents                   | Agent transformer and server helpers that stream OpenUI through AG-UI                                        |
 | [`@openuidev/react-lang`](./packages/react-lang)                                                           | React rendering runtimes                         | Define component libraries, generate prompts, and render streamed OpenUI Lang in React                       |
 | [`@openuidev/react-headless`](./packages/react-headless)                                                   | Bring-your-own React chat UI                     | Headless chat state, streaming adapters, and message format converters                                       |
@@ -102,7 +103,7 @@ Try it yourself in the [Playground](https://www.openui.com/playground): generate
 | [`@openuidev/vue-lang`](./packages/vue-lang)                                                               | Vue integrations                                 | Vue 3 bindings for defining model-renderable components and rendering streamed OpenUI Lang                   |
 | [`@openuidev/svelte-lang`](./packages/svelte-lang)                                                         | Svelte integrations                              | Svelte 5 bindings for defining model-renderable components and rendering streamed OpenUI Lang                |
 | [`@openuidev/browser-bundle`](./packages/browser-bundle)                                                   | CDN, iframe, and no-build embeds                 | Prebuilt browser bundle that ships the renderer, UI library, React, and styles as script + stylesheet assets |
-| [`@openuidev/cli`](./packages/openui-cli)                                                                  | Project scaffolding and prompt generation        | CLI for creating new apps and generating system prompts or JSON schema from a library definition             |
+| [`@openuidev/a2ui`](./packages/a2ui)                                                                       | A2UI with OpenUI Lang component payloads         | Framework-agnostic A2UI v1.0 protocol client with an optional React renderer                                 |
 | [`@openuidev/openclaw-os-plugin`](https://github.com/thesysdev/openclaw-os/tree/main/packages/claw-plugin) | OpenClaw workspaces                              | OpenClaw OS plugin for serving OpenUI-powered OpenClaw workspaces                                            |
 
 Common starting points:
@@ -120,6 +121,9 @@ npm install @openuidev/langchain @langchain/langgraph
 # Vue or Svelte runtime
 npm install @openuidev/vue-lang
 npm install @openuidev/svelte-lang
+
+# A2UI protocol with OpenUI Lang component payloads
+npm install @openuidev/a2ui zod
 ```
 
 ## Why OpenUI Lang
@@ -157,16 +161,17 @@ Detailed documentation is available at [openui.com](https://openui.com).
 ```
 openui/
 ├── packages/
+│   ├── lang-core/        # Framework-agnostic parser, prompt, and runtime layer
+│   ├── openui-cli/       # CLI for scaffolding & prompt generation
 │   ├── react-lang/       # Core runtime (parser, renderer, prompt generation)
 │   ├── react-headless/   # Headless chat state & streaming adapters
 │   ├── react-ui/         # Prebuilt chat layouts & component libraries
 │   ├── react-email/      # React Email component library for generated emails
-│   ├── lang-core/        # Framework-agnostic parser, prompt, and runtime layer
 │   ├── langchain/        # LangChain/LangGraph streaming integration
 │   ├── vue-lang/         # Vue runtime bindings for OpenUI Lang
 │   ├── svelte-lang/      # Svelte runtime bindings for OpenUI Lang
 │   ├── browser-bundle/   # Script-tag bundle for CDN / iframe / no-build embeds
-│   └── openui-cli/       # CLI for scaffolding & prompt generation
+│   └── a2ui/             # A2UI protocol with OpenUI Lang component payloads
 ├── skills/
 │   └── openui/           # Claude Code skill for AI-assisted development
 ├── examples/             # Capability and integration reference implementations
