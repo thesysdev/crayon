@@ -5,7 +5,6 @@ import * as path from "node:path";
 import { checkoutSource } from "./checkout";
 import type { PackageManagerName } from "./detect-package-manager";
 import type { ExampleProject } from "./projects";
-import { openUiSourceRoots } from "./source-roots";
 import { CreateError } from "./telemetry";
 
 const ARTIFACT_DIRS = new Set(["node_modules", ".next", ".turbo", "dist", ".nuxt", ".svelte-kit"]);
@@ -19,14 +18,6 @@ function shouldCopyExamplePath(exampleDir: string, src: string): boolean {
   const relative = path.relative(exampleDir, src);
   if (!relative) return true;
   return !relative.split(path.sep).some((segment) => ARTIFACT_DIRS.has(segment));
-}
-
-function findLocalExampleDir(examplePath: string, sourceRoot?: string): string | undefined {
-  for (const root of openUiSourceRoots(sourceRoot)) {
-    const candidate = path.join(root, examplePath);
-    if (fs.existsSync(path.join(candidate, "package.json"))) return candidate;
-  }
-  return undefined;
 }
 
 function collectPackageJsonFiles(dir: string): string[] {
@@ -132,20 +123,11 @@ export async function scaffoldExample(params: {
   targetDir: string;
   name: string;
   packageManager: PackageManagerName;
-  sourceRoot?: string;
-}): Promise<"local" | "github"> {
-  const { example, targetDir, name, packageManager, sourceRoot } = params;
-  const localDir = findLocalExampleDir(example.path, sourceRoot);
+}): Promise<void> {
+  const { example, targetDir, name, packageManager } = params;
 
   try {
-    if (localDir) {
-      fs.cpSync(localDir, targetDir, {
-        recursive: true,
-        filter: (src) => shouldCopyExamplePath(localDir, src),
-      });
-    } else {
-      await checkoutSource(example.path, { dest: targetDir });
-    }
+    await checkoutSource(example.path, { dest: targetDir });
   } catch (err) {
     if (err instanceof CreateError) throw err;
     throw new CreateError(
@@ -178,7 +160,6 @@ export async function scaffoldExample(params: {
 
   writeWorkspaceIfNested(targetDir, packageJsonFiles, packageManager);
   copyEnvExamples(targetDir);
-  return localDir ? "local" : "github";
 }
 
 function writeWorkspaceIfNested(

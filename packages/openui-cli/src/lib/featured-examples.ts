@@ -1,9 +1,5 @@
-import * as fs from "node:fs";
-import * as path from "node:path";
-
 import { fetchSourceFile } from "./checkout";
 import type { ExampleProject } from "./projects";
-import { openUiSourceRoots } from "./source-roots";
 import { CreateError } from "./telemetry";
 
 export const EXAMPLES_CATALOG_PATH = "examples/examples.json";
@@ -47,27 +43,19 @@ function parseFeaturedExamples(raw: string): ExampleProject[] {
     .filter((entry): entry is ExampleProject => Boolean(entry));
 }
 
-function readLocalFeaturedExamples(sourceRoot?: string): ExampleProject[] | undefined {
-  for (const root of openUiSourceRoots(sourceRoot)) {
-    const candidate = path.join(root, EXAMPLES_CATALOG_PATH);
-    if (!fs.existsSync(candidate)) continue;
-    return parseFeaturedExamples(fs.readFileSync(candidate, "utf8"));
-  }
-  return undefined;
-}
-
-/** Prefetch featured examples (`featured: true`) from the local repo or GitHub. */
-export async function loadFeaturedExamples(options: {
-  sourceRoot?: string;
-}): Promise<ExampleProject[]> {
-  const local = readLocalFeaturedExamples(options.sourceRoot);
-  if (local) return local;
-
+/** Prefetch featured examples (`featured: true`) from GitHub. */
+export async function loadFeaturedExamples(): Promise<ExampleProject[]> {
   try {
     const { content } = await fetchSourceFile(EXAMPLES_CATALOG_PATH);
     return parseFeaturedExamples(content);
-  } catch {
-    return [];
+  } catch (err) {
+    if (err instanceof CreateError) throw err;
+    throw new CreateError(
+      "args_resolution",
+      `Could not load featured examples from ${EXAMPLES_CATALOG_PATH}.`,
+      "network",
+      "FEATURED_CATALOG_UNAVAILABLE",
+    );
   }
 }
 

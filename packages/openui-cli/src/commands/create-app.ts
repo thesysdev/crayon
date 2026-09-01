@@ -184,7 +184,7 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
   });
 
   const catalogPromise = loadTemplatesCatalog();
-  const featuredExamplesPromise = loadFeaturedExamples({});
+  const featuredExamplesPromise = loadFeaturedExamples();
 
   rejectConflictingScaffoldSelectors({
     example: options.example,
