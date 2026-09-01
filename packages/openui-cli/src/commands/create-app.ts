@@ -12,9 +12,16 @@ import {
 } from "../lib/detect-package-manager";
 import { runDevCommand } from "../lib/dev-server";
 import { runSkillInstall, shouldInstallSkill } from "../lib/install-skill";
-import { applyOverlay, OVERLAYS_DIR, resolveOverlay, type OverlayManifest } from "../lib/overlays";
+import {
+  applyOverlay,
+  listOverlays,
+  OVERLAYS_DIR,
+  resolveOverlay,
+  type OverlayManifest,
+} from "../lib/overlays";
 import { runCommand } from "../lib/process-runner";
 import { resolveArgs } from "../lib/resolve-args";
+import { resolveTemplateSource } from "../lib/scaffold-template";
 import { withSpinner } from "../lib/spinner";
 import { resolveAvailableTarget } from "../lib/target-dir";
 import { CliCancelledError, CreateError, telemetry } from "../lib/telemetry";
@@ -185,7 +192,15 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
     );
   }
   const template: TemplateName = options.template ?? "openui-cloud";
+  const sourceRoot = options.debugSourceRoot ? path.resolve(options.debugSourceRoot) : undefined;
+  const templateSource = await resolveTemplateSource(template, sourceRoot);
+  const templateDir = templateSource.dir;
+  if (templateSource.origin === "github") {
+    console.info("Checked out template from GitHub.\n");
+  }
 
+  const overlays = listOverlays(templateDir);
+  const overlayNames = overlays.map((overlay) => overlay.name);
   const frameworkArgs = await resolveArgs(
     {
       backendFramework:
@@ -195,15 +210,11 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
               prompt: {
                 type: "select",
                 message: "Choose your backend framework",
-                choices: [
-                  {
-                    value: "default",
-                    name: "Default — minimal SDK route",
-                  },
-                  { value: "vercel-ai-sdk", name: "Vercel AI SDK" },
-                  { value: "langgraph", name: "LangGraph" },
-                  { value: "vercel-eve", name: "Vercel Eve" },
-                ],
+                choices: overlays.map((overlay) => ({
+                  value: overlay.name,
+                  name: overlay.label,
+                  description: overlay.description,
+                })),
               },
               required: true,
             },
@@ -211,6 +222,14 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
     interactive,
   );
   const backendFramework = (frameworkArgs as { backendFramework: OverlayName }).backendFramework;
+  if (!overlayNames.includes(backendFramework)) {
+    throw new CreateError(
+      "args_resolution",
+      `unknown backend framework "${backendFramework}". Use: ${overlayNames.join(" | ")}.`,
+      "invalid_input",
+      "INVALID_BACKEND_FRAMEWORK",
+    );
+  }
 
   const aiSetup = aiSetupFromTemplate(template);
   telemetry.register({ template, ai_setup: aiSetup, backend_framework: backendFramework });
@@ -229,15 +248,6 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
         : "default",
   });
 
-  const templateDir = path.join(__dirname, "..", "templates", template);
-  if (!fs.existsSync(templateDir)) {
-    throw new CreateError(
-      "preflight",
-      `Template "${template}" not found. Rebuild the CLI with \`pnpm build\`.`,
-      "filesystem",
-      "TEMPLATE_MISSING",
-    );
-  }
   const overlay = resolveOverlay(templateDir, backendFramework);
 
   telemetry.capture("cli_env_resolution_started", {
@@ -314,6 +324,10 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
       properties.error_class,
       properties.error_code,
     );
+  } finally {
+    if (templateSource.origin === "github") {
+      fs.rmSync(templateDir, { recursive: true, force: true });
+    }
   }
   telemetry.capture("cli_scaffold_succeeded", {
     ...createFunnelProps("scaffold_succeeded"),

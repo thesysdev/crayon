@@ -1,8 +1,8 @@
 import type { CloudAuthMethod, ResolvedAuthMethod } from "../auth/mint";
 
 export type TemplateName = "openui-self-hosted" | "openui-cloud";
-/** On-disk overlay under `overlays/<name>/`. Selected via `--backend-framework`. */
-export type OverlayName = "default" | "langgraph" | "vercel-ai-sdk" | "vercel-eve";
+/** Overlay directory under `templates/<name>/overlays/`, or `default` for the base template. */
+export type OverlayName = string;
 
 export interface CreateAppOptions {
   name?: string;
@@ -15,6 +15,8 @@ export interface CreateAppOptions {
   verbose?: boolean;
   apiKey?: string;
   auth?: CloudAuthMethod;
+  /** Copy templates from a local OpenUI repo root instead of GitHub. */
+  debugSourceRoot?: string;
 }
 
 export type AiSetup = "openui_cloud" | "openai_compatible_provider";

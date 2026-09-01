@@ -4,7 +4,7 @@ import { randomUUID } from "node:crypto";
 import * as fs from "node:fs";
 import * as path from "node:path";
 
-import { Command } from "commander";
+import { Command, Option } from "commander";
 
 import { runCreateApp } from "./commands/create-app";
 import { GenerateOptions, runGenerate } from "./commands/generate";
@@ -62,7 +62,7 @@ program
   )
   .option(
     "--backend-framework <framework>",
-    "Backend framework: default | langgraph | vercel-ai-sdk | vercel-eve",
+    "Backend framework overlay from the selected template (default, plus each overlays/ entry)",
   )
   .option("--api-key <key>", "OpenUI Cloud API key (cloud template; skips sign-in)")
   .option("--auth <method>", "Cloud auth method: oauth | skip (manual is deprecated)")
@@ -73,6 +73,12 @@ program
   .option("-i, --immediate", "Start the development server after installing dependencies")
   .option("--no-immediate", "Install dependencies without starting the development server")
   .option("--verbose", "Stream full dependency install logs")
+  .addOption(
+    new Option(
+      "--debug-source-root <path>",
+      "copy templates from a local OpenUI repo root",
+    ).hideHelp(),
+  )
   .addHelpText(
     "after",
     `
@@ -88,10 +94,9 @@ Templates:
                       --template; interactive runs default to openui-cloud.
 
 Backend frameworks:
-  default        Uses OpenAI SDK.
-  langgraph      Bootstraps a LangGraph agent with the selected model backend.
-  vercel-ai-sdk  Scaffolds a Vercel AI SDK agent with the selected model backend.
-  vercel-eve     Scaffolds a Vercel Eve agent with the selected model backend.
+  Loaded at runtime from templates/<template>/overlays in the OpenUI repo.
+  Use --backend-framework <name>, or pick one interactively after the template
+  is fetched. \`default\` is the base template with no overlay.
 `,
   )
   .action(
@@ -106,6 +111,7 @@ Backend frameworks:
       install: boolean;
       immediate?: boolean;
       verbose?: boolean;
+      debugSourceRoot?: string;
     }) => {
       try {
         rejectConflictingImmediateFlags(process.argv.slice(2));
@@ -120,6 +126,7 @@ Backend frameworks:
           noInstall: !options.install,
           immediate: options.immediate,
           verbose: options.verbose,
+          debugSourceRoot: options.debugSourceRoot,
         });
       } catch (e) {
         handleCliError(e, "cli_create_failed");
