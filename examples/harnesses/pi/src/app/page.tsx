@@ -39,12 +39,16 @@ export default function Home() {
         starterVariant="short"
         starters={[
           {
-            displayText: "Summarize this directory",
-            prompt: "Show me a card summarizing the files in this directory.",
+            displayText: "Launch checklist",
+            prompt: "Create a launch checklist for a new AI feature.",
           },
           {
-            displayText: "List package scripts",
-            prompt: "Read package.json and list its scripts.",
+            displayText: "Onboarding flow",
+            prompt: "Design a customer onboarding flow for a B2B SaaS product.",
+          },
+          {
+            displayText: "Support case",
+            prompt: "Summarize a support case as an action dashboard.",
           },
         ]}
       />

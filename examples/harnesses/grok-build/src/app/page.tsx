@@ -27,24 +27,16 @@ export default function Page() {
         starterVariant="short"
         starters={[
           {
-            displayText: "Map this repository",
-            prompt:
-              "Inspect this repository and build a concise architecture map with the key packages and how they connect.",
+            displayText: "Launch checklist",
+            prompt: "Create a launch checklist for a new AI feature.",
           },
           {
-            displayText: "Review current changes",
-            prompt:
-              "Review the current git changes and show the important findings, risks, and recommended next actions.",
+            displayText: "Onboarding flow",
+            prompt: "Design a customer onboarding flow for a B2B SaaS product.",
           },
           {
-            displayText: "Plan a feature",
-            prompt:
-              "Create an implementation plan for adding a health-check endpoint, including files, dependencies, tests, and risks.",
-          },
-          {
-            displayText: "Summarize test health",
-            prompt:
-              "Inspect the available test commands and present a test-health dashboard with the highest-value checks to run.",
+            displayText: "Support case",
+            prompt: "Summarize a support case as an action dashboard.",
           },
         ]}
       />
