@@ -58,11 +58,11 @@ program
   .option("-n, --name <string>", "Project name (interactive default: openui-agent)")
   .option(
     "-t, --template <template>",
-    "AI backend from templates/templates.json (openui-cloud is the interactive default)",
+    "AI backend: openui-cloud (recommended default) | openui-self-hosted (infrastructure control)",
   )
   .option(
     "--backend-framework <framework>",
-    "Backend framework overlay from the selected template's overlays list",
+    "Backend framework: default | langgraph | vercel-ai-sdk | vercel-eve",
   )
   .option("--api-key <key>", "OpenUI Cloud API key (cloud template; skips sign-in)")
   .option("--auth <method>", "Cloud auth method: oauth | skip (manual is deprecated)")
@@ -77,14 +77,21 @@ program
     "after",
     `
 Templates:
-  Loaded at runtime from templates/templates.json in the OpenUI repo.
-  Interactive runs default to openui-cloud. Use --template <key> for others
-  (openui-self-hosted is available without prompting).
+  openui-cloud        Recommended default for prototypes and evaluations.
+                      Hosted models, managed conversation history, built-in tools,
+                      and ready-to-use reports and presentations. No model, storage,
+                      or artifact infrastructure to operate. Bring your own
+                      OpenAI/Anthropic/Google key (BYOK) on any plan,
+                      including the free tier.
+  openui-self-hosted  Choose when owning the OpenAI-compatible provider, AI route,
+                      and persistence is a requirement. Available only via
+                      --template; interactive runs default to openui-cloud.
 
 Backend frameworks:
-  Loaded from the selected template's overlays list in templates/templates.json.
-  Use --backend-framework <key>, or pick one interactively after the catalog
-  is fetched. \`default\` is the base template with no overlay.
+  default        Uses OpenAI SDK.
+  langgraph      Bootstraps a LangGraph agent with the selected model backend.
+  vercel-ai-sdk  Scaffolds a Vercel AI SDK agent with the selected model backend.
+  vercel-eve     Scaffolds a Vercel Eve agent with the selected model backend.
 `,
   )
   .action(
