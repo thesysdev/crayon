@@ -3,13 +3,14 @@ import * as os from "node:os";
 import * as path from "node:path";
 import { PostHog } from "posthog-node";
 
+import { isTruthyEnv } from "./env";
+
 // Public ingestion key (same project as docs/coda-prod). Overridable for testing.
 const POSTHOG_KEY =
   process.env["OPENUI_POSTHOG_KEY"] ?? "phc_3OLW53x09ZTVZSV6BEpj5uycj3ooqR6KOemOjx04e3D";
 const POSTHOG_HOST = process.env["OPENUI_POSTHOG_HOST"] ?? "https://us.i.posthog.com";
 const SHUTDOWN_TIMEOUT_MS = 2000;
 
-const isTruthyEnv = (v?: string) => v === "1" || v?.toLowerCase() === "true";
 const isTelemetryDebug = () => process.env["OPENUI_TELEMETRY_DEBUG"] === "1";
 const configDir = () =>
   path.join(process.env["XDG_CONFIG_HOME"] ?? path.join(os.homedir(), ".config"), "openui");

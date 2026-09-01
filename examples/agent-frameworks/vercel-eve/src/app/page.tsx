@@ -1,13 +1,14 @@
 "use client";
 
-import { useTheme } from "@/hooks/use-system-theme";
-import { AgentInterface } from "@openuidev/react-ui";
-import { openuiChatLibrary } from "@openuidev/react-ui/genui-lib";
+import "@openuidev/thesys/styles.css";
+
+import { AgentInterface, useSystemThemeMode } from "@openuidev/react-ui";
+import { chatLibrary } from "@openuidev/thesys";
 import { useMemo } from "react";
 import { createEveChatProps } from "../eve-chat";
 
 export default function Page() {
-  const mode = useTheme();
+  const mode = useSystemThemeMode();
   const { llm, storage } = useMemo(() => createEveChatProps(), []);
 
   return (
@@ -15,11 +16,15 @@ export default function Page() {
       <AgentInterface
         llm={llm}
         storage={storage}
-        componentLibrary={openuiChatLibrary}
+        componentLibrary={chatLibrary}
         agentName="Eve + OpenUI"
         theme={{ mode }}
         starterVariant="short"
         starters={[
+          {
+            displayText: "Berlin weather",
+            prompt: "What's the weather in Berlin?",
+          },
           {
             displayText: "Launch checklist",
             prompt: "Create a launch checklist for a new AI feature.",
