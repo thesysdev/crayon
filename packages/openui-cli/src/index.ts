@@ -4,7 +4,7 @@ import { randomUUID } from "node:crypto";
 import * as fs from "node:fs";
 import * as path from "node:path";
 
-import { Command, Option } from "commander";
+import { Command } from "commander";
 
 import { runCreateApp } from "./commands/create-app";
 import { GenerateOptions, runGenerate } from "./commands/generate";
@@ -58,11 +58,11 @@ program
   .option("-n, --name <string>", "Project name (interactive default: openui-agent)")
   .option(
     "-t, --template <template>",
-    "AI backend: openui-cloud (recommended default) | openui-self-hosted (infrastructure control)",
+    "AI backend from templates/templates.json (openui-cloud is the interactive default)",
   )
   .option(
     "--backend-framework <framework>",
-    "Backend framework overlay from the selected template (default, plus each overlays/ entry)",
+    "Backend framework overlay from the selected template's overlays list",
   )
   .option("--api-key <key>", "OpenUI Cloud API key (cloud template; skips sign-in)")
   .option("--auth <method>", "Cloud auth method: oauth | skip (manual is deprecated)")
@@ -73,29 +73,17 @@ program
   .option("-i, --immediate", "Start the development server after installing dependencies")
   .option("--no-immediate", "Install dependencies without starting the development server")
   .option("--verbose", "Stream full dependency install logs")
-  .addOption(
-    new Option(
-      "--debug-source-root <path>",
-      "copy templates from a local OpenUI repo root",
-    ).hideHelp(),
-  )
   .addHelpText(
     "after",
     `
 Templates:
-  openui-cloud        Recommended default for prototypes and evaluations.
-                      Hosted models, managed conversation history, built-in tools,
-                      and ready-to-use reports and presentations. No model, storage,
-                      or artifact infrastructure to operate. Bring your own
-                      OpenAI/Anthropic/Google key (BYOK) on any plan,
-                      including the free tier.
-  openui-self-hosted  Choose when owning the OpenAI-compatible provider, AI route,
-                      and persistence is a requirement. Available only via
-                      --template; interactive runs default to openui-cloud.
+  Loaded at runtime from templates/templates.json in the OpenUI repo.
+  Interactive runs default to openui-cloud. Use --template <key> for others
+  (openui-self-hosted is available without prompting).
 
 Backend frameworks:
-  Loaded at runtime from templates/<template>/overlays in the OpenUI repo.
-  Use --backend-framework <name>, or pick one interactively after the template
+  Loaded from the selected template's overlays list in templates/templates.json.
+  Use --backend-framework <key>, or pick one interactively after the catalog
   is fetched. \`default\` is the base template with no overlay.
 `,
   )
@@ -111,7 +99,6 @@ Backend frameworks:
       install: boolean;
       immediate?: boolean;
       verbose?: boolean;
-      debugSourceRoot?: string;
     }) => {
       try {
         rejectConflictingImmediateFlags(process.argv.slice(2));
@@ -126,7 +113,6 @@ Backend frameworks:
           noInstall: !options.install,
           immediate: options.immediate,
           verbose: options.verbose,
-          debugSourceRoot: options.debugSourceRoot,
         });
       } catch (e) {
         handleCliError(e, "cli_create_failed");

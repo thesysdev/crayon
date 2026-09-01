@@ -12,19 +12,19 @@ import {
 } from "../lib/detect-package-manager";
 import { runDevCommand } from "../lib/dev-server";
 import { runSkillInstall, shouldInstallSkill } from "../lib/install-skill";
-import {
-  applyOverlay,
-  listOverlays,
-  OVERLAYS_DIR,
-  resolveOverlay,
-  type OverlayManifest,
-} from "../lib/overlays";
+import { applyOverlay, OVERLAYS_DIR, resolveOverlay, type OverlayManifest } from "../lib/overlays";
 import { runCommand } from "../lib/process-runner";
 import { resolveArgs } from "../lib/resolve-args";
 import { resolveTemplateSource } from "../lib/scaffold-template";
 import { withSpinner } from "../lib/spinner";
 import { resolveAvailableTarget } from "../lib/target-dir";
 import { CliCancelledError, CreateError, telemetry } from "../lib/telemetry";
+import {
+  DEFAULT_TEMPLATE_KEY,
+  findCatalogOverlay,
+  findCatalogTemplate,
+  loadTemplatesCatalog,
+} from "../lib/templates-catalog";
 import { cliErrorProperties, processErrorProperties } from "../lib/utils";
 
 function shouldCopyTemplatePath(templateDir: string, src: string): boolean {
@@ -164,6 +164,8 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
     immediate_arg: options.immediate,
   });
 
+  const catalogPromise = loadTemplatesCatalog();
+
   // Resolved on its own, and validated before anything else is asked
   const nameArgs = await resolveArgs(
     {
@@ -191,16 +193,11 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
       "MISSING_REQUIRED_ARG",
     );
   }
-  const template: TemplateName = options.template ?? "openui-cloud";
-  const sourceRoot = options.debugSourceRoot ? path.resolve(options.debugSourceRoot) : undefined;
-  const templateSource = await resolveTemplateSource(template, sourceRoot);
-  const templateDir = templateSource.dir;
-  if (templateSource.origin === "github") {
-    console.info("Checked out template from GitHub.\n");
-  }
 
-  const overlays = listOverlays(templateDir);
-  const overlayNames = overlays.map((overlay) => overlay.name);
+  const catalog = await catalogPromise;
+  const template: TemplateName = options.template ?? DEFAULT_TEMPLATE_KEY;
+  const templateEntry = findCatalogTemplate(catalog, template);
+  const overlayChoices = templateEntry.overlays;
   const frameworkArgs = await resolveArgs(
     {
       backendFramework:
@@ -210,9 +207,9 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
               prompt: {
                 type: "select",
                 message: "Choose your backend framework",
-                choices: overlays.map((overlay) => ({
-                  value: overlay.name,
-                  name: overlay.label,
+                choices: overlayChoices.map((overlay) => ({
+                  value: overlay.key,
+                  name: overlay.name,
                   description: overlay.description,
                 })),
               },
@@ -222,14 +219,11 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
     interactive,
   );
   const backendFramework = (frameworkArgs as { backendFramework: OverlayName }).backendFramework;
-  if (!overlayNames.includes(backendFramework)) {
-    throw new CreateError(
-      "args_resolution",
-      `unknown backend framework "${backendFramework}". Use: ${overlayNames.join(" | ")}.`,
-      "invalid_input",
-      "INVALID_BACKEND_FRAMEWORK",
-    );
-  }
+  findCatalogOverlay(templateEntry, backendFramework);
+
+  const templateSource = await resolveTemplateSource(template);
+  const templateDir = templateSource.dir;
+  console.info("Checked out template from GitHub.\n");
 
   const aiSetup = aiSetupFromTemplate(template);
   telemetry.register({ template, ai_setup: aiSetup, backend_framework: backendFramework });
@@ -325,9 +319,7 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
       properties.error_code,
     );
   } finally {
-    if (templateSource.origin === "github") {
-      fs.rmSync(templateDir, { recursive: true, force: true });
-    }
+    fs.rmSync(templateDir, { recursive: true, force: true });
   }
   telemetry.capture("cli_scaffold_succeeded", {
     ...createFunnelProps("scaffold_succeeded"),

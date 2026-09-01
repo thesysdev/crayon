@@ -1,7 +1,8 @@
 import type { CloudAuthMethod, ResolvedAuthMethod } from "../auth/mint";
 
-export type TemplateName = "openui-self-hosted" | "openui-cloud";
-/** Overlay directory under `templates/<name>/overlays/`, or `default` for the base template. */
+/** Template `key` from `templates/templates.json`. */
+export type TemplateName = string;
+/** Overlay `key` from the selected template's `overlays` list, or `default`. */
 export type OverlayName = string;
 
 export interface CreateAppOptions {
@@ -15,8 +16,6 @@ export interface CreateAppOptions {
   verbose?: boolean;
   apiKey?: string;
   auth?: CloudAuthMethod;
-  /** Copy templates from a local OpenUI repo root instead of GitHub. */
-  debugSourceRoot?: string;
 }
 
 export type AiSetup = "openui_cloud" | "openai_compatible_provider";
