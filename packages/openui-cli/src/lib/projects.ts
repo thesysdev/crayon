@@ -132,6 +132,7 @@ export async function resolveProject(params: {
     const selected = await select({
       message: "Select a project to scaffold:",
       choices,
+      pageSize: choices.length,
     });
 
     if (selected.startsWith("example:")) {
