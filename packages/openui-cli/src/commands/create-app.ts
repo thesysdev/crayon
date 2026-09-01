@@ -27,7 +27,7 @@ import {
   type ExampleProject,
 } from "../lib/projects";
 import { resolveArgs } from "../lib/resolve-args";
-import { resolveExampleRef, scaffoldExample, upsertEnvKey } from "../lib/scaffold-example";
+import { scaffoldExample, upsertEnvKey } from "../lib/scaffold-example";
 import { resolveTemplateSource } from "../lib/scaffold-template";
 import { withSpinner } from "../lib/spinner";
 import { resolveAvailableTarget } from "../lib/target-dir";
@@ -202,10 +202,7 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
     template: options.template,
   });
 
-  const exampleRefPromise = resolveExampleRef();
-  const featuredExamplesPromise = loadFeaturedExamples({
-    refPromise: exampleRefPromise,
-  });
+  const featuredExamplesPromise = loadFeaturedExamples({});
 
   const nameArgs = await resolveArgs(
     {
@@ -242,7 +239,6 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
       name,
       targetDir,
       example: project,
-      exampleRefPromise,
     });
     return;
   }
@@ -658,7 +654,6 @@ async function runCreateExample(params: {
   name: string;
   targetDir: string;
   example: ExampleProject;
-  exampleRefPromise: Promise<string | undefined>;
 }): Promise<void> {
   const { options, interactive, packageManager, t0, name, targetDir, example } = params;
 
@@ -698,17 +693,14 @@ async function runCreateExample(params: {
     example: example.name,
   });
   try {
-    console.info("Resolving latest OpenUI release...\n");
-    const ref = await params.exampleRefPromise;
     const origin = await scaffoldExample({
       example,
       targetDir,
       name,
       packageManager: packageManager.name,
-      ref,
     });
-    if (origin === "github" && !ref) {
-      console.info("Could not resolve latest release; downloaded from main.\n");
+    if (origin === "github") {
+      console.info("Checked out example from GitHub.\n");
     }
     if (packageManager.name !== "npm") {
       fs.rmSync(path.join(targetDir, "package-lock.json"), { force: true });

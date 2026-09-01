@@ -3,32 +3,17 @@ import * as os from "node:os";
 import * as path from "node:path";
 
 import type { PackageManagerName } from "./detect-package-manager";
-import { OPENUI_GITHUB_REPO, openUiSourceRoots } from "./featured-examples";
-import { downloadGithubSubdir } from "./github-tarball";
+import { checkoutSource } from "./checkout";
+import { openUiSourceRoots } from "./featured-examples";
 import type { ExampleProject } from "./projects";
 import { CreateError } from "./telemetry";
 
-const DOWNLOAD_TIMEOUT_MS = 60_000;
 const ARTIFACT_DIRS = new Set(["node_modules", ".next", ".turbo", "dist", ".nuxt", ".svelte-kit"]);
 
 const GENERATE_SCRIPT_RE =
   /pnpm --filter @openuidev\/cli build && node (?:\.\.\/)+packages\/openui-cli\/dist\/index\.js generate/;
 const GENERATE_SCRIPT_FALLBACK_RE =
   /node (?:\.\.\/)+packages\/openui-cli\/dist\/index\.js generate/;
-
-export async function resolveExampleRef(): Promise<string | undefined> {
-  try {
-    const res = await fetch(`https://api.github.com/repos/${OPENUI_GITHUB_REPO}/releases/latest`, {
-      headers: { "User-Agent": "openui-cli", Accept: "application/vnd.github+json" },
-      signal: AbortSignal.timeout(DOWNLOAD_TIMEOUT_MS),
-    });
-    if (!res.ok) return undefined;
-    const release = (await res.json()) as { tag_name?: string };
-    return release.tag_name || undefined;
-  } catch {
-    return undefined;
-  }
-}
 
 function shouldCopyExamplePath(exampleDir: string, src: string): boolean {
   const relative = path.relative(exampleDir, src);
@@ -148,9 +133,8 @@ export async function scaffoldExample(params: {
   name: string;
   packageManager: PackageManagerName;
   sourceRoot?: string;
-  ref?: string;
 }): Promise<"local" | "github"> {
-  const { example, targetDir, name, packageManager, sourceRoot, ref } = params;
+  const { example, targetDir, name, packageManager, sourceRoot } = params;
   const localDir = findLocalExampleDir(example.path, sourceRoot);
 
   try {
@@ -160,21 +144,10 @@ export async function scaffoldExample(params: {
         filter: (src) => shouldCopyExamplePath(localDir, src),
       });
     } else {
-      const download = (exampleRef?: string) =>
-        downloadGithubSubdir({
-          repo: OPENUI_GITHUB_REPO,
-          subdir: example.path,
-          destDir: targetDir,
-          ref: exampleRef,
-          timeoutMs: DOWNLOAD_TIMEOUT_MS,
-        });
-      await download(ref);
-      if (!fs.existsSync(path.join(targetDir, "package.json")) && ref) {
-        fs.rmSync(targetDir, { recursive: true, force: true });
-        await download();
-      }
+      await checkoutSource(example.path, { dest: targetDir });
     }
   } catch (err) {
+    if (err instanceof CreateError) throw err;
     throw new CreateError(
       "scaffold",
       err instanceof Error ? err.message : String(err),
