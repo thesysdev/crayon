@@ -29,7 +29,9 @@ function parseOverlay(item: unknown): CatalogOverlay {
     typeof overlay?.key !== "string" ||
     typeof overlay?.description !== "string"
   ) {
-    throw catalogError(`${TEMPLATES_CATALOG_PATH} has an overlay missing name, key, or description.`);
+    throw catalogError(
+      `${TEMPLATES_CATALOG_PATH} has an overlay missing name, key, or description.`,
+    );
   }
   return overlay;
 }
@@ -41,7 +43,9 @@ function parseTemplate(item: unknown): CatalogTemplate {
     typeof template?.key !== "string" ||
     typeof template?.description !== "string"
   ) {
-    throw catalogError(`${TEMPLATES_CATALOG_PATH} has a template missing name, key, or description.`);
+    throw catalogError(
+      `${TEMPLATES_CATALOG_PATH} has a template missing name, key, or description.`,
+    );
   }
   if (!Array.isArray(template.overlays) || template.overlays.length === 0) {
     throw catalogError(`Template "${template.key}" has no overlays.`);
