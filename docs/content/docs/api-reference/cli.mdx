@@ -58,7 +58,7 @@ openui create [options]
 | `-n, --name <string>`             | Project name (interactive default: `openui-agent`)                            |
 | `-t, --template <template>`       | AI backend: `openui-cloud` (recommended) or `openui-self-hosted`              |
 | `--backend-framework <framework>` | Backend integration: `default`, `langgraph`, `vercel-ai-sdk`, or `vercel-eve` |
-| `-e, --example <example>`         | Scaffold a featured example instead of a starter template                     |
+| `-e, --example <example>`         | Scaffold any example from the OpenUI Repository    |
 | `--api-key <key>`                 | OpenUI Cloud API key; skips sign-in for the Cloud setup                       |
 | `--auth <method>`                 | Cloud auth method: `oauth` or `skip`; `manual` is deprecated                  |
 | `--skill`                         | Install the OpenUI agent skill for AI coding assistants                       |
@@ -69,7 +69,7 @@ openui create [options]
 | `--no-interactive`                | Fail instead of prompting for missing input                                   |
 | `--agent-name <name>`             | Declare the invoking coding-agent slug (default: `unknown`)                   |
 
-When run interactively (default), the CLI prompts for any missing options, including a starter template or featured example, then asks whether to start the development server after installing dependencies with the detected package manager. The start prompt defaults to yes; answering no preserves the existing install-and-exit behavior and prints the `cd` and dev commands. For most prototypes and evaluations, start with **OpenUI Cloud, the recommended default**: hosted models, managed conversation history and streaming, built-in tools, and ready-to-use reports and presentations without operating the model, storage, or artifact infrastructure. Choose **self-hosted** when owning the OpenAI-compatible provider, AI route, and persistence is a requirement. Choose a **feature example** when you want a FastAPI, shadcn/ui, React Native, Mastra, or other integration listed in `examples/examples.json`.
+When run interactively (default), the CLI prompts for any missing options, including a starter template or featured example, then asks whether to start the development server after installing dependencies with the detected package manager. The start prompt defaults to yes; answering no preserves the existing install-and-exit behavior and prints the `cd` and dev commands. For most prototypes and evaluations, start with **OpenUI Cloud, the recommended default**: hosted models, managed conversation history and streaming, built-in tools, and ready-to-use reports and presentations without operating the model, storage, or artifact infrastructure. Choose **self-hosted** when owning the OpenAI-compatible provider, AI route, and persistence is a requirement.
 
 In non-interactive mode, dependencies are installed without starting the long-running development server. Pass `--immediate` to install, start, and open the app, or `--no-install` to scaffold only.
 
@@ -100,9 +100,9 @@ For Cloud LangGraph and Vercel AI SDK variants, the framework owns orchestration
 
 Every framework overlay includes a `get_weather` example backed by Open-Meteo. Ask “What’s the weather in Berlin?” to verify the selected framework’s native multi-step tool loop.
 
-**Feature examples**
+**Examples**
 
-Interactive `openui create` lists starter templates and featured examples in one prompt. The featured list is prefetched at runtime from [`examples/examples.json`](https://github.com/thesysdev/openui/blob/main/examples/examples.json) — edit that file to change what the CLI offers. `--example` cannot be combined with `--template` or `--backend-framework`. Examples are copied from a local OpenUI checkout when available, otherwise checked out from GitHub. Workspace and catalog dependencies are rewritten to `latest`.
+Interactive `openui create` lists starter templates and featured examples in one prompt. `--example` cannot be combined with `--template` or `--backend-framework`.
 
 | Value          | Demonstrates                                                   |
 | -------------- | -------------------------------------------------------------- |
@@ -142,9 +142,10 @@ pnpx @openuidev/cli@latest create --name my-app --template openui-self-hosted --
 pnpx @openuidev/cli@latest create --name my-app --template openui-self-hosted --backend-framework vercel-ai-sdk
 pnpx @openuidev/cli@latest create --name my-app --template openui-self-hosted --backend-framework vercel-eve
 
-# Select a featured example
+# Select an example
 pnpx @openuidev/cli@latest create --name my-app --example shadcn
 pnpx @openuidev/cli@latest create --name my-app --example mastra
+pnpx @openuidev/cli@latest create --name my-app --example vue
 
 # Non-interactive
 pnpx @openuidev/cli@latest create --no-interactive --name my-app --template openui-cloud --auth skip
@@ -170,9 +171,10 @@ bunx @openuidev/cli@latest create --name my-app --template openui-self-hosted --
 bunx @openuidev/cli@latest create --name my-app --template openui-self-hosted --backend-framework vercel-ai-sdk
 bunx @openuidev/cli@latest create --name my-app --template openui-self-hosted --backend-framework vercel-eve
 
-# Select a featured example
+# Select an example
 bunx @openuidev/cli@latest create --name my-app --example shadcn
 bunx @openuidev/cli@latest create --name my-app --example mastra
+bunx @openuidev/cli@latest create --name my-app --example vue
 
 # Non-interactive
 bunx @openuidev/cli@latest create --no-interactive --name my-app --template openui-cloud --auth skip
@@ -198,9 +200,10 @@ yarn dlx @openuidev/cli@latest create --name my-app --template openui-self-hoste
 yarn dlx @openuidev/cli@latest create --name my-app --template openui-self-hosted --backend-framework vercel-ai-sdk
 yarn dlx @openuidev/cli@latest create --name my-app --template openui-self-hosted --backend-framework vercel-eve
 
-# Select a featured example
+# Select an example
 yarn dlx @openuidev/cli@latest create --name my-app --example shadcn
 yarn dlx @openuidev/cli@latest create --name my-app --example mastra
+yarn dlx @openuidev/cli@latest create --name my-app --example vue
 
 # Non-interactive
 yarn dlx @openuidev/cli@latest create --no-interactive --name my-app --template openui-cloud --auth skip
@@ -226,9 +229,10 @@ npx @openuidev/cli@latest create --name my-app --template openui-self-hosted --b
 npx @openuidev/cli@latest create --name my-app --template openui-self-hosted --backend-framework vercel-ai-sdk
 npx @openuidev/cli@latest create --name my-app --template openui-self-hosted --backend-framework vercel-eve
 
-# Select a featured example
+# Select an example
 npx @openuidev/cli@latest create --name my-app --example shadcn
 npx @openuidev/cli@latest create --name my-app --example mastra
+npx @openuidev/cli@latest create --name my-app --example vue
 
 # Non-interactive
 npx @openuidev/cli@latest create --no-interactive --name my-app --template openui-cloud --auth skip

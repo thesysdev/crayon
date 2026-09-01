@@ -24,6 +24,8 @@ export interface ExampleProject {
   /** Primary env var to prompt for. Omit when the example needs several keys. */
   envKey?: string;
   aliases?: string[];
+  /** When true, the example appears in the interactive create picker. */
+  featured?: boolean;
 }
 
 export type ProjectMetadata = TemplateProject | ExampleProject;
@@ -118,10 +120,11 @@ export async function resolveProject(params: {
         description: project.description,
       })),
     ];
-    if (examples.length > 0) {
+    const pickerExamples = examples.filter((project) => project.featured);
+    if (pickerExamples.length > 0) {
       choices.push(
         new Separator("────── Feature Examples ──────"),
-        ...examples.map((project) => ({
+        ...pickerExamples.map((project) => ({
           value: `example:${project.name}`,
           name: project.label,
           description: project.description,

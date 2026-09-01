@@ -13,7 +13,7 @@ It currently supports two workflows:
   - **OpenUI Cloud (recommended)** — hosted models with managed conversations, streaming, built-in tools, and ready-to-use report and presentation artifacts
   - **Self-hosted** — bring an OpenAI-compatible model key and own the AI route and persistence
 - keeping the default minimal SDK route or adding a LangGraph, Vercel AI SDK, or Vercel Eve backend to either template
-- scaffolding a featured example listed in [`examples/examples.json`](https://github.com/thesysdev/openui/blob/main/examples/examples.json)
+- scaffolding an example from [`examples/examples.json`](https://github.com/thesysdev/openui/blob/main/examples/examples.json)
 - generating a system prompt or JSON Schema from a `createLibrary()` export
 
 ## Install
@@ -81,7 +81,7 @@ Options:
 - `-n, --name <string>`: Project name (interactive default: `openui-agent`)
 - `-t, --template <template>`: AI backend `key` from `templates/templates.json` — interactive default `openui-cloud`
 - `--backend-framework <framework>`: Overlay `key` from that template's `overlays` list (plus `default` for the base template)
-- `-e, --example <example>`: Scaffold a featured example from `examples/examples.json` instead of a starter template
+- `-e, --example <example>`: Scaffold any example from `examples/examples.json` (folder name)
 - `--skill`: Install the OpenUI agent skill for AI coding assistants
 - `--no-skill`: Skip installing the OpenUI agent skill
 - `--no-install`: Scaffold without running the package install
@@ -133,13 +133,14 @@ Every framework overlay includes `get_weather` as its example app-owned function
 
 #### Feature examples
 
-Interactive `openui create` lists **Feature Examples** under the starter templates. The names come from [`examples/examples.json`](https://github.com/thesysdev/openui/blob/main/examples/examples.json) in the OpenUI repo — the CLI prefetches that catalog at runtime, so adding or removing an example does not require a CLI release. Pick one in the prompt, or pass `--example <name>`. `--example` cannot be combined with `--template` or `--backend-framework`.
+Interactive `openui create` lists **Feature Examples** under the starter templates. The names come from [`examples/examples.json`](https://github.com/thesysdev/openui/blob/main/examples/examples.json) in the OpenUI repo — the CLI prefetches that catalog at runtime, so adding or removing an example does not require a CLI release. `--example` cannot be combined with `--template` or `--backend-framework`.
 
 The catalog currently features FastAPI, shadcn/ui, React Native, and Mastra. Examples are copied from the local OpenUI checkout when the CLI can see `examples/`, otherwise checked out from GitHub with sparse-checkout. Workspace and catalog dependencies are rewritten to `latest`, and monorepo `generate` scripts are rewritten to `npx @openuidev/cli generate`.
 
 ```bash
 openui create --example shadcn
 openui create --name my-mastra-app --example mastra --no-immediate
+openui create --example vue
 ```
 
 #### Conversation storage

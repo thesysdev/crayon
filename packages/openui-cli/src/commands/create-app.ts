@@ -16,7 +16,7 @@ import {
   type PackageManagerName,
 } from "../lib/detect-package-manager";
 import { runDevCommand } from "../lib/dev-server";
-import { loadFeaturedExamples, requireFeaturedExamples } from "../lib/featured-examples";
+import { loadExamplesCatalog, requireExamplesCatalog } from "../lib/featured-examples";
 import { runSkillInstall, shouldInstallSkill } from "../lib/install-skill";
 import {
   applyOverlay,
@@ -201,18 +201,18 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
     );
   }
 
-  const [catalog, featuredExamples] = await Promise.all([
+  const [catalog, examples] = await Promise.all([
     loadTemplatesCatalog(),
-    loadFeaturedExamples(),
+    loadExamplesCatalog(),
   ]);
-  requireFeaturedExamples(featuredExamples, options.example);
+  requireExamplesCatalog(examples, options.example);
 
   const template: TemplateName | undefined = options.example
     ? undefined
     : (options.template ?? DEFAULT_TEMPLATE_KEY);
   const templateEntry = template ? findCatalogTemplate(catalog, template) : undefined;
   if (options.example) {
-    findExample(options.example, featuredExamples);
+    findExample(options.example, examples);
   } else if (options.backendFramework && templateEntry) {
     findCatalogOverlay(templateEntry, options.backendFramework);
   }
@@ -236,7 +236,7 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
   const project = await resolveProject({
     backendFramework: options.backendFramework,
     example: options.example,
-    examples: featuredExamples,
+    examples,
     templates: templatesFromOverlays(
       (templateEntry?.overlays ?? []).map((overlay) => ({
         name: overlay.key,
