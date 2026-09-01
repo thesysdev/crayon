@@ -12,7 +12,13 @@ import {
 } from "../lib/detect-package-manager";
 import { runDevCommand } from "../lib/dev-server";
 import { runSkillInstall, shouldInstallSkill } from "../lib/install-skill";
-import { applyOverlay, OVERLAYS_DIR, resolveOverlay, type OverlayManifest, type TemplateOverlay } from "../lib/overlays";
+import {
+  applyOverlay,
+  OVERLAYS_DIR,
+  resolveOverlay,
+  type OverlayManifest,
+  type TemplateOverlay,
+} from "../lib/overlays";
 import { runCommand } from "../lib/process-runner";
 import { resolveArgs } from "../lib/resolve-args";
 import { resolveTemplateSource } from "../lib/scaffold-template";
