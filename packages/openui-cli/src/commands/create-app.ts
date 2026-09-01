@@ -12,7 +12,7 @@ import {
 } from "../lib/detect-package-manager";
 import { runDevCommand } from "../lib/dev-server";
 import { runSkillInstall, shouldInstallSkill } from "../lib/install-skill";
-import { applyOverlay, OVERLAYS_DIR, resolveOverlay, type OverlayManifest } from "../lib/overlays";
+import { applyOverlay, OVERLAYS_DIR, resolveOverlay, type OverlayManifest, type TemplateOverlay } from "../lib/overlays";
 import { runCommand } from "../lib/process-runner";
 import { resolveArgs } from "../lib/resolve-args";
 import { resolveTemplateSource } from "../lib/scaffold-template";
@@ -164,9 +164,24 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
     immediate_arg: options.immediate,
   });
 
-  const catalogPromise = loadTemplatesCatalog();
+  // Interactive runs always scaffold the Cloud backend; openui-self-hosted stays
+  // available, but only when requested explicitly with --template.
+  if (!options.template && !interactive) {
+    throw new CreateError(
+      "args_resolution",
+      "Missing required argument --template",
+      "invalid_input",
+      "MISSING_REQUIRED_ARG",
+    );
+  }
 
-  // Resolved on its own, and validated before anything else is asked
+  const catalog = await loadTemplatesCatalog();
+  const template: TemplateName = options.template ?? DEFAULT_TEMPLATE_KEY;
+  const templateEntry = findCatalogTemplate(catalog, template);
+  if (options.backendFramework) {
+    findCatalogOverlay(templateEntry, options.backendFramework);
+  }
+
   const nameArgs = await resolveArgs(
     {
       name: options.name
@@ -183,20 +198,6 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
     interactive,
   );
 
-  // Interactive runs always scaffold the Cloud backend; openui-self-hosted stays
-  // available, but only when requested explicitly with --template.
-  if (!options.template && !interactive) {
-    throw new CreateError(
-      "args_resolution",
-      "Missing required argument --template",
-      "invalid_input",
-      "MISSING_REQUIRED_ARG",
-    );
-  }
-
-  const catalog = await catalogPromise;
-  const template: TemplateName = options.template ?? DEFAULT_TEMPLATE_KEY;
-  const templateEntry = findCatalogTemplate(catalog, template);
   const overlayChoices = templateEntry.overlays;
   const frameworkArgs = await resolveArgs(
     {
@@ -221,9 +222,6 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
   const backendFramework = (frameworkArgs as { backendFramework: OverlayName }).backendFramework;
   findCatalogOverlay(templateEntry, backendFramework);
 
-  const templateSource = await resolveTemplateSource(template);
-  const templateDir = templateSource.dir;
-
   const aiSetup = aiSetupFromTemplate(template);
   telemetry.register({ template, ai_setup: aiSetup, backend_framework: backendFramework });
   telemetry.capture("cli_ai_setup_selected", {
@@ -240,8 +238,6 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
         ? "prompt"
         : "default",
   });
-
-  const overlay = resolveOverlay(templateDir, backendFramework);
 
   telemetry.capture("cli_env_resolution_started", {
     ...createFunnelProps("env_resolution_started"),
@@ -269,82 +265,79 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
     selection_source: immediateResolution.source,
   });
 
-  console.info(`\nScaffolding ${template} into "${name}"...\n`);
-  telemetry.capture("cli_scaffold_started", {
-    ...createFunnelProps("scaffold_started"),
-    template,
-    ai_setup: aiSetup,
-  });
-  try {
-    fs.cpSync(templateDir, targetDir, {
-      recursive: true,
-      filter: (src) => shouldCopyTemplatePath(templateDir, src),
-    });
-    restoreDotfiles(targetDir);
-    applyOverlay(targetDir, overlay);
-    rewritePackageJson(targetDir, name, packageManager.name, overlay?.manifest.packageJson);
-    // An overlay that changes dependencies without a lock must not keep the base lock
-    const overlayShipsNpmLock = Boolean(
-      overlay && fs.existsSync(path.join(overlay.dir, "package-lock.json")),
-    );
-    if (packageManager.name !== "npm" || (overlay && !overlayShipsNpmLock)) {
-      fs.rmSync(path.join(targetDir, "package-lock.json"), { force: true });
-    }
-    // The Cloud template ships pnpm's lock/workspace files for reproducible pnpm
-    // installs and native-build policy. A framework changes dependencies, so
-    // regenerate its lock; non-pnpm scaffolds do not need either pnpm file.
-    if (packageManager.name !== "pnpm" || backendFramework !== "default") {
-      fs.rmSync(path.join(targetDir, "pnpm-lock.yaml"), { force: true });
-    }
-    if (packageManager.name !== "pnpm") {
-      fs.rmSync(path.join(targetDir, "pnpm-workspace.yaml"), { force: true });
-    }
-  } catch (err) {
-    const properties = cliErrorProperties(err, {
-      failure_stage: "scaffold",
-      error_class: "filesystem",
-      error_code: "SCAFFOLD_FAILED",
-    });
-    telemetry.capture("cli_scaffold_failed", {
-      ...createFunnelProps("scaffold_failed"),
+  let overlay: TemplateOverlay | undefined;
+  const runScaffold = async () => {
+    const { dir: templateDir } = await resolveTemplateSource(template);
+    telemetry.capture("cli_scaffold_started", {
+      ...createFunnelProps("scaffold_started"),
       template,
       ai_setup: aiSetup,
-      ...properties,
     });
-    throw new CreateError(
-      properties.failure_stage,
-      err instanceof Error ? err.message : String(err),
-      properties.error_class,
-      properties.error_code,
-    );
-  } finally {
-    fs.rmSync(templateDir, { recursive: true, force: true });
+    try {
+      overlay = resolveOverlay(templateDir, backendFramework);
+      fs.cpSync(templateDir, targetDir, {
+        recursive: true,
+        filter: (src) => shouldCopyTemplatePath(templateDir, src),
+      });
+      restoreDotfiles(targetDir);
+      applyOverlay(targetDir, overlay);
+      rewritePackageJson(targetDir, name, packageManager.name, overlay?.manifest.packageJson);
+      // An overlay that changes dependencies without a lock must not keep the base lock
+      const overlayShipsNpmLock = Boolean(
+        overlay && fs.existsSync(path.join(overlay.dir, "package-lock.json")),
+      );
+      if (packageManager.name !== "npm" || (overlay && !overlayShipsNpmLock)) {
+        fs.rmSync(path.join(targetDir, "package-lock.json"), { force: true });
+      }
+      // The Cloud template ships pnpm's lock/workspace files for reproducible pnpm
+      // installs and native-build policy. A framework changes dependencies, so
+      // regenerate its lock; non-pnpm scaffolds do not need either pnpm file.
+      if (packageManager.name !== "pnpm" || backendFramework !== "default") {
+        fs.rmSync(path.join(targetDir, "pnpm-lock.yaml"), { force: true });
+      }
+      if (packageManager.name !== "pnpm") {
+        fs.rmSync(path.join(targetDir, "pnpm-workspace.yaml"), { force: true });
+      }
+      await writeEnv(
+        targetDir,
+        envResult,
+        template === "openui-cloud" ? buildAppId(name) : undefined,
+      );
+    } catch (err) {
+      const properties = cliErrorProperties(err, {
+        failure_stage: "scaffold",
+        error_class: "filesystem",
+        error_code: "SCAFFOLD_FAILED",
+      });
+      telemetry.capture("cli_scaffold_failed", {
+        ...createFunnelProps("scaffold_failed"),
+        template,
+        ai_setup: aiSetup,
+        ...properties,
+      });
+      throw new CreateError(
+        properties.failure_stage,
+        err instanceof Error ? err.message : String(err),
+        properties.error_class,
+        properties.error_code,
+      );
+    } finally {
+      fs.rmSync(templateDir, { recursive: true, force: true });
+    }
+  };
+
+  if (options.verbose) {
+    console.info(`\nScaffolding ${template} into "${name}"...\n`);
+    await runScaffold();
+  } else {
+    await withSpinner("Scaffolding...", runScaffold);
+    console.info("✓ Scaffolded\n");
   }
   telemetry.capture("cli_scaffold_succeeded", {
     ...createFunnelProps("scaffold_succeeded"),
     template,
     ai_setup: aiSetup,
   });
-
-  try {
-    await writeEnv(
-      targetDir,
-      envResult,
-      template === "openui-cloud" ? buildAppId(name) : undefined,
-    );
-  } catch (err) {
-    const properties = cliErrorProperties(err, {
-      failure_stage: "environment_write",
-      error_class: "filesystem",
-      error_code: "WRITE_FAILED",
-    });
-    throw new CreateError(
-      properties.failure_stage,
-      err instanceof Error ? err.message : String(err),
-      properties.error_class,
-      properties.error_code,
-    );
-  }
   telemetry.capture("cli_env_resolved", {
     ...createFunnelProps("env_written"),
     template,
@@ -353,51 +346,6 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
     auth_method: envResult.authMethod,
     auth_succeeded: envResult.authSucceeded,
   });
-
-  let skillInstalled = false;
-  if (installSkill) {
-    telemetry.capture("cli_skill_install_started", {
-      ...createFunnelProps("skill_install_started"),
-      skill_installed: installSkill,
-    });
-    const skillResult = await runSkillInstall(targetDir);
-    skillInstalled = !skillResult.error && skillResult.status === 0;
-    if (skillInstalled) {
-      telemetry.capture("cli_skill_install_finished", {
-        ...createFunnelProps("skill_install_finished"),
-        skill_installed: true,
-        duration_ms: skillResult.durationMs,
-        exit_code: skillResult.status,
-      });
-    } else {
-      const properties = processErrorProperties(skillResult, "skill_install", {
-        error_class: "dependency",
-        error_code: "SKILL_INSTALL_FAILED",
-      });
-      if (properties.error_class === "user_cancelled") {
-        telemetry.capture("cli_skill_install_cancelled", {
-          ...createFunnelProps("skill_install_cancelled"),
-          skill_installed: false,
-          ...properties,
-        });
-        throw new CliCancelledError(
-          "skill_install",
-          properties.cancellation_exit_code ?? 0,
-          properties,
-        );
-      }
-      telemetry.capture("cli_skill_install_failed", {
-        ...createFunnelProps("skill_install_failed"),
-        skill_installed: false,
-        ...properties,
-      });
-      console.warn(
-        "\nCould not install the OpenUI agent skill automatically.\n" +
-          "You can install it manually later with:\n\n" +
-          "  npx skills add thesysdev/skills --skill openui\n",
-      );
-    }
-  }
 
   // Framework scaffolds without an npm lock must resolve ranges against the
   // registry (`npm install`). When a backend overlay ships package-lock.json,
@@ -498,6 +446,67 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
         error_class,
         error_code,
         metadata,
+      );
+    }
+  }
+
+  let skillInstalled = false;
+  if (installSkill) {
+    telemetry.capture("cli_skill_install_started", {
+      ...createFunnelProps("skill_install_started"),
+      skill_installed: installSkill,
+    });
+    const runSkill = () =>
+      options.verbose
+        ? runSkillInstall(targetDir)
+        : runSkillInstall(targetDir, {
+            echo: false,
+            stdin: "ignore",
+            captureLimit: QUIET_COMMAND_CAPTURE_LIMIT,
+          });
+    if (options.verbose) {
+      console.info("Installing OpenUI agent skill...\n");
+    }
+    const skillResult = options.verbose
+      ? await runSkill()
+      : await withSpinner("Installing OpenUI agent skill...", runSkill);
+    skillInstalled = !skillResult.error && skillResult.status === 0;
+    if (skillInstalled) {
+      if (!options.verbose) {
+        console.info("✓ OpenUI agent skill installed\n");
+      }
+      telemetry.capture("cli_skill_install_finished", {
+        ...createFunnelProps("skill_install_finished"),
+        skill_installed: true,
+        duration_ms: skillResult.durationMs,
+        exit_code: skillResult.status,
+      });
+    } else {
+      const properties = processErrorProperties(skillResult, "skill_install", {
+        error_class: "dependency",
+        error_code: "SKILL_INSTALL_FAILED",
+      });
+      if (properties.error_class === "user_cancelled") {
+        telemetry.capture("cli_skill_install_cancelled", {
+          ...createFunnelProps("skill_install_cancelled"),
+          skill_installed: false,
+          ...properties,
+        });
+        throw new CliCancelledError(
+          "skill_install",
+          properties.cancellation_exit_code ?? 0,
+          properties,
+        );
+      }
+      telemetry.capture("cli_skill_install_failed", {
+        ...createFunnelProps("skill_install_failed"),
+        skill_installed: false,
+        ...properties,
+      });
+      console.warn(
+        "\nCould not install the OpenUI agent skill automatically.\n" +
+          "You can install it manually later with:\n\n" +
+          "  npx skills add thesysdev/skills --skill openui\n",
       );
     }
   }
