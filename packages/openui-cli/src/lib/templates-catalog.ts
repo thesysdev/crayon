@@ -18,78 +18,56 @@ export type CatalogTemplate = {
   overlays: CatalogOverlay[];
 };
 
-type RawOverlay = {
-  name?: unknown;
-  key?: unknown;
-  description?: unknown;
-};
-
-type RawTemplate = {
-  name?: unknown;
-  key?: unknown;
-  description?: unknown;
-  overlays?: unknown;
-};
-
-function parseOverlay(item: RawOverlay): CatalogOverlay | undefined {
-  if (typeof item.name !== "string" || typeof item.key !== "string") return undefined;
-  return {
-    name: item.name,
-    key: item.key,
-    description: typeof item.description === "string" ? item.description : item.name,
-  };
+function catalogError(message: string): CreateError {
+  return new CreateError("args_resolution", message, "invalid_input", "TEMPLATE_CATALOG_INVALID");
 }
 
-function parseTemplate(item: RawTemplate): CatalogTemplate | undefined {
-  if (typeof item.name !== "string" || typeof item.key !== "string") return undefined;
-  if (!Array.isArray(item.overlays)) return undefined;
-  const overlays = item.overlays
-    .map((entry) => parseOverlay(entry as RawOverlay))
-    .filter((entry): entry is CatalogOverlay => Boolean(entry));
-  if (overlays.length === 0) return undefined;
-  return {
-    name: item.name,
-    key: item.key,
-    description: typeof item.description === "string" ? item.description : item.name,
-    overlays,
-  };
+function parseOverlay(item: unknown): CatalogOverlay {
+  const overlay = item as CatalogOverlay;
+  if (
+    typeof overlay?.name !== "string" ||
+    typeof overlay?.key !== "string" ||
+    typeof overlay?.description !== "string"
+  ) {
+    throw catalogError(`${TEMPLATES_CATALOG_PATH} has an overlay missing name, key, or description.`);
+  }
+  return overlay;
+}
+
+function parseTemplate(item: unknown): CatalogTemplate {
+  const template = item as CatalogTemplate;
+  if (
+    typeof template?.name !== "string" ||
+    typeof template?.key !== "string" ||
+    typeof template?.description !== "string"
+  ) {
+    throw catalogError(`${TEMPLATES_CATALOG_PATH} has a template missing name, key, or description.`);
+  }
+  if (!Array.isArray(template.overlays) || template.overlays.length === 0) {
+    throw catalogError(`Template "${template.key}" has no overlays.`);
+  }
+  return { ...template, overlays: template.overlays.map(parseOverlay) };
 }
 
 function parseTemplatesCatalog(raw: string): CatalogTemplate[] {
   const parsed = JSON.parse(raw) as { templates?: unknown };
-  if (!Array.isArray(parsed.templates)) {
-    throw new Error(`${TEMPLATES_CATALOG_PATH} must contain a "templates" array.`);
+  if (!Array.isArray(parsed.templates) || parsed.templates.length === 0) {
+    throw catalogError(`${TEMPLATES_CATALOG_PATH} must contain a non-empty "templates" array.`);
   }
-  const templates = parsed.templates
-    .map((entry) => parseTemplate(entry as RawTemplate))
-    .filter((entry): entry is CatalogTemplate => Boolean(entry));
-  if (templates.length === 0) {
-    throw new Error(`${TEMPLATES_CATALOG_PATH} has no valid templates.`);
-  }
-  return templates;
+  return parsed.templates.map(parseTemplate);
 }
 
 /** Prefetch the template catalog from GitHub. */
 export async function loadTemplatesCatalog(): Promise<CatalogTemplate[]> {
-  try {
-    const { content } = await fetchSourceFile(TEMPLATES_CATALOG_PATH);
-    return parseTemplatesCatalog(content);
-  } catch (err) {
-    if (err instanceof CreateError) throw err;
-    throw new CreateError(
-      "args_resolution",
-      `Could not load templates from ${TEMPLATES_CATALOG_PATH}.`,
-      "network",
-      "TEMPLATE_CATALOG_UNAVAILABLE",
-    );
-  }
+  const { content } = await fetchSourceFile(TEMPLATES_CATALOG_PATH);
+  return parseTemplatesCatalog(content);
 }
 
 export function findCatalogTemplate(templates: CatalogTemplate[], key: string): CatalogTemplate {
   const normalized = key.toLowerCase();
   const match = templates.find((entry) => entry.key.toLowerCase() === normalized);
   if (!match) {
-    const available = templates.map((entry) => entry.key).join(" | ") || "(none loaded)";
+    const available = templates.map((entry) => entry.key).join(" | ");
     throw new CreateError(
       "args_resolution",
       `unknown template "${key}". Use: ${available}.`,

@@ -223,7 +223,6 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
 
   const templateSource = await resolveTemplateSource(template);
   const templateDir = templateSource.dir;
-  console.info("Checked out template from GitHub.\n");
 
   const aiSetup = aiSetupFromTemplate(template);
   telemetry.register({ template, ai_setup: aiSetup, backend_framework: backendFramework });
