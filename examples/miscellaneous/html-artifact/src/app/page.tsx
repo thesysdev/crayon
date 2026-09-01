@@ -3,36 +3,34 @@
 import { library } from "@/library";
 import {
   AgentInterface,
-  fetchLLM,
-  openAIConversationMessageFormat,
-  openAIResponsesAdapter,
+  openAIAdapter,
+  openAIMessageFormat,
   useSystemThemeMode,
+  type ChatLLM,
 } from "@openuidev/react-ui";
-import { useOpenuiCloudStorage } from "@openuidev/thesys";
 import { useMemo } from "react";
 
 export default function Page() {
   const mode = useSystemThemeMode();
 
-  const llm = useMemo(
-    () =>
-      fetchLLM({
-        url: "/api/chat",
-        streamAdapter: openAIResponsesAdapter(),
-        messageFormat: openAIConversationMessageFormat,
-      }),
+  const llm = useMemo<ChatLLM>(
+    () => ({
+      send: ({ messages, signal }) =>
+        fetch("/api/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ messages: openAIMessageFormat.toApi(messages) }),
+          signal,
+        }),
+      streamProtocol: openAIAdapter(),
+    }),
     [],
   );
-  const storage = useOpenuiCloudStorage({
-    token: "/api/frontend-token",
-    apiBaseUrl: "https://api.thesys.dev",
-  });
 
   return (
     <div className="h-screen w-screen overflow-hidden relative">
       <AgentInterface
         llm={llm}
-        storage={storage}
         componentLibrary={library}
         agentName="HTML Artifact"
         theme={{ mode }}

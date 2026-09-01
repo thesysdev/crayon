@@ -1,15 +1,9 @@
 import { cloudInstructions } from "@/lib/cloud-prompt";
 import { CLOUD_EMBED_URL, DEFAULT_MODEL, requiredEnv } from "@/lib/env";
-import { runFunctionToolLoop, type FunctionToolExecutor } from "@/lib/tool-loop";
-import { NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import OpenAI from "openai";
-import type {
-  ResponseCreateParamsNonStreaming,
-  ResponseInputItem,
-  Tool,
-} from "openai/resources/responses/responses";
-
-import { setCurrentThreadId, tools } from "./tools";
+import type { ChatCompletionMessageParam } from "openai/resources/chat/completions.mjs";
+import { tools, setCurrentThreadId } from "./tools";
 
 const SPREADSHEET_INSTRUCTIONS = `
 You are a helpful spreadsheet assistant. The user has a live Excel-like spreadsheet visible on the left panel at all times.
@@ -45,112 +39,230 @@ You MUST ALWAYS respond using OpenUI Lang syntax as described below. NEVER outpu
 
 FOLLOW-UP BUTTONS:
 At the END of every response, ALWAYS include 2-3 follow-up suggestion buttons using Buttons([...]) with Button components. These help the user continue the conversation. Buttons without an Action prop automatically send their label as a message to you.
+
+Examples of good follow-ups:
+- After showing a summary: "Visualize this data", "Add a new product", "Show growth trends"
+- After a modification: "Undo this change", "Show me the updated data", "Add another row"
+- After a chart: "Break down by product", "Show as a table instead", "Compare Q1 vs Q4"
+
+The follow-up buttons should be contextually relevant to what you just did.
 `.trim();
 
-type LegacyTool = {
-  function: {
-    name: string;
-    description: string;
-    parameters: Record<string, unknown>;
-    parse: (raw: string) => unknown;
-    function: (args: never) => Promise<string>;
-  };
-};
+const systemPrompt = cloudInstructions(SPREADSHEET_INSTRUCTIONS);
 
-const legacyTools = tools as LegacyTool[];
-
-const appToolDeclarations = legacyTools.map((tool) => ({
-  type: "function" as const,
-  name: tool.function.name,
-  description: tool.function.description,
-  parameters: tool.function.parameters,
-  strict: false,
-}));
-
-const appToolExecutors: Record<string, FunctionToolExecutor> = Object.fromEntries(
-  legacyTools.map((tool) => [
-    tool.function.name,
-    async (argsJson: string) =>
-      tool.function.function(tool.function.parse(argsJson || "{}") as never),
-  ]),
-);
-
-export async function POST(req: Request) {
-  const { threadId, messages } = (await req.json()) as {
-    threadId?: string;
-    messages?: ResponseInputItem[];
-  };
-
-  if (!threadId) return badRequest("threadId is required — create the conversation first");
-  if (!Array.isArray(messages) || messages.length === 0) {
-    return badRequest("messages must be a non-empty ResponseInputItem[]");
+/* eslint-disable @typescript-eslint/no-explicit-any */
+function extractText(msg: any): string {
+  const content = msg?.content;
+  if (typeof content === "string") {
+    try {
+      const parsed = JSON.parse(content);
+      if (parsed?.parts)
+        return parsed.parts
+          .filter((p: any) => p.type === "text")
+          .map((p: any) => p.text)
+          .join("");
+    } catch {
+      /* plain string */
+    }
+    return content;
   }
+  if (Array.isArray(content))
+    return content
+      .filter((p: any) => p.type === "text")
+      .map((p: any) => p.text)
+      .join("");
+  return JSON.stringify(msg);
+}
+/* eslint-enable @typescript-eslint/no-explicit-any */
 
-  setCurrentThreadId(threadId);
+function sseToolCallStart(
+  encoder: TextEncoder,
+  tc: { id: string; function: { name: string } },
+  index: number,
+) {
+  return encoder.encode(
+    `data: ${JSON.stringify({
+      id: `chatcmpl-tc-${tc.id}`,
+      object: "chat.completion.chunk",
+      choices: [
+        {
+          index: 0,
+          delta: {
+            tool_calls: [
+              {
+                index,
+                id: tc.id,
+                type: "function",
+                function: { name: tc.function.name, arguments: "" },
+              },
+            ],
+          },
+          finish_reason: null,
+        },
+      ],
+    })}\n\n`,
+  );
+}
 
-  const client = new OpenAI({
-    baseURL: CLOUD_EMBED_URL,
-    apiKey: requiredEnv("THESYS_API_KEY"),
-  });
-
-  const createParams: ResponseCreateParamsNonStreaming = {
-    model: DEFAULT_MODEL,
-    conversation: threadId,
-    input: messages.slice(-1),
-    store: true,
-    tools: appToolDeclarations as unknown as Tool[],
-    instructions: cloudInstructions(SPREADSHEET_INSTRUCTIONS),
-  };
-
-  let stream: AsyncIterable<Record<string, unknown>>;
+function sseToolCallArgs(
+  encoder: TextEncoder,
+  tc: { id: string; function: { arguments: string } },
+  result: string,
+  index: number,
+) {
+  let enrichedArgs: string;
   try {
-    stream = (await client.responses.create(
-      { ...createParams, stream: true },
-      { signal: req.signal },
-    )) as unknown as AsyncIterable<Record<string, unknown>>;
-  } catch (err) {
-    const e = err as { status?: number; error?: unknown; message?: string };
-    return NextResponse.json(
-      { error: e.error ?? { message: e.message ?? "upstream error" } },
-      { status: e.status ?? 502 },
-    );
+    enrichedArgs = JSON.stringify({
+      _request: JSON.parse(tc.function.arguments),
+      _response: JSON.parse(result),
+    });
+  } catch {
+    enrichedArgs = tc.function.arguments;
   }
+  return encoder.encode(
+    `data: ${JSON.stringify({
+      id: `chatcmpl-tc-${tc.id}-args`,
+      object: "chat.completion.chunk",
+      choices: [
+        {
+          index: 0,
+          delta: {
+            tool_calls: [{ index, function: { arguments: enrichedArgs } }],
+          },
+          finish_reason: null,
+        },
+      ],
+    })}\n\n`,
+  );
+}
 
-  const encoder = new TextEncoder();
-  const body = new ReadableStream<Uint8Array>({
-    async start(controller) {
-      const enqueue = (event: Record<string, unknown>) => {
-        controller.enqueue(encoder.encode(`data: ${JSON.stringify(event)}\n\n`));
-      };
-      try {
-        await runFunctionToolLoop({
-          client,
-          createParams,
-          firstStream: stream,
-          tools: appToolExecutors,
-          enqueue,
-          signal: req.signal,
-        });
-      } catch (err) {
-        enqueue({
-          type: "error",
-          message: err instanceof Error ? err.message : String(err),
-        });
-      } finally {
-        controller.close();
+export async function POST(req: NextRequest) {
+  const { messages } = await req.json();
+
+  setCurrentThreadId("default");
+
+  /* eslint-disable @typescript-eslint/no-explicit-any */
+  const lastUserMsg = (messages as any[])
+    .filter((m: any) => m.role === "user")
+    .pop();
+  if (lastUserMsg) extractText(lastUserMsg);
+
+  const cleanMessages = (messages as any[])
+    .filter((m) => m.role !== "tool")
+    .map((m) => {
+      if (m.role === "assistant" && m.tool_calls?.length) {
+        const { tool_calls: _tc, ...rest } = m;
+        return rest;
       }
+      return m;
+    });
+  /* eslint-enable @typescript-eslint/no-explicit-any */
+
+  const chatMessages: ChatCompletionMessageParam[] = [
+    { role: "system", content: systemPrompt },
+    ...cleanMessages,
+  ];
+
+  // Chat Completions → POST /v1/embed/chat/completions
+  const client = new OpenAI({
+    apiKey: requiredEnv("THESYS_API_KEY"),
+    baseURL: CLOUD_EMBED_URL,
+  });
+  const encoder = new TextEncoder();
+  let controllerClosed = false;
+
+  const readable = new ReadableStream({
+    start(controller) {
+      const enqueue = (data: Uint8Array) => {
+        if (controllerClosed) return;
+        try {
+          controller.enqueue(data);
+        } catch {
+          /* closed */
+        }
+      };
+      const close = () => {
+        if (controllerClosed) return;
+        controllerClosed = true;
+        try {
+          controller.close();
+        } catch {
+          /* closed */
+        }
+      };
+
+      const pendingCalls: Array<{
+        id: string;
+        name: string;
+        arguments: string;
+      }> = [];
+      let callIdx = 0;
+      let resultIdx = 0;
+
+      /* eslint-disable @typescript-eslint/no-explicit-any */
+      const runner = (client.chat.completions as any).runTools({
+        model: DEFAULT_MODEL,
+        messages: chatMessages,
+        tools,
+        stream: true,
+      });
+
+      runner.on("functionToolCall", (fc: any) => {
+        const id = `tc-${callIdx}`;
+        pendingCalls.push({ id, name: fc.name, arguments: fc.arguments });
+        enqueue(
+          sseToolCallStart(encoder, { id, function: { name: fc.name } }, callIdx),
+        );
+        callIdx++;
+      });
+
+      runner.on("functionToolCallResult", (result: string) => {
+        const tc = pendingCalls[resultIdx];
+        if (tc) {
+          enqueue(
+            sseToolCallArgs(
+              encoder,
+              { id: tc.id, function: { arguments: tc.arguments } },
+              result,
+              resultIdx,
+            ),
+          );
+        }
+        resultIdx++;
+      });
+
+      runner.on("chunk", (chunk: any) => {
+        const choice = chunk.choices?.[0];
+        const delta = choice?.delta;
+        if (!delta) return;
+        if (delta.content) {
+          enqueue(encoder.encode(`data: ${JSON.stringify(chunk)}\n\n`));
+        }
+        if (choice?.finish_reason === "stop") {
+          enqueue(encoder.encode(`data: ${JSON.stringify(chunk)}\n\n`));
+        }
+      });
+
+      runner.on("end", () => {
+        enqueue(encoder.encode("data: [DONE]\n\n"));
+        close();
+      });
+
+      runner.on("error", (err: any) => {
+        const msg = err instanceof Error ? err.message : "Stream error";
+        console.error("Chat route error:", msg);
+        enqueue(encoder.encode(`data: ${JSON.stringify({ error: msg })}\n\n`));
+        close();
+      });
+      /* eslint-enable @typescript-eslint/no-explicit-any */
     },
   });
 
-  return new Response(body, {
+  return new Response(readable, {
     headers: {
       "Content-Type": "text/event-stream",
       "Cache-Control": "no-cache, no-transform",
       Connection: "keep-alive",
     },
   });
-}
-
-function badRequest(message: string): Response {
-  return NextResponse.json({ error: { message } }, { status: 400 });
 }

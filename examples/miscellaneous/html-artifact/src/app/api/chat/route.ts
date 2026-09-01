@@ -1,77 +1,43 @@
 import { cloudInstructions } from "@/lib/cloud-prompt";
 import { CLOUD_EMBED_URL, DEFAULT_MODEL, requiredEnv } from "@/lib/env";
-import { NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import OpenAI from "openai";
-import type { ResponseInputItem } from "openai/resources/responses/responses";
+import type { ChatCompletionMessageParam } from "openai/resources/chat/completions.mjs";
 
-export async function POST(req: Request) {
-  const { threadId, messages } = (await req.json()) as {
-    threadId?: string;
-    messages?: ResponseInputItem[];
-  };
+const SSE_HEADERS = {
+  "Content-Type": "text/event-stream",
+  "Cache-Control": "no-cache, no-transform",
+  Connection: "keep-alive",
+} as const;
 
-  if (!threadId) return badRequest("threadId is required — create the conversation first");
-  if (!Array.isArray(messages) || messages.length === 0) {
-    return badRequest("messages must be a non-empty ResponseInputItem[]");
-  }
+export async function POST(req: NextRequest) {
+  const { messages } = (await req.json()) as { messages: ChatCompletionMessageParam[] };
 
+  // Chat Completions → POST /v1/embed/chat/completions
   const client = new OpenAI({
-    baseURL: CLOUD_EMBED_URL,
     apiKey: requiredEnv("THESYS_API_KEY"),
+    baseURL: CLOUD_EMBED_URL,
   });
 
-  let stream: AsyncIterable<Record<string, unknown>>;
-  try {
-    stream = (await client.responses.create(
-      {
-        model: DEFAULT_MODEL,
-        conversation: threadId,
-        input: messages.slice(-1),
-        store: true,
-        instructions: cloudInstructions(),
-        stream: true,
-      },
-      { signal: req.signal },
-    )) as unknown as AsyncIterable<Record<string, unknown>>;
-  } catch (err) {
-    const e = err as { status?: number; error?: unknown; message?: string };
-    return NextResponse.json(
-      { error: e.error ?? { message: e.message ?? "upstream error" } },
-      { status: e.status ?? 502 },
-    );
-  }
+  const stream = await client.chat.completions.create({
+    model: DEFAULT_MODEL,
+    messages: [{ role: "system", content: cloudInstructions() }, ...messages],
+    stream: true,
+  });
 
   const encoder = new TextEncoder();
-  const body = new ReadableStream<Uint8Array>({
+  const readable = new ReadableStream({
     async start(controller) {
       try {
-        for await (const event of stream) {
-          controller.enqueue(encoder.encode(`data: ${JSON.stringify(event)}\n\n`));
+        for await (const chunk of stream) {
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify(chunk)}\n\n`));
         }
-      } catch (err) {
-        controller.enqueue(
-          encoder.encode(
-            `data: ${JSON.stringify({
-              type: "error",
-              message: err instanceof Error ? err.message : String(err),
-            })}\n\n`,
-          ),
-        );
       } finally {
+        controller.enqueue(encoder.encode("data: [DONE]\n\n"));
         controller.close();
       }
     },
   });
 
-  return new Response(body, {
-    headers: {
-      "Content-Type": "text/event-stream",
-      "Cache-Control": "no-cache, no-transform",
-      Connection: "keep-alive",
-    },
-  });
-}
-
-function badRequest(message: string): Response {
-  return NextResponse.json({ error: { message } }, { status: 400 });
+  return new Response(readable, { headers: SSE_HEADERS });
 }
