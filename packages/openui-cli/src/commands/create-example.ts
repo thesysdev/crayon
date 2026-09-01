@@ -1,13 +1,17 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 
-import { promptForProviderKey, resolveImmediate } from "../lib/create-helpers";
+import {
+  promptForProviderKey,
+  resolveImmediate,
+  runDependencyInstall,
+  withProgress,
+} from "../lib/create-helpers";
 import { createFunnelProps } from "../lib/create-telemetry";
 import type { CreateAppOptions, EnvResult } from "../lib/create-types";
 import { resolveInstallPackageManager } from "../lib/detect-package-manager";
 import { runDevCommand } from "../lib/dev-server";
 import { runSkillInstall, shouldInstallSkill } from "../lib/install-skill";
-import { runCommand } from "../lib/process-runner";
 import type { ExampleProject } from "../lib/projects";
 import { scaffoldExample, upsertEnvKey } from "../lib/scaffold-example";
 import { CliCancelledError, CreateError, telemetry } from "../lib/telemetry";
@@ -60,15 +64,17 @@ export async function runCreateExample(params: {
     example: example.name,
   });
   try {
-    const origin = await scaffoldExample({
-      example,
-      targetDir,
-      name,
-      packageManager: packageManager.name,
-    });
-    if (origin === "github") {
-      console.info("Checked out example from GitHub.\n");
-    }
+    await withProgress(
+      "Fetching example...",
+      () =>
+        scaffoldExample({
+          example,
+          targetDir,
+          name,
+          packageManager: packageManager.name,
+        }),
+      options.verbose,
+    );
     if (packageManager.name !== "npm") {
       fs.rmSync(path.join(targetDir, "package-lock.json"), { force: true });
     }
@@ -187,12 +193,17 @@ export async function runCreateExample(params: {
     });
     console.info(`Skipping dependency install (--no-install). Run \`${installCmd}\` later.\n`);
   } else {
-    console.info(`Installing dependencies with: ${installCmd}\n`);
     telemetry.capture("cli_dependency_install_started", {
       ...createFunnelProps("dependency_install_started"),
       example: example.name,
     });
-    const installResult = await runCommand(packageManager.runCmd, installArgs, targetDir);
+    const installResult = await runDependencyInstall({
+      verbose: options.verbose,
+      command: packageManager.runCmd,
+      args: installArgs,
+      cwd: targetDir,
+      installCmd,
+    });
     if (!installResult.error && installResult.status === 0) {
       dependencyInstalled = true;
       telemetry.capture("cli_dependency_install_succeeded", {

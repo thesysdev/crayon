@@ -3,8 +3,12 @@ import * as os from "node:os";
 import * as path from "node:path";
 
 import { resolveCloudApiKey, THESYS_KEYS_URL } from "../auth/mint";
-import { printLogTail, QUIET_COMMAND_CAPTURE_LIMIT } from "../lib/command-output";
-import { promptForProviderKey, resolveImmediate } from "../lib/create-helpers";
+import { QUIET_COMMAND_CAPTURE_LIMIT } from "../lib/command-output";
+import {
+  promptForProviderKey,
+  resolveImmediate,
+  runDependencyInstall,
+} from "../lib/create-helpers";
 import { aiSetupFromTemplate, createFunnelProps } from "../lib/create-telemetry";
 import type { CreateAppOptions, EnvResult, TemplateName } from "../lib/create-types";
 import {
@@ -21,7 +25,6 @@ import {
   type OverlayManifest,
   type TemplateOverlay,
 } from "../lib/overlays";
-import { runCommand } from "../lib/process-runner";
 import {
   rejectConflictingScaffoldSelectors,
   resolveProject,
@@ -421,31 +424,15 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
       template,
       ai_setup: aiSetup,
     });
-    const runInstall = () =>
-      options.verbose
-        ? runCommand(packageManager.runCmd, installArgs, targetDir)
-        : runCommand(packageManager.runCmd, installArgs, targetDir, {
-            echo: false,
-            stdin: "ignore",
-            captureLimit: QUIET_COMMAND_CAPTURE_LIMIT,
-            env: {
-              ...process.env,
-              npm_config_loglevel: "error",
-              NPM_CONFIG_LOGLEVEL: "error",
-            },
-          });
-
-    if (options.verbose) {
-      console.info(`Installing dependencies with: ${installCmd}\n`);
-    }
-    const installResult = options.verbose
-      ? await runInstall()
-      : await withSpinner("Installing dependencies...", runInstall);
+    const installResult = await runDependencyInstall({
+      verbose: options.verbose,
+      command: packageManager.runCmd,
+      args: installArgs,
+      cwd: targetDir,
+      installCmd,
+    });
     if (!installResult.error && installResult.status === 0) {
       dependencyInstalled = true;
-      if (!options.verbose) {
-        console.info("✓ Dependencies installed");
-      }
       telemetry.capture("cli_dependency_install_succeeded", {
         ...createFunnelProps("dependency_install_succeeded"),
         template,
@@ -453,9 +440,6 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
         dependency_installed: dependencyInstalled,
       });
     } else {
-      if (!options.verbose) {
-        printLogTail(installResult.diagnosticTail, "install log (tail)");
-      }
       const properties = processErrorProperties(installResult, "dependency_install", {
         error_class: "dependency",
         error_code: "NONZERO_EXIT",
