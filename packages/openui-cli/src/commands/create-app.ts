@@ -332,12 +332,13 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
     }
   };
 
+  console.info();
   if (options.verbose) {
-    console.info(`\nScaffolding ${template} into "${name}"...\n`);
+    console.info(`Scaffolding ${template} into "${name}"...\n`);
     await runScaffold();
   } else {
     await withSpinner("Scaffolding...", runScaffold);
-    console.info("✓ Scaffolded\n");
+    console.info("✓ Scaffolded");
   }
   telemetry.capture("cli_scaffold_succeeded", {
     ...createFunnelProps("scaffold_succeeded"),
@@ -378,7 +379,7 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
     telemetry.capture("cli_dependency_install_skipped", {
       skip_reason: "no_install_flag",
     });
-    console.info(`Skipping dependency install (--no-install). Run \`${installCmd}\` later.\n`);
+    console.info(`Skipping dependency install (--no-install). Run \`${installCmd}\` later.`);
   } else {
     telemetry.capture("cli_dependency_install_started", {
       ...createFunnelProps("dependency_install_started"),
@@ -408,7 +409,7 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
     if (!installResult.error && installResult.status === 0) {
       dependencyInstalled = true;
       if (!options.verbose) {
-        console.info("✓ Dependencies installed\n");
+        console.info("✓ Dependencies installed");
       }
       telemetry.capture("cli_dependency_install_succeeded", {
         ...createFunnelProps("dependency_install_succeeded"),
@@ -479,7 +480,7 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
     skillInstalled = !skillResult.error && skillResult.status === 0;
     if (skillInstalled) {
       if (!options.verbose) {
-        console.info("✓ OpenUI agent skill installed\n");
+        console.info("✓ OpenUI agent skill installed");
       }
       telemetry.capture("cli_skill_install_finished", {
         ...createFunnelProps("skill_install_finished"),
@@ -772,7 +773,7 @@ function getStartedMessage(o: {
 
   const frameworkNote = o.backendGettingStarted?.replaceAll("{{packageManager}}", o.devCmd) ?? "";
 
-  return `${[skillMessage.trim(), "Done!", envNote, frameworkNote, nextStep]
+  return `\n${[skillMessage.trim(), "Done!", envNote, frameworkNote, nextStep]
     .filter(Boolean)
     .join("\n\n")}\n`;
 }
