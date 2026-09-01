@@ -4,6 +4,7 @@ import * as path from "node:path";
 
 import { resolveCloudApiKey, THESYS_KEYS_URL } from "../auth/mint";
 import { printLogTail, QUIET_COMMAND_CAPTURE_LIMIT } from "../lib/command-output";
+import { promptForProviderKey, resolveImmediate } from "../lib/create-helpers";
 import { aiSetupFromTemplate, createFunnelProps } from "../lib/create-telemetry";
 import type { CreateAppOptions, EnvResult, TemplateName } from "../lib/create-types";
 import {
@@ -21,13 +22,8 @@ import {
   type TemplateOverlay,
 } from "../lib/overlays";
 import { runCommand } from "../lib/process-runner";
-import {
-  rejectConflictingScaffoldSelectors,
-  resolveProject,
-  type ExampleProject,
-} from "../lib/projects";
+import { rejectConflictingScaffoldSelectors, resolveProject } from "../lib/projects";
 import { resolveArgs } from "../lib/resolve-args";
-import { scaffoldExample, upsertEnvKey } from "../lib/scaffold-example";
 import { resolveTemplateSource } from "../lib/scaffold-template";
 import { withSpinner } from "../lib/spinner";
 import { resolveAvailableTarget } from "../lib/target-dir";
@@ -39,6 +35,8 @@ import {
   loadTemplatesCatalog,
 } from "../lib/templates-catalog";
 import { cliErrorProperties, processErrorProperties } from "../lib/utils";
+
+import { runCreateExample } from "./create-example";
 
 function shouldCopyTemplatePath(templateDir: string, src: string): boolean {
   const rel = path.relative(templateDir, src);
@@ -615,360 +613,6 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
   }
 }
 
-const isInteractiveTerminal = () => Boolean(process.stdin.isTTY && process.stdout.isTTY);
-
-function resolveImmediate(
-  immediate: boolean | undefined,
-  noInstall: boolean | undefined,
-  interactive: boolean,
-): {
-  immediate: boolean;
-  installDependencies: boolean;
-  source: "flag" | "interactive_default" | "no_install" | "noninteractive_default";
-} {
-  if (noInstall) {
-    return { immediate: false, installDependencies: false, source: "no_install" };
-  }
-  if (immediate !== undefined) {
-    return {
-      immediate,
-      installDependencies: true,
-      source: "flag",
-    };
-  }
-  if (!interactive || !isInteractiveTerminal()) {
-    return {
-      immediate: false,
-      installDependencies: true,
-      source: "noninteractive_default",
-    };
-  }
-  return { immediate: true, installDependencies: true, source: "interactive_default" };
-}
-
-async function runCreateExample(params: {
-  options: CreateAppOptions;
-  interactive: boolean;
-  packageManager: ReturnType<typeof resolveInstallPackageManager>;
-  t0: number;
-  name: string;
-  targetDir: string;
-  example: ExampleProject;
-}): Promise<void> {
-  const { options, interactive, packageManager, t0, name, targetDir, example } = params;
-
-  telemetry.register({ example: example.name, project_category: "example" });
-  telemetry.capture("cli_example_selected", {
-    ...createFunnelProps("example_selected"),
-    example: example.name,
-    example_source: options.example ? "flag" : interactive ? "prompt" : "default",
-  });
-
-  telemetry.capture("cli_env_resolution_started", {
-    ...createFunnelProps("env_resolution_started"),
-    example: example.name,
-  });
-  const envResult = await resolveExampleEnv(example, interactive);
-
-  const installSkill = await shouldInstallSkill(options.skill, interactive);
-  telemetry.capture("cli_skill_installed", {
-    ...createFunnelProps("skill_prompt_resolved"),
-    skill_installed: installSkill,
-  });
-
-  const immediateResolution = resolveImmediate(options.immediate, options.noInstall, interactive);
-  const apiKeyEnv = example.envKey;
-  const apiKeyAvailable =
-    !apiKeyEnv || envResult.envWritten || Boolean(process.env[apiKeyEnv]?.trim());
-  const devStartBlockedByMissingApiKey = immediateResolution.immediate && !apiKeyAvailable;
-  telemetry.capture("cli_immediate_selected", {
-    immediate: immediateResolution.immediate,
-    dependency_install_requested: immediateResolution.installDependencies,
-    selection_source: immediateResolution.source,
-  });
-
-  console.info(`\nScaffolding example ${example.label} into "${name}"...\n`);
-  telemetry.capture("cli_scaffold_started", {
-    ...createFunnelProps("scaffold_started"),
-    example: example.name,
-  });
-  try {
-    const origin = await scaffoldExample({
-      example,
-      targetDir,
-      name,
-      packageManager: packageManager.name,
-    });
-    if (origin === "github") {
-      console.info("Checked out example from GitHub.\n");
-    }
-    if (packageManager.name !== "npm") {
-      fs.rmSync(path.join(targetDir, "package-lock.json"), { force: true });
-    }
-    if (packageManager.name !== "pnpm") {
-      fs.rmSync(path.join(targetDir, "pnpm-lock.yaml"), { force: true });
-    }
-  } catch (err) {
-    const properties = cliErrorProperties(err, {
-      failure_stage: "scaffold",
-      error_class: "filesystem",
-      error_code: "SCAFFOLD_FAILED",
-    });
-    telemetry.capture("cli_scaffold_failed", {
-      ...createFunnelProps("scaffold_failed"),
-      example: example.name,
-      ...properties,
-    });
-    throw new CreateError(
-      properties.failure_stage,
-      err instanceof Error ? err.message : String(err),
-      properties.error_class,
-      properties.error_code,
-    );
-  }
-  telemetry.capture("cli_scaffold_succeeded", {
-    ...createFunnelProps("scaffold_succeeded"),
-    example: example.name,
-  });
-
-  try {
-    if (envResult.envKeyValue && example.envKey) {
-      upsertEnvKey(targetDir, example.envFile, example.envKey, envResult.envKeyValue);
-    }
-  } catch (err) {
-    const properties = cliErrorProperties(err, {
-      failure_stage: "environment_write",
-      error_class: "filesystem",
-      error_code: "WRITE_FAILED",
-    });
-    throw new CreateError(
-      properties.failure_stage,
-      err instanceof Error ? err.message : String(err),
-      properties.error_class,
-      properties.error_code,
-    );
-  }
-  telemetry.capture("cli_env_resolved", {
-    ...createFunnelProps("env_written"),
-    example: example.name,
-    env_written: envResult.envWritten,
-  });
-
-  let skillInstalled = false;
-  if (installSkill) {
-    telemetry.capture("cli_skill_install_started", {
-      ...createFunnelProps("skill_install_started"),
-      skill_installed: installSkill,
-    });
-    const skillResult = await runSkillInstall(targetDir);
-    skillInstalled = !skillResult.error && skillResult.status === 0;
-    if (skillInstalled) {
-      telemetry.capture("cli_skill_install_finished", {
-        ...createFunnelProps("skill_install_finished"),
-        skill_installed: true,
-        duration_ms: skillResult.durationMs,
-        exit_code: skillResult.status,
-      });
-    } else {
-      const properties = processErrorProperties(skillResult, "skill_install", {
-        error_class: "dependency",
-        error_code: "SKILL_INSTALL_FAILED",
-      });
-      if (properties.error_class === "user_cancelled") {
-        telemetry.capture("cli_skill_install_cancelled", {
-          ...createFunnelProps("skill_install_cancelled"),
-          skill_installed: false,
-          ...properties,
-        });
-        throw new CliCancelledError(
-          "skill_install",
-          properties.cancellation_exit_code ?? 0,
-          properties,
-        );
-      }
-      telemetry.capture("cli_skill_install_failed", {
-        ...createFunnelProps("skill_install_failed"),
-        skill_installed: false,
-        ...properties,
-      });
-      console.warn(
-        "\nCould not install the OpenUI agent skill automatically.\n" +
-          "You can install it manually later with:\n\n" +
-          "  npx skills add thesysdev/skills --skill openui\n",
-      );
-    }
-  }
-
-  const hasNpmLock = fs.existsSync(path.join(targetDir, "package-lock.json"));
-  const installCmd =
-    packageManager.name === "npm" && !hasNpmLock
-      ? "npm install --no-audit --no-fund --progress=false"
-      : packageManager.name === "pnpm"
-        ? "pnpm install --no-frozen-lockfile"
-        : packageManager.installCmd;
-  const installArgs =
-    packageManager.name === "npm" && !hasNpmLock
-      ? ["install", "--no-audit", "--no-fund", "--progress=false"]
-      : packageManager.name === "pnpm"
-        ? ["install", "--no-frozen-lockfile"]
-        : packageManager.installArgs;
-  let dependencyInstalled = false;
-
-  if (!immediateResolution.installDependencies) {
-    telemetry.capture("cli_dependency_install_skipped", {
-      skip_reason: "no_install_flag",
-    });
-    console.info(`Skipping dependency install (--no-install). Run \`${installCmd}\` later.\n`);
-  } else {
-    console.info(`Installing dependencies with: ${installCmd}\n`);
-    telemetry.capture("cli_dependency_install_started", {
-      ...createFunnelProps("dependency_install_started"),
-      example: example.name,
-    });
-    const installResult = await runCommand(packageManager.runCmd, installArgs, targetDir);
-    if (!installResult.error && installResult.status === 0) {
-      dependencyInstalled = true;
-      telemetry.capture("cli_dependency_install_succeeded", {
-        ...createFunnelProps("dependency_install_succeeded"),
-        example: example.name,
-        dependency_installed: dependencyInstalled,
-      });
-    } else {
-      const properties = processErrorProperties(installResult, "dependency_install", {
-        error_class: "dependency",
-        error_code: "NONZERO_EXIT",
-      });
-      if (properties.error_class === "user_cancelled") {
-        telemetry.capture("cli_dependency_install_cancelled", {
-          ...createFunnelProps("dependency_install_cancelled"),
-          example: example.name,
-          dependency_installed: false,
-          ...properties,
-        });
-        throw new CliCancelledError(
-          "dependency_install",
-          properties.cancellation_exit_code ?? 0,
-          properties,
-        );
-      }
-      telemetry.capture("cli_dependency_install_failed", {
-        ...createFunnelProps("dependency_install_failed"),
-        example: example.name,
-        dependency_installed: dependencyInstalled,
-        ...properties,
-      });
-      const { failure_stage, error_class, error_code, ...metadata } = properties;
-      throw new CreateError(
-        failure_stage,
-        "dependency install failed",
-        error_class,
-        error_code,
-        metadata,
-      );
-    }
-  }
-
-  const devCmd = packageManager.runCmd;
-  const startDev =
-    immediateResolution.immediate && dependencyInstalled && !devStartBlockedByMissingApiKey;
-
-  telemetry.capture("cli_create_succeeded", {
-    ...createFunnelProps("create_succeeded"),
-    example: example.name,
-    duration_ms: Date.now() - t0,
-    skill_installed: skillInstalled,
-    env_written: envResult.envWritten,
-    dependency_installed: dependencyInstalled,
-  });
-  console.info(
-    getStartedMessage({
-      name,
-      devCmd,
-      template: "openui-self-hosted",
-      exampleLabel: example.label,
-      exampleEnvFile: example.envFile,
-      exampleEnvKey: example.envKey,
-      skillInstalled,
-      envWritten: envResult.envWritten,
-      startDev,
-      devStartBlockedByMissingApiKey,
-      installCmd,
-      dependencyInstalled,
-    }),
-  );
-
-  if (devStartBlockedByMissingApiKey && apiKeyEnv) {
-    telemetry.capture("cli_dev_command_skipped", {
-      skip_reason: "missing_api_key",
-      required_env: apiKeyEnv,
-    });
-    console.error(
-      `\nSkipped starting the development server — ${apiKeyEnv} is missing.\n\n` +
-        `Add your key to ${name}/${example.envFile}:\n\n  ${apiKeyEnv}=…\n\n` +
-        `Then run:\n\n> cd ${name}\n> ${devCmd} run dev\n`,
-    );
-    process.exitCode = 1;
-    return;
-  }
-
-  if (!startDev) {
-    telemetry.capture("cli_dev_command_skipped", {
-      skip_reason: options.noInstall ? "dependencies_not_installed" : "not_immediate",
-    });
-    return;
-  }
-
-  telemetry.capture("cli_dev_command_started", {
-    package_manager: packageManager.name,
-  });
-  const devResult = await runDevCommand(devCmd, targetDir);
-  const stoppedNormally =
-    devResult.status === 0 ||
-    devResult.status === 130 ||
-    devResult.status === 143 ||
-    devResult.signal === "SIGINT" ||
-    devResult.signal === "SIGTERM";
-
-  if (stoppedNormally) {
-    telemetry.capture("cli_dev_command_stopped", {
-      package_manager: packageManager.name,
-      duration_ms: devResult.durationMs,
-      exit_code: devResult.status,
-      failure_signal: devResult.signal,
-    });
-  } else {
-    const exitCode = devResult.status ?? 1;
-    const properties = processErrorProperties(devResult, "dev_server", {
-      error_class: "process",
-      error_code: "NONZERO_EXIT",
-    });
-    telemetry.capture("cli_dev_command_failed", {
-      package_manager: packageManager.name,
-      failure_reason: devResult.error ? "spawn_error" : "nonzero_exit",
-      ...properties,
-    });
-    console.error(
-      `\nDevelopment server exited. Retry with:\n\n> cd ${name}\n> ${devCmd} run dev\n`,
-    );
-    process.exitCode = exitCode;
-  }
-}
-
-async function resolveExampleEnv(
-  example: ExampleProject,
-  interactive: boolean,
-): Promise<EnvResult & { envKeyValue?: string }> {
-  if (!example.envKey) {
-    return { envWritten: false };
-  }
-
-  const apiKey = interactive ? await promptForProviderKey(example.envKey) : null;
-  return {
-    envWritten: apiKey != null,
-    envKeyValue: apiKey ?? undefined,
-  };
-}
-
 async function writeEnv(targetDir: string, result: EnvResult, appId?: string): Promise<void> {
   // APP_ID is the scaffold's stable identity: the frontend-token route sends
   // it as `app_id`, so every conversation this app creates is bound to it and
@@ -977,24 +621,6 @@ async function writeEnv(targetDir: string, result: EnvResult, appId?: string): P
   const content = `${result.envContent ?? ""}${appId ? `APP_ID=${appId}\n` : ""}`;
   if (!content) return;
   await fs.promises.writeFile(path.join(targetDir, ".env"), content);
-}
-
-async function promptForProviderKey(envKey = "OPENAI_API_KEY"): Promise<string | null> {
-  try {
-    const { input } = await import("@inquirer/prompts");
-    const apiKey = (
-      await input({
-        message: `Enter your ${envKey} (leave blank to skip):`,
-      })
-    ).trim();
-    return apiKey || null;
-  } catch (error) {
-    const { ExitPromptError } = await import("@inquirer/core");
-    if (error instanceof ExitPromptError) {
-      throw new CliCancelledError("environment_resolution");
-    }
-    throw error;
-  }
 }
 
 async function resolveChatEnv(interactive: boolean): Promise<EnvResult> {
@@ -1084,9 +710,6 @@ function getStartedMessage(o: {
   name: string;
   devCmd: string;
   template: TemplateName;
-  exampleLabel?: string;
-  exampleEnvFile?: string;
-  exampleEnvKey?: string;
   backendGettingStarted?: string;
   skillInstalled: boolean;
   envWritten: boolean;
@@ -1098,14 +721,8 @@ function getStartedMessage(o: {
     ? "The OpenUI agent skill was installed.\nAI coding assistants will use it to help you build with OpenUI.\n"
     : "";
 
-  const envFile = o.exampleEnvFile ?? ".env";
-  const envKey =
-    o.exampleEnvKey ?? (o.template === "openui-cloud" ? "THESYS_API_KEY" : "OPENAI_API_KEY");
-  const envNote = o.exampleLabel
-    ? o.envWritten
-      ? `✅ ${envFile} updated with ${envKey}.`
-      : `Add ${envKey}=… to ${envFile} (see the example README).`
-    : o.template === "openui-cloud"
+  const envNote =
+    o.template === "openui-cloud"
       ? o.envWritten
         ? "✅ .env created with your OpenUI Cloud API key + base URL."
         : `[!] .env created without a key. Add THESYS_API_KEY=… (get one at ${THESYS_KEYS_URL}).`
