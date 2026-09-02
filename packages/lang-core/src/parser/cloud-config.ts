@@ -1,0 +1,66 @@
+import type { CloudPromptOptions, SystemPromptOptions } from "./prompt";
+import { type ChatLibrary, validateChatLibrary } from "./validate-library";
+
+/** `]]>openui:config\n` — request-direction config block header. Trailing newline is part of the wire contract. */
+export const CLOUD_CONFIG_MARKER = "]]>openui:config\n";
+
+/**
+ * Wire pin for OpenUI Cloud's built-in chat library when `generateSystemPrompt({ cloud: true })`
+ * is called without a custom library. Muse 400s on a non-numeric or too-old version.
+ */
+export const CLOUD_CHAT_LIBRARY_VERSION = "0.1.0";
+
+type CloudConfig =
+  | { libraryVersion: string }
+  | { chatLibrary: CloudChatLibraryWire; systemPromptOptions?: CloudPromptOptions };
+
+type CloudChatLibraryWire = {
+  schema?: ChatLibrary["schema"];
+  root?: string;
+  componentGroups?: ChatLibrary["componentGroups"];
+  id?: string;
+};
+
+function pickCloudPromptOptions(
+  options: SystemPromptOptions | CloudPromptOptions | undefined,
+): CloudPromptOptions | undefined {
+  if (!options) return undefined;
+  const picked: CloudPromptOptions = {};
+  if (options.examples) picked.examples = options.examples;
+  if (options.preamble) picked.preamble = options.preamble;
+  if (options.additionalRules) picked.additionalRules = options.additionalRules;
+  return Object.keys(picked).length > 0 ? picked : undefined;
+}
+
+export function generateCloudConfig(spec: {
+  library?: ChatLibrary;
+  promptOptions?: SystemPromptOptions | CloudPromptOptions;
+  instructions?: string;
+}): string {
+  let config: CloudConfig;
+
+  if (spec.library) {
+    const issues = validateChatLibrary(spec.library);
+    if (issues.length > 0) {
+      throw new Error(
+        `[generateSystemPrompt] Invalid library: ${issues.map((i) => i.message).join(" ")}`,
+      );
+    }
+    const { schema, root, componentGroups, id } = spec.library;
+    const promptOptions = pickCloudPromptOptions(spec.promptOptions);
+    config = {
+      chatLibrary: { schema, root, componentGroups, id },
+      ...(promptOptions ? { systemPromptOptions: promptOptions } : {}),
+    };
+  } else {
+    if (spec.promptOptions && pickCloudPromptOptions(spec.promptOptions)) {
+      throw new Error(
+        "[generateSystemPrompt] promptOptions requires a library — the built-in library ignores it.",
+      );
+    }
+    config = { libraryVersion: CLOUD_CHAT_LIBRARY_VERSION };
+  }
+
+  const block = `${CLOUD_CONFIG_MARKER}${JSON.stringify(config)}`;
+  return spec.instructions ? `${block}\n${spec.instructions}` : block;
+}

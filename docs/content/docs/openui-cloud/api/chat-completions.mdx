@@ -14,12 +14,12 @@ Use the `embedClient` from the [API overview](/docs/openui-cloud/api/overview), 
 Use the server helper to have OpenUI Cloud assemble the system prompt for its built-in component library.
 
 ```ts title="server.ts"
-import { generateSystemPrompt } from "@openuidev/thesys-server";
+import { generateSystemPrompt } from "@openuidev/lang-core";
 
 const completion = await embedClient.chat.completions.create({
   model: "openai/gpt-5",
   messages: [
-    { role: "system", content: generateSystemPrompt() },
+    { role: "system", content: generateSystemPrompt({ cloud: true }) },
     { role: "user", content: "Compare quarterly revenue by region." },
   ],
 });
@@ -75,7 +75,7 @@ Hosted `web_search`, `image_search`, remote MCP, and artifacts-as-tool are avail
 
 ### Plain text passthrough
 
-Use a `{provider}/{model}` model ID without the managed `generateSystemPrompt()` sentinel. OpenUI Cloud forwards your messages and system prompt without injecting a generative UI prompt or component schema.
+Use a `{provider}/{model}` model ID without the managed `generateSystemPrompt({ cloud: true })` sentinel. OpenUI Cloud forwards your messages and system prompt without injecting a generative UI prompt or component schema.
 
 ```ts
 const completion = await embedClient.chat.completions.create({

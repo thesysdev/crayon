@@ -61,16 +61,38 @@ const result2 = sp.set("root = Stack([header])\nheader = CardHeader(\"Hello\")\n
 ### Generate a system prompt
 
 ```ts
-import { generatePrompt, type PromptSpec } from "@openuidev/lang-core";
-import componentSpec from "./generated/component-spec.json";
+import { generateSystemPrompt, type LibrarySpec } from "@openuidev/lang-core";
+import librarySpec from "./generated/library.spec.json";
 
-const prompt = generatePrompt({
-  ...componentSpec,
-  tools: myToolSpecs,
-  toolCalls: true,
-  bindings: true,
-  editMode: true,
-  preamble: "You build dashboards.",
+const prompt = generateSystemPrompt({
+  library: librarySpec as LibrarySpec,
+  promptOptions: {
+    tools: myToolSpecs,
+    toolCalls: true,
+    bindings: true,
+    editMode: true,
+    preamble: "You build dashboards.",
+  },
+});
+```
+
+### OpenUI Cloud
+
+Pass `cloud: true` to emit Cloud's managed config block instead of a local prompt. OpenUI Cloud
+assembles the real system prompt on the server.
+
+```ts
+import { generateSystemPrompt } from "@openuidev/lang-core";
+
+// Built-in Cloud chat library
+const instructions = generateSystemPrompt({ cloud: true });
+
+// Custom library (the `.spec.json` from `openui generate`)
+const custom = generateSystemPrompt({
+  cloud: true,
+  library: librarySpec,
+  promptOptions: { preamble: "You build dashboards for Acme." },
+  instructions: "Be terse.",
 });
 ```
 
@@ -100,6 +122,7 @@ const merged = mergeStatements(original, patch);
 | Export | Description |
 | :--- | :--- |
 | `generatePrompt(spec)` | Generate a system prompt from a `PromptSpec` |
+| `generateSystemPrompt(spec)` | Generate a system prompt from `{ library, promptOptions }`. Pass `{ cloud: true }` for OpenUI Cloud's managed config block. |
 
 **`PromptSpec`** includes component signatures, tool definitions (`ToolSpec[]`), feature flags (`toolCalls`, `bindings`, `editMode`, `inlineMode`), examples, and custom rules.
 

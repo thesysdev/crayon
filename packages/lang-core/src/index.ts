@@ -29,12 +29,14 @@ export {
   toNumber,
 } from "./parser/builtins";
 export type { BuiltinDef } from "./parser/builtins";
+export { CLOUD_CHAT_LIBRARY_VERSION, CLOUD_CONFIG_MARKER } from "./parser/cloud-config";
 export { enrichErrors } from "./parser/enrich-errors";
 export { parseExpression } from "./parser/expressions";
 export { tokenize } from "./parser/lexer";
 export { mergeStatements } from "./parser/merge";
 export { generatePrompt, generateSystemPrompt } from "./parser/prompt";
 export type {
+  CloudPromptOptions,
   ComponentPromptSpec,
   LibrarySpec,
   PromptSpec,
@@ -61,6 +63,8 @@ export type {
   ValidationError,
   ValidationErrorCode,
 } from "./parser/types";
+export { chatLibrarySchema, validateChatLibrary } from "./parser/validate-library";
+export type { ChatLibrary, ChatLibraryIssue } from "./parser/validate-library";
 
 // ── Reactive schema marker ──
 export { isReactiveSchema, markReactive } from "./reactive";
