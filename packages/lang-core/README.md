@@ -79,7 +79,8 @@ const prompt = generateSystemPrompt({
 ### OpenUI Cloud
 
 Pass `cloud: true` to emit Cloud's managed config block instead of a local prompt. OpenUI Cloud
-assembles the real system prompt on the server.
+assembles the real system prompt on the server. `instructions` is Cloud-only extra prose
+appended after the config block — self-hosted prompts use `preamble` / `additionalRules` instead.
 
 ```ts
 import { generateSystemPrompt } from "@openuidev/lang-core";

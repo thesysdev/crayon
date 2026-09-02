@@ -62,14 +62,6 @@ describe("generateSystemPrompt — self-hosted", () => {
     expect(prompt).toContain("Card(children: Component[])");
     expect(prompt.startsWith(CONFIG_MARKER)).toBe(false);
   });
-
-  it("appends instructions after the local prompt", () => {
-    const prompt = generateSystemPrompt({
-      library: spec,
-      instructions: "Be terse.",
-    });
-    expect(prompt.endsWith("\nBe terse.")).toBe(true);
-  });
 });
 
 describe("generateSystemPrompt({ cloud: true }) — sentinel", () => {

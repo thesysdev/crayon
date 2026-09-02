@@ -695,7 +695,7 @@ export function generatePrompt(spec: PromptSpec): string {
   return parts.join("\n");
 }
 
-// ─── System prompt (library + options + instructions) ───────────────────────
+// ─── System prompt (library + options) ──────────────────────────────────────
 
 /** Prompt options for {@link generateSystemPrompt} */
 export type SystemPromptOptions = Omit<PromptSpec, keyof BaseSpec>;
@@ -714,13 +714,13 @@ export type CloudPromptOptions = Pick<
  *
  * Pass `cloud: true` to emit OpenUI Cloud's managed `]]>openui:config` block
  * instead of a locally generated prompt. In that mode `library` is optional —
- * omit it to use Cloud's built-in chat library.
+ * omit it to use Cloud's built-in chat library. `instructions` is Cloud-only
+ * extra prose appended after the config block.
  */
 export type SystemPromptSpec =
   | {
       library: LibrarySpec;
       promptOptions?: SystemPromptOptions;
-      instructions?: string;
       cloud?: false;
     }
   | {
@@ -732,7 +732,7 @@ export type SystemPromptSpec =
 
 /** Render the full system prompt for a library, or Cloud's managed config block when `cloud: true`. */
 export function generateSystemPrompt(spec: SystemPromptSpec): string;
-/** @deprecated Pass `{ library, promptOptions, instructions }` instead. Removed at the next major. */
+/** @deprecated Pass `{ library, promptOptions }` instead. Removed at the next major. */
 export function generateSystemPrompt(spec: PromptSpec): string;
 export function generateSystemPrompt(spec: SystemPromptSpec | PromptSpec): string {
   if (isCloudSpec(spec)) {
@@ -746,7 +746,7 @@ export function generateSystemPrompt(spec: SystemPromptSpec | PromptSpec): strin
   const merged: PromptSpec = { ...spec.library, ...spec.promptOptions };
   const prompt = generatePrompt(merged);
   recordSystemPromptGeneration(merged, "library_spec");
-  return spec.instructions ? `${prompt}\n${spec.instructions}` : prompt;
+  return prompt;
 }
 
 function isCloudSpec(
