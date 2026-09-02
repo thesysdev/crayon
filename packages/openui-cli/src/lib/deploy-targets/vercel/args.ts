@@ -59,14 +59,6 @@ function envKeysInArgs(args: string[], flags: readonly string[]): Set<string> {
   return keys;
 }
 
-export function mutedNpmEnv(base: NodeJS.ProcessEnv = process.env): NodeJS.ProcessEnv {
-  return {
-    ...base,
-    npm_config_loglevel: "error",
-    NPM_CONFIG_LOGLEVEL: "error",
-  };
-}
-
 export function vercelSpawnArgs(invocation: CliInvocation, args: string[]): string[] {
   return [...invocation.quietPrefixArgs, ...args];
 }

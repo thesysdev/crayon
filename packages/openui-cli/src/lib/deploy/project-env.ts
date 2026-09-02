@@ -1,7 +1,7 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 
-import { loadAllowlistedEnvFiles } from "../env-file";
+import { loadAllowlistedProjectEnv } from "../env";
 
 /** Known OpenUI template env keys. Values must never be logged or sent to telemetry. */
 export const DEPLOY_ENV_ALLOWLIST = [
@@ -24,10 +24,7 @@ export const SENSITIVE_DEPLOY_ENV_KEYS = new Set([
 ]);
 
 export function loadProjectDeployEnv(projectDir: string): Record<string, string> {
-  return loadAllowlistedEnvFiles(
-    [path.join(projectDir, ".env"), path.join(projectDir, ".env.local")],
-    DEPLOY_ENV_ALLOWLIST,
-  );
+  return loadAllowlistedProjectEnv(projectDir, DEPLOY_ENV_ALLOWLIST);
 }
 
 export function detectRequiredDeployEnvNames(projectDir: string): string[] {

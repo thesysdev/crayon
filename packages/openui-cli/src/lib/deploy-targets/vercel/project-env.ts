@@ -1,9 +1,8 @@
 import type { CliInvocation } from "../../cli-bin";
 import { SENSITIVE_DEPLOY_ENV_KEYS } from "../../deploy/project-env";
 import { confirmOrDefault } from "../../deploy/prompt";
-import { parseJsonObject } from "../../env-file";
-import { runCommand } from "../../process-runner";
-import { mutedNpmEnv, vercelSpawnArgs } from "./args";
+import { mutedNpmEnv, runCommand } from "../../process-runner";
+import { vercelSpawnArgs } from "./args";
 import { isVercelLinked } from "./auth";
 
 /** Environments we keep in sync for template deploys. */
@@ -101,9 +100,21 @@ async function listVercelProjectEnv(
     { echo: false, stdin: "ignore" },
   );
   if (result.error || result.status !== 0) return null;
-  const parsed = parseJsonObject(result.diagnosticTail) as { envs?: VercelEnvEntry[] } | null;
+  const parsed = extractJsonObject(result.diagnosticTail) as { envs?: VercelEnvEntry[] } | null;
   if (!parsed || !Array.isArray(parsed.envs)) return null;
   return parsed.envs;
+}
+
+/** First JSON object in mixed CLI stdout/stderr. */
+function extractJsonObject(text: string): unknown | null {
+  const start = text.indexOf("{");
+  const end = text.lastIndexOf("}");
+  if (start < 0 || end < start) return null;
+  try {
+    return JSON.parse(text.slice(start, end + 1));
+  } catch {
+    return null;
+  }
 }
 
 function missingTargetsForKey(entries: VercelEnvEntry[], key: string): string[] {

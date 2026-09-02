@@ -5,10 +5,10 @@ import type { CliInvocation } from "../../cli-bin";
 import { throwCommandFailure } from "../../deploy/failure";
 import { canPromptInteractive } from "../../deploy/prompt";
 import type { DeployTargetOptions } from "../../deploy/types";
-import { runCommand } from "../../process-runner";
+import { mutedNpmEnv, runCommand } from "../../process-runner";
 import { withSpinner } from "../../spinner";
 import { CreateError } from "../../telemetry";
-import { mutedNpmEnv, vercelSpawnArgs } from "./args";
+import { vercelSpawnArgs } from "./args";
 
 export function isVercelLinked(projectDir: string): boolean {
   return fs.existsSync(path.join(projectDir, ".vercel", "project.json"));

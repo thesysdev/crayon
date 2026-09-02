@@ -11,6 +11,7 @@ import { runDeploy } from "./commands/deploy";
 import { GenerateOptions, runGenerate } from "./commands/generate";
 import { runGenerateApiKey } from "./commands/generate-api-key";
 import { detectAgent, UNKNOWN_AGENT_NAME } from "./lib/detect-agent";
+import { DEFAULT_ENV_FILE } from "./lib/env";
 import { rejectConflictingImmediateFlags, resolveArgs } from "./lib/resolve-args";
 import { telemetry } from "./lib/telemetry";
 import {
@@ -190,10 +191,10 @@ Examples:
     },
   );
 
-  program
+program
   .command("generate-api-key")
   .description("Mint an OpenUI Cloud API key and write it to a project env file")
-  .option("-f, --file <path>", "Env file to write", ".env")
+  .option("-f, --file <path>", "Env file to write", DEFAULT_ENV_FILE)
   .option("-k, --key <name>", "Environment variable name", "THESYS_API_KEY")
   .option("-n, --name <string>", "Name of the minted key in the Thesys console")
   .addHelpText(
