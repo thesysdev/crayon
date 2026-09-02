@@ -10,6 +10,7 @@ import { runCreateApp } from "./commands/create-app";
 import { GenerateOptions, runGenerate } from "./commands/generate";
 import { runGenerateApiKey } from "./commands/generate-api-key";
 import { detectAgent, UNKNOWN_AGENT_NAME } from "./lib/detect-agent";
+import { rejectConflictingScaffoldSelectors } from "./lib/projects";
 import { rejectConflictingImmediateFlags, resolveArgs } from "./lib/resolve-args";
 import { telemetry } from "./lib/telemetry";
 import {
@@ -65,6 +66,7 @@ program
     "--backend-framework <framework>",
     "Backend framework: default | langgraph | vercel-ai-sdk | vercel-eve",
   )
+  .option("-e, --example <example>", "create from an example in examples/examples.json")
   .option("--api-key <key>", "OpenUI Cloud API key (cloud template; skips sign-in)")
   .option("--auth <method>", "Cloud auth method: oauth | skip (manual is deprecated)")
   .option("--skill", "Install the OpenUI agent skill for AI coding assistants")
@@ -93,6 +95,11 @@ Backend frameworks:
   langgraph      Bootstraps a LangGraph agent with the selected model backend.
   vercel-ai-sdk  Scaffolds a Vercel AI SDK agent with the selected model backend.
   vercel-eve     Scaffolds a Vercel Eve agent with the selected model backend.
+
+OpenUI examples:
+  Loaded at runtime from examples/examples.json in the OpenUI repo.
+  Pick "Scaffold from OpenUI Examples" in the interactive prompt, or pass
+  --example <name> with any catalog folder name.
 `,
   )
   .action(
@@ -100,6 +107,7 @@ Backend frameworks:
       name?: string;
       template?: string;
       backendFramework?: string;
+      example?: string;
       apiKey?: string;
       auth?: string;
       skill?: boolean;
@@ -110,10 +118,16 @@ Backend frameworks:
     }) => {
       try {
         rejectConflictingImmediateFlags(process.argv.slice(2));
+        rejectConflictingScaffoldSelectors({
+          example: options.example,
+          backendFramework: normalizeBackendFramework(options.backendFramework),
+          template: options.template,
+        });
         await runCreateApp({
           name: options.name,
           template: normalizeTemplate(options.template),
           backendFramework: normalizeBackendFramework(options.backendFramework),
+          example: options.example,
           apiKey: options.apiKey,
           auth: normalizeAuth(options.auth),
           skill: options.skill,

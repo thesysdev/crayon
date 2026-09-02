@@ -10,7 +10,7 @@ const FETCH_TIMEOUT_MS = 30_000;
 
 const SOURCE_OWNER = "thesysdev";
 const SOURCE_REPO = "openui";
-const SOURCE_REF = "main";
+const SOURCE_REF = "feat/cli-featured-examples";
 const SOURCE_GIT_URL = `https://github.com/${SOURCE_OWNER}/${SOURCE_REPO}.git`;
 
 export type SourceFetchOptions = {

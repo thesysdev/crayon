@@ -13,6 +13,7 @@ It currently supports:
   - **OpenUI Cloud (recommended)** — hosted models with managed conversations, streaming, built-in tools, and ready-to-use report and presentation artifacts
   - **Self-hosted** — bring an OpenAI-compatible model key and own the AI route and persistence
 - keeping the default minimal SDK route or adding a LangGraph, Vercel AI SDK, or Vercel Eve backend to either template
+- scaffolding an example from [`examples/examples.json`](https://github.com/thesysdev/openui/blob/main/examples/examples.json)
 - minting an OpenUI Cloud API key into an existing project's env file
 - generating a system prompt or JSON Schema from a `createLibrary()` export
 
@@ -41,7 +42,7 @@ npx @openuidev/cli@latest create --template openui-cloud
 npx @openuidev/cli@latest create --template openui-self-hosted
 ```
 
-Choose a backend framework directly (the default is `default`, the template's minimal SDK route):
+Choose a backend framework or example directly:
 
 ```bash
 npx @openuidev/cli@latest create --template openui-cloud --backend-framework langgraph
@@ -50,6 +51,8 @@ npx @openuidev/cli@latest create --template openui-cloud --backend-framework ver
 npx @openuidev/cli@latest create --template openui-self-hosted --backend-framework langgraph
 npx @openuidev/cli@latest create --template openui-self-hosted --backend-framework vercel-ai-sdk
 npx @openuidev/cli@latest create --template openui-self-hosted --backend-framework vercel-eve
+npx @openuidev/cli@latest create --example shadcn
+npx @openuidev/cli@latest create --example mastra
 ```
 
 Mint an OpenUI Cloud API key into the current project's `.env`:
@@ -84,8 +87,9 @@ openui create [options]
 Options:
 
 - `-n, --name <string>`: Project name (interactive default: `openui-agent`)
-- `-t, --template <template>`: AI backend — `openui-cloud` (managed) or `openui-self-hosted` (bring your provider)
-- `--backend-framework <framework>`: API route implementation — `default`, `langgraph`, `vercel-ai-sdk`, or `vercel-eve`
+- `-t, --template <template>`: AI backend `key` from `templates/templates.json` — interactive default `openui-cloud`
+- `--backend-framework <framework>`: Overlay `key` from that template's `overlays` list (plus `default` for the base template)
+- `-e, --example <example>`: Scaffold any example from `examples/examples.json` (folder name)
 - `--skill`: Install the OpenUI agent skill for AI coding assistants
 - `--no-skill`: Skip installing the OpenUI agent skill
 - `--no-install`: Scaffold without running the package install
@@ -102,8 +106,8 @@ What it does:
 
 - prompts for the project name, defaulting to `openui-agent`, if you do not pass `--name`
 - uses the `openui-cloud` template when you do not pass `--template` (interactive runs no longer ask; `--template openui-self-hosted` still works)
-- prompts for a backend framework after the template; non-interactive usage defaults to `default`
-- copies the bundled template into a new directory
+- prefetches `templates/templates.json` and prompts for a backend framework from that template's `overlays` list, or **Scaffold from OpenUI Examples**. Non-interactive usage defaults to `default`
+- copies the selected template or example from GitHub with sparse-checkout
 - rewrites monorepo-local dependencies (`workspace:`, `file:`, `catalog:`) in the generated `package.json` to `latest`
 - installs dependencies automatically using the detected package manager (unless `--no-install`)
 - in interactive sessions, starts the development server and opens its local URL in the default browser; pass `--no-immediate` to install and exit instead
@@ -135,6 +139,18 @@ The Cloud graph needs `THESYS_API_KEY`; the self-hosted graph needs the selected
 
 Every framework overlay includes `get_weather` as its example app-owned function tool. Ask “What’s the weather in Berlin?” to exercise the selected backend’s native tool loop.
 
+#### OpenUI examples
+
+Interactive `openui create` offers **Scaffold from OpenUI Examples** after the starter templates. That opens the full catalog from [`examples/examples.json`](https://github.com/thesysdev/openui/blob/main/examples/examples.json), grouped by category, with **← Back** to return to starter templates. Pass `--example <name>` to skip the menus. `--example` cannot be combined with `--template` or `--backend-framework`.
+
+Examples are copied from GitHub with sparse-checkout. Workspace and catalog dependencies are rewritten to `latest`, and monorepo `generate` scripts are rewritten to `npx @openuidev/cli generate`.
+
+```bash
+openui create --example shadcn
+openui create --name my-mastra-app --example mastra --no-immediate
+openui create --example vue
+```
+
 #### Conversation storage
 
 Every OpenUI Cloud variant uses OpenUI Cloud as its only durable conversation and artifact store. The browser connects directly through `useOpenuiCloudStorage()` with a short-lived frontend token, and `/api/chat` appends each turn to the same Cloud conversation with `conversation: threadId` and `store: true`. Vercel does not add a second store. Configure a LangGraph checkpointer separately only when the graph itself needs durable state, interrupts, or resumable runs.
@@ -164,6 +180,7 @@ openui create --name my-app --template openui-cloud --auth oauth
 openui create --name my-app --template openui-cloud --backend-framework langgraph --auth oauth
 openui create --name my-app --template openui-cloud --backend-framework vercel-ai-sdk --auth oauth
 openui create --name my-app --template openui-cloud --backend-framework vercel-eve --auth oauth
+openui create --name my-shadcn-app --example shadcn
 openui create --name my-app --template openui-cloud --api-key tk_your_key
 openui create --name my-app --template openui-self-hosted
 openui create --name my-app --template openui-cloud --immediate
