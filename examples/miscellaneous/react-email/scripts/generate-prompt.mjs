@@ -2,7 +2,7 @@ import { emailLibrary, emailPromptOptions } from "@openuidev/react-email";
 import { generateSystemPrompt } from "@openuidev/lang-core";
 import { mkdirSync, writeFileSync } from "node:fs";
 
-// ChatLibrary is toSpec() without `components` — Cloud validates schema/root/groups.
+// LibrarySpec from toSpec(); Cloud ignores `components` and validates schema/root/groups.
 const { components: _components, ...library } = emailLibrary.toSpec();
 const promptOptions = {
   examples: emailPromptOptions.examples,
