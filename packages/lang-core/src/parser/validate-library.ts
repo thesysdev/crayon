@@ -1,5 +1,5 @@
 /**
- * Structural validator for a customer-supplied design-system library.
+ * Structural validator for your own library.
  * Hand-rolled walker — reports every issue in one pass.
  */
 import type { LibrarySpec } from "./prompt";
@@ -54,7 +54,7 @@ function collectRefIssues(
 }
 
 /**
- * Structural validation of a customer-supplied design-system library.
+ * Structural validation of your own library.
  * Returns ALL issues found (empty array = valid).
  */
 export function validateChatLibrary(library: LibrarySpec): ChatLibraryIssue[] {

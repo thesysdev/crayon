@@ -83,7 +83,7 @@ describe("generateSystemPrompt({ cloud: true }) — sentinel", () => {
     }
   });
 
-  it("appends customer prose after the block", () => {
+  it("appends extra prose after the block", () => {
     const out = generateSystemPrompt({ cloud: true, instructions: "Be terse." });
     const [sentinelLine, jsonLine, ...rest] = out.split("\n");
     expect(sentinelLine).toBe("]]>openui:config");
