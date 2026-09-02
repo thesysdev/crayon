@@ -71,7 +71,7 @@ const systemPrompt = generateSystemPrompt({
     editMode: true, // Enable incremental editing (LLM outputs patches, not full regen)
     inlineMode: true, // Enable text + code responses (LLM can answer questions without code)
 
-    // Custom instructions
+    // Preamble and extra rules
     preamble: "You build dashboards using openui-lang.",
     additionalRules: ['Use @Reset after form submit, not @Set($var, "")'],
   },
@@ -84,6 +84,28 @@ const systemPrompt = generateSystemPrompt({
 | `bindings`   | `$variables`, `@Set`, `@Reset`, built-in functions, reactive filters          | `true` if `toolCalls` is true |
 | `editMode`   | Incremental editing - LLM outputs only changed statements                     | `false`                       |
 | `inlineMode` | Text + fenced code responses - LLM can answer questions without generating UI | `false`                       |
+
+### OpenUI Cloud
+
+Pass `cloud: true` to emit Cloud's managed config block instead of a local prompt. OpenUI Cloud assembles the real system prompt on the server. `instructions` is Cloud-only extra prose appended after the config block.
+
+```ts
+import { generateSystemPrompt } from "@openuidev/lang-core";
+
+const instructions = generateSystemPrompt({ cloud: true });
+```
+
+With your own library, pass the generated spec:
+
+```ts
+const instructions = generateSystemPrompt({
+  cloud: true,
+  library: librarySpec,
+  promptOptions: { preamble: "You build dashboards for Acme." },
+});
+```
+
+See [Component Library](/docs/openui-cloud/build/component-library) for the Cloud workflow.
 
 Built-in functions (`@Count`, `@Filter`, `@Sort`, `@Each`, etc.) are automatically included when either `toolCalls` or `bindings` is enabled. For static UI libraries without data fetching, they are omitted to keep the prompt concise.
 

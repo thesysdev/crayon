@@ -8,6 +8,7 @@ import { Command } from "commander";
 
 import { runCreateApp } from "./commands/create-app";
 import { GenerateOptions, runGenerate } from "./commands/generate";
+import { runGenerateApiKey } from "./commands/generate-api-key";
 import { detectAgent, UNKNOWN_AGENT_NAME } from "./lib/detect-agent";
 import { rejectConflictingScaffoldSelectors } from "./lib/projects";
 import { rejectConflictingImmediateFlags, resolveArgs } from "./lib/resolve-args";
@@ -145,6 +146,38 @@ Feature examples:
       }
     },
   );
+
+program
+  .command("generate-api-key")
+  .description("Mint an OpenUI Cloud API key and write it to a project env file")
+  .option("-f, --file <path>", "Env file to write", ".env")
+  .option("-k, --key <name>", "Environment variable name", "THESYS_API_KEY")
+  .option("-n, --name <string>", "Name of the minted key in the Thesys console")
+  .addHelpText(
+    "after",
+    `
+Run this inside an existing project. It uses the same browser sign-in as
+openui create, mints an OpenUI Cloud API key, and writes it to the env file.
+
+Examples:
+  openui generate-api-key
+  openui generate-api-key --file .env.local
+  openui generate-api-key --file .env.local --key THESYS_API_KEY
+`,
+  )
+  .action(async (options: { file?: string; key?: string; name?: string }) => {
+    try {
+      await runGenerateApiKey({
+        file: options.file,
+        key: options.key,
+        name: options.name,
+      });
+    } catch (e) {
+      handleCliError(e, "cli_generate_api_key_failed");
+    } finally {
+      await telemetry.shutdown();
+    }
+  });
 
 program
   .command("generate")

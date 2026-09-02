@@ -22,7 +22,7 @@ This example uses the [Vercel AI SDK](https://ai-sdk.dev/) (`streamText`, `tool(
 
 ## How it connects
 
-The API route calls `streamText` with Cloud Completions, `generateSystemPrompt()`, and tools defined with `tool()`. When the model calls a tool, the AI SDK executes it server-side and continues — up to 5 steps. The response is a UIMessage stream.
+The API route calls `streamText` with Cloud Completions, `generateSystemPrompt({ cloud: true })`, and tools defined with `tool()`. When the model calls a tool, the AI SDK executes it server-side and continues — up to 5 steps. The response is a UIMessage stream.
 
 The page passes that stream to `<AgentInterface />`:
 
@@ -54,7 +54,7 @@ Storage is omitted, so AgentInterface uses its built-in in-memory default (wiped
 
 ```ts
 import { createOpenAI } from "@ai-sdk/openai";
-import { generateSystemPrompt } from "@openuidev/thesys-server";
+import { generateSystemPrompt } from "@openuidev/lang-core";
 import { convertToModelMessages, stepCountIs, streamText } from "ai";
 import { tools } from "@/lib/tools";
 
@@ -67,7 +67,7 @@ export async function POST(req: Request) {
   const { messages } = await req.json();
   const result = streamText({
     model: openai.chat("google/gemini-3.6-flash-free"),
-    system: generateSystemPrompt(),
+    system: generateSystemPrompt({ cloud: true }),
     messages: await convertToModelMessages(messages),
     tools,
     stopWhen: stepCountIs(5),
