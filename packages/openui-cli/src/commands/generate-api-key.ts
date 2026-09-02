@@ -45,7 +45,7 @@ export async function runGenerateApiKey(options: GenerateApiKeyOptions): Promise
   upsertEnvVar(filePath, envKey, apiKey);
 
   const displayPath = path.relative(process.cwd(), filePath) || file;
-  console.info(`Wrote ${envKey} to ${displayPath}`);
+  console.info(`✅ ${envKey} written to ${displayPath}`);
 
   telemetry.capture("cli_generate_api_key_succeeded", {
     auth_method: "oauth",
