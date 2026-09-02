@@ -1,6 +1,6 @@
 import { Agent } from "@mastra/core/agent";
 import { Mastra } from "@mastra/core";
-import { generateSystemPrompt } from "@openuidev/thesys-server";
+import { generateSystemPrompt } from "@openuidev/lang-core";
 import { OpenUICloudGateway, openuiCloudModelId } from "@/openui-cloud-gateway";
 import { getStockPrice, getWeather } from "@/tools";
 
@@ -8,6 +8,7 @@ export const openuiAgent = new Agent({
   id: "openui-mastra-agent",
   name: "OpenUI x Mastra Agent",
   instructions: generateSystemPrompt({
+    cloud: true,
     instructions:
       "You are a helpful assistant. Use tools when relevant and help the user with their requests. Always format your responses cleanly.",
   }),

@@ -43,7 +43,7 @@ Open [http://localhost:3000](http://localhost:3000) and try a starter such as
 ## How it works
 
 - `src/agent.ts` defines the `get_weather` tool and a `createAgent()` builder.
-  The instruction is Cloud's `generateSystemPrompt()`. The model is Cloud's
+  The instruction is Cloud's `generateSystemPrompt({ cloud: true })`. The model is Cloud's
   Gemini (`google/gemini-3.6-flash-free`).
 - `src/app/api/chat/route.ts` runs the agent with a `Runner` and keys ADK
   sessions by chat `threadId` (so multi-turn history is preserved).

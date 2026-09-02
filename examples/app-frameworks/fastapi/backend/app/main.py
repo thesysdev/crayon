@@ -16,7 +16,7 @@ client = AsyncOpenAI(
 )
 MODEL = os.environ.get("OPENUI_MODEL", "google/gemini-3.6-flash-free")
 
-# Same payload as generateSystemPrompt() from @openuidev/thesys-server.
+# Same payload as generateSystemPrompt({ cloud: true }) from @openuidev/lang-core.
 CLOUD_SYSTEM_PROMPT = ']]>openui:config\n{"libraryVersion": "0.1.0"}'
 
 app = FastAPI()

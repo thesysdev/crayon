@@ -89,7 +89,7 @@ explicitly instead of silently continuing with empty model context.
 
 The system prompt and validation schema are derived directly from `src/library.ts` in memory.
 `chatLibrary.prompt()` compiles Cloud's chat-library signatures locally — Grok Build is still the
-model (xAI), so the Cloud `generateSystemPrompt()` sentinel is not used. The prompt is attached to
+model (xAI), so the Cloud `generateSystemPrompt({ cloud: true })` sentinel is not used. The prompt is attached to
 `session/new` as ACP `_meta.rules`; it teaches Grok to produce the OpenUI Lang understood by
 `chatLibrary`. The schema lets the server verify that the final candidate has a renderable `Card`
 root before any assistant text reaches the browser.

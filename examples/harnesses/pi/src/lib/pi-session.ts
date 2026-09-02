@@ -14,7 +14,7 @@
  * requires, `import.meta`, and on-disk prompt/skill/theme reads).
  */
 import type { AgentSession } from "@earendil-works/pi-coding-agent";
-import { generateSystemPrompt } from "@openuidev/thesys-server";
+import { generateSystemPrompt } from "@openuidev/lang-core";
 import { join } from "node:path";
 
 type PiSdk = typeof import("@earendil-works/pi-coding-agent");
@@ -139,7 +139,7 @@ async function createSession(cwd: string): Promise<PiSessionEntry> {
     cwd,
     agentDir,
     settingsManager,
-    appendSystemPrompt: [generateSystemPrompt({ instructions: OPENUI_INSTRUCTIONS })],
+    appendSystemPrompt: [generateSystemPrompt({ cloud: true, instructions: OPENUI_INSTRUCTIONS })],
   });
   await resourceLoader.reload();
 

@@ -23,7 +23,7 @@ launch — see **Security** below.
                                                                            │
                                           createAgentSession({
                                             model: OpenUI Cloud Completions,
-                                            appendSystemPrompt: generateSystemPrompt()
+                                            appendSystemPrompt: generateSystemPrompt({ cloud: true })
                                           })
                                                                            │
                                           session.subscribe() → text/thinking/tool events
@@ -35,7 +35,7 @@ launch — see **Security** below.
 - **Transport:** the frontend's `openAIReadableStreamAdapter()` parses **NDJSON** OpenAI
   `chat.completion.chunk`s (one JSON object per line). The route translates pi's `text_delta`
   events into `delta.content`, and pi's reasoning + tool executions into `delta.tool_calls`.
-- **System prompt:** `generateSystemPrompt()` from `@openuidev/thesys-server` is injected into
+- **System prompt:** `generateSystemPrompt({ cloud: true })` from `@openuidev/lang-core` is injected into
   Pi via `DefaultResourceLoader({ appendSystemPrompt: [...] })`. Cloud compiles that sentinel
   into the chat-library prompt, so it matches `chatLibrary` on the client.
 - **Model:** Pi calls OpenUI Cloud Chat Completions (`https://api.thesys.dev/v1/embed`) with

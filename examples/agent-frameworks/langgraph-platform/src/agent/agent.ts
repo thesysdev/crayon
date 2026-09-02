@@ -1,6 +1,6 @@
 import { ChatOpenAI } from "@langchain/openai";
 import { openUIStreamTransformer } from "@openuidev/langchain/transformer";
-import { generateSystemPrompt } from "@openuidev/thesys-server";
+import { generateSystemPrompt } from "@openuidev/lang-core";
 import { createDeepAgent } from "deepagents";
 
 import { getStockPrice, getWeather, searchWeb } from "./tools";
@@ -19,6 +19,7 @@ export const graph = createDeepAgent({
   model,
   tools: [getWeather, getStockPrice, searchWeb],
   systemPrompt: generateSystemPrompt({
+    cloud: true,
     instructions: [
       "You are an OpenUI assistant with weather, finance, and research tools.",
       "Use the tools when they help answer the user's request, then answer only in OpenUI Lang.",

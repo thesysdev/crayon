@@ -1,5 +1,5 @@
 import { emailLibrary, emailPromptOptions } from "@openuidev/react-email";
-import { generateSystemPrompt } from "@openuidev/thesys-server";
+import { generateSystemPrompt } from "@openuidev/lang-core";
 import { mkdirSync, writeFileSync } from "node:fs";
 
 // ChatLibrary is toSpec() without `components` — Cloud validates schema/root/groups.
@@ -10,7 +10,7 @@ const promptOptions = {
 };
 
 // Fail generate if Cloud rejects the spec.
-generateSystemPrompt({ library, promptOptions });
+generateSystemPrompt({ cloud: true, library, promptOptions });
 
 mkdirSync("src/generated", { recursive: true });
 writeFileSync("src/generated/spec.json", JSON.stringify(library, null, 2));

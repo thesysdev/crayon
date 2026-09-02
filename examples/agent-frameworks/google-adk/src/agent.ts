@@ -1,5 +1,5 @@
 import { Agent, FunctionTool } from "@google/adk";
-import { generateSystemPrompt } from "@openuidev/thesys-server";
+import { generateSystemPrompt } from "@openuidev/lang-core";
 import { Custom } from "adk-llm-bridge";
 import { z } from "zod";
 
@@ -47,7 +47,7 @@ export function createAgent() {
       baseURL: "https://api.thesys.dev/v1/embed",
       apiKey,
     }),
-    instruction: generateSystemPrompt(),
+    instruction: generateSystemPrompt({ cloud: true }),
     tools: [getWeather],
   });
 }

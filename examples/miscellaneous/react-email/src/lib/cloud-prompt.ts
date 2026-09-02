@@ -1,8 +1,8 @@
 import {
   generateSystemPrompt,
   type ChatLibrary,
-  type PromptOptions,
-} from "@openuidev/thesys-server";
+  type CloudPromptOptions,
+} from "@openuidev/lang-core";
 import { readFileSync } from "fs";
 import { join } from "path";
 
@@ -13,6 +13,6 @@ export function cloudInstructions(): string {
   ) as ChatLibrary;
   const promptOptions = JSON.parse(
     readFileSync(join(process.cwd(), "src/generated/prompt-options.json"), "utf-8"),
-  ) as PromptOptions;
-  return generateSystemPrompt({ library, promptOptions });
+  ) as CloudPromptOptions;
+  return generateSystemPrompt({ cloud: true, library, promptOptions });
 }

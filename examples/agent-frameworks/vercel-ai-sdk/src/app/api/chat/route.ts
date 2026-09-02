@@ -1,6 +1,6 @@
 import { tools } from "@/lib/tools";
 import { createOpenAI } from "@ai-sdk/openai";
-import { generateSystemPrompt } from "@openuidev/thesys-server";
+import { generateSystemPrompt } from "@openuidev/lang-core";
 import { convertToModelMessages, stepCountIs, streamText } from "ai";
 
 const openai = createOpenAI({
@@ -52,7 +52,7 @@ export async function POST(req: Request) {
 
   const result = streamText({
     model: openai.chat("google/gemini-3.6-flash-free"),
-    system: generateSystemPrompt(),
+    system: generateSystemPrompt({ cloud: true }),
     messages: modelMessages,
     tools,
     stopWhen: stepCountIs(5),
