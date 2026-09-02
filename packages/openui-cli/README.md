@@ -185,7 +185,6 @@ Options:
 - `-f, --file <path>`: Env file to write (default: `.env`)
 - `-k, --key <name>`: Environment variable name (default: `THESYS_API_KEY`)
 - `-n, --name <string>`: Name of the minted key in the Thesys console (default: `package.json` name, or the current directory name)
-- `--agent-name <name>`: Declare the invoking coding agent as a lowercase kebab-case product slug (default: `unknown`)
 
 Examples:
 
