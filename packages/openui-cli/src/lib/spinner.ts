@@ -1,11 +1,8 @@
-import * as readline from "node:readline";
-
 /**
  * Terminal spinner for long-running work. Safe in non-TTY (prints the label once).
- * Clears the spinner line before resolving so callers can print a final status.
+ * Clears the spinner before resolving so callers can print a final status.
  *
- * Uses readline cursor APIs instead of bare `\r` — some terminals (including
- * Cursor/VS Code) don't reliably overwrite the current line with carriage return.
+ * `handleSignals` is off: the process runner already forwards SIGINT/SIGTERM.
  */
 export async function withSpinner<T>(label: string, run: () => Promise<T>): Promise<T> {
   if (!process.stdout.isTTY) {
@@ -13,27 +10,12 @@ export async function withSpinner<T>(label: string, run: () => Promise<T>): Prom
     return run();
   }
 
-  const frames = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"];
-  let frame = 0;
-
-  const render = () => {
-    readline.clearLine(process.stdout, 0);
-    readline.cursorTo(process.stdout, 0);
-    process.stdout.write(`${frames[frame]} ${label}`);
-  };
-
-  render();
-  const timer = setInterval(() => {
-    frame = (frame + 1) % frames.length;
-    render();
-  }, 80);
-  timer.unref();
-
+  // yocto-spinner is ESM-only; this package emits CJS.
+  const { default: yoctoSpinner } = await import("yocto-spinner");
+  const spinner = yoctoSpinner({ text: label, handleSignals: false }).start();
   try {
     return await run();
   } finally {
-    clearInterval(timer);
-    readline.clearLine(process.stdout, 0);
-    readline.cursorTo(process.stdout, 0);
+    spinner.stop();
   }
 }
