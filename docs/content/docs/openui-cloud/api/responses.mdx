@@ -14,18 +14,18 @@ Use the `embedClient` from the [API overview](/docs/openui-cloud/api/overview), 
 Use the server helper to have OpenUI Cloud assemble the system prompt for its built-in component library.
 
 ```ts title="server.ts"
-import { generateSystemPrompt } from "@openuidev/thesys-server";
+import { generateSystemPrompt } from "@openuidev/lang-core";
 
 const response = await embedClient.responses.create({
   model: "openai/gpt-5",
   input: "Compare quarterly revenue by region.",
-  instructions: generateSystemPrompt(),
+  instructions: generateSystemPrompt({ cloud: true }),
 });
 
 console.log(response.output_text);
 ```
 
-The returned `output_text` is an OpenUI Lang program. See [Component Library](/docs/openui-cloud/build/component-library) for the built-in client library and custom component workflow.
+The returned `output_text` is an OpenUI Lang program. See [Component Library](/docs/openui-cloud/build/component-library) for the built-in client library and using your own library.
 
 ## Stream and render responses
 
@@ -72,14 +72,14 @@ Chain a follow-up to an earlier response:
 const first = await embedClient.responses.create({
   model: "openai/gpt-5",
   input: "Compare quarterly revenue by region.",
-  instructions: generateSystemPrompt(),
+  instructions: generateSystemPrompt({ cloud: true }),
   store: true,
 });
 
 const followUp = await embedClient.responses.create({
   model: "openai/gpt-5",
   input: "Focus on Europe and explain the change.",
-  instructions: generateSystemPrompt(),
+  instructions: generateSystemPrompt({ cloud: true }),
   previous_response_id: first.id,
   store: true,
 });
@@ -105,7 +105,7 @@ import type { Tool } from "openai/resources/responses/responses";
 const response = await embedClient.responses.create({
   model: "openai/gpt-5",
   input: "Research the market and summarize the most important changes.",
-  instructions: generateSystemPrompt(),
+  instructions: generateSystemPrompt({ cloud: true }),
   tools: [
     { type: "web_search" },
     { type: "image_search" } as unknown as Tool,
@@ -129,14 +129,15 @@ For a `function` tool, execute each returned `function_call` on your server and 
 Add `artifactTool()` to generate editable slides or reports inside the agent stream:
 
 ```ts
-import { artifactTool, generateSystemPrompt } from "@openuidev/thesys-server";
+import { generateSystemPrompt } from "@openuidev/lang-core";
+import { artifactTool } from "@openuidev/thesys-server";
 import type { Tool } from "openai/resources/responses/responses";
 
 const response = await embedClient.responses.create({
   model: "openai/gpt-5",
   conversation: threadId,
   input: "Create a three-slide deck on Q4 results.",
-  instructions: generateSystemPrompt(),
+  instructions: generateSystemPrompt({ cloud: true }),
   tools: [artifactTool({ artifacts: ["slides", "report"] }) as unknown as Tool],
   store: true,
   stream: true,
