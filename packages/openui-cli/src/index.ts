@@ -66,10 +66,7 @@ program
     "--backend-framework <framework>",
     "Backend framework: default | langgraph | vercel-ai-sdk | vercel-eve",
   )
-  .option(
-    "-e, --example <example>",
-    "create from an example in examples/examples.json (interactive picker shows featured ones)",
-  )
+  .option("-e, --example <example>", "create from an example in examples/examples.json")
   .option("--api-key <key>", "OpenUI Cloud API key (cloud template; skips sign-in)")
   .option("--auth <method>", "Cloud auth method: oauth | skip (manual is deprecated)")
   .option("--skill", "Install the OpenUI agent skill for AI coding assistants")
@@ -99,10 +96,10 @@ Backend frameworks:
   vercel-ai-sdk  Scaffolds a Vercel AI SDK agent with the selected model backend.
   vercel-eve     Scaffolds a Vercel Eve agent with the selected model backend.
 
-Feature examples:
+OpenUI examples:
   Loaded at runtime from examples/examples.json in the OpenUI repo.
-  The interactive picker lists featured examples. --example <name> accepts any
-  catalog name (folder name), including ones not shown in the picker.
+  Pick "Scaffold from OpenUI Examples" in the interactive prompt, or pass
+  --example <name> with any catalog folder name.
 `,
   )
   .action(

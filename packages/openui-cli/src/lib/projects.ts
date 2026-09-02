@@ -24,7 +24,6 @@ export interface ExampleProject {
   /** Primary env var to prompt for. Omit when the example needs several keys. */
   envKey?: string;
   aliases?: string[];
-  /** When true, the example appears in the interactive create picker. */
   featured?: boolean;
 }
 
@@ -97,6 +96,22 @@ export function rejectConflictingScaffoldSelectors(opts: {
   }
 }
 
+const OPENUI_EXAMPLES_CHOICE = "openui-examples";
+const GO_BACK_CHOICE = "back";
+
+const EXAMPLE_CATEGORY_LABELS: Record<string, string> = {
+  "agent-frameworks": "Agent frameworks",
+  "app-frameworks": "App frameworks",
+  "design-systems": "Design systems",
+  harnesses: "Harnesses",
+  miscellaneous: "Miscellaneous",
+};
+
+function exampleCategoryKey(example: ExampleProject): string {
+  const relative = example.path.replace(/^examples\//, "");
+  return relative.split("/")[0] ?? "miscellaneous";
+}
+
 export async function resolveProject(params: {
   backendFramework?: OverlayName;
   example?: string;
@@ -112,36 +127,45 @@ export async function resolveProject(params: {
 
   const { select, Separator } = await import("@inquirer/prompts");
   try {
-    const choices = [
-      new Separator("────── Starter Templates ──────"),
-      ...templates.map((project) => ({
-        value: `template:${project.name}`,
-        name: project.label,
-        description: project.description,
-      })),
-    ];
-    const pickerExamples = examples.filter((project) => project.featured);
-    if (pickerExamples.length > 0) {
-      choices.push(
-        new Separator("────── Feature Examples ──────"),
-        ...pickerExamples.map((project) => ({
-          value: `example:${project.name}`,
+    for (;;) {
+      const starterChoices = [
+        new Separator("────── Starter Templates ──────"),
+        ...templates.map((project) => ({
+          value: `template:${project.name}`,
           name: project.label,
           description: project.description,
         })),
-      );
-    }
+      ];
+      if (examples.length > 0) {
+        starterChoices.push({
+          value: OPENUI_EXAMPLES_CHOICE,
+          name: "Scaffold from OpenUI Examples",
+          description: "Browse examples from the OpenUI repo",
+        });
+      }
 
-    const selected = await select({
-      message: "Select a project to scaffold:",
-      choices,
-      pageSize: choices.length,
-    });
+      const selected = await select({
+        message: "Select a project to scaffold:",
+        choices: starterChoices,
+        pageSize: starterChoices.length,
+      });
 
-    if (selected.startsWith("example:")) {
-      return findExample(selected.slice("example:".length), examples);
+      if (selected !== OPENUI_EXAMPLES_CHOICE) {
+        return findTemplate(selected.slice("template:".length) as OverlayName, templates);
+      }
+
+      const exampleChoices = [
+        { value: GO_BACK_CHOICE, name: "← Back" },
+        ...groupedExampleChoices(examples, Separator),
+      ];
+      const exampleSelected = await select<string>({
+        message: "Select an OpenUI example:",
+        choices: exampleChoices as never,
+        pageSize: exampleChoices.length,
+      });
+      if (exampleSelected === GO_BACK_CHOICE) continue;
+      return findExample(exampleSelected.slice("example:".length), examples);
     }
-    return findTemplate(selected.slice("template:".length) as OverlayName, templates);
   } catch (err) {
     const { ExitPromptError } = await import("@inquirer/core");
     if (err instanceof ExitPromptError) {
@@ -149,4 +173,30 @@ export async function resolveProject(params: {
     }
     throw err;
   }
+}
+
+function groupedExampleChoices(
+  examples: ExampleProject[],
+  Separator: new (heading?: string) => object,
+) {
+  const groups = new Map<string, ExampleProject[]>();
+  for (const example of examples) {
+    const key = exampleCategoryKey(example);
+    const group = groups.get(key) ?? [];
+    group.push(example);
+    groups.set(key, group);
+  }
+
+  const choices: Array<object | { value: string; name: string; description: string }> = [];
+  for (const [key, group] of groups) {
+    choices.push(new Separator(`────── ${EXAMPLE_CATEGORY_LABELS[key] ?? key} ──────`));
+    for (const project of group) {
+      choices.push({
+        value: `example:${project.name}`,
+        name: project.label,
+        description: project.description,
+      });
+    }
+  }
+  return choices;
 }

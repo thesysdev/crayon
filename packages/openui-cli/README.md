@@ -42,7 +42,7 @@ npx @openuidev/cli@latest create --template openui-cloud
 npx @openuidev/cli@latest create --template openui-self-hosted
 ```
 
-Choose a backend framework or featured example directly:
+Choose a backend framework or example directly:
 
 ```bash
 npx @openuidev/cli@latest create --template openui-cloud --backend-framework langgraph
@@ -106,7 +106,7 @@ What it does:
 
 - prompts for the project name, defaulting to `openui-agent`, if you do not pass `--name`
 - uses the `openui-cloud` template when you do not pass `--template` (interactive runs no longer ask; `--template openui-self-hosted` still works)
-- prefetches `templates/templates.json` and prompts for a backend framework from that template's `overlays` list, or a featured example. Non-interactive usage defaults to `default`
+- prefetches `templates/templates.json` and prompts for a backend framework from that template's `overlays` list, or **Scaffold from OpenUI Examples**. Non-interactive usage defaults to `default`
 - copies the selected template or example from GitHub with sparse-checkout
 - rewrites monorepo-local dependencies (`workspace:`, `file:`, `catalog:`) in the generated `package.json` to `latest`
 - installs dependencies automatically using the detected package manager (unless `--no-install`)
@@ -139,11 +139,11 @@ The Cloud graph needs `THESYS_API_KEY`; the self-hosted graph needs the selected
 
 Every framework overlay includes `get_weather` as its example app-owned function tool. Ask “What’s the weather in Berlin?” to exercise the selected backend’s native tool loop.
 
-#### Feature examples
+#### OpenUI examples
 
-Interactive `openui create` lists **Feature Examples** under the starter templates. The names come from [`examples/examples.json`](https://github.com/thesysdev/openui/blob/main/examples/examples.json) in the OpenUI repo — the CLI prefetches that catalog at runtime, so adding or removing an example does not require a CLI release. `--example` cannot be combined with `--template` or `--backend-framework`.
+Interactive `openui create` offers **Scaffold from OpenUI Examples** after the starter templates. That opens the full catalog from [`examples/examples.json`](https://github.com/thesysdev/openui/blob/main/examples/examples.json), grouped by category, with **← Back** to return to starter templates. Pass `--example <name>` to skip the menus. `--example` cannot be combined with `--template` or `--backend-framework`.
 
-The catalog currently features FastAPI, shadcn/ui, React Native, and Mastra. Examples are copied from the local OpenUI checkout when the CLI can see `examples/`, otherwise checked out from GitHub with sparse-checkout. Workspace and catalog dependencies are rewritten to `latest`, and monorepo `generate` scripts are rewritten to `npx @openuidev/cli generate`.
+Examples are copied from GitHub with sparse-checkout. Workspace and catalog dependencies are rewritten to `latest`, and monorepo `generate` scripts are rewritten to `npx @openuidev/cli generate`.
 
 ```bash
 openui create --example shadcn

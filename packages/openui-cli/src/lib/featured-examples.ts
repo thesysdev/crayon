@@ -43,7 +43,7 @@ function parseExamplesCatalog(raw: string): ExampleProject[] {
     .filter((entry): entry is ExampleProject => Boolean(entry));
 }
 
-/** Prefetch every example in `examples/examples.json`. The interactive picker uses `featured` only. */
+/** Prefetch every example in `examples/examples.json`. */
 export async function loadExamplesCatalog(): Promise<ExampleProject[]> {
   try {
     const { content } = await fetchSourceFile(EXAMPLES_CATALOG_PATH);
