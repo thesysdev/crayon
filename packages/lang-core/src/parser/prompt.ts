@@ -2,7 +2,6 @@ import { recordSystemPromptGeneration } from "../telemetry/runtime";
 import { BUILTINS, LAZY_BUILTIN_DEFS } from "./builtins";
 import { generateCloudConfig } from "./cloud-config";
 import type { LibraryJSONSchema } from "./types";
-import type { ChatLibrary } from "./validate-library";
 
 // ─── PromptSpec types (JSON-serializable, no Zod deps) ──────────────────────
 
@@ -726,7 +725,7 @@ export type SystemPromptSpec =
     }
   | {
       cloud: true;
-      library?: ChatLibrary;
+      library?: LibrarySpec;
       promptOptions?: CloudPromptOptions;
       instructions?: string;
     };
@@ -739,7 +738,7 @@ export function generateSystemPrompt(spec: SystemPromptSpec | PromptSpec): strin
   if (isCloudSpec(spec)) {
     return generateCloudConfig(spec);
   }
-  if (!isLocalSystemPromptSpec(spec)) {
+  if (!isSystemPromptSpec(spec)) {
     const prompt = generatePrompt(spec);
     recordSystemPromptGeneration(spec, "legacy_prompt_spec");
     return prompt;
@@ -756,7 +755,7 @@ function isCloudSpec(
   return "cloud" in spec && (spec as { cloud?: unknown }).cloud === true;
 }
 
-function isLocalSystemPromptSpec(
+function isSystemPromptSpec(
   spec: SystemPromptSpec | PromptSpec,
 ): spec is Extract<SystemPromptSpec, { library: LibrarySpec }> {
   return "library" in spec && typeof (spec as { library?: unknown }).library === "object";
