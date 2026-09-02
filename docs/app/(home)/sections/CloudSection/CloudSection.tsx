@@ -70,6 +70,7 @@ export function CloudSection() {
               width={1166}
               height={730}
               quality={95}
+              unoptimized
               sizes="(max-width: 1023px) calc(100vw - 80px), 520px"
             />
             <Image
@@ -80,6 +81,7 @@ export function CloudSection() {
               width={1166}
               height={730}
               quality={95}
+              unoptimized
               sizes="(max-width: 1023px) calc(100vw - 80px), 520px"
             />
           </div>

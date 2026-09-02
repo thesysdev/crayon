@@ -16,6 +16,7 @@ export function OpenSourceIllustration({ theme }: { theme?: "light" | "dark" } =
         aria-hidden="true"
         fill
         quality={95}
+        unoptimized
         sizes="(max-width: 767px) calc(100vw - 32px), 1200px"
       />
       <Image
@@ -25,6 +26,7 @@ export function OpenSourceIllustration({ theme }: { theme?: "light" | "dark" } =
         aria-hidden="true"
         fill
         quality={95}
+        unoptimized
         sizes="(max-width: 767px) calc(100vw - 32px), 1200px"
       />
     </div>

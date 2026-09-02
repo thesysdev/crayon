@@ -101,6 +101,7 @@ export default function ObservabilityPage() {
                 alt="OpenUI Observability insights preview"
                 width={1280}
                 height={600}
+                unoptimized
                 priority
               />
               <Image
@@ -110,6 +111,7 @@ export default function ObservabilityPage() {
                 aria-hidden="true"
                 width={1280}
                 height={600}
+                unoptimized
                 priority
               />
             </>
@@ -122,6 +124,7 @@ export default function ObservabilityPage() {
                 alt="OpenUI Observability insights preview"
                 width={924}
                 height={1040}
+                unoptimized
                 priority
               />
               <Image
@@ -131,6 +134,7 @@ export default function ObservabilityPage() {
                 aria-hidden="true"
                 width={924}
                 height={1040}
+                unoptimized
                 priority
               />
             </>

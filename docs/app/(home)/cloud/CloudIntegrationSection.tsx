@@ -3,7 +3,7 @@
 import { Button } from "@/components/button";
 import { ArrowUpRight } from "lucide-react";
 import Image from "next/image";
-import { type CSSProperties, type KeyboardEvent, type ReactNode, useEffect, useState } from "react";
+import { type ReactNode } from "react";
 import { CloudCodeBlock } from "./CloudCodeBlock";
 import styles from "./CloudIntegrationSection.module.css";
 
@@ -51,8 +51,6 @@ export type CloudIntegrationStep = {
   title: string;
   description: string;
   href?: string;
-  code?: string;
-  highlightLines?: number[];
 };
 
 export function CloudIntegrationSetup({
@@ -65,7 +63,6 @@ export function CloudIntegrationSetup({
   action,
   highlightLines,
   titleSize = "default",
-  autoAdvanceMs = 5000,
 }: {
   title: ReactNode;
   titleId?: string;
@@ -76,46 +73,7 @@ export function CloudIntegrationSetup({
   action?: { label: string; href: string };
   highlightLines?: number[];
   titleSize?: "default" | "medium";
-  autoAdvanceMs?: number;
 }) {
-  const isInteractive = steps.some((step) => step.code);
-  const [activeStep, setActiveStep] = useState(0);
-  const [cycleReset, setCycleReset] = useState(0);
-  const activeCode = steps[activeStep]?.code ?? code;
-  const activeHighlightLines = steps[activeStep]?.highlightLines ?? highlightLines;
-  const stepperStyle = {
-    "--integration-step-duration": `${autoAdvanceMs}ms`,
-  } as CSSProperties;
-
-  useEffect(() => {
-    if (!isInteractive || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-
-    const timeout = window.setTimeout(() => {
-      setActiveStep((current) => (current + 1) % steps.length);
-    }, autoAdvanceMs);
-
-    return () => window.clearTimeout(timeout);
-  }, [activeStep, autoAdvanceMs, cycleReset, isInteractive, steps.length]);
-
-  function selectStep(index: number) {
-    setActiveStep(index);
-    setCycleReset((current) => current + 1);
-  }
-
-  function handleTabKeyDown(event: KeyboardEvent<HTMLButtonElement>, index: number) {
-    if (event.key !== "ArrowDown" && event.key !== "ArrowUp") return;
-
-    event.preventDefault();
-    const direction = event.key === "ArrowDown" ? 1 : -1;
-    const nextIndex = (index + direction + steps.length) % steps.length;
-    const tabs = event.currentTarget
-      .closest('[role="tablist"]')
-      ?.querySelectorAll<HTMLButtonElement>('[role="tab"]');
-
-    selectStep(nextIndex);
-    tabs?.[nextIndex]?.focus();
-  }
-
   return (
     <div className={styles.inner}>
       <div className={styles.content}>
@@ -125,63 +83,26 @@ export function CloudIntegrationSetup({
           </h2>
           {description ? <p className={styles.description}>{description}</p> : null}
         </div>
-        <ol
-          className={styles.stepper}
-          aria-label={codeLabel}
-          role={isInteractive ? "tablist" : undefined}
-          aria-orientation={isInteractive ? "vertical" : undefined}
-          data-interactive={isInteractive ? "true" : undefined}
-          data-step-count={isInteractive ? steps.length : undefined}
-          style={isInteractive ? stepperStyle : undefined}
-        >
+        <ol className={styles.stepper} aria-label={codeLabel}>
           {steps.map((step, index) => (
-            <li
-              className={styles.step}
-              data-active={isInteractive && activeStep === index ? "true" : undefined}
-              data-complete={isInteractive && index < activeStep ? "true" : undefined}
-              key={step.title}
-            >
-              {isInteractive ? (
-                <button
-                  className={styles.stepTab}
-                  type="button"
-                  role="tab"
-                  id={`${titleId ?? "cloud-integration"}-tab-${index}`}
-                  aria-selected={activeStep === index}
-                  aria-controls={`${titleId ?? "cloud-integration"}-code`}
-                  tabIndex={activeStep === index ? 0 : -1}
-                  onClick={() => selectStep(index)}
-                  onKeyDown={(event) => handleTabKeyDown(event, index)}
-                >
-                  <span className={styles.stepMarker}>{index + 1}</span>
-                  <span className={styles.stepContent}>
-                    <span className={styles.stepTitle}>{step.title}</span>
-                    {activeStep === index ? (
-                      <span className={styles.stepDescription}>{step.description}</span>
-                    ) : null}
-                  </span>
-                </button>
-              ) : (
-                <>
-                  <span className={styles.stepMarker}>{index + 1}</span>
-                  <div className={styles.stepContent}>
-                    {step.href ? (
-                      <a
-                        className={styles.stepLink}
-                        href={step.href}
-                        target="_blank"
-                        rel="noreferrer"
-                      >
-                        {step.title}
-                        <ArrowUpRight size={16} strokeWidth={2} aria-hidden="true" />
-                      </a>
-                    ) : (
-                      <span className={styles.stepTitle}>{step.title}</span>
-                    )}
-                    <p className={styles.stepDescription}>{step.description}</p>
-                  </div>
-                </>
-              )}
+            <li className={styles.step} key={step.title}>
+              <span className={styles.stepMarker}>{index + 1}</span>
+              <div className={styles.stepContent}>
+                {step.href ? (
+                  <a
+                    className={styles.stepLink}
+                    href={step.href}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    {step.title}
+                    <ArrowUpRight size={16} strokeWidth={2} aria-hidden="true" />
+                  </a>
+                ) : (
+                  <span className={styles.stepTitle}>{step.title}</span>
+                )}
+                <p className={styles.stepDescription}>{step.description}</p>
+              </div>
             </li>
           ))}
         </ol>
@@ -195,17 +116,9 @@ export function CloudIntegrationSetup({
       <div
         className={styles.codeColumn}
         id={`${titleId ?? "cloud-integration"}-code`}
-        role={isInteractive ? "tabpanel" : undefined}
-        aria-labelledby={
-          isInteractive ? `${titleId ?? "cloud-integration"}-tab-${activeStep}` : undefined
-        }
         aria-label={codeLabel}
       >
-        <CloudCodeBlock
-          key={isInteractive ? activeStep : "static"}
-          code={activeCode}
-          highlightLines={activeHighlightLines}
-        />
+        <CloudCodeBlock code={code} highlightLines={highlightLines} />
       </div>
     </div>
   );

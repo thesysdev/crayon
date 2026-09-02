@@ -65,6 +65,50 @@
   }
 }
 
+@keyframes mobileLogoCycle {
+  0%,
+  38% {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0);
+  }
+
+  44%,
+  94% {
+    opacity: 0;
+    transform: scale(0.84);
+    filter: blur(1.5px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0);
+  }
+}
+
+@keyframes mobileLogoSingleCycle {
+  0%,
+  18% {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0);
+  }
+
+  22%,
+  97% {
+    opacity: 0;
+    transform: scale(0.84);
+    filter: blur(1.5px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0);
+  }
+}
+
 .card {
   position: absolute;
   z-index: 3;
@@ -217,7 +261,7 @@
 
 @media (max-width: 767px) {
   .diagram {
-    --stack-logo-size: 32px;
+    --stack-logo-size: 28px;
     left: auto;
     width: 100%;
     height: 420px;
@@ -251,15 +295,16 @@
   }
 
   .branch[data-side="left"] .category {
-    left: 31%;
+    left: 36%;
   }
 
   .branch[data-side="right"] .category {
-    left: 69%;
+    left: 62%;
   }
 
   .logos {
-    width: 32px;
+    width: 64px;
+    height: var(--stack-logo-size);
   }
 
   .branch[data-side="left"] .logos {
@@ -272,9 +317,36 @@
     left: auto;
   }
 
-  .branch[data-side="left"] .logos li:nth-child(-n + 3),
-  .branch[data-side="right"] .logos li:nth-child(n + 2) {
-    display: none;
+  .logos li {
+    position: absolute;
+    top: 0;
+    opacity: 0;
+    animation: mobileLogoCycle 8s ease-in-out infinite;
+    animation-delay: var(--mobile-cycle-offset, 0s);
+  }
+
+  .logos li:nth-child(odd) {
+    left: 0;
+  }
+
+  .logos li:nth-child(even) {
+    left: 36px;
+  }
+
+  .logos li:nth-child(n + 3) {
+    animation-delay: calc(var(--mobile-cycle-offset, 0s) - 4s);
+  }
+
+  .branch[data-row="bottom"] {
+    --mobile-cycle-offset: -1s;
+  }
+
+  .branch[data-side="right"][data-row="top"] {
+    --mobile-cycle-offset: -2s;
+  }
+
+  .branch[data-side="right"][data-row="bottom"] {
+    --mobile-cycle-offset: -3s;
   }
 }
 
@@ -290,9 +362,48 @@
   }
 }
 
+@media (max-width: 359px) {
+  .logos {
+    width: var(--stack-logo-size);
+  }
+
+  .logos li,
+  .logos li:nth-child(even) {
+    left: 0;
+    animation-name: mobileLogoSingleCycle;
+  }
+
+  .logos li:nth-child(2) {
+    animation-delay: calc(var(--mobile-cycle-offset, 0s) - 2s);
+  }
+
+  .logos li:nth-child(3) {
+    animation-delay: calc(var(--mobile-cycle-offset, 0s) - 4s);
+  }
+
+  .logos li:nth-child(4) {
+    animation-delay: calc(var(--mobile-cycle-offset, 0s) - 6s);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .pulses path {
     animation: none;
     stroke-dashoffset: 0.45;
+  }
+
+  .logos li {
+    animation: none;
+  }
+
+  @media (max-width: 767px) {
+    .logos li:nth-child(-n + 2) {
+      opacity: 1;
+      filter: none;
+    }
+
+    .logos li:nth-child(n + 3) {
+      display: none;
+    }
   }
 }

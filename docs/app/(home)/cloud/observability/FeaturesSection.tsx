@@ -58,6 +58,7 @@ function FeatureShot({ shot, alt }: { shot?: string; alt: string }) {
         width={720}
         height={400}
         quality={95}
+        unoptimized
         sizes="(max-width: 767px) calc(100vw - 32px), 720px"
       />
       <Image
@@ -68,6 +69,7 @@ function FeatureShot({ shot, alt }: { shot?: string; alt: string }) {
         width={720}
         height={400}
         quality={95}
+        unoptimized
         sizes="(max-width: 767px) calc(100vw - 32px), 720px"
       />
     </>
