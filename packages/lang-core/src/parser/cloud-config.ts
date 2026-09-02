@@ -2,13 +2,13 @@ import type { CloudPromptOptions, LibrarySpec, SystemPromptOptions } from "./pro
 import { validateChatLibrary } from "./validate-library";
 
 /** `]]>openui:config\n` — request-direction config block header. Trailing newline is part of the wire contract. */
-export const CLOUD_CONFIG_MARKER = "]]>openui:config\n";
+const CLOUD_CONFIG_MARKER = "]]>openui:config\n";
 
 /**
  * Wire pin for OpenUI Cloud's built-in chat library when `generateSystemPrompt({ cloud: true })`
  * is called without a custom library. Muse 400s on a non-numeric or too-old version.
  */
-export const CLOUD_CHAT_LIBRARY_VERSION = "0.1.0";
+const CLOUD_CHAT_LIBRARY_VERSION = "0.1.0";
 
 type CloudConfig =
   | { libraryVersion: string }

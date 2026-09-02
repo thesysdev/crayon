@@ -1,10 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  CLOUD_CHAT_LIBRARY_VERSION,
-  generateSystemPrompt,
-  type CloudPromptOptions,
-  type LibrarySpec,
-} from "../../index";
+import { generateSystemPrompt, type CloudPromptOptions, type LibrarySpec } from "../../index";
 
 const CONFIG_MARKER = "]]>openui:config\n";
 
@@ -86,7 +81,7 @@ describe("generateSystemPrompt({ cloud: true }) — sentinel", () => {
   it("no library → JSON with only libraryVersion", () => {
     const config = parseBlock(generateSystemPrompt({ cloud: true }));
     expect(Object.keys(config)).toEqual(["libraryVersion"]);
-    expect(config.libraryVersion).toBe(CLOUD_CHAT_LIBRARY_VERSION);
+    expect(config.libraryVersion).toBe("0.1.0");
   });
 
   it("emitted keys are a subset of muse MANAGED_CONFIG_KEYS", () => {
