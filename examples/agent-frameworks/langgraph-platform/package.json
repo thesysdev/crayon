@@ -3,12 +3,16 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "generate": "openui generate src/library.ts --spec --out src/generated/spec.json",
     "dev:langgraph": "langgraphjs dev",
     "dev:next": "next dev",
     "dev:serve": "run-p dev:langgraph dev:next",
     "langgraph:dev": "langgraphjs dev",
+    "predev": "npm run generate",
     "dev": "run-s dev:serve",
+    "prebuild": "npm run generate",
     "build": "next build",
+    "preverify": "npm run generate",
     "verify": "next build",
     "start": "next start",
     "lint": "eslint"
@@ -33,6 +37,7 @@
     "zustand": "^4.5.5"
   },
   "devDependencies": {
+    "@openuidev/cli": "0.2.11",
     "@langchain/langgraph-cli": "^1.4.3",
     "@types/node": "^22.15.32",
     "@types/react": "^19",

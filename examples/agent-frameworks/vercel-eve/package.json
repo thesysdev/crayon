@@ -8,14 +8,19 @@
     "#evals/*": "./evals/*"
   },
   "scripts": {
+    "generate": "openui generate src/library.ts --spec --out src/generated/spec.json",
+    "predev": "npm run generate",
     "dev": "next dev",
+    "prebuild": "npm run generate",
     "build": "next build",
     "start": "next start",
-    "eve:dev": "eve dev",
-    "eve:build": "eve build",
+    "eve:dev": "npm run generate && eve dev",
+    "eve:build": "npm run generate && eve build",
     "eve:start": "eve start",
     "lint": "eslint",
+    "pretypecheck": "npm run generate",
     "typecheck": "tsc --noEmit",
+    "preverify": "npm run generate",
     "verify": "tsc --noEmit && next build"
   },
   "dependencies": {
@@ -36,6 +41,7 @@
     "zustand": "^4.5.5"
   },
   "devDependencies": {
+    "@openuidev/cli": "0.2.11",
     "@types/node": "24.x",
     "@types/react": "^19",
     "@types/react-dom": "^19",
