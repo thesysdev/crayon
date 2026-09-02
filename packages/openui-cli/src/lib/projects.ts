@@ -2,6 +2,7 @@ import type { OverlayName } from "./create-types";
 import { promptSelect } from "./resolve-args";
 import { CreateError } from "./telemetry";
 import type { CatalogOverlay } from "./templates-catalog";
+import { findByNormalizedKey } from "./utils";
 
 export type ProjectCategory = "template" | "example";
 
@@ -42,32 +43,33 @@ export function templatesFromOverlays(overlays: CatalogOverlay[]): TemplateProje
 }
 
 export function findTemplate(name: OverlayName, templates: TemplateProject[]): TemplateProject {
-  const project = templates.find((entry) => entry.name === name);
-  if (!project) {
-    const available = templates.map((entry) => entry.name).join(" | ") || "(none loaded)";
-    throw new CreateError(
-      "args_resolution",
-      `unknown backend framework "${name}". Use: ${available}.`,
-      "invalid_input",
-      "INVALID_BACKEND_FRAMEWORK",
-    );
-  }
-  return project;
+  return findByNormalizedKey(
+    templates,
+    name,
+    (entry) => entry.name,
+    (available) =>
+      new CreateError(
+        "args_resolution",
+        `unknown backend framework "${name}". Use: ${available}.`,
+        "invalid_input",
+        "INVALID_BACKEND_FRAMEWORK",
+      ),
+  );
 }
 
 export function findExample(name: string, examples: ExampleProject[]): ExampleProject {
-  const normalized = name.toLowerCase();
-  const project = examples.find((entry) => entry.name.toLowerCase() === normalized);
-  if (!project) {
-    const available = examples.map((entry) => entry.name).join(" | ") || "(none loaded)";
-    throw new CreateError(
-      "args_resolution",
-      `unknown example "${name}". Use: ${available}.`,
-      "invalid_input",
-      "INVALID_EXAMPLE",
-    );
-  }
-  return project;
+  return findByNormalizedKey(
+    examples,
+    name,
+    (entry) => entry.name,
+    (available) =>
+      new CreateError(
+        "args_resolution",
+        `unknown example "${name}". Use: ${available}.`,
+        "invalid_input",
+        "INVALID_EXAMPLE",
+      ),
+  );
 }
 
 export function rejectConflictingScaffoldSelectors(opts: {

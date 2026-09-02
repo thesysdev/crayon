@@ -1,12 +1,8 @@
 import { fetchSourceFile } from "./checkout";
 import type { ExampleProject } from "./projects";
-import { CreateError } from "./telemetry";
+import { catalogError } from "./utils";
 
 export const EXAMPLES_CATALOG_PATH = "examples/examples.json";
-
-function catalogError(message: string): CreateError {
-  return new CreateError("args_resolution", message, "invalid_input", "EXAMPLES_CATALOG_INVALID");
-}
 
 function parseCatalogEntry(item: unknown): ExampleProject {
   const entry = item as { title?: unknown; description?: unknown; path?: unknown };
@@ -16,13 +12,17 @@ function parseCatalogEntry(item: unknown): ExampleProject {
     typeof entry.path !== "string"
   ) {
     throw catalogError(
+      "EXAMPLES_CATALOG_INVALID",
       `${EXAMPLES_CATALOG_PATH} has an example missing title, description, or path.`,
     );
   }
   const relative = entry.path.replace(/^\/+/, "");
   const name = relative.split("/").filter(Boolean).at(-1);
   if (!name) {
-    throw catalogError(`${EXAMPLES_CATALOG_PATH} has an example with an empty path.`);
+    throw catalogError(
+      "EXAMPLES_CATALOG_INVALID",
+      `${EXAMPLES_CATALOG_PATH} has an example with an empty path.`,
+    );
   }
   return {
     name,
@@ -37,7 +37,10 @@ function parseCatalogEntry(item: unknown): ExampleProject {
 function parseExamplesCatalog(raw: string): ExampleProject[] {
   const parsed = JSON.parse(raw) as { examples?: unknown };
   if (!Array.isArray(parsed.examples) || parsed.examples.length === 0) {
-    throw catalogError(`${EXAMPLES_CATALOG_PATH} must contain a non-empty "examples" array.`);
+    throw catalogError(
+      "EXAMPLES_CATALOG_INVALID",
+      `${EXAMPLES_CATALOG_PATH} must contain a non-empty "examples" array.`,
+    );
   }
   return parsed.examples.map(parseCatalogEntry);
 }

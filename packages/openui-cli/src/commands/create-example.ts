@@ -1,23 +1,21 @@
-import * as fs from "node:fs";
 import * as path from "node:path";
 
-import { QUIET_COMMAND_CAPTURE_LIMIT } from "../lib/command-output";
 import {
-  promptForProviderKey,
-  resolveImmediate,
-  runDependencyInstall,
-  withProgress,
-} from "../lib/create-helpers";
+  formatCreateDoneMessage,
+  runScaffoldDependencyInstall,
+  runScaffoldDevCommand,
+  runScaffoldSkillInstall,
+} from "../lib/create-finish";
+import { promptForProviderKey, resolveImmediate, withProgress } from "../lib/create-helpers";
 import { createFunnelProps } from "../lib/create-telemetry";
 import type { CreateAppOptions, EnvResult } from "../lib/create-types";
 import { resolveInstallPackageManager } from "../lib/detect-package-manager";
-import { runDevCommand } from "../lib/dev-server";
 import { upsertEnvVar } from "../lib/env";
-import { runSkillInstall, shouldInstallSkill } from "../lib/install-skill";
+import { shouldInstallSkill } from "../lib/install-skill";
 import type { ExampleProject } from "../lib/projects";
 import { scaffoldExample } from "../lib/scaffold-example";
-import { CliCancelledError, CreateError, telemetry } from "../lib/telemetry";
-import { cliErrorProperties, processErrorProperties } from "../lib/utils";
+import { CreateError, telemetry } from "../lib/telemetry";
+import { cliErrorProperties } from "../lib/utils";
 
 export async function runCreateExample(params: {
   options: CreateAppOptions;
@@ -75,12 +73,6 @@ export async function runCreateExample(params: {
           name,
           packageManager: packageManager.name,
         });
-        if (packageManager.name !== "npm") {
-          fs.rmSync(path.join(targetDir, "package-lock.json"), { force: true });
-        }
-        if (packageManager.name !== "pnpm") {
-          fs.rmSync(path.join(targetDir, "pnpm-lock.yaml"), { force: true });
-        }
       },
       options.verbose,
     );
@@ -112,11 +104,7 @@ export async function runCreateExample(params: {
 
   try {
     if (envResult.envKeyValue && example.envKey) {
-      upsertEnvVar(
-        path.join(targetDir, example.envFile),
-        example.envKey,
-        envResult.envKeyValue,
-      );
+      upsertEnvVar(path.join(targetDir, example.envFile), example.envKey, envResult.envKeyValue);
     }
   } catch (err) {
     const properties = cliErrorProperties(err, {
@@ -137,141 +125,21 @@ export async function runCreateExample(params: {
     env_written: envResult.envWritten,
   });
 
-  const hasNpmLock = fs.existsSync(path.join(targetDir, "package-lock.json"));
-  const installCmd =
-    packageManager.name === "npm" && !hasNpmLock
-      ? "npm install --no-audit --no-fund --progress=false"
-      : packageManager.name === "pnpm"
-        ? "pnpm install --no-frozen-lockfile"
-        : packageManager.installCmd;
-  const installArgs =
-    packageManager.name === "npm" && !hasNpmLock
-      ? ["install", "--no-audit", "--no-fund", "--progress=false"]
-      : packageManager.name === "pnpm"
-        ? ["install", "--no-frozen-lockfile"]
-        : packageManager.installArgs;
-  let dependencyInstalled = false;
+  const { dependencyInstalled, installCmd } = await runScaffoldDependencyInstall({
+    verbose: options.verbose,
+    packageManager,
+    targetDir,
+    unlockedInstall: true,
+    installDependencies: immediateResolution.installDependencies,
+    telemetryProps: { example: example.name },
+  });
 
-  if (!immediateResolution.installDependencies) {
-    telemetry.capture("cli_dependency_install_skipped", {
-      skip_reason: "no_install_flag",
-    });
-    console.info(`Skipping dependency install (--no-install). Run \`${installCmd}\` later.`);
-  } else {
-    telemetry.capture("cli_dependency_install_started", {
-      ...createFunnelProps("dependency_install_started"),
-      example: example.name,
-    });
-    const installResult = await runDependencyInstall({
-      verbose: options.verbose,
-      command: packageManager.runCmd,
-      args: installArgs,
-      cwd: targetDir,
-      installCmd,
-    });
-    if (!installResult.error && installResult.status === 0) {
-      dependencyInstalled = true;
-      telemetry.capture("cli_dependency_install_succeeded", {
-        ...createFunnelProps("dependency_install_succeeded"),
-        example: example.name,
-        dependency_installed: dependencyInstalled,
-      });
-    } else {
-      const properties = processErrorProperties(installResult, "dependency_install", {
-        error_class: "dependency",
-        error_code: "NONZERO_EXIT",
-      });
-      if (properties.error_class === "user_cancelled") {
-        telemetry.capture("cli_dependency_install_cancelled", {
-          ...createFunnelProps("dependency_install_cancelled"),
-          example: example.name,
-          dependency_installed: false,
-          ...properties,
-        });
-        throw new CliCancelledError(
-          "dependency_install",
-          properties.cancellation_exit_code ?? 0,
-          properties,
-        );
-      }
-      telemetry.capture("cli_dependency_install_failed", {
-        ...createFunnelProps("dependency_install_failed"),
-        example: example.name,
-        dependency_installed: dependencyInstalled,
-        ...properties,
-      });
-      const { failure_stage, error_class, error_code, ...metadata } = properties;
-      throw new CreateError(
-        failure_stage,
-        "dependency install failed",
-        error_class,
-        error_code,
-        metadata,
-      );
-    }
-  }
+  const skillInstalled = await runScaffoldSkillInstall({
+    enabled: installSkill,
+    verbose: options.verbose,
+    targetDir,
+  });
 
-  let skillInstalled = false;
-  if (installSkill) {
-    telemetry.capture("cli_skill_install_started", {
-      ...createFunnelProps("skill_install_started"),
-      skill_installed: installSkill,
-    });
-    const runSkill = () =>
-      options.verbose
-        ? runSkillInstall(targetDir)
-        : runSkillInstall(targetDir, {
-            echo: false,
-            stdin: "ignore",
-            captureLimit: QUIET_COMMAND_CAPTURE_LIMIT,
-          });
-    const skillResult = await withProgress(
-      "Installing OpenUI agent skill...",
-      runSkill,
-      options.verbose,
-    );
-    skillInstalled = !skillResult.error && skillResult.status === 0;
-    if (skillInstalled) {
-      if (!options.verbose) {
-        console.info("✓ OpenUI agent skill installed");
-      }
-      telemetry.capture("cli_skill_install_finished", {
-        ...createFunnelProps("skill_install_finished"),
-        skill_installed: true,
-        duration_ms: skillResult.durationMs,
-        exit_code: skillResult.status,
-      });
-    } else {
-      const properties = processErrorProperties(skillResult, "skill_install", {
-        error_class: "dependency",
-        error_code: "SKILL_INSTALL_FAILED",
-      });
-      if (properties.error_class === "user_cancelled") {
-        telemetry.capture("cli_skill_install_cancelled", {
-          ...createFunnelProps("skill_install_cancelled"),
-          skill_installed: false,
-          ...properties,
-        });
-        throw new CliCancelledError(
-          "skill_install",
-          properties.cancellation_exit_code ?? 0,
-          properties,
-        );
-      }
-      telemetry.capture("cli_skill_install_failed", {
-        ...createFunnelProps("skill_install_failed"),
-        skill_installed: false,
-        ...properties,
-      });
-      console.warn(
-        "\nCould not install the OpenUI agent skill automatically.\n" +
-          "You can install it manually later with:\n\n" +
-          "  npx skills add thesysdev/skills --skill openui\n",
-      );
-    }
-  }
-
-  const devCmd = packageManager.runCmd;
   const startDev =
     immediateResolution.immediate && dependencyInstalled && !devStartBlockedByMissingApiKey;
 
@@ -283,75 +151,38 @@ export async function runCreateExample(params: {
     env_written: envResult.envWritten,
     dependency_installed: dependencyInstalled,
   });
+  const envKey = example.envKey ?? "OPENAI_API_KEY";
   console.info(
-    getStartedMessage({
-      name,
-      devCmd,
-      exampleEnvFile: example.envFile,
-      exampleEnvKey: example.envKey,
+    formatCreateDoneMessage({
       skillInstalled,
-      envWritten: envResult.envWritten,
-      startDev,
+      envNote: envResult.envWritten
+        ? `✅ ${example.envFile} updated with ${envKey}.`
+        : `Add ${envKey}=… to ${example.envFile} (see the example README).`,
+      name,
+      devCmd: packageManager.runCmd,
       installCmd,
+      startDev,
       dependencyInstalled,
     }),
   );
 
-  if (devStartBlockedByMissingApiKey && apiKeyEnv) {
-    telemetry.capture("cli_dev_command_skipped", {
-      skip_reason: "missing_api_key",
-      required_env: apiKeyEnv,
-    });
-    console.error(
-      `\nSkipped starting the development server — ${apiKeyEnv} is missing.\n\n` +
-        `Add your key to ${name}/${example.envFile}:\n\n  ${apiKeyEnv}=…\n\n` +
-        `Then run:\n\n> cd ${name}\n> ${devCmd} run dev\n`,
-    );
-    process.exitCode = 1;
-    return;
-  }
-
-  if (!startDev) {
-    telemetry.capture("cli_dev_command_skipped", {
-      skip_reason: options.noInstall ? "dependencies_not_installed" : "not_immediate",
-    });
-    return;
-  }
-
-  telemetry.capture("cli_dev_command_started", {
-    package_manager: packageManager.name,
+  await runScaffoldDevCommand({
+    name,
+    targetDir,
+    packageManager,
+    startDev,
+    noInstall: options.noInstall,
+    missingApiKey:
+      devStartBlockedByMissingApiKey && apiKeyEnv
+        ? {
+            env: apiKeyEnv,
+            message:
+              `\nSkipped starting the development server — ${apiKeyEnv} is missing.\n\n` +
+              `Add your key to ${name}/${example.envFile}:\n\n  ${apiKeyEnv}=…\n\n` +
+              `Then run:\n\n> cd ${name}\n> ${packageManager.runCmd} run dev\n`,
+          }
+        : undefined,
   });
-  const devResult = await runDevCommand(devCmd, targetDir);
-  const stoppedNormally =
-    devResult.status === 0 ||
-    devResult.status === 130 ||
-    devResult.status === 143 ||
-    devResult.signal === "SIGINT" ||
-    devResult.signal === "SIGTERM";
-
-  if (stoppedNormally) {
-    telemetry.capture("cli_dev_command_stopped", {
-      package_manager: packageManager.name,
-      duration_ms: devResult.durationMs,
-      exit_code: devResult.status,
-      failure_signal: devResult.signal,
-    });
-  } else {
-    const exitCode = devResult.status ?? 1;
-    const properties = processErrorProperties(devResult, "dev_server", {
-      error_class: "process",
-      error_code: "NONZERO_EXIT",
-    });
-    telemetry.capture("cli_dev_command_failed", {
-      package_manager: packageManager.name,
-      failure_reason: devResult.error ? "spawn_error" : "nonzero_exit",
-      ...properties,
-    });
-    console.error(
-      `\nDevelopment server exited. Retry with:\n\n> cd ${name}\n> ${devCmd} run dev\n`,
-    );
-    process.exitCode = exitCode;
-  }
 }
 
 async function resolveExampleEnv(
@@ -367,35 +198,4 @@ async function resolveExampleEnv(
     envWritten: apiKey != null,
     envKeyValue: apiKey ?? undefined,
   };
-}
-
-function getStartedMessage(o: {
-  name: string;
-  devCmd: string;
-  exampleEnvFile: string;
-  exampleEnvKey?: string;
-  skillInstalled: boolean;
-  envWritten: boolean;
-  startDev: boolean;
-  installCmd: string;
-  dependencyInstalled: boolean;
-}): string {
-  const skillMessage = o.skillInstalled
-    ? "The OpenUI agent skill was installed.\nAI coding assistants will use it to help you build with OpenUI.\n"
-    : "";
-
-  const envKey = o.exampleEnvKey ?? "OPENAI_API_KEY";
-  const envNote = o.envWritten
-    ? `✅ ${o.exampleEnvFile} updated with ${envKey}.`
-    : `Add ${envKey}=… to ${o.exampleEnvFile} (see the example README).`;
-
-  const nextStep = o.startDev
-    ? `Starting the development server in "${o.name}"...\n\n> ${o.devCmd} run dev`
-    : [
-        `> cd ${o.name}`,
-        ...(o.dependencyInstalled ? [] : [`> ${o.installCmd}`]),
-        `> ${o.devCmd} run dev`,
-      ].join("\n");
-
-  return `\n${[skillMessage.trim(), "Done!", envNote, nextStep].filter(Boolean).join("\n\n")}\n`;
 }

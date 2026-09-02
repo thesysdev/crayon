@@ -1,5 +1,6 @@
 import { fetchSourceFile } from "./checkout";
 import { CreateError } from "./telemetry";
+import { catalogError, findByNormalizedKey } from "./utils";
 
 export const TEMPLATES_CATALOG_PATH = "templates/templates.json";
 
@@ -18,10 +19,6 @@ export type CatalogTemplate = {
   overlays: CatalogOverlay[];
 };
 
-function catalogError(message: string): CreateError {
-  return new CreateError("args_resolution", message, "invalid_input", "TEMPLATE_CATALOG_INVALID");
-}
-
 function parseOverlay(item: unknown): CatalogOverlay {
   const overlay = item as CatalogOverlay;
   if (
@@ -30,6 +27,7 @@ function parseOverlay(item: unknown): CatalogOverlay {
     typeof overlay?.description !== "string"
   ) {
     throw catalogError(
+      "TEMPLATE_CATALOG_INVALID",
       `${TEMPLATES_CATALOG_PATH} has an overlay missing name, key, or description.`,
     );
   }
@@ -44,11 +42,12 @@ function parseTemplate(item: unknown): CatalogTemplate {
     typeof template?.description !== "string"
   ) {
     throw catalogError(
+      "TEMPLATE_CATALOG_INVALID",
       `${TEMPLATES_CATALOG_PATH} has a template missing name, key, or description.`,
     );
   }
   if (!Array.isArray(template.overlays) || template.overlays.length === 0) {
-    throw catalogError(`Template "${template.key}" has no overlays.`);
+    throw catalogError("TEMPLATE_CATALOG_INVALID", `Template "${template.key}" has no overlays.`);
   }
   return { ...template, overlays: template.overlays.map(parseOverlay) };
 }
@@ -56,7 +55,10 @@ function parseTemplate(item: unknown): CatalogTemplate {
 function parseTemplatesCatalog(raw: string): CatalogTemplate[] {
   const parsed = JSON.parse(raw) as { templates?: unknown };
   if (!Array.isArray(parsed.templates) || parsed.templates.length === 0) {
-    throw catalogError(`${TEMPLATES_CATALOG_PATH} must contain a non-empty "templates" array.`);
+    throw catalogError(
+      "TEMPLATE_CATALOG_INVALID",
+      `${TEMPLATES_CATALOG_PATH} must contain a non-empty "templates" array.`,
+    );
   }
   return parsed.templates.map(parseTemplate);
 }
@@ -68,31 +70,31 @@ export async function loadTemplatesCatalog(): Promise<CatalogTemplate[]> {
 }
 
 export function findCatalogTemplate(templates: CatalogTemplate[], key: string): CatalogTemplate {
-  const normalized = key.toLowerCase();
-  const match = templates.find((entry) => entry.key.toLowerCase() === normalized);
-  if (!match) {
-    const available = templates.map((entry) => entry.key).join(" | ");
-    throw new CreateError(
-      "args_resolution",
-      `unknown template "${key}". Use: ${available}.`,
-      "invalid_input",
-      "INVALID_TEMPLATE",
-    );
-  }
-  return match;
+  return findByNormalizedKey(
+    templates,
+    key,
+    (entry) => entry.key,
+    (available) =>
+      new CreateError(
+        "args_resolution",
+        `unknown template "${key}". Use: ${available}.`,
+        "invalid_input",
+        "INVALID_TEMPLATE",
+      ),
+  );
 }
 
 export function findCatalogOverlay(template: CatalogTemplate, key: string): CatalogOverlay {
-  const normalized = key.toLowerCase();
-  const match = template.overlays.find((entry) => entry.key.toLowerCase() === normalized);
-  if (!match) {
-    const available = template.overlays.map((entry) => entry.key).join(" | ");
-    throw new CreateError(
-      "args_resolution",
-      `unknown backend framework "${key}". Use: ${available}.`,
-      "invalid_input",
-      "INVALID_BACKEND_FRAMEWORK",
-    );
-  }
-  return match;
+  return findByNormalizedKey(
+    template.overlays,
+    key,
+    (entry) => entry.key,
+    (available) =>
+      new CreateError(
+        "args_resolution",
+        `unknown backend framework "${key}". Use: ${available}.`,
+        "invalid_input",
+        "INVALID_BACKEND_FRAMEWORK",
+      ),
+  );
 }
