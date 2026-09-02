@@ -3,7 +3,6 @@ import { ArrowRight } from "@phosphor-icons/react/dist/ssr";
 import Image from "next/image";
 import { BevelButton } from "../../components/Button/BevelButton";
 import { SectionHeader } from "../../components/SectionHeader/SectionHeader";
-import { GatewayReliabilityIllustration } from "../ProductIllustrations/ProductIllustrations";
 import { ProductLabel, ProductSection } from "../ProductSection/ProductSection";
 import { GATEWAY_PRODUCT } from "../ProductSection/products";
 import styles from "./CloudSection.module.css";
@@ -31,7 +30,7 @@ export function CloudSection() {
             the two needs stating, and ProductSection stays free of layout it
             would carry into every other place it is used. */}
         <div className={styles.products}>
-          <ProductSection {...GATEWAY_PRODUCT} art={<GatewayReliabilityIllustration />} />
+          <ProductSection {...GATEWAY_PRODUCT} />
         </div>
 
         <div id="openui-observability-card" className={styles.observabilityBand}>

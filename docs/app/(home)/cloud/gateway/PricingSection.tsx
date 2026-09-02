@@ -5,7 +5,7 @@ export function PricingSection() {
   return (
     <div className={styles.pricingBand}>
       <section
-        className={`${styles.section} ${styles.repairSection} ${styles.pricingSection}`}
+        className={`${styles.section} ${styles.pricingSection}`}
         aria-labelledby="gateway-pricing"
       >
         <div className={styles.sectionLockup}>

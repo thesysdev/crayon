@@ -10,6 +10,7 @@ import { IntegrateSection } from "./IntegrateSection";
 import gatewayStyles from "./page.module.css";
 import { PricingSection } from "./PricingSection";
 import { RepairSection } from "./RepairSection";
+import sectionStyles from "./sections.module.css";
 import { SecuritySection } from "./SecuritySection";
 import { UsageSection } from "./UsageSection";
 import { WhySection } from "./WhySection";
@@ -91,7 +92,7 @@ export default function GatewayPage() {
         </div>
         <SecuritySection />
         <PricingSection />
-        <div className={gatewayStyles.faqBand}>
+        <div className={sectionStyles.faqBand}>
           <FaqSection />
         </div>
         <CloudCtaSection
