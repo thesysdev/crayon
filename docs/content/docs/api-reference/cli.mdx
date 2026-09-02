@@ -1,9 +1,9 @@
 ---
 title: "@openuidev/cli"
-description: API reference for the OpenUI CLI to scaffold apps and generate system prompts or library specs.
+description: API reference for the OpenUI CLI to scaffold apps, mint Cloud API keys, and generate system prompts or library specs.
 ---
 
-A command-line tool for scaffolding OpenUI chat apps and generating system prompts, JSON schemas, or serialized library specs from library definitions.
+A command-line tool for scaffolding OpenUI chat apps, minting OpenUI Cloud API key, and generating system prompts, JSON schemas, or serialized library specs from library definitions.
 
 ## Installation
 
@@ -208,6 +208,48 @@ npx @openuidev/cli@latest create --no-interactive --name my-app --template openu
 # Explicitly install or skip the agent skill
 npx @openuidev/cli@latest create --name my-app --skill
 npx @openuidev/cli@latest create --name my-app --no-skill
+```
+
+## `openui generate-api-key`
+
+Signs in with Thesys in the browser, mints an OpenUI Cloud API key, and writes it to a project env file.
+
+```
+openui generate-api-key [options]
+```
+
+**Options**
+
+| Flag                  | Description                                                                                        |
+| --------------------- | -------------------------------------------------------------------------------------------------- |
+| `-f, --file <path>`   | Env file to write (default: `.env`)                                                                |
+| `-k, --key <name>`    | Environment variable name (default: `THESYS_API_KEY`)                                              |
+| `-n, --name <string>` | Name of the minted key in the Thesys console (default: `package.json` name, or the directory name) |
+
+**Examples**
+
+```bash tab="pnpm" tab-group="pkg"
+pnpx @openuidev/cli@latest generate-api-key
+pnpx @openuidev/cli@latest generate-api-key --file .env.local
+pnpx @openuidev/cli@latest generate-api-key --file .env.local --key THESYS_API_KEY
+```
+
+```bash tab="bun" tab-group="pkg"
+bunx @openuidev/cli@latest generate-api-key
+bunx @openuidev/cli@latest generate-api-key --file .env.local
+bunx @openuidev/cli@latest generate-api-key --file .env.local --key THESYS_API_KEY
+```
+
+```bash tab="yarn" tab-group="pkg"
+yarn dlx @openuidev/cli@latest generate-api-key
+yarn dlx @openuidev/cli@latest generate-api-key --file .env.local
+yarn dlx @openuidev/cli@latest generate-api-key --file .env.local --key THESYS_API_KEY
+```
+
+```bash tab="npm" tab-group="pkg"
+npx @openuidev/cli@latest generate-api-key
+npx @openuidev/cli@latest generate-api-key --file .env.local
+npx @openuidev/cli@latest generate-api-key --file .env.local --key THESYS_API_KEY
 ```
 
 ## `openui generate`

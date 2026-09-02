@@ -1,18 +1,19 @@
 # @openuidev/cli
 
-Command-line tools for starting OpenUI projects and generating model instructions from component libraries.
+Command-line tools for starting OpenUI projects, minting OpenUI Cloud API keys, and generating model instructions from component libraries.
 
 [![npm](https://img.shields.io/npm/v/@openuidev/cli)](https://www.npmjs.com/package/@openuidev/cli)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/thesysdev/openui/blob/main/LICENSE)
 
 **Links:** [CLI docs](https://openui.com/docs/api-reference/cli) | [GitHub repo](https://github.com/thesysdev/openui)
 
-It currently supports two workflows:
+It currently supports:
 
 - scaffolding a new OpenUI app from one of two templates:
   - **OpenUI Cloud (recommended)** — hosted models with managed conversations, streaming, built-in tools, and ready-to-use report and presentation artifacts
   - **Self-hosted** — bring an OpenAI-compatible model key and own the AI route and persistence
 - keeping the default minimal SDK route or adding a LangGraph, Vercel AI SDK, or Vercel Eve backend to either template
+- minting an OpenUI Cloud API key into an existing project's env file
 - generating a system prompt or JSON Schema from a `createLibrary()` export
 
 ## Install
@@ -49,6 +50,13 @@ npx @openuidev/cli@latest create --template openui-cloud --backend-framework ver
 npx @openuidev/cli@latest create --template openui-self-hosted --backend-framework langgraph
 npx @openuidev/cli@latest create --template openui-self-hosted --backend-framework vercel-ai-sdk
 npx @openuidev/cli@latest create --template openui-self-hosted --backend-framework vercel-eve
+```
+
+Mint an OpenUI Cloud API key into the current project's `.env`:
+
+```bash
+npx @openuidev/cli@latest generate-api-key
+npx @openuidev/cli@latest generate-api-key --file .env.local --key THESYS_API_KEY
 ```
 
 Generate a prompt from a library file:
@@ -164,6 +172,28 @@ openui create --name my-app --no-skill --no-install
 openui create --no-interactive --name my-app --template openui-cloud --api-key tk_your_key
 ```
 
+### `openui generate-api-key`
+
+Signs in with Thesys in the browser, mints an OpenUI Cloud API key, and writes it to a project env file.
+
+```bash
+openui generate-api-key [options]
+```
+
+Options:
+
+- `-f, --file <path>`: Env file to write (default: `.env`)
+- `-k, --key <name>`: Environment variable name (default: `THESYS_API_KEY`)
+- `-n, --name <string>`: Name of the minted key in the Thesys console (default: `package.json` name, or the current directory name)
+
+Examples:
+
+```bash
+openui generate-api-key
+openui generate-api-key --file .env.local
+openui generate-api-key --file .env.local --key THESYS_API_KEY
+```
+
 ### `openui generate`
 
 Generates a system prompt and serialized library spec from a file that exports a `createLibrary()` result. Use the spec with `generateSystemPrompt` in backend routes; the prompt file remains available for static or legacy integrations.
@@ -240,6 +270,7 @@ Run the built CLI:
 ```bash
 node dist/index.js --help
 node dist/index.js create --help
+node dist/index.js generate-api-key --help
 node dist/index.js generate --help
 ```
 
