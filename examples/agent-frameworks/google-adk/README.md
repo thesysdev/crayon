@@ -17,11 +17,10 @@ An [OpenUI](https://openui.com) example showing how to wire a
 
 ## Getting started
 
-1. Create a `.env.local` file with your OpenUI Cloud key
-   (https://console.thesys.dev/keys):
+1. Mint an OpenUI Cloud key into `.env.local`:
 
    ```bash
-   echo "THESYS_API_KEY=sk-th-your-key-here" > .env.local
+   pnpm generate:apiKey
    ```
 
 2. Install dependencies from this example directory:

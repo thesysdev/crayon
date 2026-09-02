@@ -3,7 +3,8 @@ This is an [OpenUI](https://openui.com) Cloud project bootstrapped with [`openui
 ## Setup
 
 The CLI writes `.env` for you. If you cloned the generated project elsewhere,
-create `.env` with `THESYS_API_KEY`, `DEMO_USER_ID`, and `APP_ID`.
+run `pnpm generate:apiKey` to mint `THESYS_API_KEY`, then add `DEMO_USER_ID`
+and `APP_ID`.
 
 ## Getting Started
 
