@@ -22,7 +22,7 @@ SPEC_PATH = Path(__file__).resolve().parents[2] / "frontend" / "src" / "generate
 
 
 def cloud_system_prompt() -> str:
-    """Same payload as generateSystemPrompt({ library }) from @openuidev/thesys-server."""
+    """Same payload as generateSystemPrompt({ cloud: true, library }) from @openuidev/lang-core."""
     if not SPEC_PATH.is_file():
         raise RuntimeError(f"Missing {SPEC_PATH}. From frontend/, run: pnpm generate")
     spec = json.loads(SPEC_PATH.read_text())

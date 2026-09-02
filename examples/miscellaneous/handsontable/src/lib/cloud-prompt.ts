@@ -1,4 +1,4 @@
-import { generateSystemPrompt, type ChatLibrary } from "@openuidev/thesys-server";
+import { generateSystemPrompt, type ChatLibrary } from "@openuidev/lang-core";
 import { readFileSync } from "fs";
 import { join } from "path";
 
@@ -8,6 +8,7 @@ export function cloudInstructions(extra?: string): string {
     readFileSync(join(process.cwd(), "src/generated/spec.json"), "utf-8"),
   ) as ChatLibrary;
   return generateSystemPrompt({
+    cloud: true,
     library,
     ...(extra ? { instructions: extra } : {}),
   });

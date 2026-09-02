@@ -95,7 +95,7 @@ examples/agent-frameworks/vercel-eve/
 |- agent/tools/get_weather.ts        # Example Eve tool
 |- agent/tools/ask_question.ts       # Disables Eve's built-in ask_question
 |- src/library.ts                    # openuiLibrary re-export for `openui generate --spec`
-|- src/lib/cloud-prompt.ts           # Reads spec.json into generateSystemPrompt({ library })
+|- src/lib/cloud-prompt.ts           # Reads spec.json into generateSystemPrompt({ cloud: true, library })
 |- src/app/page.tsx                  # OpenUI AgentInterface chat
 |- src/eve-chat.ts                   # Eve session transport, eveAdapter, persistence
 |- src/thread-store.ts               # Browser thread and transcript storage
