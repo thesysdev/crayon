@@ -6,7 +6,7 @@ const CLOUD_CONFIG_MARKER = "]]>openui:config\n";
 
 /**
  * Wire pin for OpenUI Cloud's built-in chat library when `generateSystemPrompt({ cloud: true })`
- * is called without a custom library. Muse 400s on a non-numeric or too-old version.
+ * is called without a custom library. Cloud rejects a non-numeric or too-old version.
  */
 const CLOUD_CHAT_LIBRARY_VERSION = "0.1.0";
 

@@ -3,7 +3,7 @@ import { generateSystemPrompt, type CloudPromptOptions, type LibrarySpec } from 
 
 const CONFIG_MARKER = "]]>openui:config\n";
 
-const MUSE_MANAGED_CONFIG_KEYS = [
+const CLOUD_CONFIG_KEYS = [
   "libraryVersion",
   "customComponents",
   "customActions",
@@ -84,10 +84,10 @@ describe("generateSystemPrompt({ cloud: true }) — sentinel", () => {
     expect(config.libraryVersion).toBe("0.1.0");
   });
 
-  it("emitted keys are a subset of muse MANAGED_CONFIG_KEYS", () => {
+  it("emitted keys are a subset of Cloud config keys", () => {
     const config = parseBlock(generateSystemPrompt({ cloud: true, instructions: "Be terse." }));
     for (const key of Object.keys(config)) {
-      expect(MUSE_MANAGED_CONFIG_KEYS).toContain(key);
+      expect(CLOUD_CONFIG_KEYS).toContain(key);
     }
   });
 
