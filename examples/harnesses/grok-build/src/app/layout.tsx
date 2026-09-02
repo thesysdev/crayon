@@ -1,6 +1,7 @@
-import { ThemeProvider } from "@/hooks/use-system-theme";
 import type { Metadata } from "next";
+import "@openuidev/react-ui/components.css";
 import "@openuidev/react-ui/styles/index.css";
+import "@openuidev/thesys/styles.css";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -15,9 +16,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>
-        <ThemeProvider>{children}</ThemeProvider>
-      </body>
+      <body>{children}</body>
     </html>
   );
 }
