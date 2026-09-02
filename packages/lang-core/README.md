@@ -87,7 +87,7 @@ import { generateSystemPrompt } from "@openuidev/lang-core";
 // Built-in Cloud chat library
 const instructions = generateSystemPrompt({ cloud: true });
 
-// Custom library (the `.spec.json` from `openui generate`)
+// Using your own library (the `.spec.json` from `openui generate`)
 const myLibraryPrompt = generateSystemPrompt({
   cloud: true,
   library: librarySpec,
