@@ -110,6 +110,8 @@ What it does:
 
 #### Backend frameworks
 
+Overlay names are loaded from the fetched template's `overlays/` directory (`default` is the base template with no overlay). Current templates ship:
+
 | Value           | OpenUI Cloud route                           | Self-hosted route                        |
 | --------------- | -------------------------------------------- | ---------------------------------------- |
 | `default`       | Direct OpenAI SDK Responses proxy            | Direct OpenAI SDK Chat Completions proxy |
@@ -256,7 +258,7 @@ openui create --no-telemetry
 ## Notes
 
 - interactive prompts can be cancelled without creating output
-- `create` requires the selected template's files to be present in the built package
+- `create` fetches `templates/templates.json` and the selected template from GitHub (`thesysdev/openui@main`)
 - `generate` exits with a non-zero code if the file is missing or no valid library export is found
 
 ## Documentation
