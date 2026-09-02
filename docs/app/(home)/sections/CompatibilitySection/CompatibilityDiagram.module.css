@@ -15,27 +15,14 @@
   display: block;
   width: 100%;
   height: 100%;
-  /* Let the rails disappear into the page instead of ending as hard clipped
-     strokes at the illustration boundary. */
-  -webkit-mask-image: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgb(0 0 0 / 0.72) 5%,
-    #000 11%,
-    #000 89%,
-    rgb(0 0 0 / 0.72) 95%,
-    transparent 100%
-  );
-  mask-image: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgb(0 0 0 / 0.72) 5%,
-    #000 11%,
-    #000 89%,
-    rgb(0 0 0 / 0.72) 95%,
-    transparent 100%
-  );
+  /* End each rail beneath the center of its outermost logo so no stroke is
+     visible beyond the final circle. */
+  clip-path: inset(0 24px);
   pointer-events: none;
+}
+
+.mobileNetwork {
+  display: none;
 }
 
 .rails path {
@@ -70,20 +57,17 @@
   38% {
     opacity: 1;
     transform: scale(1);
-    filter: blur(0);
   }
 
   44%,
   94% {
     opacity: 0;
     transform: scale(0.84);
-    filter: blur(1.5px);
   }
 
   100% {
     opacity: 1;
     transform: scale(1);
-    filter: blur(0);
   }
 }
 
@@ -92,20 +76,17 @@
   18% {
     opacity: 1;
     transform: scale(1);
-    filter: blur(0);
   }
 
   22%,
   97% {
     opacity: 0;
     transform: scale(0.84);
-    filter: blur(1.5px);
   }
 
   100% {
     opacity: 1;
     transform: scale(1);
-    filter: blur(0);
   }
 }
 
@@ -119,8 +100,14 @@
   justify-content: center;
   padding: 8px;
   transform: translate(-50%, -50%);
+  border: 1px solid rgb(255 255 255 / 0.52);
   border-radius: 20px;
-  background: rgb(0 0 0 / 0.04);
+  background: rgb(255 255 255 / 0.3);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.72),
+    0 8px 24px rgb(10 10 10 / 0.05);
+  -webkit-backdrop-filter: blur(12px) saturate(118%);
+  backdrop-filter: blur(12px) saturate(118%);
 }
 
 .cardInner {
@@ -138,7 +125,11 @@
 }
 
 [data-theme="dark"] .card {
-  background: rgb(255 255 255 / 0.08);
+  border-color: rgb(255 255 255 / 0.1);
+  background: rgb(24 24 24 / 0.46);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.1),
+    0 10px 28px rgb(0 0 0 / 0.18);
 }
 
 [data-theme="dark"] .cardInner {
@@ -228,35 +219,72 @@
 }
 
 .logos li {
+  position: relative;
   display: flex;
   flex: 0 0 auto;
   align-items: center;
   justify-content: center;
   border-radius: var(--openui-radius-full);
   background: var(--openui-foreground);
-  transition:
-    opacity 180ms ease,
-    filter 180ms ease;
 }
 
-/* Logos closest to the center remain crisp; those moving toward either edge
-   progressively soften and fade, matching the open-ended rails. */
-.branch[data-side="left"] .logos li:nth-child(1),
-.branch[data-side="right"] .logos li:nth-child(4) {
-  opacity: 0.38;
-  filter: blur(1.15px);
+:global(.dark) .logos li,
+:global([data-theme="dark"]) .logos li {
+  background: var(--openui-text-white);
 }
 
-.branch[data-side="left"] .logos li:nth-child(2),
-.branch[data-side="right"] .logos li:nth-child(3) {
-  opacity: 0.58;
-  filter: blur(0.65px);
-}
+@media (hover: hover) and (pointer: fine) {
+  .logos li::after {
+    position: absolute;
+    z-index: 6;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    padding: 5px 8px;
+    transform: translate(-50%, 3px);
+    border: 1px solid var(--openui-border-default);
+    border-radius: 6px;
+    background: var(--openui-text-neutral-primary);
+    box-shadow: 0 6px 18px rgb(0 0 0 / 0.1);
+    color: var(--openui-foreground);
+    content: attr(data-tooltip);
+    font-family: var(--home-font-text);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    line-height: 1.25;
+    opacity: 0;
+    pointer-events: none;
+    transition:
+      opacity 120ms ease,
+      transform 120ms ease;
+    white-space: nowrap;
+  }
 
-.branch[data-side="left"] .logos li:nth-child(3),
-.branch[data-side="right"] .logos li:nth-child(2) {
-  opacity: 0.8;
-  filter: blur(0.2px);
+  .logos li:hover::after,
+  .logos li:focus-visible::after {
+    transform: translate(-50%, 0);
+    opacity: 1;
+  }
+
+  .branch[data-side="left"] .logos li:first-child::after {
+    left: 0;
+    transform: translate(0, 3px);
+  }
+
+  .branch[data-side="left"] .logos li:first-child:hover::after,
+  .branch[data-side="left"] .logos li:first-child:focus-visible::after {
+    transform: translate(0, 0);
+  }
+
+  .branch[data-side="right"] .logos li:last-child::after {
+    right: 0;
+    left: auto;
+    transform: translate(0, 3px);
+  }
+
+  .branch[data-side="right"] .logos li:last-child:hover::after,
+  .branch[data-side="right"] .logos li:last-child:focus-visible::after {
+    transform: translate(0, 0);
+  }
 }
 
 @media (max-width: 767px) {
@@ -266,6 +294,18 @@
     width: 100%;
     height: 420px;
     transform: none;
+  }
+
+  .network {
+    clip-path: inset(0 8px);
+  }
+
+  .desktopNetwork {
+    display: none;
+  }
+
+  .mobileNetwork {
+    display: block;
   }
 
   .card {
@@ -295,11 +335,39 @@
   }
 
   .branch[data-side="left"] .category {
-    left: 36%;
+    left: 37%;
   }
 
   .branch[data-side="right"] .category {
-    left: 62%;
+    left: 63%;
+  }
+
+  .branch[data-side="left"][data-row="top"] .category,
+  .branch[data-side="left"][data-row="top"] .logos {
+    top: 22.619%;
+  }
+
+  .branch[data-side="right"][data-row="top"] .category,
+  .branch[data-side="right"][data-row="top"] .logos {
+    top: 34.524%;
+  }
+
+  .branch[data-side="left"][data-row="bottom"] .category,
+  .branch[data-side="left"][data-row="bottom"] .logos {
+    top: 65.476%;
+  }
+
+  .branch[data-side="left"][data-row="bottom"] .category {
+    left: 37%;
+  }
+
+  .branch[data-side="right"][data-row="bottom"] .category,
+  .branch[data-side="right"][data-row="bottom"] .logos {
+    top: 77.381%;
+  }
+
+  .branch[data-side="right"][data-row="bottom"] .category {
+    left: 63%;
   }
 
   .logos {
@@ -399,7 +467,6 @@
   @media (max-width: 767px) {
     .logos li:nth-child(-n + 2) {
       opacity: 1;
-      filter: none;
     }
 
     .logos li:nth-child(n + 3) {

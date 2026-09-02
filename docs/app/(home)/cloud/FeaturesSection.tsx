@@ -73,9 +73,9 @@ export function CloudFeatureCard({
   imageFirst = true,
   unoptimized = false,
 }: {
-  image: string;
-  imageDark: string;
-  imageAlt: string;
+  image?: string;
+  imageDark?: string;
+  imageAlt?: string;
   title: string;
   headline: ReactNode;
   description: ReactNode;
@@ -84,27 +84,33 @@ export function CloudFeatureCard({
   imageFirst?: boolean;
   unoptimized?: boolean;
 }) {
-  const artwork = (
-    <>
-      <Image
-        className={`${styles.featureImage} ${styles.featureImageLight}`}
-        src={image}
-        alt={imageAlt}
-        width={720}
-        height={400}
-        unoptimized={unoptimized}
-      />
-      <Image
-        className={`${styles.featureImage} ${styles.featureImageDark}`}
-        src={imageDark}
-        alt=""
+  const artwork =
+    image && imageDark ? (
+      <>
+        <Image
+          className={`${styles.featureImage} ${styles.featureImageLight}`}
+          src={image}
+          alt={imageAlt ?? ""}
+          width={720}
+          height={400}
+          unoptimized={unoptimized}
+        />
+        <Image
+          className={`${styles.featureImage} ${styles.featureImageDark}`}
+          src={imageDark}
+          alt=""
+          aria-hidden="true"
+          width={720}
+          height={400}
+          unoptimized={unoptimized}
+        />
+      </>
+    ) : (
+      <div
+        className={`${styles.featureImage} ${styles.featureImagePlaceholder}`}
         aria-hidden="true"
-        width={720}
-        height={400}
-        unoptimized={unoptimized}
       />
-    </>
-  );
+    );
 
   const copy = (
     <FeatureCopy

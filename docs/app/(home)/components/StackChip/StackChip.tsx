@@ -115,11 +115,7 @@ export function StackChip({
     .join(" ");
 
   return (
-    <div
-      className={chipClassName}
-      aria-hidden={item.isBlurred || undefined}
-      title={iconOnly ? item.name : undefined}
-    >
+    <div className={chipClassName} aria-hidden={item.isBlurred || undefined}>
       <div className={`${styles.badge} ${item.badgeClassName ?? ""}`.trim()}>
         <ChipIcon item={item} />
       </div>

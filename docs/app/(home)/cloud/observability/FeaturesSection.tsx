@@ -28,8 +28,8 @@ function FeatureCopy({
   );
 }
 
-/* Authored at 1440x800 and declared at half that, so the pair is sharp on a
-   retina screen while occupying the 720x400 slot the layout expects. */
+/* Each pair is exported at least at 2× and rendered into the 720×400 slot, so
+   the UI copy stays crisp on retina screens without shipping oversized images. */
 function FeatureShot({ shot, alt }: { shot?: string; alt: string }) {
   /* PLACEHOLDER — a step whose art has not been made yet. Dashed rather than a
      filled panel so it reads as missing rather than as a design choice, and

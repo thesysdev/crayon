@@ -5,9 +5,8 @@ import {
   FeatureGridSection,
   type GridFeature,
 } from "../../sections/FeatureGridSection/FeatureGridSection";
+import { GatewayReliabilityDashboardIllustration } from "../../sections/ProductIllustrations/ProductIllustrations";
 import styles from "./sections.module.css";
-
-const ENTELLIGENCE_CORRECTION_RATE = "XX";
 
 const STACK_FEATURES: GridFeature[] = [
   {
@@ -77,7 +76,9 @@ export function RepairSection() {
         </p>
       </div>
 
-      <div className={`${styles.diagram} ${styles.repairIllustrationSpace}`} aria-hidden="true" />
+      <div className={`${styles.diagram} ${styles.repairIllustrationSpace}`}>
+        <GatewayReliabilityDashboardIllustration />
+      </div>
 
       <aside className={styles.customerQuote}>
         <p className={styles.quoteSentence}>
@@ -93,8 +94,8 @@ export function RepairSection() {
             <span className={styles.quoteCompany}>Entelligence</span>
           </a>{" "}
           <span className={styles.quoteCopy}>
-            ships Ask Ellie in production, where Gateway corrects {ENTELLIGENCE_CORRECTION_RATE}% of
-            all generations.
+            ships Ask Ellie in production, with Gateway correcting invalid generations before they
+            reach users.
           </span>
         </p>
       </aside>

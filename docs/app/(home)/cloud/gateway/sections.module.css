@@ -102,10 +102,12 @@
 }
 
 .repairIllustrationSpace {
-  min-height: 430px;
-  border: 1px solid var(--home-hairline);
+  display: flex;
+  min-height: 0;
+  aspect-ratio: 2272 / 1064;
+  border: 0;
   border-radius: 24px;
-  background: var(--home-color-surface-soft);
+  background: transparent;
 }
 
 /* Compact light customer proof: logo mark, company, then the original claim. */
@@ -170,6 +172,8 @@
 }
 
 .adoptionSection {
+  --cloud-code-min-height: 448px;
+
   width: 100%;
   padding-block: 60px;
   background: linear-gradient(to bottom, var(--openui-background), var(--openui-foreground));
@@ -403,7 +407,7 @@ section.usageSection {
 
 @media (max-width: 1023px) {
   .repairIllustrationSpace {
-    min-height: 360px;
+    min-height: 0;
   }
 
   .pricingSection > .diagram {
@@ -440,13 +444,38 @@ section.usageSection {
 
 @media (max-width: 767px) {
   .repairIllustrationSpace {
-    min-height: 260px;
+    min-height: 0;
+    aspect-ratio: 4 / 2.4;
     border-radius: 16px;
   }
 
   .pricingControls {
     justify-content: flex-start;
   }
+
+  .planGrid {
+    grid-template-columns: none;
+    grid-auto-columns: clamp(16rem, 76vw, 18.5rem);
+    grid-auto-flow: column;
+    justify-content: start;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    padding-bottom: 8px;
+    scroll-padding-inline: 2px;
+    scroll-snap-type: inline mandatory;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .planGrid::-webkit-scrollbar {
+    display: none;
+  }
+
+  .planCard {
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+  }
+
   .problemSection {
     padding-block: 96px;
   }
@@ -499,12 +528,6 @@ section.usageSection {
 
   .adoptionSection > div {
     width: calc(100% - 32px);
-  }
-}
-
-@media (max-width: 479px) {
-  .planGrid {
-    grid-template-columns: minmax(0, 1fr);
   }
 }
 

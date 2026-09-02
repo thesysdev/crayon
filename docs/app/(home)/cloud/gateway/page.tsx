@@ -4,6 +4,7 @@ import { BevelButton } from "../../components/Button/BevelButton";
 import styles from "../../page.module.css";
 import { Footer } from "../../sections/Footer/Footer";
 import { HeroSection } from "../../sections/HeroSection/HeroSection";
+import { GatewayReliabilityIllustration } from "../../sections/ProductIllustrations/ProductIllustrations";
 import { CloudCtaSection } from "../CloudCtaSection";
 import { FaqSection } from "./FaqSection";
 import { IntegrateSection } from "./IntegrateSection";
@@ -35,6 +36,7 @@ export default function GatewayPage() {
       <div className={styles.heroShell}>
         <HeroSection
           align="left"
+          desktopFromTablet
           title={
             <span className={gatewayStyles.titleBlock}>
               <span className={gatewayStyles.eyebrow}>
@@ -74,8 +76,16 @@ export default function GatewayPage() {
           showPlaygroundButton={false}
           showGitHubBanner={false}
           showTagline={false}
-          desktopPreviewSlot={<div className={gatewayStyles.heroArtSpace} aria-hidden="true" />}
-          mobilePreviewSlot={<div className={gatewayStyles.heroArtSpace} aria-hidden="true" />}
+          desktopPreviewSlot={
+            <div className={gatewayStyles.heroArtSpace}>
+              <GatewayReliabilityIllustration />
+            </div>
+          }
+          mobilePreviewSlot={
+            <div className={gatewayStyles.heroArtSpace}>
+              <GatewayReliabilityIllustration />
+            </div>
+          }
         />
       </div>
 

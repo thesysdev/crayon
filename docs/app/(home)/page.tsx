@@ -26,6 +26,7 @@ export default function HomePage() {
       <div className={styles.heroShell}>
         <HeroSection
           align="left"
+          desktopFromTablet
           subtitle="Open Standard for Generative UI"
           showPlaygroundButton={false}
           showTagline={false}
@@ -51,18 +52,16 @@ export default function HomePage() {
               follows it, so the page proves the point before saying what it
               works with. The grid runs on its own six features — Live data and
               Cross-platform are only stated here. */}
-          <FeatureGridSection
-            gridFirst
-            showHeaderSeparator={false}
-            showBottomSeparator={false}
-          />
+          <FeatureGridSection gridFirst showHeaderSeparator={false} showBottomSeparator={false} />
 
           <div className={styles.cloudGroup}>
             <ShiroPeek />
             <CloudSection />
           </div>
           <TweetWallSection />
-          <FaqSection />
+          <div className={styles.faqBand}>
+            <FaqSection />
+          </div>
         </div>
       </div>
       <Footer />

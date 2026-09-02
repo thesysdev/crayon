@@ -692,6 +692,7 @@ export function HeroSection({
   mobilePreviewImageHeight,
   mobilePreviewImageCropTopPercent,
   mobilePreviewSlot,
+  desktopFromTablet = false,
 }: {
   title?: ReactNode;
   subtitle?: ReactNode;
@@ -747,6 +748,8 @@ export function HeroSection({
   mobilePreviewImageCropTopPercent?: number;
   /** Replaces the mobile hero screenshot with custom preview content. */
   mobilePreviewSlot?: ReactNode;
+  /** Keep the desktop hero composition through the intermediate tablet range. */
+  desktopFromTablet?: boolean;
 } = {}) {
   const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
@@ -755,7 +758,9 @@ export function HeroSection({
   const resolvedTightDesktopSpacing = tightDesktopSpacing ?? smallSubtitle;
 
   return (
-    <section className={styles.section}>
+    <section
+      className={`${styles.section} ${desktopFromTablet ? styles.desktopFromTablet : ""}`.trim()}
+    >
       <DesktopHero
         title={title}
         subtitle={subtitle}

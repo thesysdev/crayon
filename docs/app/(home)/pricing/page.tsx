@@ -101,8 +101,8 @@ export default function PricingPage() {
             }
             subtitle={
               <span className={heroStyles.subtitle}>
-                Start with the open-source framework. Add Gateway for production reliability and
-                Observability to understand what users experienced.
+                Start with the open-source framework. Add Gateway for reliable production use and
+                Observability to understand what your users experience.
               </span>
             }
             smallSubtitle
@@ -120,7 +120,7 @@ export default function PricingPage() {
         <div className={styles.softBand}>
           <section
             id="open-source-pricing"
-            className={`${layout.section} ${styles.productSection}`}
+            className={`${layout.section} ${styles.productSection} ${styles.compactProductSection}`}
             aria-labelledby="open-source-title"
           >
             <div className={layout.sectionLockup}>
@@ -197,7 +197,7 @@ export default function PricingPage() {
         <div className={styles.softBand}>
           <section
             id="observability-pricing"
-            className={`${layout.section} ${styles.productSection}`}
+            className={`${layout.section} ${styles.productSection} ${styles.compactProductSection}`}
             aria-labelledby="observability-pricing-title"
           >
             <div className={layout.sectionLockup}>

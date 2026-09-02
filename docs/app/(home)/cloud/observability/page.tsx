@@ -66,6 +66,7 @@ export default function ObservabilityPage() {
       <div className={`${styles.heroShell} ${cloudStyles.sectionRhythm}`}>
         <HeroSection
           align="left"
+          desktopFromTablet
           title={
             <span className={cloudStyles.titleBlock}>
               {/* The same lockup Cloud uses, with the product name in the tag. */}

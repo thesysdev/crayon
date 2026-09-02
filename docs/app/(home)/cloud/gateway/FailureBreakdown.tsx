@@ -3,7 +3,12 @@ import { failureTaxonomy } from "@/lib/benchmark-data";
 import styles from "./FailureBreakdown.module.css";
 
 // Exact chart textures exported from the reviewed Figma design.
-const fills = [styles.failureFill, styles.referenceFill, styles.argumentFill, chartStyles.barMuted];
+const fills = [
+  styles.failureFill,
+  styles.referenceFill,
+  styles.argumentFill,
+  styles.truncationFill,
+];
 
 const total = failureTaxonomy.reduce((sum, entry) => sum + entry.share, 0);
 const categories = failureTaxonomy.map((entry, index) => ({

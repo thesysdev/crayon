@@ -64,11 +64,11 @@ const STACK_ROWS: StackRow[] = [
     label: "Backend",
     items: [
       {
-        name: "Vercel AI SDK",
+        name: "Cursor",
         iconKind: "image",
-        slug: "vercel",
-        iconColor: "ffffff",
-        badgeClassName: stackChipStyles.badgeBlack,
+        localSrc: "/brand-icons/cursor.svg",
+        iconColor: "000000",
+        badgeClassName: `${stackChipStyles.badgeWhite} ${stackChipStyles.badgeWithBorder}`,
       },
       {
         name: "LangChain",

@@ -132,7 +132,7 @@
   overflow: hidden;
   width: 100%;
   /* 16/9 with the height at 70%. */
-  aspect-ratio: 16 / 6.3;
+  aspect-ratio: var(--product-stage-aspect, 16 / 6.3);
   padding: clamp(0.375rem, 0.7vw, 0.625rem);
   border: 1px solid var(--ps-border);
   border-radius: 20px;
@@ -145,6 +145,7 @@
 .stageFullBleed {
   padding: 0;
   border: 0;
+  border-radius: 24px;
   background: transparent;
 }
 
@@ -246,12 +247,31 @@
 
   .stage {
     /* Taller than the desktop ratio, which gets too thin at phone width. */
-    aspect-ratio: 4 / 2.4;
+    aspect-ratio: var(--product-stage-mobile-aspect, 4 / 2.4);
     border-radius: 16px;
   }
 
   .cards {
-    grid-template-columns: minmax(0, 1fr);
+    grid-template-columns: none;
+    grid-auto-columns: clamp(15.5rem, 76vw, 18rem);
+    grid-auto-flow: column;
+    justify-content: start;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    padding-bottom: 0.25rem;
+    scroll-padding-inline: 0.125rem;
+    scroll-snap-type: inline mandatory;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .cards::-webkit-scrollbar {
+    display: none;
+  }
+
+  .card {
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
   }
 
   /* The buttons go full width on phones, so stack them rather than wrapping. */

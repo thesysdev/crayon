@@ -4,7 +4,7 @@
 import type { Icon } from "@phosphor-icons/react";
 import { ArrowRight, ArrowUpRight } from "@phosphor-icons/react/dist/ssr";
 import Image from "next/image";
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import { BevelButton } from "../../components/Button/BevelButton";
 import styles from "./ProductSection.module.css";
 
@@ -61,6 +61,10 @@ export type ProductSectionProps = {
   /* Let artwork that already includes its own frame crop directly to the
      section bounds instead of nesting it inside the shared inset stage. */
   fullBleedArt?: boolean;
+  /* Optional artwork-specific ratios. Desktop exports can stay canonical;
+     mobile uses a controlled center crop instead of squeezing the frame. */
+  stageAspectRatio?: string;
+  stageMobileAspectRatio?: string;
   cards: ProductCard[];
 };
 
@@ -82,6 +86,8 @@ export function ProductSection({
   shot,
   art,
   fullBleedArt = false,
+  stageAspectRatio,
+  stageMobileAspectRatio,
   cards,
 }: ProductSectionProps) {
   const primaryVariant = tone === "dark" ? "light" : "primary";
@@ -131,7 +137,15 @@ export function ProductSection({
         <p className={styles.description}>{description}</p>
       </div>
 
-      <div className={`${styles.stage} ${fullBleedArt ? styles.stageFullBleed : ""}`.trim()}>
+      <div
+        className={`${styles.stage} ${fullBleedArt ? styles.stageFullBleed : ""}`.trim()}
+        style={
+          {
+            "--product-stage-aspect": stageAspectRatio,
+            "--product-stage-mobile-aspect": stageMobileAspectRatio,
+          } as CSSProperties
+        }
+      >
         {art ??
           (shot ? (
             <>

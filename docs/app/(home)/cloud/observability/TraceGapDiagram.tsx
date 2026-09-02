@@ -19,7 +19,7 @@ const BLIND_SPOTS = [
   },
   {
     title: "What did the user actually experience?",
-    description: "It records the response—not the UI they saw or how they used it",
+    description: "It records the response, not the UI they saw or how they used it",
   },
   {
     title: "What should we build next?",

@@ -8,6 +8,8 @@ import {
   WarningDiamond,
   Wrench,
 } from "@phosphor-icons/react/dist/ssr";
+import { createElement } from "react";
+import { GatewayReliabilityDashboardIllustration } from "../ProductIllustrations/ProductIllustrations";
 import type { ProductSectionProps } from "./ProductSection";
 
 /* The product bands, in the order the page tells them: what OpenUI is, then
@@ -67,6 +69,10 @@ export const GATEWAY_PRODUCT: ProductSectionProps = {
   },
   secondaryCta: { label: "Learn more", href: "/cloud/gateway" },
   tone: "dark",
+  art: createElement(GatewayReliabilityDashboardIllustration, { inverted: true }),
+  fullBleedArt: true,
+  stageAspectRatio: "2272 / 1064",
+  stageMobileAspectRatio: "4 / 3",
   cards: [
     {
       Icon: ArrowsLeftRight,
