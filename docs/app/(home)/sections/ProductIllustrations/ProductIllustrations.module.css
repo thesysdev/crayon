@@ -1,0 +1,923 @@
+.canvas {
+  --ill-surface: color-mix(in srgb, currentColor 5%, transparent);
+  --ill-raised: color-mix(in srgb, currentColor 8%, transparent);
+  --ill-border: color-mix(in srgb, currentColor 13%, transparent);
+  --ill-muted: color-mix(in srgb, currentColor 55%, transparent);
+
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: minmax(10rem, 0.78fr) 3rem minmax(15rem, 1.16fr) 3rem minmax(12rem, 0.94fr);
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  padding: clamp(1rem, 3vw, 2.75rem);
+  color: inherit;
+  font-family: var(--home-font-text);
+}
+
+.canvas p,
+.canvas strong,
+.canvas small,
+.canvas code {
+  margin: 0;
+}
+
+.promptCard,
+.streamCard,
+.interfaceCard,
+.modelCard,
+.gatewayCard,
+.reliableCard {
+  box-sizing: border-box;
+  border: 1px solid var(--ill-border);
+  border-radius: 18px;
+  background: var(--ill-surface);
+}
+
+.promptCard {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 1rem;
+}
+
+.promptCard p {
+  color: var(--ill-muted);
+  font-size: clamp(0.72rem, 1vw, 0.9rem);
+  line-height: 1.45;
+}
+
+.avatar,
+.productMark {
+  display: grid;
+  flex: none;
+  width: 1.8rem;
+  height: 1.8rem;
+  place-items: center;
+  border: 1px solid var(--ill-border);
+  border-radius: 9px;
+  font-family: var(--home-font-display);
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.productMark {
+  border-color: var(--ps-mark-bg);
+  background: var(--ps-mark-bg);
+  color: var(--ps-mark-fg);
+}
+
+.connector {
+  position: relative;
+  display: flex;
+  justify-content: flex-end;
+  color: var(--ill-muted);
+}
+
+.connector::before {
+  position: absolute;
+  top: 50%;
+  right: 0.7rem;
+  left: 0;
+  height: 1px;
+  background: var(--ill-border);
+  content: "";
+}
+
+.connector svg {
+  position: relative;
+}
+
+.streamCard,
+.gatewayCard {
+  padding: 0.85rem;
+}
+
+.cardTopline,
+.interfaceHeader,
+.providerDots,
+.delivered {
+  display: flex;
+  align-items: center;
+}
+
+.cardTopline {
+  gap: 0.6rem;
+}
+
+.cardTopline strong {
+  font-family: var(--home-font-display);
+  font-size: clamp(0.78rem, 1.2vw, 1rem);
+  font-weight: 550;
+}
+
+.livePill,
+.filterChip,
+.streamStatus,
+.delivered {
+  border: 1px solid var(--ill-border);
+  border-radius: 999px;
+  color: var(--ill-muted);
+  font-size: clamp(0.55rem, 0.8vw, 0.7rem);
+  line-height: 1;
+}
+
+.livePill {
+  margin-left: auto;
+  padding: 0.3rem 0.45rem;
+}
+
+.tokenStack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  margin-top: 0.85rem;
+}
+
+.tokenStack code,
+.modelCard code,
+.patchRow code {
+  font-family: var(--font-geist-mono, monospace);
+  font-size: clamp(0.55rem, 0.8vw, 0.72rem);
+}
+
+.tokenStack code {
+  padding: 0.42rem 0.55rem;
+  border-radius: 7px;
+  background: var(--ill-raised);
+  color: var(--ill-muted);
+}
+
+.tokenStack code:nth-child(2),
+.tokenStack code:nth-child(3) {
+  color: currentColor;
+}
+
+.libraryRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.75rem;
+}
+
+.libraryRow span {
+  padding: 0.3rem 0.45rem;
+  border: 1px solid var(--ill-border);
+  border-radius: 999px;
+  color: var(--ill-muted);
+  font-size: clamp(0.5rem, 0.72vw, 0.64rem);
+}
+
+.interfaceCard {
+  padding: 0.9rem;
+}
+
+.interfaceHeader {
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.interfaceHeader > span:first-child {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.interfaceHeader small,
+.miniMetric span {
+  color: var(--ill-muted);
+  font-size: clamp(0.55rem, 0.8vw, 0.68rem);
+}
+
+.interfaceHeader strong,
+.miniMetric strong {
+  font-family: var(--home-font-display);
+  font-size: clamp(0.86rem, 1.4vw, 1.2rem);
+}
+
+.filterChip {
+  padding: 0.38rem 0.52rem;
+}
+
+.chart {
+  position: relative;
+  height: clamp(3rem, 7vw, 5rem);
+  margin-top: 0.75rem;
+  overflow: hidden;
+  border-radius: 8px;
+  background: linear-gradient(to bottom, transparent, var(--ill-surface));
+}
+
+.chartGrid {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(to bottom, transparent 0 22px, var(--ill-border) 23px);
+}
+
+.chart svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.chart path {
+  fill: none;
+  stroke: #2589ff;
+  stroke-width: 2;
+  vector-effect: non-scaling-stroke;
+}
+
+.tableRows {
+  display: flex;
+  flex-direction: column;
+  margin-top: 0.55rem;
+}
+
+.tableRows span {
+  display: grid;
+  grid-template-columns: 6px 1fr auto;
+  align-items: center;
+  gap: 0.4rem;
+  padding-block: 0.35rem;
+  border-top: 1px solid var(--ill-border);
+  color: var(--ill-muted);
+  font-size: clamp(0.5rem, 0.75vw, 0.65rem);
+}
+
+.tableRows i {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #2589ff;
+}
+
+.tableRows b {
+  color: currentColor;
+  font-weight: 500;
+}
+
+.modelCard,
+.reliableCard {
+  padding: 1rem;
+}
+
+.providerDots {
+  gap: 0.35rem;
+  margin: 1rem 0 0.7rem;
+}
+
+.providerDots span {
+  width: 1.45rem;
+  height: 1.45rem;
+  border: 1px solid var(--ill-border);
+  border-radius: 50%;
+  background: var(--ill-raised);
+}
+
+.providerDots span:nth-child(1) {
+  background: #111;
+}
+.providerDots span:nth-child(2) {
+  background: #d97757;
+}
+.providerDots span:nth-child(3) {
+  background: #4285f4;
+}
+
+.modelCard code {
+  display: block;
+  padding: 0.42rem 0.5rem;
+  color: var(--ill-muted);
+}
+
+.modelCard .badChunk {
+  border-left: 2px solid #e5484d;
+  background: color-mix(in srgb, #e5484d 10%, transparent);
+  color: #e5484d;
+}
+
+.streamStatus {
+  display: inline-flex;
+  margin-top: 0.7rem;
+  padding: 0.35rem 0.5rem;
+}
+
+.reliabilitySteps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.45rem;
+  margin-top: 0.85rem;
+}
+
+.reliabilitySteps > span {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.65rem;
+  border: 1px solid var(--ill-border);
+  border-radius: 9px;
+  background: var(--ill-surface);
+}
+
+.reliabilitySteps b {
+  font-size: clamp(0.6rem, 0.86vw, 0.75rem);
+  font-weight: 550;
+}
+
+.reliabilitySteps i,
+.reliabilitySteps em,
+.reliabilitySteps small {
+  align-self: flex-start;
+  color: var(--ill-muted);
+  font-size: clamp(0.5rem, 0.72vw, 0.62rem);
+  font-style: normal;
+}
+
+.reliabilitySteps i {
+  display: grid;
+  width: 1rem;
+  height: 1rem;
+  place-items: center;
+  border-radius: 50%;
+  background: #049156;
+  color: #fff;
+}
+
+.reliabilitySteps i svg {
+  width: 0.65rem;
+}
+
+.repairStep {
+  box-shadow: inset 0 2px 0 #e5484d;
+}
+
+.patchRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.4rem;
+  margin-top: 0.55rem;
+}
+
+.patchRow code {
+  padding: 0.5rem;
+  border-radius: 7px;
+  background: color-mix(in srgb, #e5484d 9%, transparent);
+  color: #e5484d;
+}
+
+.patchRow code:last-child {
+  background: color-mix(in srgb, #049156 10%, transparent);
+  color: #049156;
+}
+
+.successDot {
+  width: 0.55rem;
+  height: 0.55rem;
+  margin-left: auto;
+  border-radius: 50%;
+  background: #049156;
+}
+
+.miniMetric {
+  display: flex;
+  flex-direction: column;
+  gap: 0.18rem;
+  margin-top: 1rem;
+}
+
+.miniBars {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.35rem;
+  height: clamp(2.75rem, 6vw, 4.25rem);
+  margin-top: 0.6rem;
+}
+
+.miniBars i {
+  flex: 1;
+  border-radius: 4px 4px 1px 1px;
+  background: color-mix(in srgb, #2589ff 55%, transparent);
+}
+
+.miniBars i:nth-child(1) {
+  height: 44%;
+}
+.miniBars i:nth-child(2) {
+  height: 68%;
+}
+.miniBars i:nth-child(3) {
+  height: 56%;
+}
+.miniBars i:nth-child(4) {
+  height: 84%;
+}
+.miniBars i:nth-child(5) {
+  height: 100%;
+}
+
+.delivered {
+  gap: 0.3rem;
+  width: fit-content;
+  margin-top: 0.65rem;
+  padding: 0.35rem 0.48rem;
+  color: #049156;
+}
+
+@media (max-width: 767px) {
+  .canvas {
+    grid-template-columns: minmax(4.8rem, 0.8fr) 1.4rem minmax(7.6rem, 1.2fr) 1.4rem minmax(
+        5.6rem,
+        0.9fr
+      );
+    padding: 0.65rem;
+  }
+
+  .connector svg {
+    width: 11px;
+  }
+  .connector::before {
+    right: 0.45rem;
+  }
+  .promptCard,
+  .modelCard,
+  .reliableCard {
+    padding: 0.55rem;
+    border-radius: 10px;
+  }
+  .streamCard,
+  .gatewayCard,
+  .interfaceCard {
+    padding: 0.5rem;
+    border-radius: 10px;
+  }
+  .avatar,
+  .productMark {
+    width: 1.2rem;
+    height: 1.2rem;
+    border-radius: 5px;
+    font-size: 0.5rem;
+  }
+  .promptCard {
+    gap: 0.4rem;
+  }
+  .libraryRow,
+  .providerDots,
+  .delivered,
+  .tableRows {
+    display: none;
+  }
+  .reliabilitySteps > span {
+    padding: 0.35rem;
+  }
+  .reliabilitySteps svg {
+    width: 12px;
+    height: 12px;
+  }
+  .patchRow {
+    grid-template-columns: 1fr;
+  }
+  .patchRow code:first-child {
+    display: none;
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/* Gateway hero: validation flows upward into the rendered interface.         */
+/* -------------------------------------------------------------------------- */
+.simpleGateway {
+  --gateway-line: color-mix(in srgb, currentColor 18%, transparent);
+  --gateway-surface: color-mix(in srgb, currentColor 4.5%, var(--openui-background));
+  --gateway-raised: var(--openui-foreground);
+  --gateway-border: color-mix(in srgb, currentColor 13%, transparent);
+  --gateway-muted: color-mix(in srgb, currentColor 55%, transparent);
+  --gateway-error: #d9474f;
+  --gateway-success: #07864d;
+  --gateway-pulse: #2e6bff;
+
+  position: relative;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  min-height: 360px;
+  overflow: hidden;
+  color: inherit;
+  font-family: var(--home-font-text);
+  isolation: isolate;
+}
+
+.simpleGateway::before {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(var(--gateway-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--gateway-line) 1px, transparent 1px);
+  background-size: 64px 64px;
+  opacity: 0.18;
+  mask-image: radial-gradient(circle at center, #000, transparent 78%);
+  content: "";
+}
+
+.gatewayRoutes {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.route {
+  fill: none;
+  stroke: var(--gateway-line);
+  stroke-width: 1.25;
+  vector-effect: non-scaling-stroke;
+}
+
+.routePulse {
+  fill: var(--gateway-pulse);
+  filter: drop-shadow(0 0 2px color-mix(in srgb, var(--gateway-pulse) 55%, transparent));
+}
+
+.gatewayChecks,
+.renderedResponse {
+  position: absolute;
+  z-index: 2;
+  overflow: hidden;
+  border: 1px solid var(--gateway-border);
+  background: var(--gateway-raised);
+}
+
+.gatewayChecks {
+  bottom: 10%;
+  left: 7.5%;
+  width: min(36%, 420px);
+  border-radius: 16px;
+}
+
+.gatewayCheckHeader,
+.responseHeader,
+.responseFooter {
+  display: flex;
+  align-items: center;
+}
+
+.gatewayCheckHeader {
+  gap: 0.65rem;
+  padding: 0.85rem 0.9rem;
+  border-bottom: 1px solid var(--gateway-border);
+}
+
+.gatewayMark {
+  display: grid;
+  flex: none;
+  width: 1.75rem;
+  height: 1.75rem;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--ps-mark-bg, var(--openui-text-neutral-primary));
+  color: var(--ps-mark-fg, var(--openui-foreground));
+  font-family: var(--home-font-display);
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+.gatewayCheckHeader > span:nth-child(2) {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.12rem;
+}
+
+.gatewayCheckHeader strong {
+  font-family: var(--home-font-display);
+  font-size: clamp(0.7rem, 1.05vw, 0.88rem);
+  font-weight: 560;
+}
+
+.gatewayCheckHeader small {
+  color: var(--gateway-muted);
+  font-size: clamp(0.52rem, 0.78vw, 0.66rem);
+}
+
+.liveStatus,
+.routeChip,
+.deliveredBadge {
+  border: 1px solid var(--gateway-border);
+  border-radius: 999px;
+  background: var(--gateway-raised);
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.liveStatus {
+  padding: 0.28rem 0.42rem;
+  color: var(--gateway-success);
+  font-size: clamp(0.48rem, 0.7vw, 0.6rem);
+}
+
+.gatewayCheckRows {
+  display: grid;
+  padding: 0.45rem 0.7rem 0.6rem;
+}
+
+.gatewayCheckRows > span {
+  display: grid;
+  grid-template-columns: 1rem minmax(4.4rem, 0.7fr) minmax(0, 1.3fr);
+  align-items: center;
+  gap: 0.45rem;
+  min-width: 0;
+  padding: 0.54rem 0.2rem;
+  border-bottom: 1px solid var(--gateway-border);
+}
+
+.gatewayCheckRows > span:last-child {
+  border-bottom: 0;
+}
+
+.gatewayCheckRows b,
+.gatewayCheckRows code {
+  min-width: 0;
+  overflow: hidden;
+  font-size: clamp(0.53rem, 0.8vw, 0.68rem);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.gatewayCheckRows b {
+  font-weight: 520;
+}
+
+.gatewayCheckRows code {
+  color: var(--gateway-muted);
+  font-family: var(--home-font-mono);
+  text-align: right;
+}
+
+.checkState,
+.errorState {
+  display: grid;
+  width: 1rem;
+  height: 1rem;
+  place-items: center;
+  border-radius: 50%;
+  color: #fff;
+}
+
+.checkState {
+  background: var(--gateway-success);
+}
+
+.errorState {
+  background: var(--gateway-error);
+}
+
+.failedCheck code {
+  color: var(--gateway-error);
+}
+
+.gatewayCheckRows > span:last-child code {
+  color: var(--gateway-success);
+}
+
+.renderedResponse {
+  top: 9%;
+  right: 7.5%;
+  width: min(37%, 440px);
+  border-radius: 18px;
+}
+
+.responseHeader {
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.9rem 1rem 0.75rem;
+}
+
+.responseHeader > span:first-child {
+  display: flex;
+  flex-direction: column;
+  gap: 0.14rem;
+}
+
+.responseHeader small {
+  color: var(--gateway-muted);
+  font-size: clamp(0.52rem, 0.78vw, 0.66rem);
+}
+
+.responseHeader strong {
+  font-family: var(--home-font-display);
+  font-size: clamp(0.95rem, 1.5vw, 1.25rem);
+  font-weight: 560;
+}
+
+.deliveredBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.32rem;
+  padding: 0.35rem 0.48rem;
+  color: var(--gateway-success);
+  font-size: clamp(0.48rem, 0.7vw, 0.6rem);
+}
+
+.responseChart {
+  position: relative;
+  height: clamp(4.25rem, 9vw, 6.7rem);
+  margin-inline: 1rem;
+  overflow: hidden;
+  border-radius: 9px;
+  background: linear-gradient(to bottom, transparent, color-mix(in srgb, #2589ff 8%, transparent));
+}
+
+.responseChart .chartGrid {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(to bottom, transparent 0 31px, var(--gateway-border) 32px);
+}
+
+.responseChart svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.responseChart path {
+  fill: none;
+  stroke: #2589ff;
+  stroke-width: 2;
+  vector-effect: non-scaling-stroke;
+}
+
+.responseFooter {
+  justify-content: space-between;
+  margin-top: 0.7rem;
+  padding: 0.65rem 1rem 0.8rem;
+  border-top: 1px solid var(--gateway-border);
+  color: var(--gateway-muted);
+  font-size: clamp(0.48rem, 0.7vw, 0.6rem);
+}
+
+.routeChip {
+  position: absolute;
+  z-index: 3;
+  padding: 0.4rem 0.58rem;
+  font-family: var(--home-font-mono);
+  font-size: clamp(0.5rem, 0.74vw, 0.64rem);
+}
+
+.validateChip {
+  top: 51%;
+  left: 42%;
+}
+
+.repairChip {
+  top: 62%;
+  left: 53%;
+  color: var(--gateway-error);
+}
+
+.streamChip {
+  top: 43%;
+  left: 48%;
+  color: var(--gateway-success);
+}
+
+@media (max-width: 767px) {
+  .simpleGateway {
+    min-height: 0;
+  }
+
+  .simpleGateway::before {
+    background-size: 32px 32px;
+  }
+
+  .gatewayChecks {
+    bottom: 8%;
+    left: 4%;
+    width: 46%;
+    border-radius: 10px;
+  }
+
+  .gatewayCheckHeader {
+    gap: 0.35rem;
+    padding: 0.48rem;
+  }
+
+  .gatewayMark {
+    width: 1.05rem;
+    height: 1.05rem;
+    font-size: 0.42rem;
+  }
+
+  .gatewayCheckHeader strong {
+    font-size: 0.48rem;
+  }
+
+  .gatewayCheckHeader small,
+  .liveStatus {
+    font-size: 0.36rem;
+  }
+
+  .liveStatus {
+    padding: 0.2rem 0.28rem;
+  }
+
+  .gatewayCheckRows {
+    padding: 0.25rem 0.38rem 0.3rem;
+  }
+
+  .gatewayCheckRows > span {
+    grid-template-columns: 0.7rem minmax(2.5rem, 0.75fr) minmax(0, 1.25fr);
+    gap: 0.24rem;
+    padding: 0.3rem 0.1rem;
+  }
+
+  .gatewayCheckRows b,
+  .gatewayCheckRows code {
+    font-size: 0.36rem;
+  }
+
+  .checkState,
+  .errorState {
+    width: 0.65rem;
+    height: 0.65rem;
+  }
+
+  .checkState svg,
+  .errorState svg {
+    width: 7px;
+    height: 7px;
+  }
+
+  .renderedResponse {
+    top: 7%;
+    right: 4%;
+    width: 44%;
+    border-radius: 10px;
+  }
+
+  .responseHeader {
+    gap: 0.4rem;
+    padding: 0.5rem 0.55rem 0.4rem;
+  }
+
+  .responseHeader small,
+  .deliveredBadge,
+  .responseFooter {
+    font-size: 0.36rem;
+  }
+
+  .responseHeader strong {
+    font-size: 0.72rem;
+  }
+
+  .deliveredBadge {
+    gap: 0.15rem;
+    padding: 0.22rem 0.28rem;
+  }
+
+  .deliveredBadge svg {
+    width: 7px;
+    height: 7px;
+  }
+
+  .responseChart {
+    height: 2.7rem;
+    margin-inline: 0.55rem;
+    border-radius: 5px;
+  }
+
+  .responseFooter {
+    margin-top: 0.35rem;
+    padding: 0.35rem 0.55rem 0.45rem;
+  }
+
+  .routeChip {
+    padding: 0.24rem 0.32rem;
+    font-size: 0.36rem;
+  }
+
+  .validateChip {
+    top: 49%;
+    left: 42%;
+  }
+
+  .repairChip {
+    top: 64%;
+    left: 47%;
+  }
+
+  .streamChip {
+    top: 40%;
+    left: 45%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .routePulse {
+    display: none;
+  }
+}

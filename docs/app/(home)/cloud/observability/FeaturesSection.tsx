@@ -43,22 +43,32 @@ function FeatureShot({ shot, alt }: { shot?: string; alt: string }) {
     );
   }
 
+  const focalClass = shot.startsWith("triage")
+    ? styles.featureImageTriage
+    : shot.startsWith("evals")
+      ? styles.featureImageEvals
+      : "";
+
   return (
     <>
       <Image
-        className={`${styles.featureImage} ${styles.featureImageLight}`}
+        className={`${styles.featureImage} ${styles.featureImageLight} ${focalClass}`.trim()}
         src={`/openui-observability/${shot}-light.webp`}
         alt={alt}
         width={720}
         height={400}
+        quality={95}
+        sizes="(max-width: 767px) calc(100vw - 32px), 720px"
       />
       <Image
-        className={`${styles.featureImage} ${styles.featureImageDark}`}
+        className={`${styles.featureImage} ${styles.featureImageDark} ${focalClass}`.trim()}
         src={`/openui-observability/${shot}-dark.webp`}
         alt=""
         aria-hidden="true"
         width={720}
         height={400}
+        quality={95}
+        sizes="(max-width: 767px) calc(100vw - 32px), 720px"
       />
     </>
   );
@@ -97,6 +107,7 @@ const FEATURES: Feature[] = [
   },
   {
     title: "Triage",
+    shot: "triage-figma",
     headline: (
       <>
         Find the sessions
@@ -105,7 +116,7 @@ const FEATURES: Feature[] = [
       </>
     ),
     description:
-      "Ask for failed sessions, grouped by issue. See which capabilities users want most and which they can’t find.",
+      "Review issues by severity, compare what users asked with what they saw, and check related occurrences before opening a session.",
   },
   {
     title: "Annotations",
@@ -122,9 +133,10 @@ const FEATURES: Feature[] = [
   },
   {
     title: "Evals",
+    shot: "evals-figma",
     headline: "Catch repeat issues before users do",
     description:
-      "Turn flagged responses into eval cases for Braintrust, LangSmith, or your existing eval tools.",
+      "Turn production failures into repeatable evals, rerun them after changes, and catch regressions before they reach users.",
   },
 ];
 

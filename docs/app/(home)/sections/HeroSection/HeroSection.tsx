@@ -322,6 +322,7 @@ function DesktopHero({
   tightDesktopSpacing,
   splitLockup,
   flushInnerInlinePadding,
+  showCommand,
   showPlaygroundButton,
   githubRepoUrl,
   githubButtonLabel,
@@ -341,6 +342,7 @@ function DesktopHero({
   tightDesktopSpacing: boolean;
   splitLockup: boolean;
   flushInnerInlinePadding: boolean;
+  showCommand: boolean;
   showPlaygroundButton: boolean;
   githubRepoUrl?: string;
   githubButtonLabel?: string;
@@ -386,22 +388,24 @@ function DesktopHero({
           } ${isLeft ? styles.desktopCtaStackLeft : ""}`.trim()}
         >
           {isLeft && githubRepoUrl && <DesktopGithubStarButton href={githubRepoUrl} />}
-          <div className={styles.commandGroup}>
-            {commandSlot ? (
-              commandSlot
-            ) : (
-              <div className={styles.commandItem}>
-                {commandVariants(command).length > 0 ? (
-                  <CommandDropdownButton command={command} variants={commandVariants(command)} />
-                ) : (
-                  <NpmButton command={command} />
-                )}
-              </div>
-            )}
-            {/* Sits inside the command group so it lines up with the command
-                rather than with the CTA stack around it. */}
-            {commandTrailing}
-          </div>
+          {showCommand && (
+            <div className={styles.commandGroup}>
+              {commandSlot ? (
+                commandSlot
+              ) : (
+                <div className={styles.commandItem}>
+                  {commandVariants(command).length > 0 ? (
+                    <CommandDropdownButton command={command} variants={commandVariants(command)} />
+                  ) : (
+                    <NpmButton command={command} />
+                  )}
+                </div>
+              )}
+              {/* Sits inside the command group so it lines up with the command
+                  rather than with the CTA stack around it. */}
+              {commandTrailing}
+            </div>
+          )}
           {showPlaygroundButton && <DesktopPlaygroundButton />}
           {!isLeft && githubRepoUrl && (
             <DesktopGithubButton href={githubRepoUrl} label={githubButtonLabel} />
@@ -428,6 +432,7 @@ function MobileHero({
   commandTrailing,
   compact,
   smallSubtitle,
+  showCommand,
   showPlaygroundButton,
   showGitHubBanner,
   githubRepoUrl,
@@ -438,6 +443,7 @@ function MobileHero({
   mobileImageHeight,
   mobileImageCropTopPercent = 0,
   mobilePreviewSlot,
+  showPreview,
 }: {
   theme: HeroTheme;
   title: ReactNode;
@@ -451,6 +457,7 @@ function MobileHero({
   commandTrailing?: ReactNode;
   compact: boolean;
   smallSubtitle: boolean;
+  showCommand: boolean;
   showPlaygroundButton: boolean;
   showGitHubBanner: boolean;
   githubRepoUrl?: string;
@@ -461,6 +468,7 @@ function MobileHero({
   mobileImageHeight?: number;
   mobileImageCropTopPercent?: number;
   mobilePreviewSlot?: ReactNode;
+  showPreview: boolean;
 }) {
   const [platform, setPlatform] = useState<CommandPlatform>("macos");
   const activeCommand = platform === "windows" && secondaryCommand ? secondaryCommand : command;
@@ -513,47 +521,51 @@ function MobileHero({
         {showGitHubBanner && (
           <GitHubBanner href={githubRepoUrl} className={styles.mobileCtaButtonWidth} />
         )}
-        <div className={styles.commandGroup}>
-          {commandSlot ? (
-            commandSlot
-          ) : (
-            <>
-              <CommandTabs
-                platform={platform}
-                setPlatform={setPlatform}
-                secondaryCommand={secondaryCommand}
-              />
-              <div className={styles.commandItem}>
-                <NpmButton className={styles.mobileCtaButtonWidth} command={activeCommand} />
-              </div>
-            </>
-          )}
-          {commandTrailing}
-        </div>
+        {showCommand && (
+          <div className={styles.commandGroup}>
+            {commandSlot ? (
+              commandSlot
+            ) : (
+              <>
+                <CommandTabs
+                  platform={platform}
+                  setPlatform={setPlatform}
+                  secondaryCommand={secondaryCommand}
+                />
+                <div className={styles.commandItem}>
+                  <NpmButton className={styles.mobileCtaButtonWidth} command={activeCommand} />
+                </div>
+              </>
+            )}
+            {commandTrailing}
+          </div>
+        )}
         {showPlaygroundButton && <MobilePlaygroundButton className={styles.mobileCtaButtonWidth} />}
       </div>
 
       {/* Mobile hero image */}
-      <div
-        className={`${styles.mobileIllustrationViewport} ${
-          mobileImageOverride ? styles.mobileIllustrationViewportFramed : ""
-        } ${mobilePreviewSlot ? styles.mobileIllustrationViewportSlot : ""}`.trim()}
-        style={viewportStyle}
-      >
-        {mobilePreviewSlot ?? (
-          <img
-            src={mobileHeroImage}
-            alt={mobileImageAlt ?? "OpenUI mobile hero preview"}
-            width={naturalWidth}
-            height={naturalHeight}
-            className={styles.mobileIllustrationImage}
-            style={imageStyle}
-            loading="eager"
-            decoding="async"
-            fetchPriority="high"
-          />
-        )}
-      </div>
+      {showPreview && (
+        <div
+          className={`${styles.mobileIllustrationViewport} ${
+            mobileImageOverride ? styles.mobileIllustrationViewportFramed : ""
+          } ${mobilePreviewSlot ? styles.mobileIllustrationViewportSlot : ""}`.trim()}
+          style={viewportStyle}
+        >
+          {mobilePreviewSlot ?? (
+            <img
+              src={mobileHeroImage}
+              alt={mobileImageAlt ?? "OpenUI mobile hero preview"}
+              width={naturalWidth}
+              height={naturalHeight}
+              className={styles.mobileIllustrationImage}
+              style={imageStyle}
+              loading="eager"
+              decoding="async"
+              fetchPriority="high"
+            />
+          )}
+        </div>
+      )}
     </div>
   );
 }
@@ -657,6 +669,7 @@ export function HeroSection({
   tightDesktopSpacing,
   splitLockup = false,
   flushInnerInlinePadding = false,
+  showCommand = true,
   showPlaygroundButton = true,
   desktopPreviewImage,
   desktopPreviewImageDark,
@@ -665,6 +678,7 @@ export function HeroSection({
   desktopPreviewImageHeight,
   desktopPreviewSlot,
   widePreview = false,
+  showPreview = true,
   showTagline = true,
   tagline,
   taglineCompact = false,
@@ -700,6 +714,8 @@ export function HeroSection({
   splitLockup?: boolean;
   /** Remove horizontal padding from the desktop hero's inner container. */
   flushInnerInlinePadding?: boolean;
+  /** Hide the primary command area on editorial or text-only pages. */
+  showCommand?: boolean;
   showPlaygroundButton?: boolean;
   desktopPreviewImage?: string;
   /** Dark-theme variant of the desktop preview image (falls back to the light one). */
@@ -710,6 +726,8 @@ export function HeroSection({
   /** Replaces the desktop hero screenshot with custom preview content. */
   desktopPreviewSlot?: ReactNode;
   widePreview?: boolean;
+  /** Hide the illustration for text-only pages, such as pricing. */
+  showPreview?: boolean;
   showTagline?: boolean;
   tagline?: ReactNode;
   taglineCompact?: boolean;
@@ -753,6 +771,7 @@ export function HeroSection({
         tightDesktopSpacing={resolvedTightDesktopSpacing}
         splitLockup={splitLockup}
         flushInnerInlinePadding={flushInnerInlinePadding}
+        showCommand={showCommand}
         showPlaygroundButton={showPlaygroundButton}
         githubRepoUrl={githubRepoUrl}
         githubButtonLabel={githubButtonLabel}
@@ -769,6 +788,7 @@ export function HeroSection({
         commandTrailing={commandTrailing}
         compact={compact}
         smallSubtitle={smallSubtitle}
+        showCommand={showCommand}
         showPlaygroundButton={showPlaygroundButton}
         showGitHubBanner={showGitHubBanner}
         githubRepoUrl={githubRepoUrl}
@@ -779,17 +799,20 @@ export function HeroSection({
         mobileImageHeight={mobilePreviewImageHeight}
         mobileImageCropTopPercent={mobilePreviewImageCropTopPercent}
         mobilePreviewSlot={mobilePreviewSlot}
+        showPreview={showPreview}
       />
-      <PreviewImage
-        theme={theme}
-        desktopImageOverride={desktopPreviewImage}
-        desktopImageOverrideDark={desktopPreviewImageDark}
-        desktopImageAlt={desktopPreviewImageAlt}
-        desktopImageWidth={desktopPreviewImageWidth}
-        desktopImageHeight={desktopPreviewImageHeight}
-        widePreview={widePreview}
-        desktopPreviewSlot={desktopPreviewSlot}
-      />
+      {showPreview && (
+        <PreviewImage
+          theme={theme}
+          desktopImageOverride={desktopPreviewImage}
+          desktopImageOverrideDark={desktopPreviewImageDark}
+          desktopImageAlt={desktopPreviewImageAlt}
+          desktopImageWidth={desktopPreviewImageWidth}
+          desktopImageHeight={desktopPreviewImageHeight}
+          widePreview={widePreview}
+          desktopPreviewSlot={desktopPreviewSlot}
+        />
+      )}
       {showTagline && <Tagline compact={taglineCompact}>{tagline}</Tagline>}
     </section>
   );

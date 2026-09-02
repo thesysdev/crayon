@@ -8,6 +8,7 @@ import { FeatureGridSection } from "./sections/FeatureGridSection/FeatureGridSec
 import { Footer } from "./sections/Footer/Footer";
 import { HeroSection } from "./sections/HeroSection/HeroSection";
 import { LogoStrip } from "./sections/LogoStrip/LogoStrip";
+import { OpenSourceIllustration } from "./sections/ProductIllustrations/ProductIllustrations";
 import { ProductSection } from "./sections/ProductSection/ProductSection";
 import { LANG_PRODUCT } from "./sections/ProductSection/products";
 import { ShiroPeek } from "./sections/ShiroPeek/ShiroPeek";
@@ -42,7 +43,7 @@ export default function HomePage() {
       <div className={styles.contentSection}>
         <div className={styles.contentShell}>
           <div className={styles.langBand}>
-            <ProductSection {...LANG_PRODUCT} />
+            <ProductSection {...LANG_PRODUCT} art={<OpenSourceIllustration />} fullBleedArt />
           </div>
           {/* The benchmark header and the compatibility band, without the feature
               grid that used to sit between them. */}

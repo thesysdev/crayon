@@ -1,43 +1,49 @@
-import { useId, type CSSProperties, type ReactNode } from "react";
+import { useId, type CSSProperties } from "react";
 import { StackChip, type StackChipItem } from "../../components/StackChip/StackChip";
 import styles from "./CompatibilityDiagram.module.css";
 
 type StackGroup = { label: string; items: StackChipItem[] };
 
-// Anchors on the exported Figma rail, in its 480 × 210 visible area.
-// The six-logo rail keeps every existing integration visible without clipping.
-const LOGO_ANCHORS = {
-  5: [
-    [44, 46],
-    [140, 46],
-    [220, 46],
-    [268.8, 105],
-    [288, 178],
-  ],
-  6: [
-    [44, 46],
-    [116, 46],
-    [188, 46],
-    [266.85, 65.125],
-    [268.8, 132],
-    [306, 178],
-  ],
-};
+const CONNECTORS = [
+  "M640 306H528C477 306 446 279 446 235C446 195 418 166 376 166H0",
+  "M640 306H528C477 306 446 333 446 377C446 417 418 446 376 446H0",
+  "M640 306H752C803 306 834 279 834 235C834 195 862 166 904 166H1280",
+  "M640 306H752C803 306 834 333 834 377C834 417 862 446 904 446H1280",
+];
 
-export function CompatibilityDiagram({
-  groups,
-  description,
-}: {
-  groups: StackGroup[];
-  description?: ReactNode;
-}) {
+export function CompatibilityDiagram({ groups }: { groups: StackGroup[] }) {
   const id = useId();
 
   return (
     <div className={styles.diagram}>
+      <svg
+        className={styles.network}
+        viewBox="0 0 1280 612"
+        preserveAspectRatio="none"
+        aria-hidden="true"
+      >
+        <g className={styles.rails}>
+          {CONNECTORS.map((path) => (
+            <path key={path} d={path} vectorEffect="non-scaling-stroke" />
+          ))}
+        </g>
+        <g className={styles.pulses}>
+          {CONNECTORS.map((path, index) => (
+            <path
+              key={path}
+              d={path}
+              pathLength="1"
+              vectorEffect="non-scaling-stroke"
+              style={{ "--pulse-delay": `${index * -1.4}s` } as CSSProperties}
+            />
+          ))}
+        </g>
+      </svg>
+
       <div className={styles.card}>
-        <h2 id="favorite-stack-title">Works with any stack</h2>
-        {description && <p>{description}</p>}
+        <div className={styles.cardInner}>
+          <h2 id="favorite-stack-title">Works with any stack</h2>
+        </div>
       </div>
 
       {groups.map((group, index) => (
@@ -49,28 +55,15 @@ export function CompatibilityDiagram({
           role="group"
           aria-labelledby={`${id}-${index}`}
         >
-          <span className={styles.connector} aria-hidden="true" />
           <h3 id={`${id}-${index}`} className={styles.category}>
             {group.label}
           </h3>
           <ul className={styles.logos}>
-            {group.items.map((item, itemIndex) => {
-              const anchors = LOGO_ANCHORS[group.items.length === 6 ? 6 : 5];
-              const [x, y] = anchors[index < 2 ? itemIndex : anchors.length - 1 - itemIndex];
-              return (
-                <li
-                  key={item.name}
-                  style={
-                    {
-                      "--logo-x": `${(x / 480) * 100}%`,
-                      "--logo-y": `${y}px`,
-                    } as CSSProperties
-                  }
-                >
-                  <StackChip item={{ ...item, isBlurred: false }} iconOnly />
-                </li>
-              );
-            })}
+            {group.items.slice(0, 4).map((item) => (
+              <li key={item.name}>
+                <StackChip item={{ ...item, isBlurred: false }} iconOnly />
+              </li>
+            ))}
           </ul>
         </div>
       ))}

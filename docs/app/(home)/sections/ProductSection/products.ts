@@ -41,17 +41,11 @@ export const LANG_PRODUCT: ProductSectionProps = {
      it is internal. */
   name: "OpenUI",
   tag: "Open Source",
-  /* Shaped like A2UI's lockup — a category line, then a sentence that says what
-     it does and ends on the difference. "Open-source language and runtime"
-     described the machinery rather than the payoff, and open source is table
-     stakes here: A2UI and json-render are both Apache-licensed and neither
-     mentions it. The difference worth naming is the one they share and we do
-     not: they make the model write JSON. The numbers are the ones the benchmark
-     header below already uses, so the band and the section under it cite the
-     same comparison rather than two different ones. */
+  /* Keep the performance claim qualitative here. The benchmark fold directly
+     below carries the supporting numbers and comparison details. */
   headline: "A framework for agent-driven interfaces.",
   description:
-    "Not just chat: agents stream live dashboards, forms, tables, and charts as complete interfaces. Up to 3\u00d7 faster and 67% more token efficient than JSON, with fewer invalid UI responses.",
+    "Make your AI agents stream live charts, forms, cards, tables, and dashboards faster, with fewer tokens.",
   secondaryCta: { label: "View docs", href: "/docs/openui-lang" },
   tone: "light",
   /* No cards. Interactive, Bring your UI library, Safe by default and Stream UI

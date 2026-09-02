@@ -1,7 +1,6 @@
 "use client";
 
 import svgPaths from "@/imports/svg-urruvoh2be";
-import type { ReactNode } from "react";
 import { stackChipStyles, type StackChipItem } from "../../components/StackChip/StackChip";
 import { CompatibilityDiagram } from "./CompatibilityDiagram";
 import styles from "./CompatibilitySection.module.css";
@@ -194,16 +193,7 @@ const STACK_ROWS: StackRow[] = [
   },
 ];
 
-export function CompatibilitySection({
-  description = (
-    <>
-      Add Generative UI
-      <br />
-      without changing your stack.
-    </>
-  ),
-  embedded = false,
-}: { description?: ReactNode; embedded?: boolean } = {}) {
+export function CompatibilitySection({ embedded = false }: { embedded?: boolean } = {}) {
   return (
     <section
       className={styles.section}
@@ -212,7 +202,7 @@ export function CompatibilitySection({
     >
       <div className={styles.container}>
         <div className={styles.stack}>
-          <CompatibilityDiagram groups={STACK_ROWS} description={description} />
+          <CompatibilityDiagram groups={STACK_ROWS} />
         </div>
       </div>
     </section>

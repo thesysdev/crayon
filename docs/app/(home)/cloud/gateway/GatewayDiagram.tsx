@@ -1,18 +1,18 @@
 import {
   ArrowRight,
-  BracketsCurly,
-  Browser,
-  ChatCircleText,
-  CheckCircle,
+  ChartLine,
+  Check,
+  Code,
   ShieldCheck,
   Wrench,
+  X,
 } from "@phosphor-icons/react/dist/ssr";
 import styles from "./GatewayDiagram.module.css";
 
-function FlowArrow() {
+function StateIcon({ ok }: { ok: boolean }) {
   return (
-    <span className={styles.flowArrow} aria-hidden="true">
-      <ArrowRight size={16} weight="bold" />
+    <span className={ok ? styles.okIcon : styles.errorIcon} aria-hidden="true">
+      {ok ? <Check size={12} weight="bold" /> : <X size={12} weight="bold" />}
     </span>
   );
 }
@@ -22,69 +22,117 @@ export function GatewayDiagram() {
     <div
       className={styles.stage}
       role="img"
-      aria-label="A component schema and model response enter OpenUI Gateway. Valid output streams to the OpenUI runtime. Invalid output is repaired and the corrected delta streams to the runtime."
+      aria-label="Gateway detects an invalid series reference in a streaming chart component, repairs only that chunk, and lets the valid interface continue rendering."
     >
-      <div className={styles.sources}>
-        <div className={styles.sourceCard}>
-          <span className={styles.iconTile} aria-hidden="true">
-            <BracketsCurly size={20} weight="light" />
-          </span>
-          <span>
-            <strong>Component schema</strong>
-            <small>Your allowed UI primitives</small>
-          </span>
+      <div className={styles.streamColumn}>
+        <div className={styles.columnLabel}>
+          <Code size={18} weight="light" />
+          <span>Model stream</span>
         </div>
-        <div className={styles.sourceCard}>
-          <span className={styles.iconTile} aria-hidden="true">
-            <ChatCircleText size={20} weight="light" />
-          </span>
-          <span>
-            <strong>Model response</strong>
-            <small>The generated OpenUI stream</small>
-          </span>
+        <div className={styles.codeWindow}>
+          <div className={styles.windowDots} aria-hidden="true">
+            <i />
+            <i />
+            <i />
+          </div>
+          <code>&lt;Dashboard&gt;</code>
+          <code>&nbsp;&nbsp;&lt;Metric value=&quot;$2.15M&quot; /&gt;</code>
+          <code className={styles.invalidLine}>
+            &nbsp;&nbsp;&lt;LineChart series=&quot;revenue&quot; /&gt;
+          </code>
+          <code>&nbsp;&nbsp;&lt;Select action=&quot;filter&quot; /&gt;</code>
+          <code>&lt;/Dashboard&gt;</code>
         </div>
+        <span className={styles.failureLabel}>
+          <StateIcon ok={false} />
+          Invalid reference
+        </span>
       </div>
 
-      <FlowArrow />
+      <span className={styles.flowArrow} aria-hidden="true">
+        <ArrowRight size={18} weight="bold" />
+      </span>
 
-      <div className={styles.gateway}>
+      <div className={styles.gatewayColumn}>
         <div className={styles.gatewayHeader}>
-          <span className={styles.gatewayMark} aria-hidden="true">
-            <ShieldCheck size={20} weight="light" />
-          </span>
+          <span className={styles.gatewayMark}>O</span>
           <span>
             <strong>OpenUI Gateway</strong>
-            <small>Validate against your schema</small>
+            <small>Checks each streamed node</small>
+          </span>
+          <ShieldCheck size={20} weight="light" />
+        </div>
+        <div className={styles.checkList}>
+          <span>
+            <StateIcon ok />
+            <b>Component exists</b>
+          </span>
+          <span>
+            <StateIcon ok={false} />
+            <b>Reference resolves</b>
+          </span>
+          <span>
+            <StateIcon ok />
+            <b>Arguments match</b>
           </span>
         </div>
-
-        <div className={styles.routes}>
-          <div className={styles.route}>
-            <CheckCircle size={18} weight="fill" aria-hidden="true" />
-            <span>
-              <strong>Valid</strong>
-              <small>Continue streaming</small>
-            </span>
+        <div className={styles.patch}>
+          <div className={styles.patchLabel}>
+            <Wrench size={16} weight="light" />
+            Repair only the invalid chunk
           </div>
-          <div className={`${styles.route} ${styles.repairRoute}`}>
-            <Wrench size={18} weight="fill" aria-hidden="true" />
-            <span>
-              <strong>Invalid</strong>
-              <small>Repair the broken node and stream the delta</small>
-            </span>
-          </div>
+          <code>
+            <del>series=&quot;revenue&quot;</del>
+          </code>
+          <code>
+            <ins>series=&#123;revenue&#125;</ins>
+          </code>
         </div>
       </div>
 
-      <FlowArrow />
+      <span className={styles.flowArrow} aria-hidden="true">
+        <ArrowRight size={18} weight="bold" />
+      </span>
 
-      <div className={styles.outputCard}>
-        <span className={styles.outputIcon} aria-hidden="true">
-          <Browser size={22} weight="light" />
+      <div className={styles.resultColumn}>
+        <div className={styles.columnLabel}>
+          <ChartLine size={18} weight="light" />
+          <span>Interface keeps rendering</span>
+        </div>
+        <div className={styles.resultWindow}>
+          <div className={styles.metric}>
+            <small>Revenue</small>
+            <strong>$2.15M</strong>
+          </div>
+          <div className={styles.chart} aria-hidden="true">
+            <span />
+            <svg viewBox="0 0 280 100" preserveAspectRatio="none">
+              <path d="M0 76 C42 68 55 43 94 50 S146 72 180 45 S235 37 280 16" />
+            </svg>
+          </div>
+          <div className={styles.filterRow}>
+            <span>Region</span>
+            <b>All regions</b>
+          </div>
+        </div>
+        <span className={styles.successLabel}>
+          <StateIcon ok />
+          Valid UI delivered
+        </span>
+      </div>
+
+      <div className={styles.timeline} aria-hidden="true">
+        <span>
+          <i />
+          Stream starts
+        </span>
+        <span className={styles.repairMoment}>
+          <i />
+          Invalid chunk repaired
         </span>
         <span>
-          <strong>OpenUI runtime</strong>
-          <small>Reliable UI reaches the user</small>
+          <i />
+          Stream continues
         </span>
       </div>
     </div>

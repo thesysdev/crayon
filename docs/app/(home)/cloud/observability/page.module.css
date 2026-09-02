@@ -104,19 +104,20 @@
 }
 
 .sectionRhythm {
-  /* Match the original Cloud feature rhythm without stacking adjacent gaps. */
+  /* Feature rows belong to one sequence; a new page group needs a visibly
+     larger break. This follows the 160px feature rhythm used across Cloud,
+     with a 1.5x transition before Setup. */
   --observability-section-gap: 160px;
+  --observability-group-gap: 240px;
 }
 
 .integrationSection {
   width: 100%;
-  padding-block: var(--observability-section-gap) calc(var(--observability-section-gap) / 2);
-  background: linear-gradient(to bottom, var(--openui-background), var(--openui-foreground));
-}
-
-section.trustSection {
-  /* Split the gap across both backgrounds at the section boundary. */
-  padding-block: calc(var(--observability-section-gap) / 2);
+  padding-block: var(--observability-group-gap) calc(var(--observability-section-gap) / 2);
+  /* Setup stays on the same surface as the feature flow. The alternate band is
+     reserved for trust and compliance, so Evals gets a clean uninterrupted gap
+     before this section instead of colliding with a premature background shift. */
+  background: var(--openui-foreground);
 }
 
 .faqBand {
@@ -136,10 +137,15 @@ section.trustSection {
 @media (max-width: 1023px) {
   .sectionRhythm {
     --observability-section-gap: 96px;
+    --observability-group-gap: 144px;
   }
 }
 
 @media (max-width: 767px) {
+  .sectionRhythm {
+    --observability-group-gap: 112px;
+  }
+
   .integrationSection > div {
     width: calc(100% - 32px);
   }

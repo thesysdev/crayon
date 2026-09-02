@@ -5,7 +5,6 @@ import {
   FeatureGridSection,
   type GridFeature,
 } from "../../sections/FeatureGridSection/FeatureGridSection";
-import placeholderStyles from "../sections.module.css";
 import styles from "./sections.module.css";
 
 const ENTELLIGENCE_CORRECTION_RATE = "XX";
@@ -78,13 +77,7 @@ export function RepairSection() {
         </p>
       </div>
 
-      {/* Reserve the artwork space and brief until the illustration is ready in P2. */}
-      <div className={placeholderStyles.artPlaceholder} aria-hidden="true">
-        <p className={placeholderStyles.artPlaceholderLabel}>
-          Diagram: component schema + prompt → Gateway → valid response returns to the client;
-          invalid response goes to a small repair model, which streams the delta.
-        </p>
-      </div>
+      <div className={`${styles.diagram} ${styles.repairIllustrationSpace}`} aria-hidden="true" />
 
       <aside className={styles.customerQuote}>
         <p className={styles.quoteSentence}>

@@ -9,6 +9,12 @@ const withMDX = createMDX();
 /** @type {import('next').NextConfig} */
 const config = {
   serverExternalPackages: ["@takumi-rs/image-response"],
+  images: {
+    /* Dense product screenshots contain small UI text and one-pixel rules.
+       Keep the default for general imagery, but allow the illustration pair
+       components to request a sharper responsive derivative. */
+    qualities: [75, 95],
+  },
   turbopack: {
     root: dirname(dirname(__dirname)),
   },

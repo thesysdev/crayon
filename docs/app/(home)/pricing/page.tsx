@@ -1,8 +1,18 @@
-import { ArrowUpRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import type { Metadata } from "next";
+import { GatewayPlans } from "../cloud/gateway/GatewayPlans";
+import heroStyles from "../cloud/gateway/page.module.css";
+import layout from "../cloud/gateway/sections.module.css";
 import { BevelButton } from "../components/Button/BevelButton";
 import pageStyles from "../page.module.css";
+import { FaqSection, type MarketingFaq } from "../sections/FaqSection/FaqSection";
+import {
+  FeatureGridSection,
+  type GridFeature,
+} from "../sections/FeatureGridSection/FeatureGridSection";
 import { Footer } from "../sections/Footer/Footer";
+import { HeroSection } from "../sections/HeroSection/HeroSection";
+import { ProductLabel } from "../sections/ProductSection/ProductSection";
 import styles from "./page.module.css";
 
 export const metadata: Metadata = {
@@ -12,217 +22,213 @@ export const metadata: Metadata = {
   alternates: { canonical: "/pricing" },
 };
 
-const PLANS = [
+const BILLING_DETAILS: GridFeature[] = [
   {
-    name: "Free",
-    price: "$0",
-    cadence: "/mo",
-    description: "For individuals exploring OpenUI Cloud with core limits.",
-    features: [
-      "3K API calls per month",
-      "Bring your own LLM key",
-      "Style customizations and popular LLM support",
-      "Discord community support",
-    ],
-    cta: "Get started for free",
-    href: "https://console.thesys.dev/keys",
-  },
-  {
-    name: "Build",
-    price: "$49",
-    cadence: "/mo",
-    description: "For small teams shipping their first AI features.",
-    features: [
-      "Everything in Free",
-      "25K API calls per month",
-      "$0.002 per call after",
-      "Higher request priority and rate limits",
-      "Email support",
-    ],
-    cta: "Generate API key",
-    href: "https://console.thesys.dev/keys",
-  },
-  {
-    name: "Grow",
-    price: "$499",
-    cadence: "/mo",
-    description: "For businesses scaling production AI workloads.",
-    features: [
-      "Everything in Build",
-      "500K API calls per month",
-      "$0.001 per call after",
-      "Highest request priority and rate limits",
-      "Priority support and solutions engineering",
-      "SSO/SAML",
-    ],
-    cta: "Generate API key",
-    href: "https://console.thesys.dev/keys",
-  },
-  {
-    name: "Scale",
-    price: "Custom",
-    cadence: "",
-    description: "For enterprises needing control over infrastructure, data, and models.",
-    features: [
-      "Everything in Grow",
-      "Self-hosting or VPC deployment",
-      "Custom rate limits and usage controls",
-      "Compliance, SLAs, and support guarantees",
-    ],
-    cta: "Contact sales",
-    href: "https://zcal.co/t/thesys/demo",
-  },
-];
-
-const BILLING_DETAILS = [
-  {
+    icon: "chart",
     title: "No markup on LLMs",
     description:
       "Tokens are billed separately from API calls at provider list prices. Bring your own OpenAI, Anthropic, or Google keys if you prefer.",
   },
   {
+    icon: "shield",
     title: "Repair is included",
     description:
       "Validation and correction calls are part of your Gateway plan and are not billed separately.",
   },
   {
+    icon: "database",
     title: "Zero data retention available",
     description: "Zero data retention is available on paid models when you need it.",
   },
 ];
 
+// Existing answers from the homepage and product FAQs; no new pricing policy.
+const PRICING_FAQS: MarketingFaq[] = [
+  {
+    question: "Is OpenUI free and open source?",
+    answer: [
+      "Yes. OpenUI is fully open source and works with your own models, infrastructure, components, and design system.",
+      "OpenUI Gateway and OpenUI Observability are managed services for teams running Generative UI in production.",
+    ],
+  },
+  {
+    question: "Which model handles corrections, and are they billed separately?",
+    answer: [
+      "Corrections use a dedicated model tuned for low latency, which we continue to improve. All correction calls are included in your plan and are not billed separately.",
+    ],
+  },
+  {
+    question: "What does OpenUI Observability cost?",
+    answer: [
+      "OpenUI Observability is free during early access. Pricing will be published before paid access begins.",
+    ],
+  },
+  {
+    question: "Do I need both Gateway and Observability?",
+    answer: [
+      "No. They work independently.",
+      "We recommend using both. Gateway makes generated UI more reliable. Observability shows what users experienced and whether it worked.",
+    ],
+  },
+];
+
+function ProductChips({ points }: { points: string[] }) {
+  return (
+    <ul className={styles.productChips}>
+      {points.map((point) => (
+        <li key={point}>{point}</li>
+      ))}
+    </ul>
+  );
+}
+
 export default function PricingPage() {
   return (
     <div className={pageStyles.page}>
-      <main className={styles.main}>
-        <header className={styles.hero}>
-          <p className={styles.eyebrow}>Pricing</p>
-          <h1 className={styles.title}>Three ways to use OpenUI.</h1>
-          <p className={styles.subtitle}>
-            Start with the open-source framework. Add Gateway for production reliability and
-            Observability to understand what users experienced.
-          </p>
-        </header>
+      <main>
+        <div className={styles.hero}>
+          <HeroSection
+            align="left"
+            title={
+              <span className={`${heroStyles.titleBlock} ${styles.titleBlock}`}>
+                <span className={heroStyles.eyebrow}>Pricing</span>
+                <span className={heroStyles.title}>
+                  Three ways
+                  <br />
+                  to use OpenUI.
+                </span>
+              </span>
+            }
+            subtitle={
+              <span className={heroStyles.subtitle}>
+                Start with the open-source framework. Add Gateway for production reliability and
+                Observability to understand what users experienced.
+              </span>
+            }
+            smallSubtitle
+            tightDesktopSpacing={false}
+            splitLockup
+            flushInnerInlinePadding
+            showCommand={false}
+            showPreview={false}
+            showPlaygroundButton={false}
+            showGitHubBanner={false}
+            showTagline={false}
+          />
+        </div>
 
-        <section className={`${styles.productSection} ${styles.productHighlight}`}>
-          <div className={styles.productHeader}>
-            <div className={styles.productCopy}>
-              <p className={styles.productEyebrow}>
-                OpenUI <span className={styles.productTag}>Open source</span>
-              </p>
-              <h2 className={styles.productTitle}>Free forever.</h2>
-              <p className={styles.productDescription}>
-                Build agent-driven interfaces with any model, backend framework, client, or design
-                system. Run it wherever you want with no usage limits from us.
-              </p>
+        <div className={styles.softBand}>
+          <section
+            id="open-source-pricing"
+            className={`${layout.section} ${styles.productSection}`}
+            aria-labelledby="open-source-title"
+          >
+            <div className={layout.sectionLockup}>
+              <div className={styles.productLead}>
+                <ProductLabel name="OpenUI" tag="Open source" />
+                <h2 id="open-source-title" className={layout.heading}>
+                  Generative UI,
+                  <br />
+                  free by design.
+                </h2>
+                <BevelButton
+                  href="/docs/openui-lang"
+                  variant="primary"
+                  label="Get started"
+                  badge={<ArrowRight size={16} />}
+                />
+              </div>
+              <div className={styles.productSupport}>
+                <p className={layout.lead}>
+                  Build agent-driven interfaces with any model, backend framework, client, or design
+                  system. Run it wherever you want with no usage limits from us.
+                </p>
+                <ProductChips
+                  points={["Open source forever", "Self-host anywhere", "Bring your whole stack"]}
+                />
+              </div>
             </div>
-          </div>
-          <div className={styles.productFooter}>
-            <ul className={styles.productPoints}>
-              <li>Open source forever</li>
-              <li>Self-host anywhere</li>
-              <li>Bring your whole stack</li>
-            </ul>
-            <BevelButton
-              href="/docs/openui-lang"
-              variant="secondary"
-              label="Get started"
-              badge={<ArrowUpRight size={16} strokeWidth={2.25} />}
-            />
-          </div>
-        </section>
+          </section>
+        </div>
 
-        <section className={styles.productSection} aria-labelledby="gateway-plans">
-          <div className={styles.productHeader}>
-            <div className={styles.productCopy}>
-              <p className={styles.productEyebrow}>
-                OpenUI Gateway <span className={styles.productTag}>Cloud</span>
-              </p>
-              <h2 id="gateway-plans" className={styles.productTitle}>
-                Reliability for production Generative UI.
+        <section
+          className={`${layout.section} ${styles.productSection}`}
+          aria-labelledby="gateway-plans"
+        >
+          <div className={layout.sectionLockup}>
+            <div className={styles.productLead}>
+              <ProductLabel name="OpenUI" tag="Gateway" />
+              <h2 id="gateway-plans" className={`${layout.heading} ${styles.gatewayTitle}`}>
+                Reliability for production
+                <br />
+                Generative UI.
               </h2>
-              <p className={styles.productDescription}>
+            </div>
+            <div className={styles.supporting}>
+              <p className={layout.lead}>
                 Validate and repair model output before it reaches users, with provider fallbacks,
                 usage dashboards, and one OpenAI-compatible endpoint.
               </p>
-            </div>
-            <div className={styles.priceLockup}>
-              <span className={styles.productPrice}>From $0</span>
-              <span className={styles.priceNote}>per month</span>
+              <p className={styles.priceNote}>From $0 per month</p>
             </div>
           </div>
 
-          <div className={styles.planGrid}>
-            {PLANS.map((plan) => (
-              <article className={styles.plan} key={plan.name}>
-                <div>
-                  <h3 className={styles.planName}>{plan.name}</h3>
-                  <p className={styles.price}>
-                    {plan.price}
-                    {plan.cadence ? <span className={styles.cadence}>{plan.cadence}</span> : null}
-                  </p>
-                  <p className={styles.planDescription}>{plan.description}</p>
-                </div>
-                <ul className={styles.features}>
-                  {plan.features.map((feature) => (
-                    <li key={feature}>{feature}</li>
-                  ))}
-                </ul>
-                <BevelButton
-                  className={styles.planCta}
-                  href={plan.href}
-                  external
-                  variant="primary"
-                  label={plan.cta}
-                  badge={<ArrowUpRight size={16} strokeWidth={2.25} />}
-                />
-              </article>
-            ))}
+          <div className={layout.diagram}>
+            <GatewayPlans detailed />
           </div>
-
           <div className={styles.billingDetails}>
-            {BILLING_DETAILS.map((detail) => (
-              <article className={styles.billingDetail} key={detail.title}>
-                <h3>{detail.title}</h3>
-                <p>{detail.description}</p>
-              </article>
-            ))}
+            <FeatureGridSection
+              features={BILLING_DETAILS}
+              showHeader={false}
+              showCompat={false}
+              showBottomSeparator={false}
+              flushOuterCards
+              flushSectionPadding
+              mobileAccordion={false}
+            />
           </div>
-
           <p className={styles.freeModelNote}>
-            API calls are included in each plan. LLM tokens are billed separately at provider
-            rates. Annual billing saves up to 20%. Free models have zero LLM cost and may use data
-            for training.
+            API calls are included in each plan. LLM tokens are billed separately at provider rates.
+            Annual billing saves up to 20%. Free models have zero LLM cost and may use data for
+            training.
           </p>
         </section>
 
-        <section className={`${styles.productSection} ${styles.productHighlight}`}>
-          <div className={styles.productHeader}>
-            <div className={styles.productCopy}>
-              <p className={styles.productEyebrow}>
-                OpenUI Observability <span className={styles.productTag}>Early access</span>
-              </p>
-              <h2 className={styles.productTitle}>Free while in early access.</h2>
-              <p className={styles.productDescription}>
-                See what users saw, find the sessions worth opening, and turn problematic responses
-                into feedback and evals.
-              </p>
+        <div className={styles.softBand}>
+          <section
+            id="observability-pricing"
+            className={`${layout.section} ${styles.productSection}`}
+            aria-labelledby="observability-pricing-title"
+          >
+            <div className={layout.sectionLockup}>
+              <div className={styles.productLead}>
+                <ProductLabel name="OpenUI" tag="Observability" />
+                <h2 id="observability-pricing-title" className={layout.heading}>
+                  Free while in early access.
+                </h2>
+                <BevelButton
+                  href="/cloud/observability"
+                  variant="primary"
+                  label="Join the waitlist"
+                  badge={<ArrowRight size={16} />}
+                />
+              </div>
+              <div className={styles.productSupport}>
+                <p className={layout.lead}>
+                  See what users saw, find the sessions worth opening, and turn problematic
+                  responses into feedback and evals.
+                </p>
+                <ProductChips
+                  points={["Session replay", "AI-assisted triage", "Feedback into evals"]}
+                />
+              </div>
             </div>
-          </div>
-          <div className={styles.productFooter}>
-            <ul className={styles.productPoints}>
-              <li>Session replay</li>
-              <li>AI-assisted triage</li>
-              <li>Feedback into evals</li>
-            </ul>
-            <BevelButton
-              href="/cloud/observability"
-              variant="secondary"
-              label="Join the waitlist"
-              badge={<ArrowUpRight size={16} strokeWidth={2.25} />}
-            />
-          </div>
-        </section>
+          </section>
+        </div>
+
+        <div className={`${layout.section} ${styles.faqBand}`}>
+          <FaqSection faqs={PRICING_FAQS} titleId="pricing-faq" />
+        </div>
       </main>
       <Footer />
     </div>

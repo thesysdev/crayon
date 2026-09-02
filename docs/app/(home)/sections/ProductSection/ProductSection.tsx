@@ -55,6 +55,12 @@ export type ProductSectionProps = {
      exists the stage renders its brief instead, at the same aspect ratio, so
      dropping the images in later changes nothing about the layout. */
   shot?: string;
+  /* A code-native illustration can replace the image pair while retaining the
+     same stage, spacing and responsive behaviour. */
+  art?: ReactNode;
+  /* Let artwork that already includes its own frame crop directly to the
+     section bounds instead of nesting it inside the shared inset stage. */
+  fullBleedArt?: boolean;
   cards: ProductCard[];
 };
 
@@ -74,6 +80,8 @@ export function ProductSection({
   secondaryCta,
   tone = "light",
   shot,
+  art,
+  fullBleedArt = false,
   cards,
 }: ProductSectionProps) {
   const primaryVariant = tone === "dark" ? "light" : "primary";
@@ -123,29 +131,30 @@ export function ProductSection({
         <p className={styles.description}>{description}</p>
       </div>
 
-      <div className={styles.stage}>
-        {shot ? (
-          <>
-            <Image
-              className={`${styles.stageImage} ${styles.stageLight}`}
-              src={`${shot}-light.webp`}
-              alt=""
-              aria-hidden="true"
-              width={1280}
-              height={720}
-              loading="lazy"
-            />
-            <Image
-              className={`${styles.stageImage} ${styles.stageDark}`}
-              src={`${shot}-dark.webp`}
-              alt=""
-              aria-hidden="true"
-              width={1280}
-              height={720}
-              loading="lazy"
-            />
-          </>
-        ) : null}
+      <div className={`${styles.stage} ${fullBleedArt ? styles.stageFullBleed : ""}`.trim()}>
+        {art ??
+          (shot ? (
+            <>
+              <Image
+                className={`${styles.stageImage} ${styles.stageLight}`}
+                src={`${shot}-light.webp`}
+                alt=""
+                aria-hidden="true"
+                width={1280}
+                height={720}
+                loading="lazy"
+              />
+              <Image
+                className={`${styles.stageImage} ${styles.stageDark}`}
+                src={`${shot}-dark.webp`}
+                alt=""
+                aria-hidden="true"
+                width={1280}
+                height={720}
+                loading="lazy"
+              />
+            </>
+          ) : null)}
       </div>
 
       {cards.length > 0 && (

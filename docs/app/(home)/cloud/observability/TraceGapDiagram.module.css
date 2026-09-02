@@ -70,68 +70,97 @@
   transform: translateY(-50%);
 }
 
-/* At 1280px, match the reviewed 1116px comparison and 400px cards. */
+/* The same response is read two ways: technical completion on the left,
+   the unresolved user outcome on the right. The status badges make the
+   contradiction legible before the viewer reads any row copy. */
 .comparison {
-  --panel-inset: 64px;
-  position: relative;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 36px minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr) 64px minmax(0, 1fr);
   align-items: stretch;
-  gap: 12px;
-  width: calc(100% - 20px);
-  margin-top: 80px;
-}
-
-.traceConnector,
-.outcomeConnector {
-  position: absolute;
-  top: -81px;
-  height: 82px;
-  background-repeat: no-repeat;
-  background-size: 100% 100%;
-  pointer-events: none;
-}
-
-.traceConnector {
-  left: calc((100% - 60px) / 4);
-  width: calc((100% + 60px) / 4 + 10px);
-  background-image: url("./assets/trace-connector.svg");
-}
-
-.outcomeConnector {
-  left: calc(50% + 10px);
-  width: calc((100% + 60px) / 4 - 10px);
-  background-image: url("./assets/outcome-connector.svg");
-  transform: scaleX(-1);
+  gap: 16px;
+  width: 100%;
+  margin-top: 72px;
 }
 
 .panel {
   position: relative;
   display: flex;
-  flex-direction: column;
-  gap: 40px;
   min-width: 0;
-  margin-inline: var(--panel-inset);
-  padding: 24px 24px 32px;
+  flex-direction: column;
+  gap: 36px;
+  padding: 28px 28px 32px;
   border: 1px solid var(--openui-border-default);
   border-radius: 24px;
   background: var(--home-color-surface);
 }
 
+.outcomePanel {
+  border-color: color-mix(in srgb, var(--openui-text-danger-primary) 24%, transparent);
+}
+
+.panelHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  min-height: 72px;
+}
+
+.panelHeader > div {
+  min-width: 0;
+}
+
+.panelLabel {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--openui-text-neutral-secondary);
+  font-family: var(--home-font-mono);
+  font-size: var(--home-label-size);
+  font-weight: var(--home-label-weight);
+  line-height: 1;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
 .panelHeader h3 {
+  max-width: 18ch;
   margin: 0;
   font-family: var(--home-font-display);
   font-size: var(--home-heading-size);
   font-weight: var(--home-heading-weight);
   line-height: var(--home-heading-leading);
   letter-spacing: var(--home-heading-tracking);
+  text-wrap: balance;
+}
+
+.resultBadge {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  min-height: 28px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  color: #fff;
+  font-family: var(--home-font-text);
+  font-size: var(--home-label-size);
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.passedBadge {
+  background: #049156;
+}
+
+.failedBadge {
+  background: #b91c1c;
 }
 
 .checklist {
   display: grid;
   grid-template-rows: repeat(3, minmax(min-content, 1fr));
   flex: 1;
-  gap: 32px;
+  gap: 0;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -139,14 +168,23 @@
 
 .checklist li {
   display: flex;
-  align-items: flex-start;
-  gap: 12px;
+  align-items: center;
+  gap: 16px;
   min-width: 0;
+  padding-block: 18px;
+  border-top: 1px solid var(--home-hairline);
 }
 
 .checkCopy {
   flex: 1;
   min-width: 0;
+}
+
+.checkCopy > span {
+  display: block;
+  margin-bottom: 3px;
+  font-family: var(--home-font-display);
+  font-weight: var(--home-heading-weight);
 }
 
 .checkCopy p {
@@ -165,16 +203,39 @@
 }
 
 .notEqual {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--openui-text-neutral-secondary);
+  color: var(--openui-text-neutral-primary);
 }
 
-@media (max-width: 1199px) {
-  .comparison {
-    --panel-inset: clamp(0px, calc((100vw - 900px) / 4), 64px);
-  }
+.notEqual::before,
+.notEqual::after {
+  position: absolute;
+  left: 50%;
+  width: 1px;
+  height: calc(50% - 34px);
+  background: var(--home-hairline);
+  content: "";
+}
+
+.notEqual::before {
+  top: 0;
+}
+
+.notEqual::after {
+  bottom: 0;
+}
+
+.notEqual svg {
+  position: relative;
+  z-index: 1;
+  box-sizing: content-box;
+  padding: 12px;
+  border: 1px solid var(--openui-border-default);
+  border-radius: 50%;
+  background: var(--openui-foreground);
 }
 
 @media (max-width: 1023px) {
@@ -188,6 +249,20 @@
 
   .arrow {
     right: -27px;
+  }
+
+  .comparison {
+    grid-template-columns: minmax(0, 1fr) 48px minmax(0, 1fr);
+    gap: 10px;
+  }
+
+  .panel {
+    padding: 24px 20px 28px;
+  }
+
+  .panelHeader {
+    flex-direction: column;
+    gap: 12px;
   }
 }
 
@@ -208,28 +283,51 @@
   .comparison {
     grid-template-columns: minmax(0, 1fr);
     gap: 16px;
-    width: 100%;
-    margin-top: 40px;
-  }
-
-  .traceConnector,
-  .outcomeConnector {
-    display: none;
+    margin-top: 48px;
   }
 
   .panel {
-    gap: 28px;
+    gap: 24px;
     padding: 20px;
+  }
+
+  .panelHeader {
+    min-height: 0;
+  }
+
+  .notEqual {
+    height: 52px;
+  }
+
+  .notEqual::before,
+  .notEqual::after {
+    top: 50%;
+    width: calc(50% - 34px);
+    height: 1px;
+  }
+
+  .notEqual::before {
+    right: auto;
+    left: 0;
+  }
+
+  .notEqual::after {
+    right: 0;
+    left: auto;
+  }
+
+  .notEqual svg {
+    width: 24px;
+    height: 24px;
+    padding: 10px;
   }
 
   .checklist {
     display: flex;
     flex-direction: column;
-    gap: 24px;
   }
 
-  .notEqual svg {
-    width: 28px;
-    height: 28px;
+  .checklist li {
+    padding-block: 16px;
   }
 }
