@@ -79,8 +79,7 @@ const prompt = generateSystemPrompt({
 ### OpenUI Cloud
 
 Pass `cloud: true` to emit Cloud's managed config block instead of a local prompt. OpenUI Cloud
-assembles the real system prompt on the server. `instructions` is Cloud-only extra prose
-appended after the config block — self-hosted prompts use `preamble` / `additionalRules` instead.
+assembles the real system prompt on the server.
 
 ```ts
 import { generateSystemPrompt } from "@openuidev/lang-core";
@@ -89,7 +88,7 @@ import { generateSystemPrompt } from "@openuidev/lang-core";
 const instructions = generateSystemPrompt({ cloud: true });
 
 // Custom library (the `.spec.json` from `openui generate`)
-const custom = generateSystemPrompt({
+const myLibraryPrompt = generateSystemPrompt({
   cloud: true,
   library: librarySpec,
   promptOptions: { preamble: "You build dashboards for Acme." },
@@ -122,8 +121,8 @@ const merged = mergeStatements(original, patch);
 
 | Export | Description |
 | :--- | :--- |
-| `generatePrompt(spec)` | Generate a system prompt from a `PromptSpec` |
-| `generateSystemPrompt(spec)` | Generate a system prompt from `{ library, promptOptions }`. Pass `{ cloud: true }` for OpenUI Cloud's managed config block. |
+| `generatePrompt(spec)` | Generate a system prompt from a `PromptSpec` (now deprecated) |
+| `generateSystemPrompt(spec)` | Generate a system prompt from `{ library, promptOptions }`. Pass `{ cloud: true }` for OpenUI Cloud's managed config. |
 
 **`PromptSpec`** includes component signatures, tool definitions (`ToolSpec[]`), feature flags (`toolCalls`, `bindings`, `editMode`, `inlineMode`), examples, and custom rules.
 
