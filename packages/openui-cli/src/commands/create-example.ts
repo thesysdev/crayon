@@ -12,9 +12,10 @@ import { createFunnelProps } from "../lib/create-telemetry";
 import type { CreateAppOptions, EnvResult } from "../lib/create-types";
 import { resolveInstallPackageManager } from "../lib/detect-package-manager";
 import { runDevCommand } from "../lib/dev-server";
+import { upsertEnvVar } from "../lib/env";
 import { runSkillInstall, shouldInstallSkill } from "../lib/install-skill";
 import type { ExampleProject } from "../lib/projects";
-import { scaffoldExample, upsertEnvKey } from "../lib/scaffold-example";
+import { scaffoldExample } from "../lib/scaffold-example";
 import { CliCancelledError, CreateError, telemetry } from "../lib/telemetry";
 import { cliErrorProperties, processErrorProperties } from "../lib/utils";
 
@@ -111,7 +112,11 @@ export async function runCreateExample(params: {
 
   try {
     if (envResult.envKeyValue && example.envKey) {
-      upsertEnvKey(targetDir, example.envFile, example.envKey, envResult.envKeyValue);
+      upsertEnvVar(
+        path.join(targetDir, example.envFile),
+        example.envKey,
+        envResult.envKeyValue,
+      );
     }
   } catch (err) {
     const properties = cliErrorProperties(err, {

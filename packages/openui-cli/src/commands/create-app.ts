@@ -31,6 +31,7 @@ import {
   rejectConflictingScaffoldSelectors,
   resolveProject,
   templatesFromOverlays,
+  type ExampleProject,
 } from "../lib/projects";
 import { resolveArgs } from "../lib/resolve-args";
 import { resolveTemplateSource } from "../lib/scaffold-template";
@@ -41,6 +42,7 @@ import {
   findCatalogOverlay,
   findCatalogTemplate,
   loadTemplatesCatalog,
+  type CatalogTemplate,
 } from "../lib/templates-catalog";
 import { cliErrorProperties, processErrorProperties } from "../lib/utils";
 
@@ -211,9 +213,9 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
     }
   }
 
-  let examples: Awaited<ReturnType<typeof loadExamplesCatalog>> = [];
+  let examples: ExampleProject[] = [];
   let template: TemplateName | undefined;
-  let templateEntry: ReturnType<typeof findCatalogTemplate> | undefined;
+  let templateEntry: CatalogTemplate | undefined;
 
   if (options.example) {
     examples = await loadExamplesCatalog();

@@ -183,21 +183,3 @@ function writeWorkspaceIfNested(
   pkg.workspaces = nested;
   fs.writeFileSync(rootPkgPath, JSON.stringify(pkg, null, 2) + "\n");
 }
-
-export function upsertEnvKey(
-  projectDir: string,
-  envFile: string,
-  key: string,
-  value: string,
-): void {
-  const filePath = path.join(projectDir, envFile);
-  const existing = fs.existsSync(filePath) ? fs.readFileSync(filePath, "utf8") : "";
-  const line = `${key}=${value}`;
-  if (existing.includes(`${key}=`)) {
-    const next = existing.replace(new RegExp(`^${key}=.*$`, "m"), line);
-    fs.writeFileSync(filePath, next.endsWith("\n") ? next : `${next}\n`);
-    return;
-  }
-  const prefix = existing && !existing.endsWith("\n") ? `${existing}\n` : existing;
-  fs.writeFileSync(filePath, `${prefix}${line}\n`);
-}
