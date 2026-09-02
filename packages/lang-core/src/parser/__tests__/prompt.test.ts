@@ -2,7 +2,6 @@ import { describe, expect, it } from "vitest";
 import {
   CLOUD_CHAT_LIBRARY_VERSION,
   generateSystemPrompt,
-  type ChatLibrary,
   type CloudPromptOptions,
   type LibrarySpec,
 } from "../../index";
@@ -25,7 +24,7 @@ function parseBlock(emitted: string): Record<string, unknown> {
   return JSON.parse(firstLine);
 }
 
-const library: ChatLibrary = {
+const library = {
   root: "Card",
   schema: {
     $defs: {
@@ -52,7 +51,7 @@ const library: ChatLibrary = {
       components: ["TextContent"],
     },
   ],
-};
+} as LibrarySpec;
 
 describe("generateSystemPrompt — self-hosted", () => {
   const spec: LibrarySpec = {
@@ -161,8 +160,9 @@ describe("generateSystemPrompt({ cloud: true, library })", () => {
   });
 
   it("invalid library throws with every issue", () => {
-    const broken: ChatLibrary = {
+    const broken: LibrarySpec = {
       root: "Missing",
+      components: {},
       schema: {
         $defs: {
           Card: {

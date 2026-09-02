@@ -1,5 +1,5 @@
-import type { CloudPromptOptions, SystemPromptOptions } from "./prompt";
-import { type ChatLibrary, validateChatLibrary } from "./validate-library";
+import type { CloudPromptOptions, LibrarySpec, SystemPromptOptions } from "./prompt";
+import { validateChatLibrary } from "./validate-library";
 
 /** `]]>openui:config\n` — request-direction config block header. Trailing newline is part of the wire contract. */
 export const CLOUD_CONFIG_MARKER = "]]>openui:config\n";
@@ -12,14 +12,7 @@ export const CLOUD_CHAT_LIBRARY_VERSION = "0.1.0";
 
 type CloudConfig =
   | { libraryVersion: string }
-  | { chatLibrary: CloudChatLibraryWire; systemPromptOptions?: CloudPromptOptions };
-
-type CloudChatLibraryWire = {
-  schema?: ChatLibrary["schema"];
-  root?: string;
-  componentGroups?: ChatLibrary["componentGroups"];
-  id?: string;
-};
+  | { chatLibrary: Omit<LibrarySpec, "components">; systemPromptOptions?: CloudPromptOptions };
 
 function pickCloudPromptOptions(
   options: SystemPromptOptions | CloudPromptOptions | undefined,
@@ -33,7 +26,7 @@ function pickCloudPromptOptions(
 }
 
 export function generateCloudConfig(spec: {
-  library?: ChatLibrary;
+  library?: LibrarySpec;
   promptOptions?: SystemPromptOptions | CloudPromptOptions;
   instructions?: string;
 }): string {
@@ -46,10 +39,10 @@ export function generateCloudConfig(spec: {
         `[generateSystemPrompt] Invalid library: ${issues.map((i) => i.message).join(" ")}`,
       );
     }
-    const { schema, root, componentGroups, id } = spec.library;
+    const { components: _components, ...chatLibrary } = spec.library;
     const promptOptions = pickCloudPromptOptions(spec.promptOptions);
     config = {
-      chatLibrary: { schema, root, componentGroups, id },
+      chatLibrary,
       ...(promptOptions ? { systemPromptOptions: promptOptions } : {}),
     };
   } else {

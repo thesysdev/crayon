@@ -4,12 +4,6 @@
  */
 import type { LibrarySpec } from "./prompt";
 
-/**
- * Wire shape of a serialized chat library (the `]]>openui:config` `chatLibrary`
- * value). Same as {@link LibrarySpec} without prompt-side `components`.
- */
-export type ChatLibrary = Omit<LibrarySpec, "components">;
-
 export interface ChatLibraryIssue {
   code:
     | "invalid-shape"
@@ -63,7 +57,7 @@ function collectRefIssues(
  * Structural validation of a customer-supplied design-system library.
  * Returns ALL issues found (empty array = valid).
  */
-export function validateChatLibrary(library: ChatLibrary): ChatLibraryIssue[] {
+export function validateChatLibrary(library: LibrarySpec): ChatLibraryIssue[] {
   const issues: ChatLibraryIssue[] = [];
 
   if (!isPlainObject(library)) {

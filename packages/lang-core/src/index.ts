@@ -63,7 +63,6 @@ export type {
   ValidationError,
   ValidationErrorCode,
 } from "./parser/types";
-export type { ChatLibrary } from "./parser/validate-library";
 
 // ── Reactive schema marker ──
 export { isReactiveSchema, markReactive } from "./reactive";
