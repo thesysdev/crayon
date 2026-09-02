@@ -228,12 +228,7 @@ export function normalizeTemplate(t?: string): TemplateName | undefined {
   const v = t.toLowerCase();
   if (v === "self-hosted" || v === "openui-self-hosted") return "openui-self-hosted";
   if (v === "cloud" || v === "openui-cloud") return "openui-cloud";
-  throw new CreateError(
-    "args_resolution",
-    `unknown template "${t}". Use: openui-self-hosted | openui-cloud.`,
-    "invalid_input",
-    "INVALID_TEMPLATE",
-  );
+  return v;
 }
 
 export function normalizeAuth(a?: string): CloudAuthMethod | undefined {
@@ -266,9 +261,6 @@ export function normalizeBackendFramework(framework?: string): OverlayName | und
     case "vercel-eve":
       return "vercel-eve";
     default:
-      throw new CreateError(
-        "bad_args",
-        `unknown backend framework "${framework}". Use: default | langgraph | vercel-ai-sdk | vercel-eve.`,
-      );
+      return framework.toLowerCase();
   }
 }

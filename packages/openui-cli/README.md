@@ -1,6 +1,6 @@
 # @openuidev/cli
 
-Command-line tools for starting OpenUI projects, generating model instructions from component libraries, and deploying apps to Vercel.
+Command-line tools for starting OpenUI projects, minting OpenUI Cloud API keys, and generating model instructions from component libraries, and deploying apps to Vercel.
 
 [![npm](https://img.shields.io/npm/v/@openuidev/cli)](https://www.npmjs.com/package/@openuidev/cli)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/thesysdev/openui/blob/main/LICENSE)
@@ -13,6 +13,7 @@ It currently supports:
   - **OpenUI Cloud (recommended)** — hosted models with managed conversations, streaming, built-in tools, and ready-to-use report and presentation artifacts
   - **Self-hosted** — bring an OpenAI-compatible model key and own the AI route and persistence
 - keeping the default minimal SDK route or adding a LangGraph, Vercel AI SDK, or Vercel Eve backend to either template
+- minting an OpenUI Cloud API key into an existing project's env file
 - generating a system prompt or JSON Schema from a `createLibrary()` export
 - deploying a project with `openui deploy`
 
@@ -50,6 +51,13 @@ npx @openuidev/cli@latest create --template openui-cloud --backend-framework ver
 npx @openuidev/cli@latest create --template openui-self-hosted --backend-framework langgraph
 npx @openuidev/cli@latest create --template openui-self-hosted --backend-framework vercel-ai-sdk
 npx @openuidev/cli@latest create --template openui-self-hosted --backend-framework vercel-eve
+```
+
+Mint an OpenUI Cloud API key into the current project's `.env`:
+
+```bash
+npx @openuidev/cli@latest generate-api-key
+npx @openuidev/cli@latest generate-api-key --file .env.local --key THESYS_API_KEY
 ```
 
 Generate a prompt from a library file:
@@ -117,6 +125,8 @@ What it does:
 - **Self-hosted** — choose this when owning the OpenAI-compatible provider integration, AI route, and persistence is a requirement. It is not offered as an interactive choice; request it with `--template openui-self-hosted`.
 
 #### Backend frameworks
+
+Overlay names are loaded from the fetched template's `overlays/` directory (`default` is the base template with no overlay). Current templates ship:
 
 | Value           | OpenUI Cloud route                           | Self-hosted route                        |
 | --------------- | -------------------------------------------- | ---------------------------------------- |
@@ -194,13 +204,34 @@ Extra flags after `deploy` are forwarded as-is to the target deployment platform
 
 Unlinked projects run `vercel link` first (so env can be saved before the build). Allowlisted keys from `.env` / `.env.local` that are missing on production, preview, or development can be saved to the project (prompted; auto-accepted with `--yes`). Existing project keys are never overwritten. Env is still attached to the current deployment via `--env` / `--build-env`. Build logs are quiet by default.
 
-Examples:
 
 ```bash
 openui deploy
 openui deploy ./my-app
 openui deploy ./my-app --prod
 openui deploy --skip-env -- --force
+```
+
+### `openui generate-api-key`
+
+Signs in with Thesys in the browser, mints an OpenUI Cloud API key, and writes it to a project env file.
+
+```bash
+openui generate-api-key [options]
+```
+
+Options:
+
+- `-f, --file <path>`: Env file to write (default: `.env`)
+- `-k, --key <name>`: Environment variable name (default: `THESYS_API_KEY`)
+- `-n, --name <string>`: Name of the minted key in the Thesys console (default: `package.json` name, or the current directory name)
+
+Examples:
+
+```bash
+openui generate-api-key
+openui generate-api-key --file .env.local
+openui generate-api-key --file .env.local --key THESYS_API_KEY
 ```
 
 ### `openui generate`
@@ -280,6 +311,7 @@ Run the built CLI:
 node dist/index.js --help
 node dist/index.js create --help
 node dist/index.js deploy --help
+node dist/index.js generate-api-key --help
 node dist/index.js generate --help
 ```
 
@@ -298,7 +330,7 @@ openui create --no-telemetry
 ## Notes
 
 - interactive prompts can be cancelled without creating output
-- `create` requires the selected template's files to be present in the built package
+- `create` fetches `templates/templates.json` and the selected template from GitHub (`thesysdev/openui@main`)
 - `generate` exits with a non-zero code if the file is missing or no valid library export is found
 - `deploy` exits with a non-zero code if the directory has no `package.json` or the Vercel CLI fails
 

@@ -1,4 +1,4 @@
-import { runCommand, type CommandResult } from "./process-runner";
+import { runCommand, type CommandResult, type RunCommandOptions } from "./process-runner";
 import { CliCancelledError } from "./telemetry";
 
 const OPENUI_SKILL_SOURCE = "thesysdev/skills";
@@ -25,11 +25,14 @@ export async function shouldInstallSkill(
   }
 }
 
-export async function runSkillInstall(targetDir: string): Promise<CommandResult> {
-  console.info("\nInstalling OpenUI agent skill...\n");
+export async function runSkillInstall(
+  targetDir: string,
+  options: RunCommandOptions = {},
+): Promise<CommandResult> {
   return runCommand(
     "npx",
     ["-y", "skills", "add", OPENUI_SKILL_SOURCE, "--skill", "openui", "-y"],
     targetDir,
+    options,
   );
 }

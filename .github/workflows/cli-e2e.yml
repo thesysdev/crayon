@@ -6,12 +6,14 @@ on:
     paths:
       - ".github/workflows/cli-e2e.yml"
       - "packages/openui-cli/**"
+      - "templates/**"
       - "tsconfig.json"
   pull_request:
     branches: [main]
     paths:
       - ".github/workflows/cli-e2e.yml"
       - "packages/openui-cli/**"
+      - "templates/**"
       - "tsconfig.json"
 
 permissions:
@@ -35,7 +37,7 @@ jobs:
       - name: Install workspace dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Build CLI and templates
+      - name: Build CLI
         run: pnpm --filter @openuidev/cli build
 
       - name: Pack CLI
@@ -146,6 +148,8 @@ jobs:
             package-manager-version: "11"
 
     steps:
+      - uses: actions/checkout@v6
+
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ matrix.node-version }}

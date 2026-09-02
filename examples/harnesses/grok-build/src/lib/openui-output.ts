@@ -221,7 +221,7 @@ export function createOpenUIStatus(
 ): string {
   return [
     "root = Card([notice])",
-    `notice = TextCallout(${JSON.stringify(variant)}, ${JSON.stringify(title)}, ${JSON.stringify(description)})`,
+        `notice = CalloutV2(${JSON.stringify(variant)}, ${JSON.stringify(title)}, ${JSON.stringify(description)})`,
   ].join("\n");
 }
 

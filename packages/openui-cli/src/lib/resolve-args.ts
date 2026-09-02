@@ -33,7 +33,11 @@ export function rejectConflictingImmediateFlags(args: string[]): void {
 async function resolveOne(prompt: PromptConfig): Promise<string> {
   const { input, select } = await import("@inquirer/prompts");
   if (prompt.type === "select") {
-    return select({ message: prompt.message, choices: prompt.choices });
+    return select({
+      message: prompt.message,
+      choices: prompt.choices,
+      pageSize: prompt.choices.length,
+    });
   }
   return input({ message: prompt.message, default: prompt.default });
 }

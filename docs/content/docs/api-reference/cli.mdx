@@ -1,9 +1,9 @@
 ---
 title: "@openuidev/cli"
-description: API reference for the OpenUI CLI to scaffold apps, generate system prompts or library specs, and deploy projects.
+description: API reference for the OpenUI CLI to scaffold apps, mint Cloud API keys, and generate system prompts or library specs, and deploy projects.
 ---
 
-A command-line tool for scaffolding OpenUI chat apps, generating system prompts, JSON schemas, or serialized library specs from library definitions, and deploying those apps.
+A command-line tool for scaffolding OpenUI chat apps, minting OpenUI Cloud API key, and generating system prompts, JSON schemas, or serialized library specs from library definitions, and deploying those apps.
 
 ## Installation
 
@@ -238,8 +238,6 @@ Extra flags after `deploy` are forwarded as-is to the target deployment platform
 
 Unlinked projects run `vercel link` first. Allowlisted keys from `.env` / `.env.local` that are missing on production, preview, or development can be saved to the project (prompted; auto-accepted with `--yes`). Existing project keys are left unchanged. The current deployment still receives those keys via `--env` / `--build-env`. Build logs are quiet by default; use `--verbose` to stream them.
 
-**Examples**
-
 ```bash tab="pnpm" tab-group="pkg"
 # Preview deploy from the project directory
 pnpx @openuidev/cli@latest deploy
@@ -282,6 +280,48 @@ npx @openuidev/cli@latest deploy --prod --yes
 
 # Deploy a specific directory without forwarding local env
 npx @openuidev/cli@latest deploy ./my-app --skip-env
+```
+
+## `openui generate-api-key`
+
+Signs in with Thesys in the browser, mints an OpenUI Cloud API key, and writes it to a project env file.
+
+```
+openui generate-api-key [options]
+```
+
+**Options**
+
+| Flag                  | Description                                                                                        |
+| --------------------- | -------------------------------------------------------------------------------------------------- |
+| `-f, --file <path>`   | Env file to write (default: `.env`)                                                                |
+| `-k, --key <name>`    | Environment variable name (default: `THESYS_API_KEY`)                                              |
+| `-n, --name <string>` | Name of the minted key in the Thesys console (default: `package.json` name, or the directory name) |
+
+**Examples**
+
+```bash tab="pnpm" tab-group="pkg"
+pnpx @openuidev/cli@latest generate-api-key
+pnpx @openuidev/cli@latest generate-api-key --file .env.local
+pnpx @openuidev/cli@latest generate-api-key --file .env.local --key THESYS_API_KEY
+```
+
+```bash tab="bun" tab-group="pkg"
+bunx @openuidev/cli@latest generate-api-key
+bunx @openuidev/cli@latest generate-api-key --file .env.local
+bunx @openuidev/cli@latest generate-api-key --file .env.local --key THESYS_API_KEY
+```
+
+```bash tab="yarn" tab-group="pkg"
+yarn dlx @openuidev/cli@latest generate-api-key
+yarn dlx @openuidev/cli@latest generate-api-key --file .env.local
+yarn dlx @openuidev/cli@latest generate-api-key --file .env.local --key THESYS_API_KEY
+```
+
+```bash tab="npm" tab-group="pkg"
+npx @openuidev/cli@latest generate-api-key
+npx @openuidev/cli@latest generate-api-key --file .env.local
+npx @openuidev/cli@latest generate-api-key --file .env.local --key THESYS_API_KEY
 ```
 
 ## `openui generate`
