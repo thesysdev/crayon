@@ -6,7 +6,7 @@ Each example has one primary home based on the integration seam it is intended t
 
 ## CLI catalog
 
-[`examples.json`](./examples.json) is the catalog `openui create` prefetches at runtime. Interactive create offers **Scaffold from OpenUI Examples**, which lists every catalog entry (with **← Back** to starter templates). `--example <name>` bootstraps any folder name in that file.
+[`examples.json`](./examples.json) is the catalog `openui create` prefetches at runtime. Interactive create offers **Scaffold from OpenUI Examples**, which lists every catalog entry (with **← Back** to starter templates). `--example <name>` bootstraps any folder name in that file. Each entry’s `envKey` is the API key the CLI asks you to set after scaffold (almost always `THESYS_API_KEY`; Grok Build uses `XAI_API_KEY`).
 
 ## Categories
 

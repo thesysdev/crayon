@@ -1,19 +1,20 @@
 import * as path from "node:path";
 
-import {
-  formatCreateDoneMessage,
-  runScaffoldDependencyInstall,
-  runScaffoldDevCommand,
-  runScaffoldSkillInstall,
-} from "../lib/create-finish";
-import { promptForProviderKey, resolveImmediate, withProgress } from "../lib/create-helpers";
+import { formatCreateDoneMessage, resolveScaffoldInstall, runScaffoldSkillInstall } from "../lib/create-finish";
+import { promptForProviderKey, withProgress } from "../lib/create-helpers";
 import { createFunnelProps } from "../lib/create-telemetry";
 import type { CreateAppOptions, EnvResult } from "../lib/create-types";
 import { resolveInstallPackageManager } from "../lib/detect-package-manager";
 import { upsertEnvVar } from "../lib/env";
 import { shouldInstallSkill } from "../lib/install-skill";
 import type { ExampleProject } from "../lib/projects";
-import { scaffoldExample } from "../lib/scaffold-example";
+import {
+  exampleDevCommand,
+  exampleLayout,
+  isNestedExample,
+  scaffoldExample,
+  type ExampleLayout,
+} from "../lib/scaffold-example";
 import { CreateError, telemetry } from "../lib/telemetry";
 import { cliErrorProperties } from "../lib/utils";
 
@@ -41,21 +42,15 @@ export async function runCreateExample(params: {
   });
   const envResult = await resolveExampleEnv(example, interactive);
 
-  const installSkill = await shouldInstallSkill(options.skill, interactive);
+  const installSkill = await shouldInstallSkill(options.skill, false);
   telemetry.capture("cli_skill_installed", {
     ...createFunnelProps("skill_prompt_resolved"),
     skill_installed: installSkill,
   });
-
-  const immediateResolution = resolveImmediate(options.immediate, options.noInstall, interactive);
-  const apiKeyEnv = example.envKey;
-  const apiKeyAvailable =
-    !apiKeyEnv || envResult.envWritten || Boolean(process.env[apiKeyEnv]?.trim());
-  const devStartBlockedByMissingApiKey = immediateResolution.immediate && !apiKeyAvailable;
   telemetry.capture("cli_immediate_selected", {
-    immediate: immediateResolution.immediate,
-    dependency_install_requested: immediateResolution.installDependencies,
-    selection_source: immediateResolution.source,
+    immediate: false,
+    dependency_install_requested: false,
+    selection_source: "no_install",
   });
 
   console.info();
@@ -63,11 +58,12 @@ export async function runCreateExample(params: {
     ...createFunnelProps("scaffold_started"),
     example: example.name,
   });
+  let layout: ExampleLayout | undefined;
   try {
     await withProgress(
       "Scaffolding...",
       async () => {
-        await scaffoldExample({
+        layout = await scaffoldExample({
           example,
           targetDir,
           name,
@@ -125,13 +121,13 @@ export async function runCreateExample(params: {
     env_written: envResult.envWritten,
   });
 
-  const { dependencyInstalled, installCmd } = await runScaffoldDependencyInstall({
-    verbose: options.verbose,
-    packageManager,
-    targetDir,
-    unlockedInstall: true,
-    installDependencies: immediateResolution.installDependencies,
-    telemetryProps: { example: example.name },
+  layout ??= exampleLayout(targetDir);
+  const { installCmd } = resolveScaffoldInstall(packageManager, targetDir, true);
+  telemetry.capture("cli_dependency_install_skipped", {
+    skip_reason: "example_scaffold_only",
+  });
+  telemetry.capture("cli_dev_command_skipped", {
+    skip_reason: "not_immediate",
   });
 
   const skillInstalled = await runScaffoldSkillInstall({
@@ -140,49 +136,39 @@ export async function runCreateExample(params: {
     targetDir,
   });
 
-  const startDev =
-    immediateResolution.immediate && dependencyInstalled && !devStartBlockedByMissingApiKey;
-
   telemetry.capture("cli_create_succeeded", {
     ...createFunnelProps("create_succeeded"),
     example: example.name,
     duration_ms: Date.now() - t0,
     skill_installed: skillInstalled,
     env_written: envResult.envWritten,
-    dependency_installed: dependencyInstalled,
+    dependency_installed: false,
   });
-  const envKey = example.envKey ?? "OPENAI_API_KEY";
+  const envKey = example.envKey;
   console.info(
     formatCreateDoneMessage({
       skillInstalled,
-      envNote: envResult.envWritten
-        ? `✅ ${example.envFile} updated with ${envKey}.`
-        : `Add ${envKey}=… to ${example.envFile} (see the example README).`,
+      envNote: envKey
+        ? envResult.envWritten
+          ? `✅ ${example.envFile} updated with ${envKey}.`
+          : `Add ${envKey}=… to ${example.envFile} (see the example README).`
+        : `Add your API keys to ${example.envFile} (see the example README).`,
       name,
       devCmd: packageManager.runCmd,
       installCmd,
-      startDev,
-      dependencyInstalled,
+      startDev: false,
+      dependencyInstalled: false,
+      nextStep: isNestedExample(layout)
+        ? nestedExampleNextSteps({
+            name,
+            targetDir,
+            layout,
+            runCmd: packageManager.runCmd,
+            installCmd,
+          })
+        : undefined,
     }),
   );
-
-  await runScaffoldDevCommand({
-    name,
-    targetDir,
-    packageManager,
-    startDev,
-    noInstall: options.noInstall,
-    missingApiKey:
-      devStartBlockedByMissingApiKey && apiKeyEnv
-        ? {
-            env: apiKeyEnv,
-            message:
-              `\nSkipped starting the development server — ${apiKeyEnv} is missing.\n\n` +
-              `Add your key to ${name}/${example.envFile}:\n\n  ${apiKeyEnv}=…\n\n` +
-              `Then run:\n\n> cd ${name}\n> ${packageManager.runCmd} run dev\n`,
-          }
-        : undefined,
-  });
 }
 
 async function resolveExampleEnv(
@@ -198,4 +184,36 @@ async function resolveExampleEnv(
     envWritten: apiKey != null,
     envKeyValue: apiKey ?? undefined,
   };
+}
+
+function posixJoin(...parts: string[]): string {
+  return parts.filter((part) => part && part !== ".").join("/");
+}
+
+function nestedExampleNextSteps(params: {
+  name: string;
+  targetDir: string;
+  layout: ExampleLayout;
+  runCmd: string;
+  installCmd: string;
+}): string {
+  const blocks: string[] = [];
+  for (const relative of params.layout.jsPackages) {
+    const pkgDir = relative === "." ? params.targetDir : path.join(params.targetDir, relative);
+    blocks.push(
+      [
+        `> cd ${posixJoin(params.name, relative)}`,
+        `> ${params.installCmd}`,
+        `> ${exampleDevCommand(pkgDir, params.runCmd)}`,
+      ].join("\n"),
+    );
+  }
+  for (const relative of params.layout.pythonPackages) {
+    blocks.push(
+      [`> cd ${posixJoin(params.name, relative)}`, `> uv run uvicorn app.main:app --reload`].join(
+        "\n",
+      ),
+    );
+  }
+  return blocks.join("\n\n");
 }

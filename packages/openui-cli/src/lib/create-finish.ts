@@ -250,17 +250,20 @@ export function formatCreateDoneMessage(o: {
   installCmd: string;
   startDev: boolean;
   dependencyInstalled: boolean;
+  nextStep?: string;
 }): string {
   const skillMessage = o.skillInstalled
     ? "The OpenUI agent skill was installed.\nAI coding assistants will use it to help you build with OpenUI."
     : "";
-  const nextStep = o.startDev
-    ? `Starting the development server in "${o.name}"...\n\n> ${o.devCmd} run dev`
-    : [
-        `> cd ${o.name}`,
-        ...(o.dependencyInstalled ? [] : [`> ${o.installCmd}`]),
-        `> ${o.devCmd} run dev`,
-      ].join("\n");
+  const nextStep =
+    o.nextStep ??
+    (o.startDev
+      ? `Starting the development server in "${o.name}"...\n\n> ${o.devCmd} run dev`
+      : [
+          `> cd ${o.name}`,
+          ...(o.dependencyInstalled ? [] : [`> ${o.installCmd}`]),
+          `> ${o.devCmd} run dev`,
+        ].join("\n"));
 
   return `\n${[skillMessage, "Done!", o.envNote, ...(o.extraNotes ?? []), nextStep]
     .filter(Boolean)

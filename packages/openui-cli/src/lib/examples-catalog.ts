@@ -5,7 +5,12 @@ import { catalogError } from "./utils";
 export const EXAMPLES_CATALOG_PATH = "examples/examples.json";
 
 function parseCatalogEntry(item: unknown): ExampleProject {
-  const entry = item as { title?: unknown; description?: unknown; path?: unknown };
+  const entry = item as {
+    title?: unknown;
+    description?: unknown;
+    path?: unknown;
+    envKey?: unknown;
+  };
   if (
     typeof entry.title !== "string" ||
     typeof entry.description !== "string" ||
@@ -24,6 +29,14 @@ function parseCatalogEntry(item: unknown): ExampleProject {
       `${EXAMPLES_CATALOG_PATH} has an example with an empty path.`,
     );
   }
+  if (entry.envKey !== undefined) {
+    if (typeof entry.envKey !== "string" || !/^[A-Za-z_][A-Za-z0-9_]*$/.test(entry.envKey)) {
+      throw catalogError(
+        "EXAMPLES_CATALOG_INVALID",
+        `${EXAMPLES_CATALOG_PATH} example "${name}" has an invalid envKey.`,
+      );
+    }
+  }
   return {
     name,
     label: entry.title,
@@ -31,6 +44,7 @@ function parseCatalogEntry(item: unknown): ExampleProject {
     category: "example",
     path: relative.startsWith("examples/") ? relative : `examples/${relative}`,
     envFile: ".env",
+    envKey: typeof entry.envKey === "string" ? entry.envKey : undefined,
   };
 }
 

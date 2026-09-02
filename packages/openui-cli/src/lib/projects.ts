@@ -1,3 +1,5 @@
+import { styleText } from "node:util";
+
 import type { OverlayName } from "./create-types";
 import { promptSelect } from "./resolve-args";
 import { CreateError } from "./telemetry";
@@ -32,6 +34,16 @@ export type ProjectMetadata = TemplateProject | ExampleProject;
 
 const OPENUI_EXAMPLES_CHOICE = "openui-examples";
 const GO_BACK_CHOICE = "__back__";
+
+function erasePromptLines(count: number) {
+  const out = process.stdout;
+  if (!out.isTTY) return;
+  for (let i = 0; i < count; i++) {
+    out.moveCursor(0, -1);
+    out.clearLine(0);
+  }
+  out.cursorTo(0);
+}
 
 export function templatesFromOverlays(overlays: CatalogOverlay[]): TemplateProject[] {
   return overlays.map((overlay) => ({
@@ -96,7 +108,7 @@ export function rejectConflictingScaffoldSelectors(opts: {
 }
 
 function heading(label: string): string {
-  return `────── ${label} ──────`;
+  return styleText("bold", label);
 }
 
 function categoryLabel(key: string): string {
@@ -158,7 +170,7 @@ export async function resolveProject(params: {
     if (examples.length > 0) {
       starterChoices.push({
         value: OPENUI_EXAMPLES_CHOICE,
-        name: "Scaffold from OpenUI Examples",
+        name: "Scaffold from OpenUI Examples →",
         description: "Browse examples from the OpenUI repo",
       });
     }
@@ -168,11 +180,22 @@ export async function resolveProject(params: {
       return findTemplate(selected as OverlayName, templates);
     }
 
-    const exampleSelected = await promptSelect("Select an OpenUI example:", [
-      { value: GO_BACK_CHOICE, name: "← Back" },
-      ...groupedExampleChoices(examples, Separator),
-    ]);
-    if (exampleSelected === GO_BACK_CHOICE) continue;
-    return findExample(exampleSelected, examples);
+    const exampleSelected = await promptSelect(
+      "Select an OpenUI example:",
+      [{ value: GO_BACK_CHOICE, name: "← Back" }, ...groupedExampleChoices(examples, Separator)],
+      10,
+    );
+    if (exampleSelected === GO_BACK_CHOICE) {
+      // Inquirer prints a ✔ line for every resolved select. Drop the
+      // examples visit so Back returns to a clean starter prompt.
+      erasePromptLines(2);
+      continue;
+    }
+    const selectedExample = findExample(exampleSelected, examples);
+    erasePromptLines(2);
+    const prefix = styleText("green", "✔");
+    const answer = styleText("cyan", selectedExample.label);
+    console.info(`${prefix} Select a project to scaffold: ${answer}`);
+    return selectedExample;
   }
 }

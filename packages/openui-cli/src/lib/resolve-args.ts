@@ -38,13 +38,17 @@ async function resolveOne(prompt: PromptConfig): Promise<string> {
   return input({ message: prompt.message, default: prompt.default });
 }
 
-export async function promptSelect(message: string, choices: readonly unknown[]): Promise<string> {
+export async function promptSelect(
+  message: string,
+  choices: readonly unknown[],
+  pageSize = choices.length,
+): Promise<string> {
   const { select } = await import("@inquirer/prompts");
   try {
     return await select<string>({
       message,
       choices: choices as never,
-      pageSize: choices.length,
+      pageSize,
     });
   } catch (err) {
     const { ExitPromptError } = await import("@inquirer/core");
