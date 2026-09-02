@@ -31,15 +31,28 @@ export function rejectConflictingImmediateFlags(args: string[]): void {
 }
 
 async function resolveOne(prompt: PromptConfig): Promise<string> {
-  const { input, select } = await import("@inquirer/prompts");
   if (prompt.type === "select") {
-    return select({
-      message: prompt.message,
-      choices: prompt.choices,
-      pageSize: prompt.choices.length,
-    });
+    return promptSelect(prompt.message, prompt.choices);
   }
+  const { input } = await import("@inquirer/prompts");
   return input({ message: prompt.message, default: prompt.default });
+}
+
+export async function promptSelect(message: string, choices: readonly unknown[]): Promise<string> {
+  const { select } = await import("@inquirer/prompts");
+  try {
+    return await select<string>({
+      message,
+      choices: choices as never,
+      pageSize: choices.length,
+    });
+  } catch (err) {
+    const { ExitPromptError } = await import("@inquirer/core");
+    if (err instanceof ExitPromptError) {
+      throw new CliCancelledError("args_resolution");
+    }
+    throw err;
+  }
 }
 
 export async function resolveArgs<T extends Record<string, ArgDef<unknown>>>(

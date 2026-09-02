@@ -1,5 +1,7 @@
 import type { OverlayName } from "./create-types";
-import { CliCancelledError, CreateError } from "./telemetry";
+import { promptSelect } from "./resolve-args";
+import { CreateError } from "./telemetry";
+import type { CatalogOverlay } from "./templates-catalog";
 
 export type ProjectCategory = "template" | "example";
 
@@ -23,19 +25,18 @@ export interface ExampleProject {
   envFile: EnvFileHint;
   /** Primary env var to prompt for. Omit when the example needs several keys. */
   envKey?: string;
-  aliases?: string[];
-  featured?: boolean;
 }
 
 export type ProjectMetadata = TemplateProject | ExampleProject;
 
-export function templatesFromOverlays(
-  overlays: Array<{ name: string; label: string; description?: string }>,
-): TemplateProject[] {
+const OPENUI_EXAMPLES_CHOICE = "openui-examples";
+const GO_BACK_CHOICE = "__back__";
+
+export function templatesFromOverlays(overlays: CatalogOverlay[]): TemplateProject[] {
   return overlays.map((overlay) => ({
-    name: overlay.name,
-    label: overlay.label,
-    description: overlay.description ?? overlay.label,
+    name: overlay.key,
+    label: overlay.name,
+    description: overlay.description,
     category: "template",
   }));
 }
@@ -56,11 +57,7 @@ export function findTemplate(name: OverlayName, templates: TemplateProject[]): T
 
 export function findExample(name: string, examples: ExampleProject[]): ExampleProject {
   const normalized = name.toLowerCase();
-  const project = examples.find(
-    (entry) =>
-      entry.name.toLowerCase() === normalized ||
-      entry.aliases?.some((alias) => alias.toLowerCase() === normalized),
-  );
+  const project = examples.find((entry) => entry.name.toLowerCase() === normalized);
   if (!project) {
     const available = examples.map((entry) => entry.name).join(" | ") || "(none loaded)";
     throw new CreateError(
@@ -96,20 +93,41 @@ export function rejectConflictingScaffoldSelectors(opts: {
   }
 }
 
-const OPENUI_EXAMPLES_CHOICE = "openui-examples";
-const GO_BACK_CHOICE = "back";
+function heading(label: string): string {
+  return `────── ${label} ──────`;
+}
 
-const EXAMPLE_CATEGORY_LABELS: Record<string, string> = {
-  "agent-frameworks": "Agent frameworks",
-  "app-frameworks": "App frameworks",
-  "design-systems": "Design systems",
-  harnesses: "Harnesses",
-  miscellaneous: "Miscellaneous",
-};
+function categoryLabel(key: string): string {
+  return key
+    .split("-")
+    .map((part, index) => (index === 0 ? part.charAt(0).toUpperCase() + part.slice(1) : part))
+    .join(" ");
+}
 
-function exampleCategoryKey(example: ExampleProject): string {
-  const relative = example.path.replace(/^examples\//, "");
-  return relative.split("/")[0] ?? "miscellaneous";
+function groupedExampleChoices(
+  examples: ExampleProject[],
+  Separator: new (heading?: string) => object,
+): unknown[] {
+  const groups = new Map<string, ExampleProject[]>();
+  for (const example of examples) {
+    const key = example.path.replace(/^examples\//, "").split("/")[0] ?? "miscellaneous";
+    const group = groups.get(key) ?? [];
+    group.push(example);
+    groups.set(key, group);
+  }
+
+  const choices: unknown[] = [];
+  for (const [key, group] of groups) {
+    choices.push(new Separator(heading(categoryLabel(key))));
+    for (const project of group) {
+      choices.push({
+        value: project.name,
+        name: project.label,
+        description: project.description,
+      });
+    }
+  }
+  return choices;
 }
 
 export async function resolveProject(params: {
@@ -125,78 +143,34 @@ export async function resolveProject(params: {
   if (backendFramework) return findTemplate(backendFramework, templates);
   if (!interactive) return findTemplate("default", templates);
 
-  const { select, Separator } = await import("@inquirer/prompts");
-  try {
-    for (;;) {
-      const starterChoices = [
-        new Separator("────── Starter Templates ──────"),
-        ...templates.map((project) => ({
-          value: `template:${project.name}`,
-          name: project.label,
-          description: project.description,
-        })),
-      ];
-      if (examples.length > 0) {
-        starterChoices.push({
-          value: OPENUI_EXAMPLES_CHOICE,
-          name: "Scaffold from OpenUI Examples",
-          description: "Browse examples from the OpenUI repo",
-        });
-      }
-
-      const selected = await select({
-        message: "Select a project to scaffold:",
-        choices: starterChoices,
-        pageSize: starterChoices.length,
-      });
-
-      if (selected !== OPENUI_EXAMPLES_CHOICE) {
-        return findTemplate(selected.slice("template:".length) as OverlayName, templates);
-      }
-
-      const exampleChoices = [
-        { value: GO_BACK_CHOICE, name: "← Back" },
-        ...groupedExampleChoices(examples, Separator),
-      ];
-      const exampleSelected = await select<string>({
-        message: "Select an OpenUI example:",
-        choices: exampleChoices as never,
-        pageSize: exampleChoices.length,
-      });
-      if (exampleSelected === GO_BACK_CHOICE) continue;
-      return findExample(exampleSelected.slice("example:".length), examples);
-    }
-  } catch (err) {
-    const { ExitPromptError } = await import("@inquirer/core");
-    if (err instanceof ExitPromptError) {
-      throw new CliCancelledError("args_resolution");
-    }
-    throw err;
-  }
-}
-
-function groupedExampleChoices(
-  examples: ExampleProject[],
-  Separator: new (heading?: string) => object,
-) {
-  const groups = new Map<string, ExampleProject[]>();
-  for (const example of examples) {
-    const key = exampleCategoryKey(example);
-    const group = groups.get(key) ?? [];
-    group.push(example);
-    groups.set(key, group);
-  }
-
-  const choices: Array<object | { value: string; name: string; description: string }> = [];
-  for (const [key, group] of groups) {
-    choices.push(new Separator(`────── ${EXAMPLE_CATEGORY_LABELS[key] ?? key} ──────`));
-    for (const project of group) {
-      choices.push({
-        value: `example:${project.name}`,
+  const { Separator } = await import("@inquirer/prompts");
+  for (;;) {
+    const starterChoices: unknown[] = [
+      new Separator(heading("Starter Templates")),
+      ...templates.map((project) => ({
+        value: project.name,
         name: project.label,
         description: project.description,
+      })),
+    ];
+    if (examples.length > 0) {
+      starterChoices.push({
+        value: OPENUI_EXAMPLES_CHOICE,
+        name: "Scaffold from OpenUI Examples",
+        description: "Browse examples from the OpenUI repo",
       });
     }
+
+    const selected = await promptSelect("Select a project to scaffold:", starterChoices);
+    if (selected !== OPENUI_EXAMPLES_CHOICE) {
+      return findTemplate(selected as OverlayName, templates);
+    }
+
+    const exampleSelected = await promptSelect("Select an OpenUI example:", [
+      { value: GO_BACK_CHOICE, name: "← Back" },
+      ...groupedExampleChoices(examples, Separator),
+    ]);
+    if (exampleSelected === GO_BACK_CHOICE) continue;
+    return findExample(exampleSelected, examples);
   }
-  return choices;
 }

@@ -8,6 +8,7 @@ import {
   promptForProviderKey,
   resolveImmediate,
   runDependencyInstall,
+  withProgress,
 } from "../lib/create-helpers";
 import { aiSetupFromTemplate, createFunnelProps } from "../lib/create-telemetry";
 import type { CreateAppOptions, EnvResult, TemplateName } from "../lib/create-types";
@@ -16,7 +17,7 @@ import {
   type PackageManagerName,
 } from "../lib/detect-package-manager";
 import { runDevCommand } from "../lib/dev-server";
-import { loadExamplesCatalog, requireExamplesCatalog } from "../lib/featured-examples";
+import { loadExamplesCatalog } from "../lib/examples-catalog";
 import { runSkillInstall, shouldInstallSkill } from "../lib/install-skill";
 import {
   applyOverlay,
@@ -33,7 +34,6 @@ import {
 } from "../lib/projects";
 import { resolveArgs } from "../lib/resolve-args";
 import { resolveTemplateSource } from "../lib/scaffold-template";
-import { withSpinner } from "../lib/spinner";
 import { resolveAvailableTarget } from "../lib/target-dir";
 import { CliCancelledError, CreateError, telemetry } from "../lib/telemetry";
 import {
@@ -192,29 +192,50 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
 
   // Interactive runs always scaffold the Cloud backend; openui-self-hosted stays
   // available, but only when requested explicitly with --template.
-  if (!options.example && !options.template && !interactive) {
-    throw new CreateError(
-      "args_resolution",
-      "Missing required argument --template",
-      "invalid_input",
-      "MISSING_REQUIRED_ARG",
-    );
+  if (!interactive) {
+    if (!options.name) {
+      throw new CreateError(
+        "args_resolution",
+        "Missing required argument --name",
+        "invalid_input",
+        "MISSING_REQUIRED_ARG",
+      );
+    }
+    if (!options.example && !options.template) {
+      throw new CreateError(
+        "args_resolution",
+        "Missing required argument --template",
+        "invalid_input",
+        "MISSING_REQUIRED_ARG",
+      );
+    }
   }
 
-  const [catalog, examples] = await Promise.all([
-    loadTemplatesCatalog(),
-    loadExamplesCatalog(),
-  ]);
-  requireExamplesCatalog(examples, options.example);
+  let examples: Awaited<ReturnType<typeof loadExamplesCatalog>> = [];
+  let template: TemplateName | undefined;
+  let templateEntry: ReturnType<typeof findCatalogTemplate> | undefined;
 
-  const template: TemplateName | undefined = options.example
-    ? undefined
-    : (options.template ?? DEFAULT_TEMPLATE_KEY);
-  const templateEntry = template ? findCatalogTemplate(catalog, template) : undefined;
   if (options.example) {
+    examples = await loadExamplesCatalog();
     findExample(options.example, examples);
-  } else if (options.backendFramework && templateEntry) {
-    findCatalogOverlay(templateEntry, options.backendFramework);
+  } else if (interactive) {
+    const [catalog, loadedExamples] = await Promise.all([
+      loadTemplatesCatalog(),
+      loadExamplesCatalog(),
+    ]);
+    examples = loadedExamples;
+    template = options.template ?? DEFAULT_TEMPLATE_KEY;
+    templateEntry = findCatalogTemplate(catalog, template);
+    if (options.backendFramework) {
+      findCatalogOverlay(templateEntry, options.backendFramework);
+    }
+  } else {
+    const catalog = await loadTemplatesCatalog();
+    template = options.template ?? DEFAULT_TEMPLATE_KEY;
+    templateEntry = findCatalogTemplate(catalog, template);
+    if (options.backendFramework) {
+      findCatalogOverlay(templateEntry, options.backendFramework);
+    }
   }
 
   const nameArgs = await resolveArgs(
@@ -237,13 +258,7 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
     backendFramework: options.backendFramework,
     example: options.example,
     examples,
-    templates: templatesFromOverlays(
-      (templateEntry?.overlays ?? []).map((overlay) => ({
-        name: overlay.key,
-        label: overlay.name,
-        description: overlay.description,
-      })),
-    ),
+    templates: templatesFromOverlays(templateEntry?.overlays ?? []),
     interactive,
   });
 
@@ -377,11 +392,12 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
   };
 
   console.info();
-  if (options.verbose) {
-    console.info(`Scaffolding ${template} into "${name}"...\n`);
-    await runScaffold();
-  } else {
-    await withSpinner("Scaffolding...", runScaffold);
+  await withProgress(
+    options.verbose ? `Scaffolding ${template} into "${name}"...` : "Scaffolding...",
+    runScaffold,
+    options.verbose,
+  );
+  if (!options.verbose) {
     console.info("✓ Scaffolded");
   }
   telemetry.capture("cli_scaffold_succeeded", {
@@ -496,12 +512,11 @@ export async function runCreateApp(options: CreateAppOptions): Promise<void> {
             stdin: "ignore",
             captureLimit: QUIET_COMMAND_CAPTURE_LIMIT,
           });
-    if (options.verbose) {
-      console.info("Installing OpenUI agent skill...\n");
-    }
-    const skillResult = options.verbose
-      ? await runSkill()
-      : await withSpinner("Installing OpenUI agent skill...", runSkill);
+    const skillResult = await withProgress(
+      "Installing OpenUI agent skill...",
+      runSkill,
+      options.verbose,
+    );
     skillInstalled = !skillResult.error && skillResult.status === 0;
     if (skillInstalled) {
       if (!options.verbose) {
