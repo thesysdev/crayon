@@ -206,7 +206,7 @@ const DESCRIPTIONS: Record<
     title: "Use any model",
     description: "Generate OpenUI Lang with your preferred LLM.",
     cloud: ["One API", "Provider fallbacks"],
-    docsHref: "/docs/agent/agent-interface/reference/adapters-and-formats",
+    docsHref: "/docs/agent/reference/adapters-and-formats",
     worksWith: LLM_BADGES,
   },
 };

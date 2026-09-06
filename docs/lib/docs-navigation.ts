@@ -36,9 +36,9 @@ export const NESTED_DOCS_SECTIONS: Record<NestedDocsRoot, NestedSection> = {
   },
   "agent-interface": {
     title: "Agent Interface",
-    entryUrl: "/docs/agent/agent-interface/getting-started/introduction",
-    pathPrefix: "/docs/agent/agent-interface",
-    treeFolder: "agent/agent-interface",
+    entryUrl: "/docs/agent/getting-started/introduction",
+    pathPrefix: "/docs/agent",
+    treeFolder: "agent",
   },
   "build-agents": {
     title: "Build Agents",

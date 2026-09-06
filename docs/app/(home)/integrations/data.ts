@@ -164,12 +164,12 @@ const integrationCatalog: Integration[] = [
       ...packageLinks("@openuidev/langchain", "langchain", "/docs/api-reference/langchain"),
       {
         label: "Stream adapters",
-        href: "/docs/agent/agent-interface/reference/adapters-and-formats#langgraphadapter",
+        href: "/docs/agent/reference/adapters-and-formats#langgraphadapter",
         kind: "Docs",
       },
       {
         label: "Integration guide",
-        href: "/docs/agent/agent-interface/agent-runtimes/langgraph-platform",
+        href: "/docs/agent/agent-runtimes/langgraph-platform",
         kind: "Guide",
       },
       exampleLink("langchain-chat"),
@@ -189,12 +189,12 @@ const integrationCatalog: Integration[] = [
     links: [
       {
         label: "Vercel AI adapter",
-        href: "/docs/agent/agent-interface/reference/adapters-and-formats#vercelaiadapter",
+        href: "/docs/agent/reference/adapters-and-formats#vercelaiadapter",
         kind: "Docs",
       },
       {
         label: "Integration guide",
-        href: "/docs/agent/agent-interface/agent-runtimes/vercel-ai-sdk",
+        href: "/docs/agent/agent-runtimes/vercel-ai-sdk",
         kind: "Guide",
       },
       ...packageLinks("@openuidev/react-headless", "react-headless"),
@@ -275,7 +275,7 @@ const integrationCatalog: Integration[] = [
     links: [
       {
         label: "Adapters and formats",
-        href: "/docs/agent/agent-interface/reference/adapters-and-formats",
+        href: "/docs/agent/reference/adapters-and-formats",
         kind: "Docs",
       },
       { label: "AG-UI documentation", href: "https://docs.ag-ui.com", kind: "Website" },
@@ -310,7 +310,7 @@ const integrationCatalog: Integration[] = [
     links: [
       {
         label: "Integration guide",
-        href: "/docs/agent/agent-interface/agent-runtimes/vercel-eve",
+        href: "/docs/agent/agent-runtimes/vercel-eve",
         kind: "Guide",
       },
       exampleLink("harnesses/vercel-eve", "OpenUI harness"),
@@ -330,7 +330,7 @@ const integrationCatalog: Integration[] = [
     links: [
       {
         label: "Integration guide",
-        href: "/docs/agent/agent-interface/agent-runtimes/pi",
+        href: "/docs/agent/agent-runtimes/pi",
         kind: "Guide",
       },
       exampleLink("harnesses/pi-agent-harness", "OpenUI harness"),

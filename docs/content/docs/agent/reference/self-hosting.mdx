@@ -7,10 +7,10 @@ description: Connect your LLM with a streaming route and persist threads and art
 
 Everything `<AgentInterface>` needs from a backend flows through two independent interfaces:
 
-- **`llm`** — a `ChatLLM` that produces replies. The browser-side [`fetchLLM`](/docs/agent/agent-interface/reference/adapters-and-formats) factory builds one for you.
-- **`storage`** — a `ChatStorage` that persists threads (and optionally artifacts). The [`restStorage`](/docs/agent/agent-interface/reference/adapters-and-formats) factory builds one for you.
+- **`llm`** — a `ChatLLM` that produces replies. The browser-side [`fetchLLM`](/docs/agent/reference/adapters-and-formats) factory builds one for you.
+- **`storage`** — a `ChatStorage` that persists threads (and optionally artifacts). The [`restStorage`](/docs/agent/reference/adapters-and-formats) factory builds one for you.
 
-They are configured separately. You can run a real `llm` with ephemeral (in-memory) storage, or persistent storage with a placeholder `llm`. For the full type signatures of every interface and factory named here, see [Adapters & formats](/docs/agent/agent-interface/reference/adapters-and-formats); this page is the worked-example home for wiring them against your own backend.
+They are configured separately. You can run a real `llm` with ephemeral (in-memory) storage, or persistent storage with a placeholder `llm`. For the full type signatures of every interface and factory named here, see [Adapters & formats](/docs/agent/reference/adapters-and-formats); this page is the worked-example home for wiring them against your own backend.
 
 <Callout type="info">
   The provider key **always** lives server-side. `fetchLLM` only ever talks to your own origin (e.g.
@@ -56,7 +56,7 @@ Your route always receives a JSON body of `{ threadId, messages }` and returns a
 | LangGraph stream (named SSE events)                                  | `langGraphAdapter()`            | `langGraphMessageFormat`           |
 | A backend that already emits AG-UI events                            | `agUIAdapter()`                 | depends on what your route expects |
 
-The full catalogue and the precise wire format each adapter expects are in [Adapters & formats](/docs/agent/agent-interface/reference/adapters-and-formats).
+The full catalogue and the precise wire format each adapter expects are in [Adapters & formats](/docs/agent/reference/adapters-and-formats).
 
 ### Recipe: OpenAI
 
@@ -184,7 +184,7 @@ const llm = fetchLLM({
 });
 ```
 
-To let the model call tools, declare provider-format tools on the request, run the ones it asks for, and emit the matching `TOOL_CALL_START` / `TOOL_CALL_ARGS` / `TOOL_CALL_END` / `TOOL_CALL_RESULT` events between the text events, looping back to the provider with each result until it returns a turn with no tool calls. (`TOOL_CALL_RESULT.content` is always a string.) See [Tools](/docs/agent/agent-interface/core-concepts/tools).
+To let the model call tools, declare provider-format tools on the request, run the ones it asks for, and emit the matching `TOOL_CALL_START` / `TOOL_CALL_ARGS` / `TOOL_CALL_END` / `TOOL_CALL_RESULT` events between the text events, looping back to the provider with each result until it returns a turn with no tool calls. (`TOOL_CALL_RESULT.content` is always a string.) See [Tools](/docs/agent/core-concepts/tools).
 
 ## 2. Stream — your route must stream
 
@@ -374,7 +374,7 @@ const storage: ChatStorage = {
 };
 ```
 
-Four things to keep right (full contract in [Adapters & formats](/docs/agent/agent-interface/reference/adapters-and-formats)):
+Four things to keep right (full contract in [Adapters & formats](/docs/agent/reference/adapters-and-formats)):
 
 - **`list` filters on the server.** `name` (partial-match search on `title`) and `type` go to your backend, not applied client-side — the browser's search box and category tabs become these params, paginated via `cursor` / `nextCursor`.
 - **`get` returns the full record** including `content`, which the renderer needs to draw the full view. On the storage path a renderer's `parser` is called as `parser({ args: undefined, response: artifact.content }, { isStreaming: false })`, so make your parser tolerate `args` being `undefined` and read the artifact's data from `response`.
@@ -411,7 +411,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
 }
 ```
 
-The artifact `type` you store must match the `type` a registered renderer declares — it's the contract linking a stored artifact to the renderer that draws it. How artifacts get _written_ (a tool call, a background job, a direct write) is up to your agent; the browser only reads, gets, and updates. See [`<AgentInterface>` props](/docs/agent/agent-interface/reference/agentinterface-props) for the related API.
+The artifact `type` you store must match the `type` a registered renderer declares — it's the contract linking a stored artifact to the renderer that draws it. How artifacts get _written_ (a tool call, a background job, a direct write) is up to your agent; the browser only reads, gets, and updates. See [`<AgentInterface>` props](/docs/agent/reference/agentinterface-props) for the related API.
 
 ## 5. Framework-agnostic (plain Web `Request`/`Response`)
 
@@ -515,18 +515,18 @@ A self-hosted `<AgentInterface>`: a model reply that streams (key server-side), 
 <Cards>
   <Card
     title="Adapters & formats"
-    href="/docs/agent/agent-interface/reference/adapters-and-formats"
+    href="/docs/agent/reference/adapters-and-formats"
   >
     The full `ChatLLM`, `ChatStorage`, `ThreadStorage`, `ArtifactStorage` interfaces and the
     `fetchLLM` / `restStorage` factories, plus every stream adapter and message format.
   </Card>
   <Card
     title="<AgentInterface> props"
-    href="/docs/agent/agent-interface/reference/agentinterface-props"
+    href="/docs/agent/reference/agentinterface-props"
   >
     The `llm`, `storage`, `artifactRenderers`, and `artifactCategories` props in full.
   </Card>
-  <Card title="Conversations" href="/docs/agent/agent-interface/core-concepts/conversations">
+  <Card title="Conversations" href="/docs/agent/core-concepts/conversations">
     How threads, messages, and streaming fit together.
   </Card>
 </Cards>

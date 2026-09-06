@@ -3,7 +3,7 @@ title: defineArtifactRenderer
 description: Full reference for the artifact-renderer config — type, toolName, the parser contract, preview/actual, controls, and registry matching.
 ---
 
-A **renderer** describes how one kind of artifact — a dashboard, data explorer, or code file — turns into UI: an inline preview inside the chat message and a full view in a side panel or page. You build one with `defineArtifactRenderer(config)` and pass the results to `<AgentInterface>` through the [`artifactRenderers`](/docs/agent/agent-interface/reference/agentinterface-props#artifactrenderers) prop.
+A **renderer** describes how one kind of artifact — a dashboard, data explorer, or code file — turns into UI: an inline preview inside the chat message and a full view in a side panel or page. You build one with `defineArtifactRenderer(config)` and pass the results to `<AgentInterface>` through the [`artifactRenderers`](/docs/agent/reference/agentinterface-props#artifactrenderers) prop.
 
 ```tsx
 import { defineArtifactRenderer } from "@openuidev/react-ui";
@@ -76,7 +76,7 @@ type: string;
 The artifact kind — a literal string like `"code_artifact"` or `"code_block"`. It links three things together:
 
 - **this renderer**, for the storage path (the artifact browser looks up a renderer by `type`);
-- any [`artifactCategories`](/docs/agent/agent-interface/reference/agentinterface-props#artifactcategories) whose `filter.type` includes it;
+- any [`artifactCategories`](/docs/agent/reference/agentinterface-props#artifactcategories) whose `filter.type` includes it;
 - **stored artifacts**, whose `ArtifactSummary.type` is matched against it.
 
 `type` is orthogonal to the static/live distinction — it is just an identifier you choose. On a duplicate `type` across renderers, the first registration wins (see [Registry behavior](#registry-behavior)).
@@ -134,7 +134,7 @@ Two consequences your parser must respect:
 | `{ props, meta: { id, version, heading } }` | Render `preview`/`actual` with `props`, **and** register an entry in the per-thread ThreadContext. |
 | `{ props, meta: null }`                     | Render `preview`/`actual` with `props`, but do **not** register in ThreadContext.                  |
 
-`meta` controls the [per-thread artifact registry](/docs/agent/agent-interface/reference/hooks#useartifactlist) — the list backing `useArtifactList` and the [Workspace](/docs/agent/agent-interface/reference/components#agentinterfaceworkspace) rail:
+`meta` controls the [per-thread artifact registry](/docs/agent/reference/hooks#useartifactlist) — the list backing `useArtifactList` and the [Workspace](/docs/agent/reference/components#agentinterfaceworkspace) rail:
 
 - **`meta.id`** — a stable identifier for this logical entry. It should not change across re-runs of the same artifact.
 - **`meta.version`** — bump it when the content changes. When the `(id, version)` pair changes, the entry is re-registered.
@@ -223,7 +223,7 @@ Pass an array of configs to `<AgentInterface artifactRenderers={[...]}>`. The in
 
 ### Looking renderers up at runtime
 
-Resolve the matched renderer for a tool name with [`useArtifactRenderer`](/docs/agent/agent-interface/reference/hooks#useartifactrenderer):
+Resolve the matched renderer for a tool name with [`useArtifactRenderer`](/docs/agent/reference/hooks#useartifactrenderer):
 
 ```ts
 import { useArtifactRenderer } from "@openuidev/react-ui";
@@ -235,7 +235,7 @@ It returns `null` on a miss (and when no `artifactRenderers` were provided). Thi
 
 #### Advanced: the raw registry
 
-For custom dispatching — when you need to iterate every registered renderer, or do your own matching rather than looking up a single tool name — [`useArtifactRendererRegistry`](/docs/agent/agent-interface/reference/hooks#useartifactrendererregistry) is the escape hatch. It returns the whole `ArtifactRendererRegistry` (or `null` when no `artifactRenderers` were provided):
+For custom dispatching — when you need to iterate every registered renderer, or do your own matching rather than looking up a single tool name — [`useArtifactRendererRegistry`](/docs/agent/reference/hooks#useartifactrendererregistry) is the escape hatch. It returns the whole `ArtifactRendererRegistry` (or `null` when no `artifactRenderers` were provided):
 
 ```ts
 import { useArtifactRendererRegistry } from "@openuidev/react-ui";
@@ -289,6 +289,6 @@ export const codeBlockRenderer = defineArtifactRenderer({
 
 ## See also
 
-- [Hooks](/docs/agent/agent-interface/reference/hooks) — `useArtifactRenderer`, `useArtifactRendererRegistry`, `useArtifactList`.
-- [`<AgentInterface>` props](/docs/agent/agent-interface/reference/agentinterface-props) — `artifactRenderers`, `artifactCategories`.
-- [Components](/docs/agent/agent-interface/reference/components#agentinterfaceworkspace) — the Workspace rail backed by the registry.
+- [Hooks](/docs/agent/reference/hooks) — `useArtifactRenderer`, `useArtifactRendererRegistry`, `useArtifactList`.
+- [`<AgentInterface>` props](/docs/agent/reference/agentinterface-props) — `artifactRenderers`, `artifactCategories`.
+- [Components](/docs/agent/reference/components#agentinterfaceworkspace) — the Workspace rail backed by the registry.

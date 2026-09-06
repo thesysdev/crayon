@@ -61,7 +61,7 @@ const config = {
       },
       {
         source: "/docs/agent",
-        destination: "/docs/agent/agent-interface/getting-started/introduction",
+        destination: "/docs/agent/getting-started/introduction",
         permanent: true,
       },
       ...["assistant-ui", "copilotkit"].map((integration) => ({
@@ -76,17 +76,17 @@ const config = {
       },
       {
         source: "/docs/agent/vercel-ai-sdk",
-        destination: "/docs/agent/agent-interface/agent-runtimes/vercel-ai-sdk",
+        destination: "/docs/agent/agent-runtimes/vercel-ai-sdk",
         permanent: true,
       },
       {
         source: "/docs/agent/langchain",
-        destination: "/docs/agent/agent-interface/agent-runtimes/langgraph-platform",
+        destination: "/docs/agent/agent-runtimes/langgraph-platform",
         permanent: true,
       },
       {
         source: "/docs/agent/harnesses/:path*",
-        destination: "/docs/agent/agent-interface/agent-runtimes/:path*",
+        destination: "/docs/agent/agent-runtimes/:path*",
         permanent: true,
       },
       {
@@ -106,42 +106,42 @@ const config = {
       },
       {
         source: "/docs/integrations/vercel-ai-sdk",
-        destination: "/docs/agent/agent-interface/agent-runtimes/vercel-ai-sdk",
+        destination: "/docs/agent/agent-runtimes/vercel-ai-sdk",
         permanent: true,
       },
       {
         source: "/docs/integrations/langchain",
-        destination: "/docs/agent/agent-interface/agent-runtimes/langgraph-platform",
+        destination: "/docs/agent/agent-runtimes/langgraph-platform",
         permanent: true,
       },
       {
         source: "/docs/integrations/harnesses/:path*",
-        destination: "/docs/agent/agent-interface/agent-runtimes/:path*",
+        destination: "/docs/agent/agent-runtimes/:path*",
         permanent: true,
       },
       {
         source: "/docs/openui-lang/examples/agent-frameworks/vercel-ai-sdk",
-        destination: "/docs/agent/agent-interface/agent-runtimes/vercel-ai-sdk",
+        destination: "/docs/agent/agent-runtimes/vercel-ai-sdk",
         permanent: true,
       },
       {
         source: "/docs/openui-lang/examples/agent-frameworks/langchain",
-        destination: "/docs/agent/agent-interface/agent-runtimes/langgraph-platform",
+        destination: "/docs/agent/agent-runtimes/langgraph-platform",
         permanent: true,
       },
       {
         source: "/docs/openui-lang/examples/agent-frameworks/langgraph-platform",
-        destination: "/docs/agent/agent-interface/agent-runtimes/langgraph-platform",
+        destination: "/docs/agent/agent-runtimes/langgraph-platform",
         permanent: true,
       },
       {
         source: "/docs/openui-lang/examples/agent-frameworks/vercel-eve",
-        destination: "/docs/agent/agent-interface/agent-runtimes/vercel-eve",
+        destination: "/docs/agent/agent-runtimes/vercel-eve",
         permanent: true,
       },
       {
         source: "/docs/openui-lang/examples/harnesses/pi",
-        destination: "/docs/agent/agent-interface/agent-runtimes/pi",
+        destination: "/docs/agent/agent-runtimes/pi",
         permanent: true,
       },
       {
@@ -151,31 +151,34 @@ const config = {
       },
       {
         source: "/docs/agent/getting-started/openui-cloud",
-        destination: "/docs/agent/agent-interface/getting-started/quickstart",
+        destination: "/docs/agent/getting-started/quickstart",
         permanent: true,
       },
       {
-        source: "/docs/agent/agent-interface/core-concepts/artifacts",
-        destination: "/docs/agent/agent-interface",
+        source: "/docs/agent/core-concepts/artifacts",
+        destination: "/docs/agent/reference/define-artifact-renderer",
         permanent: true,
       },
       {
-        source: "/docs/agent/agent-interface/guides/custom-artifacts",
-        destination: "/docs/agent/agent-interface",
+        source: "/docs/agent/guides/custom-artifacts",
+        destination: "/docs/agent/reference/define-artifact-renderer",
         permanent: true,
       },
       {
-        source: "/docs/agent/agent-interface/guides/open-ended-html",
-        destination: "/docs/agent/agent-interface",
+        source: "/docs/agent/guides/open-ended-html",
+        destination: "/docs/agent/reference/define-artifact-renderer",
         permanent: true,
       },
-      ...["getting-started", "core-concepts", "customize", "guides", "reference"].map(
-        (section) => ({
-          source: `/docs/agent/${section}/:path*`,
-          destination: `/docs/agent/agent-interface/${section}/:path*`,
-          permanent: true,
-        }),
-      ),
+      {
+        source: "/docs/agent/agent-interface",
+        destination: "/docs/agent/getting-started/introduction",
+        permanent: true,
+      },
+      {
+        source: "/docs/agent/agent-interface/:path*",
+        destination: "/docs/agent/:path*",
+        permanent: true,
+      },
       {
         source: "/docs/openui-cloud/get-started",
         destination: "/docs/gateway/generate-openui-lang",
@@ -188,7 +191,7 @@ const config = {
       },
       {
         source: "/docs/openui-cloud/how-it-works",
-        destination: "/docs/gateway/how-it-works",
+        destination: "/docs/gateway",
         permanent: true,
       },
       {
