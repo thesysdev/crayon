@@ -151,7 +151,7 @@ const config = {
       },
       {
         source: "/docs/agent/getting-started/openui-cloud",
-        destination: "/docs/agent/agent-interface/getting-started/gateway",
+        destination: "/docs/agent/agent-interface/getting-started/quickstart",
         permanent: true,
       },
       {
