@@ -86,7 +86,11 @@ const integrationCatalog: Integration[] = [
     howItWorks:
       "Each shadcn component is registered with defineComponent and a Zod prop schema. createLibrary produces both the prompt vocabulary and the renderer mapping used by the example chat app.",
     links: [
-      { label: "Integration guide", href: "/docs/openui-lang/examples/design-systems/shadcn", kind: "Guide" },
+      {
+        label: "Integration guide",
+        href: "/docs/openui-lang/examples/design-systems/shadcn",
+        kind: "Guide",
+      },
       exampleLink("shadcn-chat"),
       { label: "shadcn/ui", href: "https://ui.shadcn.com", kind: "Website" },
     ],
@@ -160,8 +164,13 @@ const integrationCatalog: Integration[] = [
       ...packageLinks("@openuidev/langchain", "langchain", "/docs/api-reference/langchain"),
       {
         label: "Stream adapters",
-        href: "/docs/agent/reference/adapters-and-formats#langgraphadapter",
+        href: "/docs/agent/agent-interface/reference/adapters-and-formats#langgraphadapter",
         kind: "Docs",
+      },
+      {
+        label: "Integration guide",
+        href: "/docs/agent/agent-interface/agent-runtimes/langgraph-platform",
+        kind: "Guide",
       },
       exampleLink("langchain-chat"),
     ],
@@ -180,8 +189,13 @@ const integrationCatalog: Integration[] = [
     links: [
       {
         label: "Vercel AI adapter",
-        href: "/docs/agent/reference/adapters-and-formats#vercelaiadapter",
+        href: "/docs/agent/agent-interface/reference/adapters-and-formats#vercelaiadapter",
         kind: "Docs",
+      },
+      {
+        label: "Integration guide",
+        href: "/docs/agent/agent-interface/agent-runtimes/vercel-ai-sdk",
+        kind: "Guide",
       },
       ...packageLinks("@openuidev/react-headless", "react-headless"),
       exampleLink("vercel-ai-chat"),
@@ -261,7 +275,7 @@ const integrationCatalog: Integration[] = [
     links: [
       {
         label: "Adapters and formats",
-        href: "/docs/agent/reference/adapters-and-formats",
+        href: "/docs/agent/agent-interface/reference/adapters-and-formats",
         kind: "Docs",
       },
       { label: "AG-UI documentation", href: "https://docs.ag-ui.com", kind: "Website" },
@@ -296,7 +310,7 @@ const integrationCatalog: Integration[] = [
     links: [
       {
         label: "Integration guide",
-        href: "/docs/openui-lang/examples/agent-frameworks/vercel-eve",
+        href: "/docs/agent/agent-interface/agent-runtimes/vercel-eve",
         kind: "Guide",
       },
       exampleLink("harnesses/vercel-eve", "OpenUI harness"),
@@ -316,7 +330,7 @@ const integrationCatalog: Integration[] = [
     links: [
       {
         label: "Integration guide",
-        href: "/docs/openui-lang/examples/harnesses/pi",
+        href: "/docs/agent/agent-interface/agent-runtimes/pi",
         kind: "Guide",
       },
       exampleLink("harnesses/pi-agent-harness", "OpenUI harness"),

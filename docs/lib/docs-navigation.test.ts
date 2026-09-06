@@ -43,14 +43,14 @@ describe("global docs navigation", () => {
       },
       {
         type: "page",
-        name: "Agent Interface",
-        url: "/docs/agent/agent-interface/getting-started/introduction",
+        name: "Build Agents",
+        url: "/docs/build-agents",
         children: undefined,
       },
       {
         type: "page",
-        name: "Integrations",
-        url: "/docs/integrations",
+        name: "Agent Interface",
+        url: "/docs/agent/agent-interface/getting-started/introduction",
         children: undefined,
       },
       { type: "separator", name: "Production", url: undefined, children: undefined },
@@ -73,11 +73,11 @@ describe("global docs navigation", () => {
 
   it("treats nested roots as navigation sections rather than products", () => {
     assert.equal(getNestedRootForEntryUrl("/docs/openui-lang"), "openui-lang");
+    assert.equal(getNestedRootForEntryUrl("/docs/build-agents"), "build-agents");
     assert.equal(
       getNestedRootForEntryUrl("/docs/agent/agent-interface/getting-started/introduction"),
       "agent-interface",
     );
-    assert.equal(getNestedRootForEntryUrl("/docs/integrations"), "integrations");
     assert.equal(getNestedRootForEntryUrl("/docs/gateway"), "gateway");
     assert.equal(getNestedRootForEntryUrl("/docs/observability"), "observability");
     assert.equal(getNestedRootForEntryUrl("/docs/api-reference"), "api-reference");
@@ -92,14 +92,18 @@ describe("global docs navigation", () => {
       kind: "nested",
       root: "openui-lang",
     });
+    assert.deepEqual(getDefaultSidebarMode("/docs/agent/agent-interface/core-concepts/tools"), {
+      kind: "nested",
+      root: "agent-interface",
+    });
+    assert.deepEqual(getDefaultSidebarMode("/docs/build-agents/assistant-ui"), {
+      kind: "nested",
+      root: "build-agents",
+    });
     assert.deepEqual(
-      getDefaultSidebarMode("/docs/agent/agent-interface/core-concepts/tools"),
+      getDefaultSidebarMode("/docs/agent/agent-interface/agent-runtimes/vercel-ai-sdk"),
       { kind: "nested", root: "agent-interface" },
     );
-    assert.deepEqual(getDefaultSidebarMode("/docs/integrations/assistant-ui"), {
-      kind: "nested",
-      root: "integrations",
-    });
     assert.deepEqual(getDefaultSidebarMode("/docs/api-reference/cli"), {
       kind: "nested",
       root: "api-reference",
@@ -126,12 +130,9 @@ describe("global docs navigation", () => {
       getGlobalActiveItemUrl("/docs/agent/agent-interface/core-concepts/tools"),
       "/docs/agent/agent-interface/getting-started/introduction",
     );
-    assert.equal(getGlobalActiveItemUrl("/docs/integrations/copilotkit"), "/docs/integrations");
+    assert.equal(getGlobalActiveItemUrl("/docs/build-agents/copilotkit"), "/docs/build-agents");
     assert.equal(getGlobalActiveItemUrl("/docs/gateway/api/responses"), "/docs/gateway");
-    assert.equal(
-      getGlobalActiveItemUrl("/docs/observability/dashboard"),
-      "/docs/observability",
-    );
+    assert.equal(getGlobalActiveItemUrl("/docs/observability/dashboard"), "/docs/observability");
   });
 });
 
@@ -190,7 +191,7 @@ describe("nested docs navigation", () => {
       getNestedRootForPathname("/docs/agent/agent-interface/customize/sidebar"),
       "agent-interface",
     );
-    assert.equal(getNestedRootForPathname("/docs/integrations/langchain"), "integrations");
+    assert.equal(getNestedRootForPathname("/docs/build-agents/custom-chat-ui"), "build-agents");
     assert.equal(getNestedRootForPathname("/docs"), undefined);
   });
 

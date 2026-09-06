@@ -2,8 +2,8 @@ import type * as PageTree from "fumadocs-core/page-tree";
 
 export type NestedDocsRoot =
   | "openui-lang"
+  | "build-agents"
   | "agent-interface"
-  | "integrations"
   | "gateway"
   | "observability"
   | "api-reference";
@@ -35,11 +35,11 @@ export const NESTED_DOCS_SECTIONS: Record<NestedDocsRoot, NestedSection> = {
     pathPrefix: "/docs/agent/agent-interface",
     treeFolder: "agent/agent-interface",
   },
-  integrations: {
-    title: "Integrations",
-    entryUrl: "/docs/integrations",
-    pathPrefix: "/docs/integrations",
-    treeFolder: "integrations",
+  "build-agents": {
+    title: "Build Agents",
+    entryUrl: "/docs/build-agents",
+    pathPrefix: "/docs/build-agents",
+    treeFolder: "build-agents",
   },
   gateway: {
     title: "Gateway",
@@ -61,11 +61,7 @@ export const NESTED_DOCS_SECTIONS: Record<NestedDocsRoot, NestedSection> = {
   },
 };
 
-const promotedGlobalUrls = new Set([
-  "/docs",
-  "/docs/architecture",
-  "/docs/openui-lang/comparison",
-]);
+const promotedGlobalUrls = new Set(["/docs", "/docs/architecture", "/docs/openui-lang/comparison"]);
 
 export const GLOBAL_DOCS_TREE: PageTree.Root = {
   type: "root",
@@ -92,13 +88,13 @@ export const GLOBAL_DOCS_TREE: PageTree.Root = {
     },
     {
       type: "page",
-      name: NESTED_DOCS_SECTIONS["agent-interface"].title,
-      url: NESTED_DOCS_SECTIONS["agent-interface"].entryUrl,
+      name: NESTED_DOCS_SECTIONS["build-agents"].title,
+      url: NESTED_DOCS_SECTIONS["build-agents"].entryUrl,
     },
     {
       type: "page",
-      name: NESTED_DOCS_SECTIONS.integrations.title,
-      url: NESTED_DOCS_SECTIONS.integrations.entryUrl,
+      name: NESTED_DOCS_SECTIONS["agent-interface"].title,
+      url: NESTED_DOCS_SECTIONS["agent-interface"].entryUrl,
     },
     { type: "separator", name: "Production" },
     {
@@ -152,10 +148,7 @@ export function getGlobalActiveItemUrl(pathname: string): string | undefined {
   return root ? NESTED_DOCS_SECTIONS[root].entryUrl : undefined;
 }
 
-function findNestedFolder(
-  nodes: PageTree.Node[],
-  treeFolder: string,
-): PageTree.Folder | undefined {
+function findNestedFolder(nodes: PageTree.Node[], treeFolder: string): PageTree.Folder | undefined {
   for (const node of nodes) {
     if (node.type !== "folder") continue;
     if (node.$ref?.folder === treeFolder) return node;
@@ -171,17 +164,10 @@ export function getNestedDocsTree(tree: PageTree.Root, root: NestedDocsRoot): Pa
   const folder = findNestedFolder(tree.children, NESTED_DOCS_SECTIONS[root].treeFolder);
   if (!folder) throw new Error(`Nested docs root "${root}" was not found in the page tree.`);
 
-  const children =
-    root === "integrations"
-      ? folder.children.filter(
-          (node) => node.type !== "folder" || node.$ref?.folder !== "agent/agent-interface",
-        )
-      : folder.children;
-
   return {
     type: "root",
     $id: `docs:nested:${root}`,
     name: folder.name,
-    children,
+    children: folder.children,
   };
 }

@@ -1,6 +1,6 @@
 ---
 title: Vercel Eve
-description: Connect a Vercel Eve agent to OpenUI and render streamed responses and tool calls as live generative UI.
+description: Connect Agent Interface to Vercel Eve's resumable agent sessions.
 ---
 
 OpenUI can render output from a [Vercel Eve](https://github.com/vercel/eve) agent without replacing Eve's session protocol. This example uses Eve's built-in HTTP channel for delivery and resumable streaming. `eveAdapter()` from `@openuidev/react-headless` maps Eve's NDJSON session stream to AG-UI for `<AgentInterface />`.
@@ -24,12 +24,12 @@ The agent receives the OpenUI component-library prompt when a session starts, so
 
 ## How it connects
 
-| Piece              | File                           | Role                                                                                                        |
-| ------------------ | ------------------------------ | ----------------------------------------------------------------------------------------------------------- |
-| OpenUI chat        | `src/app/page.tsx`             | Renders `<AgentInterface />` with `eveAdapter()` and the Cloud chat library.                                 |
-| Session bridge     | `src/eve-chat.ts`              | Delivers turns through Eve's HTTP API and returns Eve's raw NDJSON stream.                                  |
-| Event adapter      | `eveAdapter()`                 | Maps Eve text, tool-call, and failure events to AG-UI (`@openuidev/react-headless`).                         |
-| Agent instructions | `agent/instructions/openui.ts` | Adds the generated OpenUI system prompt when each Eve session starts.                                       |
+| Piece              | File                           | Role                                                                                 |
+| ------------------ | ------------------------------ | ------------------------------------------------------------------------------------ |
+| OpenUI chat        | `src/app/page.tsx`             | Renders `<AgentInterface />` with `eveAdapter()` and the Cloud chat library.         |
+| Session bridge     | `src/eve-chat.ts`              | Delivers turns through Eve's HTTP API and returns Eve's raw NDJSON stream.           |
+| Event adapter      | `eveAdapter()`                 | Maps Eve text, tool-call, and failure events to AG-UI (`@openuidev/react-headless`). |
+| Agent instructions | `agent/instructions/openui.ts` | Adds the generated OpenUI system prompt when each Eve session starts.                |
 
 The Next.js app and Eve development server start together through `withEve()`. The browser uses
 Eve's same-origin session endpoints directly, so the integration does not need a custom backend

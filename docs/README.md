@@ -102,7 +102,7 @@ docs/
 │   │   ├── meta.json                       # Root content order
 │   │   ├── openui-lang/                    # OpenUI Lang docs
 │   │   ├── agent/                          # Agent Interface docs
-│   │   ├── integrations/                   # Framework and runtime integrations
+│   │   ├── build-agents/                   # Existing chat UI and agent framework guides
 │   │   ├── api-reference/                  # API reference
 │   │   └── mcp/                            # MCP docs
 │   └── blog/                               # Blog MDX content
@@ -159,7 +159,7 @@ Active component-preview specific modules are located under `app/components/` an
 
 The docs use two sidebar modes. The global sidebar introduces the documentation through Start,
 Build, Production, and Reference groups. Links with chevrons enter a nested section sidebar for
-OpenUI Lang, Build Agents, OpenUI Cloud, or API Reference. Nested page lists continue to come from
+OpenUI Lang, Build Agents, Agent Interface, Gateway, Observability, or API Reference. Nested page lists continue to come from
 each section's `meta.json`; “All docs” restores the global sidebar without changing the current
 page. Direct links into a section start in nested mode.
 

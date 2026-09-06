@@ -61,39 +61,87 @@ const config = {
       },
       {
         source: "/docs/agent",
-        destination: "/docs/integrations",
+        destination: "/docs/agent/agent-interface/getting-started/introduction",
         permanent: true,
       },
-      ...["assistant-ui", "build-your-own-ui", "copilotkit", "vercel-ai-sdk", "langchain"].map(
-        (integration) => ({
-          source: `/docs/agent/${integration}`,
-          destination: `/docs/integrations/${integration}`,
-          permanent: true,
-        }),
-      ),
+      ...["assistant-ui", "copilotkit"].map((integration) => ({
+        source: `/docs/agent/${integration}`,
+        destination: `/docs/build-agents/${integration}`,
+        permanent: true,
+      })),
+      {
+        source: "/docs/agent/build-your-own-ui",
+        destination: "/docs/build-agents/custom-chat-ui",
+        permanent: true,
+      },
+      {
+        source: "/docs/agent/vercel-ai-sdk",
+        destination: "/docs/agent/agent-interface/agent-runtimes/vercel-ai-sdk",
+        permanent: true,
+      },
+      {
+        source: "/docs/agent/langchain",
+        destination: "/docs/agent/agent-interface/agent-runtimes/langgraph-platform",
+        permanent: true,
+      },
       {
         source: "/docs/agent/harnesses/:path*",
-        destination: "/docs/integrations/harnesses/:path*",
+        destination: "/docs/agent/agent-interface/agent-runtimes/:path*",
+        permanent: true,
+      },
+      {
+        source: "/docs/integrations",
+        destination: "/docs/build-agents",
+        permanent: true,
+      },
+      ...["assistant-ui", "copilotkit"].map((integration) => ({
+        source: `/docs/integrations/${integration}`,
+        destination: `/docs/build-agents/${integration}`,
+        permanent: true,
+      })),
+      {
+        source: "/docs/integrations/build-your-own-ui",
+        destination: "/docs/build-agents/custom-chat-ui",
+        permanent: true,
+      },
+      {
+        source: "/docs/integrations/vercel-ai-sdk",
+        destination: "/docs/agent/agent-interface/agent-runtimes/vercel-ai-sdk",
+        permanent: true,
+      },
+      {
+        source: "/docs/integrations/langchain",
+        destination: "/docs/agent/agent-interface/agent-runtimes/langgraph-platform",
+        permanent: true,
+      },
+      {
+        source: "/docs/integrations/harnesses/:path*",
+        destination: "/docs/agent/agent-interface/agent-runtimes/:path*",
         permanent: true,
       },
       {
         source: "/docs/openui-lang/examples/agent-frameworks/vercel-ai-sdk",
-        destination: "/docs/integrations/vercel-ai-sdk",
+        destination: "/docs/agent/agent-interface/agent-runtimes/vercel-ai-sdk",
         permanent: true,
       },
       {
         source: "/docs/openui-lang/examples/agent-frameworks/langchain",
-        destination: "/docs/integrations/langchain",
+        destination: "/docs/agent/agent-interface/agent-runtimes/langgraph-platform",
+        permanent: true,
+      },
+      {
+        source: "/docs/openui-lang/examples/agent-frameworks/langgraph-platform",
+        destination: "/docs/agent/agent-interface/agent-runtimes/langgraph-platform",
         permanent: true,
       },
       {
         source: "/docs/openui-lang/examples/agent-frameworks/vercel-eve",
-        destination: "/docs/integrations/harnesses/vercel-eve",
+        destination: "/docs/agent/agent-interface/agent-runtimes/vercel-eve",
         permanent: true,
       },
       {
         source: "/docs/openui-lang/examples/harnesses/pi",
-        destination: "/docs/integrations/harnesses/pi",
+        destination: "/docs/agent/agent-interface/agent-runtimes/pi",
         permanent: true,
       },
       {
