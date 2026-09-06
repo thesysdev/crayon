@@ -94,7 +94,7 @@ function GlobalSidebarItem({ item }: { item: PageTree.Item }) {
       onClick={nestedRoot ? () => enterNested(nestedRoot) : undefined}
     >
       <span className="min-w-0 flex-1">{item.name}</span>
-      {nestedRoot ? <ChevronRight aria-hidden className="ms-auto" /> : null}
+      {nestedRoot ? <ChevronRight aria-hidden className="ms-auto" size={18} /> : null}
     </SidebarItem>
   );
 }
