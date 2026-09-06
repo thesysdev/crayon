@@ -26,10 +26,10 @@ The agent receives the OpenUI component-library prompt when a session starts, so
 
 | Piece              | File                           | Role                                                                                 |
 | ------------------ | ------------------------------ | ------------------------------------------------------------------------------------ |
-| OpenUI chat        | `src/app/page.tsx`             | Renders `<AgentInterface />` with `eveAdapter()` and the Cloud chat library.         |
+| OpenUI chat        | `src/app/page.tsx`             | Renders `<AgentInterface />` with the built-in `openuiLibrary`.                      |
 | Session bridge     | `src/eve-chat.ts`              | Delivers turns through Eve's HTTP API and returns Eve's raw NDJSON stream.           |
 | Event adapter      | `eveAdapter()`                 | Maps Eve text, tool-call, and failure events to AG-UI (`@openuidev/react-headless`). |
-| Agent instructions | `agent/instructions/openui.ts` | Adds the generated OpenUI system prompt when each Eve session starts.                |
+| Agent instructions | `agent/instructions/openui.ts` | Adds the Gateway-compatible OpenUI instructions when each Eve session starts.        |
 
 The Next.js app and Eve development server start together through `withEve()`. The browser uses
 Eve's same-origin session endpoints directly, so the integration does not need a custom backend
@@ -41,8 +41,8 @@ stream cursor, preserving multi-turn context and resumable delivery.
 The page creates Eve-backed chat callbacks and passes them to `<AgentInterface />`. `eveAdapter()` consumes Eve's NDJSON session stream:
 
 ```tsx
-import { AgentInterface, useSystemThemeMode } from "@openuidev/react-ui";
-import { chatLibrary } from "@openuidev/thesys";
+import { AgentInterface } from "@openuidev/react-ui";
+import { openuiLibrary } from "@openuidev/react-ui/genui-lib";
 import { createEveChatProps } from "../eve-chat";
 
 const { llm, storage } = createEveChatProps();
@@ -50,7 +50,7 @@ const { llm, storage } = createEveChatProps();
 <AgentInterface
   llm={llm}
   storage={storage}
-  componentLibrary={chatLibrary}
+  componentLibrary={openuiLibrary}
   agentName="Eve + OpenUI"
 />;
 ```
@@ -62,20 +62,21 @@ const { llm, storage } = createEveChatProps();
 Eve loads instructions from `agent/instructions`. A dynamic instruction adds the component library's generated prompt once when a session starts:
 
 ```ts
-import { openuiChatLibrary, openuiChatPromptOptions } from "@openuidev/react-ui/genui-lib";
+import { cloudInstructions } from "../../src/lib/cloud-prompt";
 import { defineDynamic, defineInstructions } from "eve/instructions";
 
 export default defineDynamic({
   events: {
     "session.started": () =>
       defineInstructions({
-        markdown: openuiChatLibrary.prompt(openuiChatPromptOptions),
+        markdown: cloudInstructions(),
       }),
   },
 });
 ```
 
-This keeps the model's instructions synchronized with the exact component library used by the renderer.
+`cloudInstructions()` loads the generated specification for the same `openuiLibrary` used by the
+renderer and wraps it for OpenUI Gateway.
 
 ## The session bridge
 
@@ -119,8 +120,9 @@ session.failed     -> RUN_ERROR
 
 Tool calls and text share one assistant message ID. OpenUI renders tool activity in its behind-the-scenes section and the final OpenUI Lang response in the conversation.
 
-The included `get_current_time` tool is a minimal example. Additional Eve tools automatically
-surface through the same AG-UI tool-call mapping.
+The included `get_weather` tool calls Open-Meteo. The example disables Eve's built-in
+`ask_question` tool so clarifying questions remain visible in the chat. Additional Eve tools
+automatically surface through the same AG-UI tool-call mapping.
 
 ## Thread persistence
 
@@ -139,10 +141,14 @@ The demo channel uses anonymous authentication for local development. Replace `n
 examples/agent-frameworks/vercel-eve/
 |- agent/agent.ts                    # Eve model and build configuration
 |- agent/channels/eve.ts             # Eve HTTP session channel
+|- agent/instructions/identity.md    # Standing agent identity
 |- agent/instructions/openui.ts      # Generated OpenUI Lang instructions
-|- agent/tools/get_current_time.ts   # Example Eve tool
+|- agent/tools/get_weather.ts        # Open-Meteo weather tool
+|- agent/tools/ask_question.ts       # Disables Eve's built-in ask_question tool
 |- src/app/page.tsx                  # OpenUI AgentInterface chat
 |- src/eve-chat.ts                   # Session transport, eveAdapter, persistence
+|- src/library.ts                    # Component library used to generate the prompt spec
+|- src/lib/cloud-prompt.ts           # Gateway-compatible OpenUI Lang instructions
 |- src/thread-store.ts               # Browser thread and transcript storage
 |- next.config.ts                    # Installs Eve with withEve()
 ```
@@ -158,9 +164,9 @@ pnpm install
 # 2. Enter the example.
 cd examples/agent-frameworks/vercel-eve
 
-# 3. Configure an OpenAI-compatible model provider.
+# 3. Configure OpenUI Gateway.
 cp .env.example .env
-# Edit .env and set LLM_API_KEY.
+# Edit .env and set THESYS_API_KEY.
 
 # 4. Start Next.js and the embedded Eve development server.
 pnpm dev
@@ -173,9 +179,9 @@ bun install
 # 2. Enter the example.
 cd examples/agent-frameworks/vercel-eve
 
-# 3. Configure an OpenAI-compatible model provider.
+# 3. Configure OpenUI Gateway.
 cp .env.example .env
-# Edit .env and set LLM_API_KEY.
+# Edit .env and set THESYS_API_KEY.
 
 # 4. Start Next.js and the embedded Eve development server.
 bun dev
@@ -188,9 +194,9 @@ yarn install
 # 2. Enter the example.
 cd examples/agent-frameworks/vercel-eve
 
-# 3. Configure an OpenAI-compatible model provider.
+# 3. Configure OpenUI Gateway.
 cp .env.example .env
-# Edit .env and set LLM_API_KEY.
+# Edit .env and set THESYS_API_KEY.
 
 # 4. Start Next.js and the embedded Eve development server.
 yarn dev
@@ -203,35 +209,40 @@ npm install
 # 2. Enter the example.
 cd examples/agent-frameworks/vercel-eve
 
-# 3. Configure an OpenAI-compatible model provider.
+# 3. Configure OpenUI Gateway.
 cp .env.example .env
-# Edit .env and set LLM_API_KEY.
+# Edit .env and set THESYS_API_KEY.
 
 # 4. Start Next.js and the embedded Eve development server.
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) and start a conversation. `OPENAI_API_KEY`,
-`OPENAI_MODEL`, and `OPENAI_BASE_URL` are accepted as aliases for the `LLM_*` variables.
+Open [http://localhost:3000](http://localhost:3000) and start a conversation. The example requires
+`THESYS_API_KEY` and accepts an optional `OPENUI_MODEL` override. The default model is
+`google/gemini-3.6-flash-free`.
 
 The repository scripts also expose Eve directly when you need to build or run the agent separately:
 
 ```bash tab="pnpm" tab-group="pkg"
+pnpm eve:dev
 pnpm eve:build
 pnpm eve:start
 ```
 
 ```bash tab="bun" tab-group="pkg"
+bun eve:dev
 bun eve:build
 bun eve:start
 ```
 
 ```bash tab="yarn" tab-group="pkg"
+yarn eve:dev
 yarn eve:build
 yarn eve:start
 ```
 
 ```bash tab="npm" tab-group="pkg"
+npm run eve:dev
 npm run eve:build
 npm run eve:start
 ```

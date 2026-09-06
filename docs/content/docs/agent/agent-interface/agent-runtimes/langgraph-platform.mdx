@@ -47,20 +47,34 @@ The integration has two halves:
 Pass the transformer factory to the agent's `streamTransformers` option:
 
 ```ts
+import { cloudInstructions } from "@/lib/cloud-prompt";
+import { ChatOpenAI } from "@langchain/openai";
 import { openUIStreamTransformer } from "@openuidev/langchain/transformer";
 import { createDeepAgent } from "deepagents";
 
+const model = new ChatOpenAI({
+  model: "google/gemini-3.6-flash-free",
+  apiKey: process.env.THESYS_API_KEY,
+  streaming: true,
+  configuration: { baseURL: "https://api.thesys.dev/v1/embed" },
+});
+
 export const graph = createDeepAgent({
-  model: `openai:${process.env.OPENAI_MODEL ?? "gpt-5.5"}`,
+  model,
   tools: [getWeather, getStockPrice, searchWeb],
-  systemPrompt: SYSTEM_PROMPT,
+  systemPrompt: cloudInstructions(
+    [
+      "You are an OpenUI assistant with weather, finance, and research tools.",
+      "Use the tools when they help answer the user's request, then answer only in OpenUI Lang.",
+    ].join("\n"),
+  ),
   streamTransformers: [openUIStreamTransformer],
 });
 ```
 
-The example's `SYSTEM_PROMPT` includes the prompt generated from its OpenUI
-component library. That teaches the agent to return OpenUI Lang after it uses
-the mock weather, stock-price, and research tools.
+`cloudInstructions()` loads the generated component-library specification and wraps it for OpenUI
+Gateway. This teaches the agent to return OpenUI Lang after it uses the mock weather, stock-price,
+and research tools.
 
 The integration package does not depend on DeepAgents. It works with any agent
 surface that accepts LangGraph stream transformers.
@@ -102,7 +116,8 @@ The proxy already returns AG-UI, so no LangChain-specific browser adapter or
 message conversion is needed:
 
 ```tsx
-import { AgentInterface, agUIAdapter, fetchLLM, openuiChatLibrary } from "@openuidev/react-ui";
+import { AgentInterface, agUIAdapter, fetchLLM } from "@openuidev/react-ui";
+import { openuiLibrary } from "@openuidev/react-ui/genui-lib";
 
 const llm = fetchLLM({
   url: "/api/chat",
@@ -111,7 +126,7 @@ const llm = fetchLLM({
 
 <AgentInterface
   llm={llm}
-  componentLibrary={openuiChatLibrary}
+  componentLibrary={openuiLibrary}
   agentName="OpenUI + DeepAgents Chat"
 />;
 ```
@@ -124,8 +139,9 @@ examples/agent-frameworks/langgraph-platform/
 |- src/app/api/chat/route.ts  # createLangChainStreamResponse()
 |- src/agent/agent.ts         # DeepAgent with openUIStreamTransformer()
 |- src/agent/tools.ts         # Mock weather, finance, and research tools
+|- src/lib/cloud-prompt.ts    # Generated OpenUI Lang instructions for Gateway
 |- src/library.ts             # Components the model can render
-|- src/generated/             # Generated OpenUI system prompt
+|- src/generated/             # Generated component-library specification
 |- langgraph.json             # Local and deployed graph configuration
 ```
 
@@ -154,8 +170,8 @@ npm install
 cp .env.example .env
 ```
 
-Add `OPENAI_API_KEY` to `.env`, then start the LangGraph server and Next.js app
-together:
+Add `THESYS_API_KEY` to `.env`, then start the LangGraph server and Next.js app together. The
+LangGraph process uses this key when it calls OpenUI Gateway:
 
 ```bash tab="pnpm" tab-group="pkg"
 pnpm dev
@@ -178,8 +194,9 @@ or "AAPL stock price".
 
 ## Deploy to LangGraph Platform
 
-The included `langgraph.json` can be deployed without changing app code. Point
-the proxy at the deployment through `.env`:
+The included `langgraph.json` can be deployed without changing app code. Configure
+`THESYS_API_KEY` for the LangGraph deployment, then point the Next.js proxy at that deployment
+through `.env`:
 
 ```bash
 LANGGRAPH_API_URL=https://your-deployment.us.langgraph.app

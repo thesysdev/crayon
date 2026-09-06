@@ -194,14 +194,14 @@ function ThreadCount() {
 ### `useMessage`
 
 ```ts
-function useMessage(): Message;
+function useMessage(): { message: Message };
 ```
 
-Returns the canonical `Message` for the **current message row** — the same hook the built-in message renderer uses, so you never thread the message through props. Because it returns the live message, your component re-renders as the reply streams in (`content` grows token by token). **Throws if called outside a message component** — it only works inside the components you pass via the `components` prop or inside `AgentInterface.Messages`.
+Returns an object containing the canonical `Message` for the **current message row** — the same hook the built-in message renderer uses, so you never thread the message through props. Because it returns the live message, your component re-renders as the reply streams in (`content` grows token by token). **Throws if called outside a message component** — it only works inside the components you pass via the `components` prop or inside `AgentInterface.Messages`.
 
 ```tsx
 function AssistantMessage() {
-  const message = useMessage();
+  const { message } = useMessage();
   return <div className="bubble">{message.content}</div>;
 }
 ```
