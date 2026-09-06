@@ -94,8 +94,8 @@ export function RepairSection() {
             <span className={styles.quoteCompany}>Entelligence</span>
           </a>{" "}
           <span className={styles.quoteCopy}>
-            ships Ask Ellie in production, with Gateway correcting invalid generations before they
-            reach users.
+            uses Gateway to keep Ask Ellie production-ready by catching and repairing invalid
+            generations before they reach users.
           </span>
         </p>
       </aside>
