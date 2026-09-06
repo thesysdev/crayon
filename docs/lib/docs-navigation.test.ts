@@ -25,6 +25,12 @@ describe("global docs navigation", () => {
       { type: "page", name: "Introduction", url: "/docs", children: undefined },
       {
         type: "page",
+        name: "Getting Started",
+        url: "/docs/getting-started",
+        children: undefined,
+      },
+      {
+        type: "page",
         name: "How OpenUI works",
         url: "/docs/architecture",
         children: undefined,
@@ -88,6 +94,7 @@ describe("global docs navigation", () => {
   it("uses a nested sidebar for direct links into a nested section", () => {
     assert.deepEqual(getDefaultSidebarMode("/docs"), { kind: "global" });
     assert.deepEqual(getDefaultSidebarMode("/docs/overview"), { kind: "global" });
+    assert.deepEqual(getDefaultSidebarMode("/docs/getting-started"), { kind: "global" });
     assert.deepEqual(getDefaultSidebarMode("/docs/openui-lang/comparison"), { kind: "global" });
     assert.deepEqual(getDefaultSidebarMode("/docs/openui-lang/quickstart"), {
       kind: "nested",
@@ -148,6 +155,7 @@ describe("global docs navigation", () => {
   });
 
   it("promotes overview pages while grouping product pages under their roots", () => {
+    assert.equal(getGlobalActiveItemUrl("/docs/getting-started"), "/docs/getting-started");
     assert.equal(
       getGlobalActiveItemUrl("/docs/openui-lang/comparison"),
       "/docs/openui-lang/comparison",

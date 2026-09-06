@@ -66,7 +66,12 @@ export const NESTED_DOCS_SECTIONS: Record<NestedDocsRoot, NestedSection> = {
   },
 };
 
-const promotedGlobalUrls = new Set(["/docs", "/docs/architecture", "/docs/openui-lang/comparison"]);
+const promotedGlobalUrls = new Set([
+  "/docs",
+  "/docs/getting-started",
+  "/docs/architecture",
+  "/docs/openui-lang/comparison",
+]);
 
 export const GLOBAL_DOCS_TREE: PageTree.Root = {
   type: "root",
@@ -75,6 +80,7 @@ export const GLOBAL_DOCS_TREE: PageTree.Root = {
   children: [
     { type: "separator", name: "Overview" },
     { type: "page", name: "Introduction", url: "/docs" },
+    { type: "page", name: "Getting Started", url: "/docs/getting-started" },
     {
       type: "page",
       name: "How OpenUI works",
