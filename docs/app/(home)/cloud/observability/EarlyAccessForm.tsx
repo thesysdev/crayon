@@ -8,7 +8,7 @@ import styles from "./page.module.css";
    twice, short enough that it is gone by the time you scroll. */
 const NOTICE_MS = 4000;
 
-const SUCCESS = "We have added you to the Waitlist.";
+const SUCCESS = "You’re on the waitlist.";
 const OFFLINE = "Could not reach the server. Please try again.";
 const FALLBACK = "Something went wrong. Please try again.";
 
@@ -86,7 +86,7 @@ export function EarlyAccessForm() {
           name="email"
           value={email}
           onChange={(event) => setEmail(event.target.value)}
-          placeholder="Enter Work Email"
+          placeholder="Enter your work email"
           autoComplete="email"
           required
         />
@@ -97,14 +97,14 @@ export function EarlyAccessForm() {
         <button
           className={`${styles.emailSubmit} ${typing ? styles.emailSubmitLabelled : ""}`.trim()}
           type="submit"
-          aria-label="Get Early Access"
+          aria-label="Join the waitlist"
           /* Guards the double-submit; the label does not change, so the control
              keeps its width while the request is in flight. */
           disabled={status === "pending"}
         >
           <ArrowRight className={styles.emailSubmitIcon} size={18} weight="bold" />
           <span className={styles.emailSubmitLabel} aria-hidden={!typing}>
-            <span className={styles.emailSubmitText}>Get Early Access</span>
+            <span className={styles.emailSubmitText}>Join the waitlist</span>
           </span>
         </button>
       </form>

@@ -9,6 +9,12 @@ const withMDX = createMDX();
 /** @type {import('next').NextConfig} */
 const config = {
   serverExternalPackages: ["@takumi-rs/image-response"],
+  images: {
+    /* Dense product screenshots contain small UI text and one-pixel rules.
+       Keep the default for general imagery, but allow the illustration pair
+       components to request a sharper responsive derivative. */
+    qualities: [75, 95],
+  },
   turbopack: {
     root: dirname(dirname(__dirname)),
   },
@@ -29,6 +35,15 @@ const config = {
   },
   async redirects() {
     return [
+      // /cloud was the OpenUI Cloud product page; its pitch now lives on the
+      // home page, and the managed products have pages of their own. Temporary
+      // while the marketing restructure settles — make it permanent once the
+      // home page has actually absorbed the cloud sections.
+      {
+        source: "/cloud",
+        destination: "/",
+        permanent: false,
+      },
       {
         source: "/AGENTS.md",
         destination: "/",

@@ -5,7 +5,16 @@ import { Highlight, themes } from "prism-react-renderer";
 import { useEffect, useState } from "react";
 import styles from "./CloudCodeBlock.module.css";
 
-export function CloudCodeBlock({ code }: { code: string }) {
+/* `highlightLines` are 0-based indices into the trimmed source. It defaults to
+   the single line Cloud's integration section has always marked, so existing
+   callers keep their highlight without passing anything. */
+export function CloudCodeBlock({
+  code,
+  highlightLines = [4],
+}: {
+  code: string;
+  highlightLines?: number[];
+}) {
   const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
@@ -30,7 +39,9 @@ export function CloudCodeBlock({ code }: { code: string }) {
                 <span
                   key={lineIndex}
                   {...getLineProps({ line })}
-                  className={`${styles.codeLine} ${lineIndex === 4 ? styles.changedLine : ""}`}
+                  className={`${styles.codeLine} ${
+                    highlightLines.includes(lineIndex) ? styles.changedLine : ""
+                  }`}
                 >
                   {line.map((token, tokenIndex) => (
                     <span key={tokenIndex} {...getTokenProps({ token })} />

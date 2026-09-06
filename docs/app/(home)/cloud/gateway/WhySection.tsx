@@ -1,0 +1,39 @@
+import { production } from "@/lib/benchmark-data";
+import { FailureBreakdown } from "./FailureBreakdown";
+import styles from "./sections.module.css";
+
+export function WhySection() {
+  return (
+    <section className={`${styles.section} ${styles.problemSection}`} aria-labelledby="gateway-why">
+      <div className={`${styles.sectionLockup} ${styles.problemLockup}`}>
+        <div>
+          <h2 id="gateway-why" className={styles.heading}>
+            {production.triggerRate}% of UI generations fail silently in production
+          </h2>
+        </div>
+        <p className={styles.lead}>
+          Every failed generation still returns 200. Based on 1,285 production failures observed
+          over 15 days.
+        </p>
+      </div>
+
+      <FailureBreakdown />
+
+      <div className={styles.problemConclusion}>
+        <p className={styles.lead}>
+          OpenUI matches or beats Google A2UI and Vercel json-render on structural validity, with
+          about half the tokens and streaming time. Better models reduce the error rate. None get it
+          to zero
+        </p>
+        <div className={styles.linkRow}>
+          <a className={styles.link} href="/benchmarks?view=formats">
+            Compare formats →
+          </a>
+          <a className={styles.link} href="/benchmarks">
+            Compare models →
+          </a>
+        </div>
+      </div>
+    </section>
+  );
+}
