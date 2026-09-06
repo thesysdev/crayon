@@ -1,7 +1,12 @@
 import type * as PageTree from "fumadocs-core/page-tree";
 
 export type NestedDocsRoot =
-  "openui-lang" | "agent" | "gateway" | "observability" | "api-reference";
+  | "openui-lang"
+  | "agent-interface"
+  | "integrations"
+  | "gateway"
+  | "observability"
+  | "api-reference";
 
 export type SidebarMode =
   | { kind: "global" }
@@ -14,6 +19,7 @@ type NestedSection = {
   title: string;
   entryUrl: string;
   pathPrefix: string;
+  treeFolder: string;
 };
 
 export const NESTED_DOCS_SECTIONS: Record<NestedDocsRoot, NestedSection> = {
@@ -21,32 +27,43 @@ export const NESTED_DOCS_SECTIONS: Record<NestedDocsRoot, NestedSection> = {
     title: "OpenUI Lang",
     entryUrl: "/docs/openui-lang",
     pathPrefix: "/docs/openui-lang",
+    treeFolder: "openui-lang",
   },
-  agent: {
-    title: "Build Agents",
-    entryUrl: "/docs/agent",
-    pathPrefix: "/docs/agent",
+  "agent-interface": {
+    title: "Agent Interface",
+    entryUrl: "/docs/agent/agent-interface/getting-started/introduction",
+    pathPrefix: "/docs/agent/agent-interface",
+    treeFolder: "agent/agent-interface",
+  },
+  integrations: {
+    title: "Integrations",
+    entryUrl: "/docs/integrations",
+    pathPrefix: "/docs/integrations",
+    treeFolder: "integrations",
   },
   gateway: {
     title: "Gateway",
     entryUrl: "/docs/gateway",
     pathPrefix: "/docs/gateway",
+    treeFolder: "gateway",
   },
   observability: {
     title: "Observability",
     entryUrl: "/docs/observability",
     pathPrefix: "/docs/observability",
+    treeFolder: "observability",
   },
   "api-reference": {
     title: "API Reference",
     entryUrl: "/docs/api-reference",
     pathPrefix: "/docs/api-reference",
+    treeFolder: "api-reference",
   },
 };
 
 const promotedGlobalUrls = new Set([
   "/docs",
-  "/docs/generative-ui",
+  "/docs/architecture",
   "/docs/openui-lang/comparison",
 ]);
 
@@ -59,12 +76,12 @@ export const GLOBAL_DOCS_TREE: PageTree.Root = {
     { type: "page", name: "Introduction", url: "/docs" },
     {
       type: "page",
-      name: "What is Generative UI",
-      url: "/docs/generative-ui",
+      name: "How OpenUI works",
+      url: "/docs/architecture",
     },
     {
       type: "page",
-      name: "Feature Comparison",
+      name: "OpenUI vs others",
       url: "/docs/openui-lang/comparison",
     },
     { type: "separator", name: "Build" },
@@ -75,8 +92,13 @@ export const GLOBAL_DOCS_TREE: PageTree.Root = {
     },
     {
       type: "page",
-      name: NESTED_DOCS_SECTIONS.agent.title,
-      url: NESTED_DOCS_SECTIONS.agent.entryUrl,
+      name: NESTED_DOCS_SECTIONS["agent-interface"].title,
+      url: NESTED_DOCS_SECTIONS["agent-interface"].entryUrl,
+    },
+    {
+      type: "page",
+      name: NESTED_DOCS_SECTIONS.integrations.title,
+      url: NESTED_DOCS_SECTIONS.integrations.entryUrl,
     },
     { type: "separator", name: "Production" },
     {
@@ -109,9 +131,9 @@ export function getNestedRootForEntryUrl(url: string): NestedDocsRoot | undefine
 }
 
 export function getNestedRootForPathname(pathname: string): NestedDocsRoot | undefined {
-  return (Object.entries(NESTED_DOCS_SECTIONS) as [NestedDocsRoot, NestedSection][]).find(
-    ([, section]) => isPathWithin(pathname, section.pathPrefix),
-  )?.[0];
+  return (Object.entries(NESTED_DOCS_SECTIONS) as [NestedDocsRoot, NestedSection][])
+    .sort(([, a], [, b]) => b.pathPrefix.length - a.pathPrefix.length)
+    .find(([, section]) => isPathWithin(pathname, section.pathPrefix))?.[0];
 }
 
 export function getDefaultSidebarMode(pathname: string): SidebarMode {
@@ -132,13 +154,13 @@ export function getGlobalActiveItemUrl(pathname: string): string | undefined {
 
 function findNestedFolder(
   nodes: PageTree.Node[],
-  root: NestedDocsRoot,
+  treeFolder: string,
 ): PageTree.Folder | undefined {
   for (const node of nodes) {
     if (node.type !== "folder") continue;
-    if (node.root && node.$ref?.folder === root) return node;
+    if (node.$ref?.folder === treeFolder) return node;
 
-    const nested = findNestedFolder(node.children, root);
+    const nested = findNestedFolder(node.children, treeFolder);
     if (nested) return nested;
   }
 
@@ -146,13 +168,20 @@ function findNestedFolder(
 }
 
 export function getNestedDocsTree(tree: PageTree.Root, root: NestedDocsRoot): PageTree.Root {
-  const folder = findNestedFolder(tree.children, root);
+  const folder = findNestedFolder(tree.children, NESTED_DOCS_SECTIONS[root].treeFolder);
   if (!folder) throw new Error(`Nested docs root "${root}" was not found in the page tree.`);
+
+  const children =
+    root === "integrations"
+      ? folder.children.filter(
+          (node) => node.type !== "folder" || node.$ref?.folder !== "agent/agent-interface",
+        )
+      : folder.children;
 
   return {
     type: "root",
     $id: `docs:nested:${root}`,
     name: folder.name,
-    children: folder.children,
+    children,
   };
 }

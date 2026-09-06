@@ -82,7 +82,7 @@ function GlobalSidebarItem({ item }: { item: PageTree.Item }) {
   const pathname = usePathname();
   const { enterNested } = useDocsNavigation();
   const nestedRoot = getNestedRootForEntryUrl(item.url);
-  const active = getGlobalActiveItemUrl(pathname) === item.url;
+  const active = (getGlobalActiveItemUrl(pathname) ?? pathname) === item.url;
 
   return (
     <SidebarItem
@@ -157,7 +157,10 @@ export function DocsRouteLayout({ tree, children }: DocsRouteLayoutProps) {
           tabs: false,
           collapsible: false,
           banner: nestedRoot ? <NestedSidebarHeader root={nestedRoot} /> : undefined,
-          components: sidebarMode.kind === "global" ? { Item: GlobalSidebarItem } : undefined,
+          components:
+            sidebarMode.kind === "global"
+              ? { Item: GlobalSidebarItem }
+              : undefined,
           footer: <SidebarUtilities />,
         }}
         searchToggle={{ enabled: false }}

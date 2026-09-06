@@ -60,23 +60,40 @@ const config = {
         permanent: true,
       },
       {
+        source: "/docs/agent",
+        destination: "/docs/integrations",
+        permanent: true,
+      },
+      ...["assistant-ui", "build-your-own-ui", "copilotkit", "vercel-ai-sdk", "langchain"].map(
+        (integration) => ({
+          source: `/docs/agent/${integration}`,
+          destination: `/docs/integrations/${integration}`,
+          permanent: true,
+        }),
+      ),
+      {
+        source: "/docs/agent/harnesses/:path*",
+        destination: "/docs/integrations/harnesses/:path*",
+        permanent: true,
+      },
+      {
         source: "/docs/openui-lang/examples/agent-frameworks/vercel-ai-sdk",
-        destination: "/docs/agent/vercel-ai-sdk",
+        destination: "/docs/integrations/vercel-ai-sdk",
         permanent: true,
       },
       {
         source: "/docs/openui-lang/examples/agent-frameworks/langchain",
-        destination: "/docs/agent/langchain",
+        destination: "/docs/integrations/langchain",
         permanent: true,
       },
       {
         source: "/docs/openui-lang/examples/agent-frameworks/vercel-eve",
-        destination: "/docs/agent/harnesses/vercel-eve",
+        destination: "/docs/integrations/harnesses/vercel-eve",
         permanent: true,
       },
       {
         source: "/docs/openui-lang/examples/harnesses/pi",
-        destination: "/docs/agent/harnesses/pi",
+        destination: "/docs/integrations/harnesses/pi",
         permanent: true,
       },
       {
@@ -113,7 +130,12 @@ const config = {
       ),
       {
         source: "/docs/openui-cloud/get-started",
-        destination: "/docs/gateway/quickstart",
+        destination: "/docs/gateway/generate-openui-lang",
+        permanent: true,
+      },
+      {
+        source: "/docs/gateway/quickstart",
+        destination: "/docs/gateway/generate-openui-lang",
         permanent: true,
       },
       {
@@ -123,6 +145,16 @@ const config = {
       },
       {
         source: "/docs/openui-cloud/production-readiness",
+        destination: "/docs/gateway/reliability",
+        permanent: true,
+      },
+      {
+        source: "/docs/gateway/reliability/error-correction",
+        destination: "/docs/gateway/reliability",
+        permanent: true,
+      },
+      {
+        source: "/docs/gateway/reliability/provider-fallbacks",
         destination: "/docs/gateway/reliability",
         permanent: true,
       },

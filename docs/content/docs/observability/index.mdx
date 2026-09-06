@@ -3,44 +3,10 @@ title: Overview
 description: Find and understand OpenUI generation and rendering errors across production traffic.
 ---
 
-OpenUI Observability shows how generated interfaces behave after deployment. It collects runtime signals from OpenUI applications and turns them into dashboards for finding recurring generation and rendering failures.
+Generative UI turns model output into interfaces that people use directly. Models usually follow the component contract they receive, but they can still invent components, use unsupported values, leave references unresolved, or stop early. This can produce incomplete or broken interfaces.
 
-Observability is independent of the Gateway. Use both for the recommended production setup, or connect Observability to an application that sends model requests directly to a provider.
+![OpenUI reliability dashboard](/images/observability/reliability-dashboard.png)
 
-## The reliability loop
+In our [**Reliability benchmark**](/blog/generative-ui-benchmark), every tested format, including OpenUI, A2UI, and json-render, produced incomplete generations. OpenUI completed 92.9% of evaluated tasks and produced 2 blank screens across 1,104 runs. Its strongest model pairing reached 99.5%, not 100%.
 
-<Mermaid
-  chart={`
-flowchart LR
-    A["Generate OpenUI Lang"] --> R["Render and interact"]
-    R --> E["Capture runtime events"]
-    E --> D["Inspect dashboards"]
-    D --> I["Improve schemas, prompts, and models"]
-    I --> A
-`}
-/>
-
-The [Gateway](/docs/gateway) corrects invalid OpenUI Lang during generation. Observability captures the failures and warnings visible in the application runtime, including problems that depend on a specific component library or browser environment.
-
-## Two packages, two responsibilities
-
-| Package                          | Responsibility                                                                                          |
-| -------------------------------- | ------------------------------------------------------------------------------------------------------- |
-| `@openuidev/observability`       | A framework-agnostic local event bus. It emits and subscribes to typed events but does not upload them. |
-| `@openuidev/observability-cloud` | The official SDK for sending supported OpenUI runtime telemetry to the hosted Observability product.    |
-
-The open-source event bus is useful for local tools and custom sinks such as Sentry or Datadog. Install the hosted SDK when you want the OpenUI-specific production dashboards described in this section.
-
-## Start here
-
-<Cards>
-  <Card title="Developer Tools" href="/docs/observability/developer-tools">
-    Inspect streams and events locally before shipping.
-  </Card>
-  <Card title="Production Setup" href="/docs/observability/production-setup">
-    Initialize the hosted SDK and send runtime signals from a deployed application.
-  </Card>
-  <Card title="Console Dashboards" href="/docs/observability/console-dashboards">
-    Find error rates, recurring failure types, and affected generations.
-  </Card>
-</Cards>
+OpenUI Observability helps teams find and trace these failures after deployment so they can improve the reliability of generated interfaces.

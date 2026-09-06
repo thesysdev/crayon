@@ -102,6 +102,7 @@ docs/
 │   │   ├── meta.json                       # Root content order
 │   │   ├── openui-lang/                    # OpenUI Lang docs
 │   │   ├── agent/                          # Agent Interface docs
+│   │   ├── integrations/                   # Framework and runtime integrations
 │   │   ├── api-reference/                  # API reference
 │   │   └── mcp/                            # MCP docs
 │   └── blog/                               # Blog MDX content

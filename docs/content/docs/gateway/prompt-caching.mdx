@@ -1,20 +1,51 @@
 ---
 title: Prompt Caching
-description: Reduce repeated prompt work for requests that reuse stable OpenUI component instructions.
+description: Reuse stable prompt prefixes to reduce model costs and response latency.
 ---
 
-OpenUI requests often share a large stable prefix: the language specification, component signatures, examples, and application rules. Prompt caching can let a provider reuse work for this repeated prefix, reducing latency and input processing on compatible routes.
+Prompt caching is supported on the OpenUI Embed route through the OpenAI [explicit caching option](https://developers.openai.com/api/docs/guides/prompt-caching#how-caching-works).
 
-## Design prompts for reuse
+## Why prompt caching matters
 
-- Keep stable OpenUI and component instructions before conversation-specific content.
-- Avoid changing the component library or system instructions between otherwise similar requests.
-- Put dynamic user and tool content after the reusable prefix.
-- Measure cache behavior per model because provider implementations differ.
+Prompt caching reuses work when requests share the same prompt prefix. This provides three main benefits:
 
-<Callout type="info">
-  Gateway caching controls and per-model support are still being finalized. This page will gain the
-  exact request fields and billing behavior when that contract is published.
-</Callout>
+- **Compute-efficient:** Avoid recalculating a prompt prefix that the model has already processed.
+- **Cheaper input tokens:** Pay the model's reduced cached-input rate for reused tokens.
+- **Faster:** Reduce the time spent processing input before the response starts.
 
-Prompt caching does not change Gateway error correction. Generated OpenUI Lang is still validated as it streams.
+## Enabling caching
+
+Mark the end of the reusable prefix with `prompt_cache_breakpoint` on the corresponding content block. Content up to and including that block is cached.
+
+```python
+client.chat.completions.create(
+    model="c1/anthropic/claude-sonnet-4/v-20251230",
+    messages=[
+        {
+            "role": "system",
+            "content": [
+                {
+                    "type": "text",
+                    "text": SYSTEM_PROMPT,
+                    "prompt_cache_breakpoint": {"mode": "explicit"},
+                }
+            ],
+        },
+        {"role": "user", "content": "..."},
+    ],
+)
+```
+
+## Provider behavior
+
+| Provider                   | Behavior                                                                                                   |
+| :------------------------- | :--------------------------------------------------------------------------------------------------------- |
+| Anthropic (Claude)         | Content up to and including a marked block is cached. Without a breakpoint, your content is not cached.    |
+| OpenAI (GPT)               | A stable prompt prefix is cached automatically. Explicit caching requires GPT-5.6 or later (not supported). |
+| Google (Gemini) and others | Prefixes are cached automatically where the provider supports it. The breakpoint is ignored.               |
+
+For Anthropic models, caching your content is opt-in. OpenAI and Gemini cache eligible prefixes automatically.
+
+## Limitations
+
+- Setting a cache lifetime (`ttl`) on an individual breakpoint is not supported. The cache lifetime is fixed.

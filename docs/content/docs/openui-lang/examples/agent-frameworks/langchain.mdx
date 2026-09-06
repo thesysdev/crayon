@@ -1,6 +1,6 @@
 ---
 title: LangChain Chat
-description: Stream Gateway-backed OpenUI generative interfaces from a LangChain or LangGraph agent.
+description: Stream OpenUI generative interfaces from a DeepAgents graph with the supported @openuidev/langchain integration.
 ---
 
 OpenUI's renderer is transport-agnostic: it turns streamed OpenUI Lang into
@@ -8,8 +8,6 @@ interactive components no matter which agent produced it. This example uses a
 [DeepAgents](https://docs.langchain.com/oss/javascript/deepagents/overview)
 agent running on LangGraph and the supported `@openuidev/langchain` integration
 to deliver its response as AG-UI events.
-
-For production, configure the graph's model client with the [Gateway](/docs/gateway) API key and OpenAI-compatible base URL. The LangGraph transformer and browser adapter do not change when the underlying model route moves to the Gateway.
 
 [View source on GitHub →](https://github.com/thesysdev/openui/tree/main/examples/agent-frameworks/langchain)
 
@@ -55,7 +53,7 @@ import { openUIStreamTransformer } from "@openuidev/langchain/transformer";
 import { createDeepAgent } from "deepagents";
 
 export const graph = createDeepAgent({
-  model: `openai:${process.env.OPENAI_MODEL ?? "openai/gpt-5"}`,
+  model: `openai:${process.env.OPENAI_MODEL ?? "gpt-5.5"}`,
   tools: [getWeather, getStockPrice, searchWeb],
   systemPrompt: SYSTEM_PROMPT,
   streamTransformers: [openUIStreamTransformer],
@@ -65,14 +63,6 @@ export const graph = createDeepAgent({
 The example's `SYSTEM_PROMPT` includes the prompt generated from its OpenUI
 component library. That teaches the agent to return OpenUI Lang after it uses
 the mock weather, stock-price, and research tools.
-
-Configure the LangGraph process to use the Gateway before starting it:
-
-```bash
-OPENAI_API_KEY=sk-th-your-key-here
-OPENAI_BASE_URL=https://api.thesys.dev/v1/embed
-OPENAI_MODEL=openai/gpt-5
-```
 
 The integration package does not depend on DeepAgents. It works with any agent
 surface that accepts LangGraph stream transformers.
@@ -166,15 +156,8 @@ npm install
 cp .env.example .env
 ```
 
-Replace the model variables in `.env` with the Gateway configuration:
-
-```bash
-OPENAI_API_KEY=sk-th-your-key-here
-OPENAI_BASE_URL=https://api.thesys.dev/v1/embed
-OPENAI_MODEL=openai/gpt-5
-```
-
-Then start the LangGraph server and Next.js app together:
+Add `OPENAI_API_KEY` to `.env`, then start the LangGraph server and Next.js app
+together:
 
 ```bash tab="pnpm" tab-group="pkg"
 pnpm dev

@@ -5,8 +5,6 @@ description: Connect a Vercel Eve agent to OpenUI and render streamed responses 
 
 OpenUI can render output from a [Vercel Eve](https://github.com/vercel/eve) agent without replacing Eve's session protocol. This example uses Eve's built-in HTTP channel for delivery and resumable streaming, translates its events to AG-UI, and passes that stream to OpenUI's `<FullScreen>` chat.
 
-For production generation, point Eve's OpenAI-compatible model configuration at the [Gateway](/docs/gateway). Eve continues to own sessions and tool execution while the Gateway handles model routing and OpenUI Lang correction.
-
 The agent receives the OpenUI component-library prompt when a session starts, so its responses use OpenUI Lang and render as cards, tables, charts, forms, and other interactive components.
 
 [View source on GitHub →](https://github.com/thesysdev/openui/tree/main/examples/agent-frameworks/vercel-eve)
@@ -161,8 +159,12 @@ pnpm install
 # 2. Enter the example.
 cd examples/agent-frameworks/vercel-eve
 
-# 3. Copy the model configuration.
+# 3. Configure an OpenAI-compatible model provider.
 cp .env.example .env
+# Edit .env and set LLM_API_KEY.
+
+# 4. Start Next.js and the embedded Eve development server.
+pnpm dev
 ```
 
 ```bash tab="bun" tab-group="pkg"
@@ -172,8 +174,12 @@ bun install
 # 2. Enter the example.
 cd examples/agent-frameworks/vercel-eve
 
-# 3. Copy the model configuration.
+# 3. Configure an OpenAI-compatible model provider.
 cp .env.example .env
+# Edit .env and set LLM_API_KEY.
+
+# 4. Start Next.js and the embedded Eve development server.
+bun dev
 ```
 
 ```bash tab="yarn" tab-group="pkg"
@@ -183,8 +189,12 @@ yarn install
 # 2. Enter the example.
 cd examples/agent-frameworks/vercel-eve
 
-# 3. Copy the model configuration.
+# 3. Configure an OpenAI-compatible model provider.
 cp .env.example .env
+# Edit .env and set LLM_API_KEY.
+
+# 4. Start Next.js and the embedded Eve development server.
+yarn dev
 ```
 
 ```bash tab="npm" tab-group="pkg"
@@ -194,33 +204,11 @@ npm install
 # 2. Enter the example.
 cd examples/agent-frameworks/vercel-eve
 
-# 3. Copy the model configuration.
+# 3. Configure an OpenAI-compatible model provider.
 cp .env.example .env
-```
+# Edit .env and set LLM_API_KEY.
 
-Before starting the app, replace the model variables in `.env` with the Gateway configuration:
-
-```bash
-LLM_API_KEY=sk-th-your-key-here
-LLM_MODEL=openai/gpt-5
-LLM_BASE_URL=https://api.thesys.dev/v1/embed
-```
-
-Start Next.js and the embedded Eve development server:
-
-```bash tab="pnpm" tab-group="run"
-pnpm dev
-```
-
-```bash tab="bun" tab-group="run"
-bun dev
-```
-
-```bash tab="yarn" tab-group="run"
-yarn dev
-```
-
-```bash tab="npm" tab-group="run"
+# 4. Start Next.js and the embedded Eve development server.
 npm run dev
 ```
 
