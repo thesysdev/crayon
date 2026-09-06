@@ -4,12 +4,12 @@ import { DocsNavbar } from "@/components/docs-navbar";
 import {
   GLOBAL_DOCS_TREE,
   NESTED_DOCS_SECTIONS,
-  getDefaultSidebarMode,
   getGlobalActiveItemUrl,
   getNestedDocsTree,
   getNestedRootForEntryUrl,
-  getNestedRootForPathname,
+  getSidebarModeForPathname,
   type NestedDocsRoot,
+  type SidebarModeOverride,
 } from "@/lib/docs-navigation";
 import { baseOptions, siteConfig } from "@/lib/layout.shared";
 import type * as PageTree from "fumadocs-core/page-tree";
@@ -130,18 +130,21 @@ type DocsRouteLayoutProps = {
 
 export function DocsRouteLayout({ tree, children }: DocsRouteLayoutProps) {
   const pathname = usePathname();
-  const [sidebarMode, setSidebarMode] = useState(() => getDefaultSidebarMode(pathname));
+  const [sidebarOverride, setSidebarOverride] = useState<SidebarModeOverride>();
+  const sidebarMode = getSidebarModeForPathname(pathname, sidebarOverride);
 
-  const enterNested = useCallback((root: NestedDocsRoot) => {
-    setSidebarMode({ kind: "nested", root });
-  }, []);
+  const enterNested = useCallback(
+    (root: NestedDocsRoot) => {
+      setSidebarOverride({ pathname, mode: { kind: "nested", root } });
+    },
+    [pathname],
+  );
   const showGlobal = useCallback(() => {
-    setSidebarMode({ kind: "global" });
-  }, []);
+    setSidebarOverride({ pathname, mode: { kind: "global" } });
+  }, [pathname]);
   const navigationContext = useMemo(() => ({ enterNested, showGlobal }), [enterNested, showGlobal]);
 
-  const routeRoot = getNestedRootForPathname(pathname);
-  const nestedRoot = sidebarMode.kind === "nested" ? (routeRoot ?? sidebarMode.root) : undefined;
+  const nestedRoot = sidebarMode.kind === "nested" ? sidebarMode.root : undefined;
   const activeTree = useMemo(
     () => (nestedRoot ? getNestedDocsTree(tree, nestedRoot) : GLOBAL_DOCS_TREE),
     [nestedRoot, tree],
@@ -157,10 +160,7 @@ export function DocsRouteLayout({ tree, children }: DocsRouteLayoutProps) {
           tabs: false,
           collapsible: false,
           banner: nestedRoot ? <NestedSidebarHeader root={nestedRoot} /> : undefined,
-          components:
-            sidebarMode.kind === "global"
-              ? { Item: GlobalSidebarItem }
-              : undefined,
+          components: sidebarMode.kind === "global" ? { Item: GlobalSidebarItem } : undefined,
           footer: <SidebarUtilities />,
         }}
         searchToggle={{ enabled: false }}

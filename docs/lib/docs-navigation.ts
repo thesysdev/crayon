@@ -15,6 +15,11 @@ export type SidebarMode =
       root: NestedDocsRoot;
     };
 
+export type SidebarModeOverride = {
+  pathname: string;
+  mode: SidebarMode;
+};
+
 type NestedSection = {
   title: string;
   entryUrl: string;
@@ -139,6 +144,13 @@ export function getDefaultSidebarMode(pathname: string): SidebarMode {
 
   const root = getNestedRootForPathname(pathname);
   return root ? { kind: "nested", root } : { kind: "global" };
+}
+
+export function getSidebarModeForPathname(
+  pathname: string,
+  override?: SidebarModeOverride,
+): SidebarMode {
+  return override?.pathname === pathname ? override.mode : getDefaultSidebarMode(pathname);
 }
 
 export function getGlobalActiveItemUrl(pathname: string): string | undefined {

@@ -8,6 +8,7 @@ import {
   getNestedDocsTree,
   getNestedRootForEntryUrl,
   getNestedRootForPathname,
+  getSidebarModeForPathname,
 } from "./docs-navigation";
 
 describe("global docs navigation", () => {
@@ -117,6 +118,33 @@ describe("global docs navigation", () => {
       root: "observability",
     });
     assert.deepEqual(getDefaultSidebarMode("/docs/mcp"), { kind: "global" });
+  });
+
+  it("shows the destination section after client-side navigation", () => {
+    const globalOverride = {
+      pathname: "/docs",
+      mode: { kind: "global" } as const,
+    };
+
+    assert.deepEqual(getSidebarModeForPathname("/docs/openui-lang/renderer", globalOverride), {
+      kind: "nested",
+      root: "openui-lang",
+    });
+    assert.deepEqual(getSidebarModeForPathname("/docs", globalOverride), { kind: "global" });
+
+    const nestedPathname = "/docs/openui-lang/renderer";
+    const showGlobalOverride = {
+      pathname: nestedPathname,
+      mode: { kind: "global" } as const,
+    };
+
+    assert.deepEqual(getSidebarModeForPathname(nestedPathname, showGlobalOverride), {
+      kind: "global",
+    });
+    assert.deepEqual(getSidebarModeForPathname("/docs/gateway", showGlobalOverride), {
+      kind: "nested",
+      root: "gateway",
+    });
   });
 
   it("promotes overview pages while grouping product pages under their roots", () => {
