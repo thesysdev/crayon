@@ -1,9 +1,9 @@
 ---
 title: Vercel AI Chat
-description: A full-featured chatbot using the Vercel AI SDK for streaming and tool execution, with OpenUI Renderer for generative UI.
+description: AgentInterface over a Vercel AI SDK streamText backend with server-side tools.
 ---
 
-OpenUI's `<Renderer />` is transport-agnostic — it takes a string of OpenUI Lang markup and renders it as interactive React components, regardless of how that string arrived. This example uses the Vercel AI SDK (`ai`, `@ai-sdk/react`, `@ai-sdk/openai`) as the transport layer, paired with the built-in `openuiChatLibrary` of `OpenUI` as the presentation layer. It includes multi-step tool calling, conversation threading with localStorage persistence, and automatic light/dark theme support.
+This example uses the [Vercel AI SDK](https://ai-sdk.dev/) (`streamText`, `tool()`, `toUIMessageStreamResponse()`) as the agent backend, and OpenUI's `<AgentInterface />` as the chat UI. The route talks to OpenUI Cloud Completions; the browser decodes the AI SDK UIMessage stream with `vercelAIAdapter()`.
 
 [View source on GitHub →](https://github.com/thesysdev/openui/tree/main/examples/agent-frameworks/vercel-ai-sdk)
 
@@ -20,79 +20,70 @@ OpenUI's `<Renderer />` is transport-agnostic — it takes a string of OpenUI La
   />
 </div>
 
-## How OpenUI plugs into any chat framework
+## How it connects
 
-The backend API route reads a system prompt generated locally at `src/generated/system-prompt.txt` and calls the LLM with `streamText`. Tool definitions use the AI SDK's `tool()` helper with Zod schemas:
+The API route calls `streamText` with Cloud Completions, `generateSystemPrompt({ cloud: true })`, and tools defined with `tool()`. When the model calls a tool, the AI SDK executes it server-side and continues — up to 5 steps. The response is a UIMessage stream.
+
+The page passes that stream to `<AgentInterface />`:
 
 ```tsx
-import { streamText, convertToModelMessages, stepCountIs } from "ai";
-import { openai } from "@ai-sdk/openai";
+import {
+  AgentInterface,
+  fetchLLM,
+  vercelAIAdapter,
+  vercelAIMessageFormat,
+} from "@openuidev/react-ui";
+import { chatLibrary } from "@openuidev/thesys";
+
+const llm = fetchLLM({
+  url: "/api/chat",
+  streamAdapter: vercelAIAdapter(),
+  messageFormat: vercelAIMessageFormat,
+});
+
+<AgentInterface
+  llm={llm}
+  componentLibrary={chatLibrary}
+  agentName="OpenUI + Vercel AI SDK"
+/>;
+```
+
+Storage is omitted, so AgentInterface uses its built-in in-memory default (wiped on reload).
+
+## Backend
+
+```ts
+import { createOpenAI } from "@ai-sdk/openai";
+import { generateSystemPrompt } from "@openuidev/lang-core";
+import { convertToModelMessages, stepCountIs, streamText } from "ai";
 import { tools } from "@/lib/tools";
+
+const openai = createOpenAI({
+  baseURL: "https://api.thesys.dev/v1/embed",
+  apiKey: process.env.THESYS_API_KEY,
+});
 
 export async function POST(req: Request) {
   const { messages } = await req.json();
-  const modelMessages = await convertToModelMessages(messages);
-
   const result = streamText({
-    model: openai("gpt-5.4"),
-    system: systemPrompt,
-    messages: modelMessages,
+    model: openai.chat("google/gemini-3.6-flash-free"),
+    system: generateSystemPrompt({ cloud: true }),
+    messages: await convertToModelMessages(messages),
     tools,
     stopWhen: stepCountIs(5),
   });
-
   return result.toUIMessageStreamResponse();
 }
 ```
 
-On the client, `useChat` from `@ai-sdk/react` manages conversation state and streaming. Each assistant message passes its accumulated text to `<Renderer />`:
-
-```tsx
-import { useChat } from "@ai-sdk/react";
-import { Renderer } from "@openuidev/react-lang";
-import { openuiChatLibrary } from "@openuidev/react-ui/genui-lib";
-
-const { messages, sendMessage, status, stop } = useChat({
-  id: activeThreadId,
-  messages: activeThread?.messages,
-});
-
-// In the assistant message component:
-<Renderer
-  response={textContent}
-  library={openuiChatLibrary}
-  isStreaming={isStreaming}
-  onAction={handleAction}
-/>;
-```
-
-- `response` — the accumulated text the LLM has streamed so far; `<Renderer />` parses it progressively as tokens arrive
-- `library` — maps OpenUI Lang nodes to the built-in component set (cards, tables, charts, forms, etc.)
-- `isStreaming` — tells the renderer to keep expecting more tokens
-- `onAction` — captures interactive events like button clicks and feeds them back into the conversation
-
-Swap out `useChat` and the API route for any other transport — raw `fetch`, LangChain, LlamaIndex — and the `<Renderer />` call stays unchanged.
-
-## Architecture
-
-```
-Browser (useChat) -- POST /api/chat --> Next.js route --> LLM
-                  <-- streaming text --                   (OpenUI Lang markup)
-```
-
-The API route calls the LLM with `streamText`, the system prompt, and tool definitions. When the LLM invokes a tool (weather, stock price, or web search), the AI SDK executes it server-side and feeds the result back — up to 5 steps. The response streams back as OpenUI Lang markup.
-
-On the client, `<Renderer />` and `openuiChatLibrary` progressively render each token into interactive UI components as the response arrives.
+Tools live in `src/lib/tools.ts` (`get_weather`, `get_stock_price`, `search_web`).
 
 ## Project layout
 
 ```
 examples/agent-frameworks/vercel-ai-sdk/
-|- src/app/        # Next.js app (layout, page, API route)
-|- src/components/ # Chat UI components (messages, input, sidebar)
-|- src/hooks/      # Theme detection, thread management
-|- src/lib/        # Tool definitions, localStorage thread store
-|- src/generated/  # Generated system prompt
+|- src/app/          # Next.js app (layout, page, API route)
+|- src/lib/tools.ts  # Vercel AI SDK tool() definitions
 ```
 
 ## Run the example
@@ -121,10 +112,10 @@ cd examples/agent-frameworks/vercel-ai-sdk
 npm install
 ```
 
-2. Create a `.env.local` file with your API key:
+2. Create a `.env.local` file with your OpenUI Cloud key:
 
 ```bash
-OPENAI_API_KEY=sk-...
+THESYS_API_KEY=sk-th-...
 ```
 
 3. Start the dev server:
@@ -144,5 +135,3 @@ yarn dev
 ```bash tab="npm" tab-group="pkg"
 npm run dev
 ```
-
-This generates the system prompt from the OpenUI component library and starts the Next.js dev server.

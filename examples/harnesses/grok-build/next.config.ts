@@ -8,7 +8,7 @@ const nextConfig: NextConfig = {
         { request }: { request?: string },
         callback: (error?: null, result?: string) => void,
       ) => {
-        if (request === "@openuidev/react-ui/genui-lib") {
+        if (request === "@openuidev/thesys") {
           return callback(null, `commonjs ${request}`);
         }
         return callback();

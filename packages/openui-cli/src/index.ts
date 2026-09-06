@@ -8,6 +8,7 @@ import { Command } from "commander";
 
 import { runCreateApp } from "./commands/create-app";
 import { GenerateOptions, runGenerate } from "./commands/generate";
+import { runGenerateApiKey } from "./commands/generate-api-key";
 import { detectAgent, UNKNOWN_AGENT_NAME } from "./lib/detect-agent";
 import { rejectConflictingImmediateFlags, resolveArgs } from "./lib/resolve-args";
 import { telemetry } from "./lib/telemetry";
@@ -62,7 +63,7 @@ program
   )
   .option(
     "--backend-framework <framework>",
-    "Backend framework: default | langgraph | vercel-ai-sdk",
+    "Backend framework: default | langgraph | vercel-ai-sdk | vercel-eve",
   )
   .option("--api-key <key>", "OpenUI Cloud API key (cloud template; skips sign-in)")
   .option("--auth <method>", "Cloud auth method: oauth | skip (manual is deprecated)")
@@ -72,6 +73,7 @@ program
   .option("--no-install", "Scaffold without running the package install")
   .option("-i, --immediate", "Start the development server after installing dependencies")
   .option("--no-immediate", "Install dependencies without starting the development server")
+  .option("--verbose", "Stream full dependency install logs")
   .addHelpText(
     "after",
     `
@@ -90,6 +92,7 @@ Backend frameworks:
   default        Uses OpenAI SDK.
   langgraph      Bootstraps a LangGraph agent with the selected model backend.
   vercel-ai-sdk  Scaffolds a Vercel AI SDK agent with the selected model backend.
+  vercel-eve     Scaffolds a Vercel Eve agent with the selected model backend.
 `,
   )
   .action(
@@ -103,6 +106,7 @@ Backend frameworks:
       interactive: boolean;
       install: boolean;
       immediate?: boolean;
+      verbose?: boolean;
     }) => {
       try {
         rejectConflictingImmediateFlags(process.argv.slice(2));
@@ -116,6 +120,7 @@ Backend frameworks:
           noInteractive: !options.interactive,
           noInstall: !options.install,
           immediate: options.immediate,
+          verbose: options.verbose,
         });
       } catch (e) {
         handleCliError(e, "cli_create_failed");
@@ -124,6 +129,38 @@ Backend frameworks:
       }
     },
   );
+
+program
+  .command("generate-api-key")
+  .description("Mint an OpenUI Cloud API key and write it to a project env file")
+  .option("-f, --file <path>", "Env file to write", ".env")
+  .option("-k, --key <name>", "Environment variable name", "THESYS_API_KEY")
+  .option("-n, --name <string>", "Name of the minted key in the Thesys console")
+  .addHelpText(
+    "after",
+    `
+Run this inside an existing project. It uses the same browser sign-in as
+openui create, mints an OpenUI Cloud API key, and writes it to the env file.
+
+Examples:
+  openui generate-api-key
+  openui generate-api-key --file .env.local
+  openui generate-api-key --file .env.local --key THESYS_API_KEY
+`,
+  )
+  .action(async (options: { file?: string; key?: string; name?: string }) => {
+    try {
+      await runGenerateApiKey({
+        file: options.file,
+        key: options.key,
+        name: options.name,
+      });
+    } catch (e) {
+      handleCliError(e, "cli_generate_api_key_failed");
+    } finally {
+      await telemetry.shutdown();
+    }
+  });
 
 program
   .command("generate")
