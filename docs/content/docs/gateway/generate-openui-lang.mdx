@@ -53,7 +53,7 @@ Both endpoints accept a system prompt generated from the exported library specif
 
 ```ts title="server.ts" tab="Chat Completions" tab-group="gateway-endpoint"
 import OpenAI from "openai";
-import { generateSystemPrompt } from "@openuidev/thesys-server";
+import { generateSystemPrompt } from "@openuidev/lang-core";
 import library from "./openui.spec.json";
 
 const gateway = new OpenAI({
@@ -64,7 +64,7 @@ const gateway = new OpenAI({
 const completion = await gateway.chat.completions.create({
   model: "openai/gpt-5",
   messages: [
-    { role: "system", content: generateSystemPrompt({ library }) },
+    { role: "system", content: generateSystemPrompt({ cloud: true, library }) },
     { role: "user", content: "Compare quarterly revenue by region." },
   ],
   stream: true,
@@ -73,7 +73,7 @@ const completion = await gateway.chat.completions.create({
 
 ```ts title="server.ts" tab="Responses API" tab-group="gateway-endpoint"
 import OpenAI from "openai";
-import { generateSystemPrompt } from "@openuidev/thesys-server";
+import { generateSystemPrompt } from "@openuidev/lang-core";
 import library from "./openui.spec.json";
 
 const gateway = new OpenAI({
@@ -84,7 +84,7 @@ const gateway = new OpenAI({
 const response = await gateway.responses.create({
   model: "openai/gpt-5",
   input: "Compare quarterly revenue by region.",
-  instructions: generateSystemPrompt({ library }),
+  instructions: generateSystemPrompt({ cloud: true, library }),
   stream: true,
 });
 ```

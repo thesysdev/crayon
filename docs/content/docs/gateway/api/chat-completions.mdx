@@ -26,13 +26,14 @@ See [Authentication](/docs/gateway/authentication) before using the client in a 
 Configure the system message for OpenUI generation, then send the same messages shape used by the OpenAI SDK:
 
 ```ts title="server.ts"
-import { generateSystemPrompt } from "@openuidev/thesys-server";
+import { generateSystemPrompt } from "@openuidev/lang-core";
 import { gateway } from "./lib/gateway";
+import library from "./openui.spec.json";
 
 const completion = await gateway.chat.completions.create({
   model: "openai/gpt-5",
   messages: [
-    { role: "system", content: generateSystemPrompt() },
+    { role: "system", content: generateSystemPrompt({ cloud: true, library }) },
     { role: "user", content: "Compare quarterly revenue by region." },
   ],
   stream: true,

@@ -87,15 +87,19 @@ const systemPrompt = generateSystemPrompt({
 
 ### OpenUI Cloud
 
-Pass `cloud: true` to emit Cloud's managed config block instead of a local prompt. OpenUI Cloud assembles the real system prompt on the server. `instructions` is Cloud-only extra prose appended after the config block.
+Pass `cloud: true` with the generated library specification to emit Cloud's managed config block instead of a local prompt. OpenUI Cloud assembles the real system prompt on the server. `instructions` is Cloud-only extra prose appended after the config block.
 
 ```ts
 import { generateSystemPrompt } from "@openuidev/lang-core";
+import librarySpec from "./generated/system-prompt.spec.json";
 
-const instructions = generateSystemPrompt({ cloud: true });
+const instructions = generateSystemPrompt({
+  cloud: true,
+  library: librarySpec,
+});
 ```
 
-With your own library, pass the generated spec:
+Add Cloud-compatible prompt options when needed:
 
 ```ts
 const instructions = generateSystemPrompt({
