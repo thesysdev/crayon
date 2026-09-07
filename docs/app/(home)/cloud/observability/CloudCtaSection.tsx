@@ -14,10 +14,10 @@ export function CloudCtaSection() {
         {/* The same capture as the hero, so the page opens and closes on the
             one action. */}
         <div className={styles.actions}>
-          <h3 className={styles.formTitle}>Join the waitlist</h3>
+          <h3 className={styles.formTitle}>Join waitlist</h3>
           <EarlyAccessForm />
           <p className={styles.accessNote}>
-            Free during early access.{" "}
+            <strong>Free during early access.</strong>{" "}
             <a className={styles.pricingLink} href="/pricing">
               View pricing
             </a>

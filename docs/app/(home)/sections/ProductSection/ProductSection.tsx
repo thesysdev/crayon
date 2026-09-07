@@ -178,8 +178,10 @@ export function ProductSection({
               <span className={styles.cardIcon} aria-hidden="true">
                 <CardIcon size={20} weight="light" />
               </span>
-              <h4 className={styles.cardTitle}>{title}</h4>
-              <p className={styles.cardDescription}>{cardCopy}</p>
+              <div className={styles.cardCopy}>
+                <h4 className={styles.cardTitle}>{title}</h4>
+                <p className={styles.cardDescription}>{cardCopy}</p>
+              </div>
             </div>
           ))}
         </div>

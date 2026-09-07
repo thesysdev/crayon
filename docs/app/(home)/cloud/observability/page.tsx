@@ -22,22 +22,21 @@ import { WhySection } from "./WhySection";
 const TRUST_ITEMS: GridFeature[] = [
   {
     icon: "key",
-    title: "Control what you send",
-    description:
-      "Choose metadata-only capture to keep generated responses in the browser. Edit or drop events before they’re sent.",
+    title: "Data controls",
+    description: "Keep responses in the browser and capture only the metadata you need.",
   },
   {
     icon: "shield",
-    title: "No training on your data",
+    title: "Your data stays yours",
     description:
-      "Your data is not used to train models. Self-hosting and VPC deployments are available on Scale.",
+      "Your data stays private and is never used to train models. Deploy in your VPC or self-host.",
   },
   {
     icon: "database",
     title: "Compliance",
     description: (
       <>
-        GDPR, SOC 2, and ISO 27001 details are available in the{" "}
+        Find GDPR, SOC 2, and ISO 27001 evidence in the{" "}
         <ExternalTextLink href="https://trust.thesys.dev">Trust centre</ExternalTextLink>.
       </>
     ),

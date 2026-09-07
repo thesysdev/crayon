@@ -1694,8 +1694,11 @@
   position: relative;
   width: 100%;
   height: 100%;
-  overflow: hidden;
-  border-radius: inherit;
+  /* The page-level stage owns the single illustration clip. Keeping another
+     inherited radius here creates a second antialiased edge over Figma's
+     exported canvas and exposes a corner seam in dark mode. */
+  overflow: visible;
+  border-radius: 0;
 }
 
 .reliabilityDashboardImage {
@@ -1756,6 +1759,7 @@
   --response-error: #ff5159;
   --response-reference: #ff8851;
   --response-type: var(--response-error);
+  --response-chip: #fff;
 
   position: relative;
   box-sizing: border-box;
@@ -1773,6 +1777,12 @@
 :global(.dark) .responseFlowHero,
 :global([data-theme="dark"]) .responseFlowHero {
   --response-canvas: #151515;
+  --response-chip: #202020;
+}
+
+.responseFlowHeroOpen {
+  border-radius: 0;
+  background: transparent;
 }
 
 .responseFlowHero *,
@@ -1841,35 +1851,144 @@
   color: var(--response-type);
 }
 
+.modelSources {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  pointer-events: none;
+}
+
+.modelSource {
+  position: absolute;
+  left: 22px;
+  display: inline-flex;
+  width: max-content;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 10px 5px 5px;
+  border: 1px solid var(--response-border);
+  border-radius: 999px;
+  background: var(--response-chip);
+  box-shadow: 0 5px 18px color-mix(in srgb, var(--response-text) 5%, transparent);
+  color: var(--response-text);
+  font-family: var(--home-font-text);
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1;
+  transform: translateY(-50%);
+  white-space: nowrap;
+}
+
+.modelSource:nth-child(1) {
+  top: 18.46%;
+}
+
+.modelSource:nth-child(2) {
+  top: 33.85%;
+}
+
+.modelSource:nth-child(3) {
+  top: 50%;
+}
+
+.modelSource:nth-child(4) {
+  top: 66.15%;
+}
+
+.modelSource:nth-child(5) {
+  top: 81.54%;
+}
+
+.modelSourceIcon {
+  display: grid;
+  width: 24px;
+  height: 24px;
+  flex: none;
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, #0a0a0a 8%, transparent);
+  border-radius: 50%;
+  background: #fff;
+}
+
+.modelSourceIcon img {
+  display: block;
+  width: 14px;
+  height: 14px;
+}
+
+.modelSource[data-provider="openai"] .modelSourceIcon img {
+  width: 20px;
+  height: 20px;
+}
+
+.modelSource[data-provider="anthropic"] .modelSourceIcon {
+  background: #d4a574;
+}
+
+.modelSource[data-provider="meta"] .modelSourceIcon {
+  background: #4c7cf3;
+}
+
+.modelSource[data-provider="meta"] .modelSourceIcon img,
+.modelSource[data-provider="xai"] .modelSourceIcon img {
+  filter: invert(1);
+}
+
+.modelSource[data-provider="meta"] .modelSourceIcon img {
+  width: 17px;
+  height: 17px;
+}
+
+.modelSource[data-provider="xai"] .modelSourceIcon img {
+  width: 13px;
+  height: 13px;
+}
+
+.modelSource[data-provider="xai"] .modelSourceIcon {
+  background: #0a0a0a;
+}
+
+.responseFlowHeroOpen .modelSource:nth-child(1) {
+  top: 11.15%;
+}
+
+.responseFlowHeroOpen .modelSource:nth-child(2) {
+  top: 30.58%;
+}
+
+.responseFlowHeroOpen .modelSource:nth-child(3) {
+  top: 50%;
+}
+
+.responseFlowHeroOpen .modelSource:nth-child(4) {
+  top: 69.42%;
+}
+
+.responseFlowHeroOpen .modelSource:nth-child(5) {
+  top: 88.85%;
+}
+
 .modelOutputLabel {
   position: absolute;
   z-index: 2;
   bottom: 22px;
   left: 22px;
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 6px;
-  padding: 10px 12px;
+  align-items: center;
+  padding: 8px 10px;
   border: 0;
-  border-radius: 10px;
-  background: color-mix(in srgb, var(--response-canvas) 86%, transparent);
-  box-shadow: 0 10px 30px color-mix(in srgb, var(--response-text) 5%, transparent);
-  backdrop-filter: blur(10px);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--response-canvas) 92%, transparent);
   text-align: left;
 }
 
 .modelOutputLabel span {
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  line-height: 1;
-}
-
-.modelOutputLabel small {
   color: var(--response-muted);
   font-family: var(--home-font-text);
   font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0;
   line-height: 1;
 }
 
@@ -1877,7 +1996,7 @@
   position: absolute;
   z-index: 4;
   top: 34.6%;
-  left: 23.83%;
+  left: 31.25%;
   display: flex;
   width: 20.55%;
   min-width: 228px;
@@ -2038,17 +2157,24 @@
 .renderedInterface {
   position: absolute;
   z-index: 3;
-  top: 6.2%;
-  left: 52.8%;
+  top: 10%;
+  left: 58.5%;
   display: block;
-  width: 44.7%;
-  height: 87.6%;
+  width: 39%;
+  height: auto;
+  aspect-ratio: 1716 / 1367;
   padding: 0;
   overflow: hidden;
   border: 0;
   border-radius: 24px;
   background: transparent;
   box-shadow: none;
+}
+
+.responseFlowHeroOpen .renderedInterface {
+  top: 4%;
+  left: 57.5%;
+  width: 42%;
 }
 
 .renderedInterface img {
@@ -2227,12 +2353,61 @@
     pointer-events: none;
   }
 
+  .responseFlowHeroOpen::before {
+    display: none;
+  }
+
   .gatewayPathsDesktop {
     display: none;
   }
 
   .gatewayPathsMobile {
     display: block;
+  }
+
+  .modelSources {
+    top: 58px;
+    right: 12px;
+    bottom: auto;
+    left: 12px;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 5px;
+  }
+
+  .modelSource {
+    position: static;
+    width: max-content;
+    min-width: 0;
+    justify-self: center;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+    padding: 5px 2px 6px;
+    border-radius: 9px;
+    font-size: 7px;
+    transform: none;
+  }
+
+  .modelSourceIcon {
+    width: 18px;
+    height: 18px;
+  }
+
+  .modelSourceIcon img {
+    width: 11px;
+    height: 11px;
+  }
+
+  .modelSource[data-provider="openai"] .modelSourceIcon img,
+  .modelSource[data-provider="meta"] .modelSourceIcon img {
+    width: 13px;
+    height: 13px;
+  }
+
+  .modelSource[data-provider="openai"] .modelSourceIcon img {
+    width: 16px;
+    height: 16px;
   }
 
   .modelOutputLabel {
@@ -2258,6 +2433,12 @@
     height: 43%;
     border-radius: 18px;
   }
+
+  .responseFlowHeroOpen .renderedInterface {
+    top: 61%;
+    left: 8%;
+    width: 84%;
+  }
 }
 
 @media (max-width: 767px) {
@@ -2265,19 +2446,12 @@
     top: 16px;
     bottom: auto;
     left: 12px;
-    gap: 3px;
-    padding: 7px 8px;
+    padding: 6px 8px;
     border-radius: 7px;
   }
 
   .modelOutputLabel span {
     font-size: 7px;
-  }
-
-  .modelOutputLabel small {
-    max-width: 110px;
-    font-size: 7px;
-    white-space: normal;
   }
 
   .responseGatewayNode {
@@ -2363,6 +2537,12 @@
     width: 88%;
     height: 43%;
     border-radius: 12px;
+  }
+
+  .responseFlowHeroOpen .renderedInterface {
+    top: 61%;
+    left: 6%;
+    width: 88%;
   }
 
   .renderedInterface header b {

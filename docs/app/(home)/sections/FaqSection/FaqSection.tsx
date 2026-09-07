@@ -37,7 +37,7 @@ const FAQS: MarketingFaq[] = [
     answer: [
       "No. You can call any supported LLM directly.",
       "For production applications, OpenUI Gateway adds validation and automatic corrections for generated UI, model routing, and provider fallbacks through an OpenAI-compatible API.",
-      "You can usually adopt it by changing your base URL and model configuration.",
+      "Adopt it by changing your base URL and model configuration.",
     ],
   },
   {
@@ -53,7 +53,7 @@ const FAQS: MarketingFaq[] = [
     question: "Can OpenUI work with my existing stack?",
     answer: [
       "Yes. OpenUI works with your existing LLMs, agent frameworks, design systems, and infrastructure.",
-      "You can bring your own OpenAI, Anthropic, or Google keys, use custom component libraries, and run OpenUI Gateway behind other OpenAI-compatible gateways such as Portkey.",
+      "Bring your own OpenAI, Anthropic, or Google keys, use custom component libraries, and run OpenUI Gateway behind any OpenAI-compatible gateway, including Portkey.",
     ],
   },
   {

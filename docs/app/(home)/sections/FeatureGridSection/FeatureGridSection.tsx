@@ -42,7 +42,7 @@ const FEATURES: GridFeature[] = [
     Icon: Devices,
     title: "Cross-platform",
     description:
-      "One response renders through React, Vue, Svelte, React Native, email, or a plain script tag.",
+      "One response renders across React, Vue, Svelte, React Native, email, and script tags.",
   },
   {
     Icon: Broadcast,
@@ -52,8 +52,7 @@ const FEATURES: GridFeature[] = [
   {
     Icon: CursorClick,
     title: "Interactive",
-    description:
-      "Connect inputs and actions to your tools, with UI that updates as users interact.",
+    description: "Generate UI that responds as users click, choose, and type.",
   },
   {
     Icon: ShieldCheck,

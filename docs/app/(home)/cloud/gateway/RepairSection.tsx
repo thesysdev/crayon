@@ -11,39 +11,38 @@ import styles from "./sections.module.css";
 const STACK_FEATURES: GridFeature[] = [
   {
     icon: "chart",
-    title: "No token markup",
-    description: "Tokens are billed at model providers’ standard rates.",
+    title: "Provider pricing",
+    description: "Tokens are billed at provider rates, with no Gateway markup.",
   },
   {
     icon: "cloud",
-    title: "OpenAI-compatible",
+    title: "SDK support",
     description: "Chat Completions and Responses endpoints work with your existing SDKs.",
   },
   {
     icon: "key",
-    title: "Bring your own API keys",
+    title: "Bring your own keys",
     description:
       "Use your existing OpenAI, Anthropic, or Google Vertex credentials and commitments.",
   },
   {
     icon: "handshake",
     title: "Works with other gateways",
-    description: "Run Gateway behind Portkey or any other OpenAI-compatible gateway.",
+    description: "Run Gateway behind any OpenAI-compatible gateway, including Portkey.",
   },
   {
     icon: "database",
-    title: "Keep your cache setup",
-    description: "Your existing upstream cache configuration continues to work.",
+    title: "Keep your cache",
+    description: "Add Gateway without changing your upstream cache configuration.",
   },
   {
     icon: "signal",
     title: "Broad model support",
     description: (
       <>
-        Use models listed on{" "}
-        <ExternalTextLink href="https://models.dev">models.dev</ExternalTextLink>, with more
-        available through{" "}
-        <ExternalTextLink href="https://openrouter.ai">OpenRouter</ExternalTextLink>.
+        Use any model through one OpenAI-compatible API.{" "}
+        <ExternalTextLink href="/docs/gateway/models">View routing</ExternalTextLink>
+        {"."}
       </>
     ),
   },

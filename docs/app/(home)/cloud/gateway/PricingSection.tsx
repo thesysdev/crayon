@@ -17,13 +17,15 @@ export function PricingSection() {
             </h2>
           </div>
           <p className={styles.lead}>
-            Each plan includes monthly API calls and all correction calls. Every response uses an
-            API call plus LLM tokens. Tokens are billed separately at model provider rates.
+            Plans start free. Each response uses one API call plus LLM tokens at provider rates,
+            with corrections included.
           </p>
         </div>
         <div className={styles.diagram}>
-          <GatewayPlans />
+          <GatewayPlans detailed />
         </div>
+        {/* Restore the shared <LogoStrip variant="cloud" /> here after Rabi confirms
+            which Gateway customer logos are approved for public use. */}
       </section>
     </div>
   );

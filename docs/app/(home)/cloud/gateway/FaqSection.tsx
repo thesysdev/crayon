@@ -14,7 +14,7 @@ const FAQS: MarketingFaq[] = [
   {
     question: "What happens to my data?",
     answer: [
-      "Your data is not used to train models, except with free models. Chat Completions requests have zero data retention by default on paid models.",
+      "Your Gateway data is never used to train models. Chat Completions requests use zero data retention by default.",
     ],
   },
   {
@@ -32,9 +32,7 @@ const FAQS: MarketingFaq[] = [
   },
   {
     question: "Can I use OpenUI Gateway with Portkey or another gateway?",
-    answer: [
-      "Yes. Configure OpenUI Gateway as an OpenAI-compatible endpoint behind Portkey or any other OpenAI-compatible gateway.",
-    ],
+    answer: ["Yes. Run OpenUI Gateway behind any OpenAI-compatible gateway, including Portkey."],
   },
   {
     question: "Will my cache configuration work?",

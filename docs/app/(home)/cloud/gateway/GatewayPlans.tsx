@@ -7,13 +7,26 @@ import { GATEWAY_PLANS } from "./gateway-plans";
 import details from "./GatewayPlans.module.css";
 import styles from "./sections.module.css";
 
-const STRIP = ["Free models available", "Zero data retention available"];
+const STRIP = ["Free models", "Zero data retention"];
 const formatPrice = (price: number) =>
   new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
     maximumFractionDigits: 0,
   }).format(price);
+
+function FeatureLabel({ feature }: { feature: string }) {
+  const usage = feature.match(/^(3K|25K|500K)(.*)$/);
+
+  if (!usage) return feature;
+
+  return (
+    <>
+      <strong className={details.featureMetric}>{usage[1]}</strong>
+      {usage[2]}
+    </>
+  );
+}
 
 /** Same plans, billing control, and card styling on both pricing surfaces. */
 export function GatewayPlans({ detailed = false }: { detailed?: boolean }) {
@@ -55,37 +68,44 @@ export function GatewayPlans({ detailed = false }: { detailed?: boolean }) {
             const price = annualBilling ? plan.annualMonthly : plan.monthly;
             return (
               <article
-                className={`${styles.planCard} ${detailed ? details.card : ""}`}
+                className={`${styles.planCard} ${detailed ? details.card : ""} ${
+                  plan.recommended ? details.recommended : ""
+                }`}
                 key={plan.name}
                 aria-labelledby={`${id}-${plan.name}`}
               >
                 <div className={`${styles.planHeader} ${detailed ? details.header : ""}`}>
-                  <h3 id={`${id}-${plan.name}`} className={styles.planName}>
+                  <h3
+                    id={`${id}-${plan.name}`}
+                    className={`${styles.planName} ${detailed ? details.name : ""}`}
+                  >
                     {plan.name}
                   </h3>
-                  <span className={styles.planPrice}>
+                  <span className={`${styles.planPrice} ${detailed ? details.price : ""}`}>
                     {price === null ? "Custom" : price === 0 ? "$0" : `${formatPrice(price)}/mo`}
                   </span>
                   {price !== null && price > 0 ? (
                     <span className={detailed ? details.cadence : styles.pricingCaption}>
-                      {annualBilling
-                        ? `${formatPrice(price * 12)} billed annually`
-                        : "Billed monthly"}
+                      {annualBilling ? `${formatPrice(price * 12)} annually` : "Billed monthly"}
                     </span>
                   ) : detailed ? (
                     <span className={details.cadence} aria-hidden="true">
                       &nbsp;
                     </span>
                   ) : null}
-                  {detailed && <p className={details.description}>{plan.description}</p>}
                 </div>
                 {detailed ? (
                   <>
                     <ul className={details.features}>
-                      {plan.features.map((feature) => (
+                      <li className={details.featureIntro}>
+                        <span>{plan.name === "Free" ? "Includes" : plan.features[0]}</span>
+                      </li>
+                      {plan.features.slice(plan.name === "Free" ? 0 : 1).map((feature) => (
                         <li key={feature}>
-                          <Check size={16} strokeWidth={1.75} aria-hidden="true" />
-                          <span>{feature}</span>
+                          <Check size={14} strokeWidth={1.05} aria-hidden="true" />
+                          <span>
+                            <FeatureLabel feature={feature} />
+                          </span>
                         </li>
                       ))}
                     </ul>
@@ -94,7 +114,7 @@ export function GatewayPlans({ detailed = false }: { detailed?: boolean }) {
                         className={details.cta}
                         href={plan.href}
                         external
-                        variant="primary"
+                        variant={plan.recommended ? "primary" : "secondary"}
                         label={plan.cta}
                         badge={<ArrowUpRight size={16} strokeWidth={2.25} />}
                       />

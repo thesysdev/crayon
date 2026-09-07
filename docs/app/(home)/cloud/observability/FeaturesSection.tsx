@@ -28,8 +28,8 @@ function FeatureCopy({
   );
 }
 
-/* Each pair is exported at least at 2× and rendered into the 720×400 slot, so
-   the UI copy stays crisp on retina screens without shipping oversized images. */
+/* High-density Figma exports, losslessly compressed as WebP. Intrinsic dimensions
+   reserve space while the responsive slots keep the UI's focal content visible. */
 function FeatureShot({ shot, alt }: { shot?: string; alt: string }) {
   /* PLACEHOLDER — a step whose art has not been made yet. Dashed rather than a
      filled panel so it reads as missing rather than as a design choice, and
@@ -43,11 +43,15 @@ function FeatureShot({ shot, alt }: { shot?: string; alt: string }) {
     );
   }
 
-  const focalClass = shot.startsWith("triage")
-    ? styles.featureImageTriage
-    : shot.startsWith("evals")
-      ? styles.featureImageEvals
-      : "";
+  const focalClass =
+    shot === "session-replay"
+      ? styles.featureImageSessionReplay
+      : shot.startsWith("triage")
+        ? styles.featureImageTriage
+        : shot.startsWith("evals")
+          ? styles.featureImageEvals
+          : "";
+  const imageHeight = shot === "session-replay" ? 1804 : 1600;
 
   return (
     <>
@@ -55,8 +59,8 @@ function FeatureShot({ shot, alt }: { shot?: string; alt: string }) {
         className={`${styles.featureImage} ${styles.featureImageLight} ${focalClass}`.trim()}
         src={`/openui-observability/${shot}-light.webp`}
         alt={alt}
-        width={720}
-        height={400}
+        width={2880}
+        height={imageHeight}
         quality={95}
         unoptimized
         sizes="(max-width: 767px) calc(100vw - 32px), 720px"
@@ -66,8 +70,8 @@ function FeatureShot({ shot, alt }: { shot?: string; alt: string }) {
         src={`/openui-observability/${shot}-dark.webp`}
         alt=""
         aria-hidden="true"
-        width={720}
-        height={400}
+        width={2880}
+        height={imageHeight}
         quality={95}
         unoptimized
         sizes="(max-width: 767px) calc(100vw - 32px), 720px"
@@ -99,26 +103,25 @@ const FEATURES: Feature[] = [
     shot: "session-replay",
     headline: (
       <>
-        See exactly
+        See every
         <br />
-        what users saw
+        user session
       </>
     ),
-    description:
-      "Replay conversations with the generated UI your users saw, not just the response text. Follow queries, actions, generated interface changes, and responses in order.",
+    description: "Replay the exact interface, responses, and interactions each user experienced.",
   },
   {
     title: "Triage",
     shot: "triage-figma",
     headline: (
       <>
-        Find the sessions
+        Find sessions
         <br />
         worth opening
       </>
     ),
     description:
-      "Review issues by severity, compare what users asked with what they saw, and check related occurrences before opening a session.",
+      "Surface failed journeys, unmet needs, and high-impact issues to understand where users struggle.",
   },
   {
     title: "Annotations",
@@ -130,15 +133,19 @@ const FEATURES: Feature[] = [
         into feedback
       </>
     ),
-    description:
-      "Annotate the exact response, set severity, and share it with the session attached. Your team can investigate without reproducing the issue.",
+    description: "Mark the broken response, add context, and share the session with your team.",
   },
   {
     title: "Evals",
     shot: "evals-figma",
-    headline: "Catch repeat issues before users do",
-    description:
-      "Turn production failures into repeatable evals, rerun them after changes, and catch regressions before they reach users.",
+    headline: (
+      <>
+        Prevent the same
+        <br />
+        issue twice
+      </>
+    ),
+    description: "Turn production failures into evals that catch regressions before release.",
   },
 ];
 

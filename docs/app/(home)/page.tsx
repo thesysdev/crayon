@@ -39,8 +39,7 @@ export default function HomePage() {
         <LogoStrip />
         {/* Tagline hidden for now; restore this line to bring it back. */}
       </div>
-      {/* The Lang band opens the content section, so the page gradient starts
-          here rather than at the feature grid below it. */}
+      {/* The open-source band opens the solid page field. */}
       <div className={styles.contentSection}>
         <div className={styles.contentShell}>
           <div className={styles.langBand}>

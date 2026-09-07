@@ -50,6 +50,7 @@ export const LANG_PRODUCT: ProductSectionProps = {
     "Make your AI agents stream live charts, forms, cards, tables, and dashboards faster, with fewer tokens.",
   secondaryCta: { label: "View docs", href: "/docs/openui-lang" },
   tone: "light",
+  stageAspectRatio: "1120 / 440",
   /* No cards. Interactive, Bring your UI library, Safe by default and Stream UI
      live all moved to the feature grid directly below this band, which states
      them once alongside Live data and Cross-platform. */
@@ -61,7 +62,7 @@ export const GATEWAY_PRODUCT: ProductSectionProps = {
   tag: "Gateway",
   headline: "Production reliability for OpenUI",
   description:
-    "An OpenAI-compatible API that validates and repairs model output against your component library as it streams.",
+    "Make agent responses more reliable in production. Gateway catches and repairs invalid output before users see it.",
   primaryCta: {
     label: "Get API key",
     href: "https://console.thesys.dev/keys",
@@ -71,31 +72,28 @@ export const GATEWAY_PRODUCT: ProductSectionProps = {
   tone: "dark",
   art: createElement(GatewayReliabilityDashboardIllustration, { inverted: true }),
   fullBleedArt: true,
-  stageAspectRatio: "2272 / 1064",
-  stageMobileAspectRatio: "4 / 3",
+  stageAspectRatio: "1120 / 440",
+  stageMobileAspectRatio: "4 / 2.4",
   cards: [
     {
       Icon: ArrowsLeftRight,
-      title: "OpenAI-compatible",
-      description: "Chat Completions and Responses endpoints work with your existing SDKs.",
+      title: "Keep your existing SDK",
+      description: "Chat Completions and Responses endpoints work with existing SDKs.",
     },
     {
       Icon: Wrench,
-      title: "Fix invalid output",
-      description:
-        "Invalid output is repaired in the streaming path, not through a retry your user waits for.",
+      title: "Repair before users see it",
+      description: "Fix invalid output as it streams, before it reaches users.",
     },
     {
       Icon: ArrowsClockwise,
-      title: "Provider fallbacks",
-      description:
-        "If a provider is unavailable, Gateway serves the same model through another provider.",
+      title: "Stay online through outages",
+      description: "Gateway switches providers if one fails, keeping the same model.",
     },
     {
       Icon: Key,
-      title: "Bring your keys",
-      description:
-        "Use your existing OpenAI, Anthropic, or Google Vertex credentials and commitments. Or use OpenUI-managed credits.",
+      title: "Use existing LLM spend",
+      description: "Use your existing model provider credentials and commitments.",
     },
   ],
 };
