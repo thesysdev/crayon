@@ -11,33 +11,33 @@ import styles from "./sections.module.css";
 const STACK_FEATURES: GridFeature[] = [
   {
     icon: "chart",
-    title: "Pay provider rates",
-    description: "Keep model spend predictable with zero Gateway markup on tokens.",
+    title: "Provider pricing",
+    description: "Tokens are billed at provider rates, with no Gateway markup.",
   },
   {
     icon: "cloud",
-    title: "Keep your SDK",
-    description: "Add Gateway without rebuilding your client.",
+    title: "SDK support",
+    description: "Chat Completions and Responses endpoints work with your existing SDKs.",
   },
   {
     icon: "key",
-    title: "Use existing LLM spend",
+    title: "Bring your own keys",
     description:
-      "Bring your OpenAI, Anthropic, or Google Vertex keys and keep your existing commitments.",
+      "Use your existing OpenAI, Anthropic, or Google Vertex credentials and commitments.",
   },
   {
     icon: "handshake",
-    title: "Keep your routing stack",
+    title: "Works with other gateways",
     description: "Run Gateway behind any OpenAI-compatible gateway, including Portkey.",
   },
   {
     icon: "database",
     title: "Keep your cache",
-    description: "Preserve your upstream cache behavior when you add Gateway.",
+    description: "Add Gateway without changing your upstream cache configuration.",
   },
   {
     icon: "signal",
-    title: "Route any model",
+    title: "Broad model support",
     description: (
       <>
         Use any model through one OpenAI-compatible API.{" "}

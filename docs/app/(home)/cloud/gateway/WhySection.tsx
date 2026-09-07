@@ -12,8 +12,8 @@ export function WhySection() {
           </h2>
         </div>
         <p className={styles.lead}>
-          Every failed generation still returns 200. Based on 1,285 production failures observed
-          over 15 days.
+          Failures are easy to miss because the request still succeeds. Based on 1,285 production
+          failures observed over 15 days.
         </p>
       </div>
 

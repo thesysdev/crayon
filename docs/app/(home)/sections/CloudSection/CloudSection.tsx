@@ -42,19 +42,21 @@ export function CloudSection() {
                 className={styles.observabilityEyebrow}
               />
               <h3 className={styles.observabilityTitle}>
-                Understand how users experience your agent
+                User analytics
+                <br />
+                for AI agents
               </h3>
               <BevelButton
                 className={styles.observabilityCta}
-                variant="dark"
+                variant="primary"
                 href="/cloud/observability"
                 label="Join waitlist"
                 badge={<ArrowRight size={16} weight="bold" />}
               />
             </div>
             <p className={styles.observabilityDescription}>
-              See what users saw, find issues and unmet needs, and turn failed responses into
-              feedback and evals.
+              See where users drop off, what they struggle with, and what they ask for. Know what to
+              fix and what to build next.
             </p>
           </div>
           <div

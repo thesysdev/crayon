@@ -43,13 +43,14 @@ function FeatureShot({ shot, alt }: { shot?: string; alt: string }) {
     );
   }
 
-  const focalClass = shot === "session-replay"
-    ? styles.featureImageSessionReplay
-    : shot.startsWith("triage")
-      ? styles.featureImageTriage
-      : shot.startsWith("evals")
-        ? styles.featureImageEvals
-        : "";
+  const focalClass =
+    shot === "session-replay"
+      ? styles.featureImageSessionReplay
+      : shot.startsWith("triage")
+        ? styles.featureImageTriage
+        : shot.startsWith("evals")
+          ? styles.featureImageEvals
+          : "";
   const imageHeight = shot === "session-replay" ? 1804 : 1600;
 
   return (
@@ -102,26 +103,25 @@ const FEATURES: Feature[] = [
     shot: "session-replay",
     headline: (
       <>
-        See exactly
+        See every
         <br />
-        what users saw
+        user session
       </>
     ),
-    description:
-      "Replay the exact interface and every interaction to find where the journey broke—without guessing what the user experienced.",
+    description: "Replay the exact interface, responses, and interactions each user experienced.",
   },
   {
     title: "Triage",
     shot: "triage-figma",
     headline: (
       <>
-        Find the sessions
+        Find sessions
         <br />
         worth opening
       </>
     ),
     description:
-      "Get to the sessions that need attention first. Keep severity, user intent, rendered output, and related failures together.",
+      "Surface failed journeys, unmet needs, and high-impact issues to understand where users struggle.",
   },
   {
     title: "Annotations",
@@ -133,15 +133,19 @@ const FEATURES: Feature[] = [
         into feedback
       </>
     ),
-    description:
-      "Turn a broken experience into an actionable handoff. Mark the exact response and share the session so anyone can investigate without reproducing it.",
+    description: "Mark the broken response, add context, and share the session with your team.",
   },
   {
     title: "Evals",
     shot: "evals-figma",
-    headline: "Catch repeat issues before users do",
-    description:
-      "Keep the same failure from reaching users twice. Convert production issues into repeatable evals and catch regressions before release.",
+    headline: (
+      <>
+        Prevent the same
+        <br />
+        issue twice
+      </>
+    ),
+    description: "Turn production failures into evals that catch regressions before release.",
   },
 ];
 

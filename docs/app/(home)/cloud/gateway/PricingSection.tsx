@@ -17,8 +17,8 @@ export function PricingSection() {
             </h2>
           </div>
           <p className={styles.lead}>
-            Start free, pay less per response as you scale, and never pay extra for corrections. LLM
-            tokens stay at provider rates.
+            Plans start free. Each response uses one API call plus LLM tokens at provider rates,
+            with corrections included.
           </p>
         </div>
         <div className={styles.diagram}>

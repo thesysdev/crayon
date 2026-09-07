@@ -22,18 +22,18 @@ import { WhySection } from "./WhySection";
 const TRUST_ITEMS: GridFeature[] = [
   {
     icon: "key",
-    title: "Send only what you need",
-    description:
-      "Keep generated responses in the browser with metadata-only capture. Edit or drop any event before it leaves.",
+    title: "Data controls",
+    description: "Keep responses in the browser and capture only the metadata you need.",
   },
   {
     icon: "shield",
     title: "Your data stays yours",
-    description: "Your OpenUI data is never used to train models. Deploy in your VPC or self-host.",
+    description:
+      "Your data stays private and is never used to train models. Deploy in your VPC or self-host.",
   },
   {
     icon: "database",
-    title: "Clear security review faster",
+    title: "Compliance",
     description: (
       <>
         Find GDPR, SOC 2, and ISO 27001 evidence in the{" "}

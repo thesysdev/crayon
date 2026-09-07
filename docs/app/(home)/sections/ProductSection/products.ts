@@ -62,7 +62,7 @@ export const GATEWAY_PRODUCT: ProductSectionProps = {
   tag: "Gateway",
   headline: "Production reliability for OpenUI",
   description:
-    "Keep invalid model output away from users without replacing your SDK. Gateway validates and repairs every response as it streams.",
+    "Make agent responses more reliable in production. Gateway catches and repairs invalid output before users see it.",
   primaryCta: {
     label: "Get API key",
     href: "https://console.thesys.dev/keys",

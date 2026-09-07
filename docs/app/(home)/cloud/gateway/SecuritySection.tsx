@@ -2,41 +2,11 @@ import { ExternalTextLink } from "../../components/ExternalTextLink/ExternalText
 import type { GridFeature } from "../../sections/FeatureGridSection/FeatureGridSection";
 import { EnterpriseSection } from "../EnterpriseSection";
 
-type StatusSummary = {
-  page?: {
-    status?: "UP" | "HASISSUES" | "UNDERMAINTENANCE";
-  };
-};
-
-async function getServiceStatus() {
-  try {
-    const response = await fetch("https://status.thesys.dev/summary.json", {
-      next: { revalidate: 300 },
-    });
-
-    if (!response.ok) return null;
-
-    const summary = (await response.json()) as StatusSummary;
-    return summary.page?.status ?? null;
-  } catch {
-    return null;
-  }
-}
-
-export async function SecuritySection() {
-  const serviceStatus = await getServiceStatus();
-  const statusCopy = serviceStatus
-    ? {
-        UP: "All systems operational right now.",
-        HASISSUES: "An active incident is being resolved.",
-        UNDERMAINTENANCE: "Scheduled maintenance is in progress.",
-      }[serviceStatus]
-    : "See current system status.";
-
+export function SecuritySection() {
   const features: GridFeature[] = [
     {
       icon: "shield",
-      title: "Private by default",
+      title: "Zero data retention",
       description: "Chat Completions requests use zero data retention by default.",
     },
     {
@@ -46,34 +16,36 @@ export async function SecuritySection() {
     },
     {
       icon: "shield",
-      title: "Faster security reviews",
+      title: "Compliance",
       description: (
         <>
           Find GDPR, SOC 2, and ISO 27001 evidence in the{" "}
-          <ExternalTextLink href="https://trust.thesys.dev">Trust centre</ExternalTextLink>
+          <ExternalTextLink href="https://trust.thesys.dev/?utm_source=openui&utm_medium=referral&utm_campaign=openui_to_thesys">
+            Trust centre
+          </ExternalTextLink>
           {"."}
         </>
       ),
     },
     {
       icon: "cloud",
-      title: "Stay online",
-      description: "Gateway reroutes the same model through another provider.",
+      title: "Provider fallbacks",
+      description: "Gateway switches providers if one fails, keeping the same model.",
     },
     {
       icon: "pulse",
       title: "Live service status",
       description: (
         <>
-          {statusCopy}{" "}
-          <ExternalTextLink href="https://status.thesys.dev">View status</ExternalTextLink>
+          View current and historical uptime on our{" "}
+          <ExternalTextLink href="https://status.thesys.dev/">service status page</ExternalTextLink>
           {"."}
         </>
       ),
     },
     {
       icon: "devices",
-      title: "Deploy your way",
+      title: "Private deployment",
       description: "Deploy in your VPC or self-host in your own environment.",
     },
   ];

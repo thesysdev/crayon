@@ -10,7 +10,7 @@ export const GATEWAY_PLANS = [
     overage: "—",
     note: "Core limits, your LLM key",
     features: [
-      "3K responses/month",
+      "3K API calls/month",
       "Bring your own LLM key",
       "Style customizations and popular LLM support",
       "Discord community support",
@@ -28,7 +28,8 @@ export const GATEWAY_PLANS = [
     note: "More volume and priority",
     features: [
       "Everything in Free",
-      "25K responses/month · $0.002 per call after",
+      "25K API calls/month",
+      "$0.002 per additional call",
       "Higher request priority and rate limits",
       "Email support",
     ],
@@ -45,7 +46,8 @@ export const GATEWAY_PLANS = [
     note: "Lower rates, SSO, priority support",
     features: [
       "Everything in Build",
-      "500K responses/month · $0.001 per call after",
+      "500K API calls/month",
+      "$0.001 per additional call",
       "Highest request priority and rate limits",
       "Priority support and solutions engineering",
       "SSO/SAML",
