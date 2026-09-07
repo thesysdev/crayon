@@ -10,7 +10,7 @@ export const GATEWAY_PLANS = [
     overage: "—",
     note: "Validate before users see it",
     features: [
-      "Check up to 3K responses every month",
+      "3K responses/month",
       "Repair invalid output before it reaches users",
       "Bring your own LLM key",
       "Use any supported model",
@@ -29,7 +29,7 @@ export const GATEWAY_PLANS = [
     note: "Repair + usage visibility",
     features: [
       "Everything in Free",
-      "Check 25K responses every month",
+      "25K responses/month",
       "Automatic repair included",
       "Provider fallbacks during outages",
       "Usage, cost, and correction reporting",
@@ -49,7 +49,7 @@ export const GATEWAY_PLANS = [
     note: "Lower rates, SSO, support",
     features: [
       "Everything in Build",
-      "Check 500K responses every month",
+      "500K responses/month",
       "Cut overage to $0.001 per call",
       "Highest request priority and rate limits",
       "Priority support and solutions engineering",

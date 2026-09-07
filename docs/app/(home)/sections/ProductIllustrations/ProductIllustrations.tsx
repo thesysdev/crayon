@@ -18,19 +18,19 @@ export function GatewayReliabilityDashboardIllustration({
     >
       <Image
         className={`${styles.reliabilityDashboardImage} ${styles.reliabilityDashboardImageLight}`}
-        src="/images/gateway/reliability-light@3x.png"
+        src="/images/gateway/reliability-light@4x.webp"
         alt={alt}
-        width={3408}
-        height={1596}
+        width={3360}
+        height={1320}
         unoptimized
       />
       <Image
         className={`${styles.reliabilityDashboardImage} ${styles.reliabilityDashboardImageDark}`}
-        src="/images/gateway/reliability-dark@3x.png"
+        src="/images/gateway/reliability-dark@4x.webp"
         alt=""
         aria-hidden="true"
-        width={3408}
-        height={1596}
+        width={3360}
+        height={1320}
         unoptimized
       />
     </div>

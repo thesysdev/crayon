@@ -12,7 +12,6 @@ import {
 } from "../sections/FeatureGridSection/FeatureGridSection";
 import { Footer } from "../sections/Footer/Footer";
 import { HeroSection } from "../sections/HeroSection/HeroSection";
-import { LogoStrip } from "../sections/LogoStrip/LogoStrip";
 import { ProductLabel } from "../sections/ProductSection/ProductSection";
 import styles from "./page.module.css";
 
@@ -176,10 +175,8 @@ export default function PricingPage() {
           <div className={layout.diagram}>
             <GatewayPlans detailed />
           </div>
-          <LogoStrip
-            variant="cloud"
-            title="Trusted by teams shipping OpenUI products in production."
-          />
+          {/* Restore the shared <LogoStrip variant="cloud" /> here after Rabi confirms
+              which Gateway customer logos are approved for public use. */}
           <div className={styles.billingDetails}>
             <FeatureGridSection
               features={BILLING_DETAILS}

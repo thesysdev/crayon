@@ -6,28 +6,36 @@
 
 .card {
   display: grid;
-  grid-template-rows: subgrid;
-  grid-row: span 3;
-  row-gap: 0;
+  grid-template-rows: auto 1fr auto;
+  min-height: 520px;
+  border-radius: 16px;
 }
 
 .detailed .card {
-  background: color-mix(in srgb, var(--openui-text-neutral-primary) 3%, var(--openui-foreground));
+  background: #f5f5f5;
 }
 
 .detailed .recommended {
-  background: color-mix(in srgb, var(--openui-text-neutral-primary) 6%, var(--openui-foreground));
+  background: #f5f5f5;
   box-shadow: none;
 }
 
+:global([data-theme="dark"]) .detailed .card,
+:global([data-theme="dark"]) .detailed .recommended {
+  background: var(--openui-background);
+}
+
 .detailed .header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
   gap: 4px;
-  min-height: 156px;
-  padding: 28px 24px 32px;
+  min-height: 0;
+  padding: 18px 20px 0;
   border-bottom: 0;
 }
 
 .header h3 {
+  grid-column: 1 / -1;
   margin: 0;
   font-size: 20px;
   font-weight: 500;
@@ -35,20 +43,22 @@
   letter-spacing: -0.02em;
 }
 
-.price {
-  color: var(--openui-text-neutral-secondary);
+.detailed .price {
+  align-self: end;
+  color: color-mix(in srgb, var(--openui-text-neutral-primary) 56%, transparent);
   font-size: 20px;
   font-weight: 400;
   line-height: 1.3;
   letter-spacing: -0.015em;
 }
 
-.cadence {
+.detailed .cadence {
   display: block;
-  margin-top: 2px;
-  color: var(--openui-text-neutral-secondary);
-  font-size: 13px;
-  line-height: 1.4;
+  align-self: end;
+  margin: 0 0 3px;
+  color: color-mix(in srgb, var(--openui-text-neutral-primary) 50%, transparent);
+  font-size: 14px;
+  line-height: 20px;
 }
 
 .description {
@@ -63,7 +73,7 @@
   flex-direction: column;
   gap: 12px;
   margin: 0;
-  padding: 8px 24px 32px;
+  padding: 28px 20px 20px;
   list-style: none;
   font-size: 15px;
   line-height: 1.45;
@@ -73,6 +83,16 @@
   display: flex;
   align-items: flex-start;
   gap: 8px;
+  color: color-mix(in srgb, var(--openui-text-neutral-primary) 80%, transparent);
+}
+
+.features .featureIntro {
+  color: color-mix(in srgb, var(--openui-text-neutral-primary) 50%, transparent);
+}
+
+.featureMetric {
+  color: var(--openui-text-neutral-primary);
+  font-weight: 500;
 }
 
 .features svg {
@@ -80,12 +100,13 @@
   width: 14px;
   height: 14px;
   margin-top: 4px;
-  color: var(--openui-text-neutral-secondary);
+  color: var(--openui-text-neutral-primary);
 }
 
 .action {
   min-width: 0;
-  padding: 0 24px 24px;
+  margin-top: auto;
+  padding: 0 20px 18px;
 }
 
 .cta {
@@ -103,6 +124,7 @@
     display: flex;
     flex-direction: column;
     grid-row: auto;
+    min-height: 500px;
   }
 
   .cadence[aria-hidden="true"] {

@@ -15,6 +15,19 @@ const formatPrice = (price: number) =>
     maximumFractionDigits: 0,
   }).format(price);
 
+function FeatureLabel({ feature }: { feature: string }) {
+  const usage = feature.match(/^(3K|25K|500K)(.*)$/);
+
+  if (!usage) return feature;
+
+  return (
+    <>
+      <strong className={details.featureMetric}>{usage[1]}</strong>
+      {usage[2]}
+    </>
+  );
+}
+
 /** Same plans, billing control, and card styling on both pricing surfaces. */
 export function GatewayPlans({ detailed = false }: { detailed?: boolean }) {
   const [annualBilling, setAnnualBilling] = useState(true);
@@ -73,9 +86,7 @@ export function GatewayPlans({ detailed = false }: { detailed?: boolean }) {
                   </span>
                   {price !== null && price > 0 ? (
                     <span className={detailed ? details.cadence : styles.pricingCaption}>
-                      {annualBilling
-                        ? `${formatPrice(price * 12)} billed annually`
-                        : "Billed monthly"}
+                      {annualBilling ? `${formatPrice(price * 12)} annually` : "Billed monthly"}
                     </span>
                   ) : detailed ? (
                     <span className={details.cadence} aria-hidden="true">
@@ -86,10 +97,15 @@ export function GatewayPlans({ detailed = false }: { detailed?: boolean }) {
                 {detailed ? (
                   <>
                     <ul className={details.features}>
-                      {plan.features.map((feature) => (
+                      <li className={details.featureIntro}>
+                        <span>{plan.name === "Free" ? "Includes" : plan.features[0]}</span>
+                      </li>
+                      {plan.features.slice(plan.name === "Free" ? 0 : 1).map((feature) => (
                         <li key={feature}>
-                          <Check size={16} strokeWidth={1.75} aria-hidden="true" />
-                          <span>{feature}</span>
+                          <Check size={14} strokeWidth={1.05} aria-hidden="true" />
+                          <span>
+                            <FeatureLabel feature={feature} />
+                          </span>
                         </li>
                       ))}
                     </ul>

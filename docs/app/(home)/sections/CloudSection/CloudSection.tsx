@@ -60,26 +60,26 @@ export function CloudSection() {
           <div
             className={styles.observabilityStage}
             role="img"
-            aria-label="OpenUI Observability showing user insights, a generated interface session, and review feedback"
+            aria-label="OpenUI Observability session replay showing the exact generated interface and user interactions"
           >
             <Image
               className={`${styles.observabilityImage} ${styles.observabilityImageLight}`}
-              src="/openui-illustrations/home-observability-light.webp"
+              src="/openui-observability/session-replay-light.webp"
               alt=""
               aria-hidden="true"
-              width={1166}
-              height={730}
+              width={2880}
+              height={1804}
               quality={95}
               unoptimized
               sizes="(max-width: 1023px) calc(100vw - 80px), 520px"
             />
             <Image
               className={`${styles.observabilityImage} ${styles.observabilityImageDark}`}
-              src="/openui-illustrations/home-observability-dark.webp"
+              src="/openui-observability/session-replay-dark.webp"
               alt=""
               aria-hidden="true"
-              width={1166}
-              height={730}
+              width={2880}
+              height={1804}
               quality={95}
               unoptimized
               sizes="(max-width: 1023px) calc(100vw - 80px), 520px"

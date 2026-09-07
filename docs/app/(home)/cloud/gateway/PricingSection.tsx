@@ -1,4 +1,3 @@
-import { LogoStrip } from "../../sections/LogoStrip/LogoStrip";
 import { GatewayPlans } from "./GatewayPlans";
 import styles from "./sections.module.css";
 
@@ -25,10 +24,8 @@ export function PricingSection() {
         <div className={styles.diagram}>
           <GatewayPlans detailed />
         </div>
-        <LogoStrip
-          variant="cloud"
-          title="Trusted by teams shipping OpenUI products in production."
-        />
+        {/* Restore the shared <LogoStrip variant="cloud" /> here after Rabi confirms
+            which Gateway customer logos are approved for public use. */}
       </section>
     </div>
   );

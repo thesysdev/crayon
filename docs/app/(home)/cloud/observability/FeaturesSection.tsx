@@ -28,8 +28,8 @@ function FeatureCopy({
   );
 }
 
-/* Each pair is exported at least at 2× and rendered into the 720×400 slot, so
-   the UI copy stays crisp on retina screens without shipping oversized images. */
+/* High-density Figma exports, losslessly compressed as WebP. Intrinsic dimensions
+   reserve space while the responsive slots keep the UI's focal content visible. */
 function FeatureShot({ shot, alt }: { shot?: string; alt: string }) {
   /* PLACEHOLDER — a step whose art has not been made yet. Dashed rather than a
      filled panel so it reads as missing rather than as a design choice, and
@@ -43,11 +43,14 @@ function FeatureShot({ shot, alt }: { shot?: string; alt: string }) {
     );
   }
 
-  const focalClass = shot.startsWith("triage")
-    ? styles.featureImageTriage
-    : shot.startsWith("evals")
-      ? styles.featureImageEvals
-      : "";
+  const focalClass = shot === "session-replay"
+    ? styles.featureImageSessionReplay
+    : shot.startsWith("triage")
+      ? styles.featureImageTriage
+      : shot.startsWith("evals")
+        ? styles.featureImageEvals
+        : "";
+  const imageHeight = shot === "session-replay" ? 1804 : 1600;
 
   return (
     <>
@@ -55,8 +58,8 @@ function FeatureShot({ shot, alt }: { shot?: string; alt: string }) {
         className={`${styles.featureImage} ${styles.featureImageLight} ${focalClass}`.trim()}
         src={`/openui-observability/${shot}-light.webp`}
         alt={alt}
-        width={720}
-        height={400}
+        width={2880}
+        height={imageHeight}
         quality={95}
         unoptimized
         sizes="(max-width: 767px) calc(100vw - 32px), 720px"
@@ -66,8 +69,8 @@ function FeatureShot({ shot, alt }: { shot?: string; alt: string }) {
         src={`/openui-observability/${shot}-dark.webp`}
         alt=""
         aria-hidden="true"
-        width={720}
-        height={400}
+        width={2880}
+        height={imageHeight}
         quality={95}
         unoptimized
         sizes="(max-width: 767px) calc(100vw - 32px), 720px"
