@@ -41,24 +41,48 @@ type ResponseTone = "valid" | "root" | "reference" | "type";
 
 const responseLanes = [
   {
-    path: "M -28 96 H 86 C 118 96 126 106 142 128 S 170 160 198 160 H 218 C 244 160 246 190 266 204 S 290 218 305 222",
+    path: "M 22 96 H 164 C 196 96 204 106 220 128 S 248 160 276 160 H 296 C 322 160 324 190 344 204 S 388 218 405 222",
   },
   {
-    path: "M -28 176 H 92 C 126 176 132 188 150 206 S 178 226 206 226 H 226 C 252 226 268 238 305 242",
+    path: "M 22 176 H 170 C 204 176 210 188 228 206 S 256 226 284 226 H 304 C 330 226 348 238 405 242",
   },
-  { path: "M -28 260 H 110 C 144 260 152 244 178 244 H 208 C 234 244 254 260 305 260" },
+  { path: "M 22 260 H 188 C 222 260 230 244 256 244 H 286 C 312 244 338 260 405 260" },
   {
-    path: "M -28 344 H 92 C 126 344 132 332 150 314 S 178 294 206 294 H 226 C 252 294 268 282 305 280",
+    path: "M 22 344 H 170 C 204 344 210 332 228 314 S 256 294 284 294 H 304 C 330 294 348 282 405 280",
   },
   {
-    path: "M -28 424 H 86 C 118 424 126 414 142 392 S 170 360 198 360 H 218 C 244 360 246 330 266 316 S 290 302 305 300",
+    path: "M 22 424 H 164 C 196 424 204 414 220 392 S 248 360 276 360 H 296 C 322 360 324 330 344 316 S 388 302 405 300",
+  },
+] as const;
+
+const openResponseLanes = [
+  {
+    path: "M 22 58 H 174 C 204 58 210 84 228 112 S 258 154 286 154 H 304 C 330 154 344 202 405 222",
+  },
+  {
+    path: "M 22 159 H 174 C 206 159 214 178 232 198 S 260 224 288 224 H 306 C 332 224 350 238 405 242",
+  },
+  { path: "M 22 260 H 190 C 224 260 230 244 256 244 H 286 C 312 244 338 260 405 260" },
+  {
+    path: "M 22 361 H 174 C 206 361 214 342 232 322 S 260 296 288 296 H 306 C 332 296 350 282 405 280",
+  },
+  {
+    path: "M 22 462 H 174 C 204 462 210 436 228 408 S 258 366 286 366 H 304 C 330 366 344 318 405 300",
   },
 ] as const;
 
 const validatedLanes = [
-  { path: "M 568 236 H 606 C 642 236 642 186 676 186 H 1120" },
-  { path: "M 568 260 H 624 C 648 260 654 260 676 260 H 1120" },
-  { path: "M 568 284 H 606 C 642 284 642 334 676 334 H 1120" },
+  { path: "M 656 236 H 690 C 724 236 724 186 758 186 H 1120" },
+  { path: "M 656 260 H 706 C 730 260 736 260 758 260 H 1120" },
+  { path: "M 656 284 H 690 C 724 284 724 334 758 334 H 1120" },
+] as const;
+
+const responseModels = [
+  { name: "OpenAI", provider: "openai", src: "/brand-icons/openai.svg" },
+  { name: "Anthropic", provider: "anthropic", src: "/brand-icons/anthropic.svg" },
+  { name: "Gemini", provider: "gemini", src: "/brand-icons/gemini.svg" },
+  { name: "Meta", provider: "meta", src: "/brand-icons/meta.svg" },
+  { name: "xAI", provider: "xai", src: "/brand-icons/xai.svg" },
 ] as const;
 
 const mobileResponseLanes = [
@@ -104,19 +128,29 @@ const slotValues = {
   delivered: ["143", "144", "145", "146", "147", "148"],
 };
 
-export function GatewayReliabilityIllustration() {
+function GatewayReliabilityFlow({ openCanvas = false }: { openCanvas?: boolean }) {
   return (
     <div
-      className={styles.responseFlowHero}
+      className={`${styles.responseFlowHero} ${openCanvas ? styles.responseFlowHeroOpen : ""}`.trim()}
       role="img"
       aria-label="Model output streams fifteen complete responses through OpenUI Gateway. Gateway checks every response, fixes four kinds of output errors, and delivers the same fifteen valid responses to a rendered analytics interface."
     >
-      <ResponsePaths />
+      <ResponsePaths openCanvas={openCanvas} />
       <ResponsePaths mobile />
 
+      <div className={styles.modelSources} aria-hidden="true">
+        {responseModels.map((model) => (
+          <div className={styles.modelSource} data-provider={model.provider} key={model.name}>
+            <span className={styles.modelSourceIcon}>
+              <Image src={model.src} alt="" width={14} height={14} />
+            </span>
+            <span>{model.name}</span>
+          </div>
+        ))}
+      </div>
+
       <div className={styles.modelOutputLabel} aria-hidden="true">
-        <span>MODEL OUTPUT</span>
-        <small>Each marker is one response</small>
+        <span>Each marker is one response</span>
       </div>
 
       <div className={styles.responseGatewayNode} aria-hidden="true">
@@ -156,8 +190,27 @@ export function GatewayReliabilityIllustration() {
   );
 }
 
-function ResponsePaths({ mobile = false }: { mobile?: boolean }) {
-  const incomingLanes = mobile ? mobileResponseLanes : responseLanes;
+export function GatewayReliabilityIllustration() {
+  return <GatewayReliabilityFlow />;
+}
+
+/** Open-stage alternative retained separately so the framed composition remains reusable. */
+export function GatewayReliabilityOpenIllustration() {
+  return <GatewayReliabilityFlow openCanvas />;
+}
+
+function ResponsePaths({
+  mobile = false,
+  openCanvas = false,
+}: {
+  mobile?: boolean;
+  openCanvas?: boolean;
+}) {
+  const incomingLanes = mobile
+    ? mobileResponseLanes
+    : openCanvas
+      ? openResponseLanes
+      : responseLanes;
   const outgoingLanes = mobile ? mobileValidatedLanes : validatedLanes;
 
   return (

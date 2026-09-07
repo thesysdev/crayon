@@ -6,9 +6,15 @@ import styles from "./page.module.css";
    key format all come from
    CloudObservabilityOptions rather than from the brief, which named the package
    two different ways. */
-const OBSERVABILITY_EXAMPLE = `import * as Observability from "@openuidev/observability-cloud";
+const OBSERVABILITY_EXAMPLE = `// src/main.tsx
+import { createRoot } from "react-dom/client";
+import { App } from "./App";
+import * as Observability from "@openuidev/observability-cloud";
 
-Observability.init({ apiKey: "pk-th-…" });`;
+Observability.init({ apiKey: "pk-th-…" });
+
+const root = document.getElementById("root");
+createRoot(root!).render(<App />);`;
 
 const STEPS: CloudIntegrationStep[] = [
   {
@@ -19,8 +25,7 @@ const STEPS: CloudIntegrationStep[] = [
   },
   {
     title: "Initialize the SDK",
-    description:
-      "Add it once in your root layout to collect OpenUI render events. No tracking code needed in your components.",
+    description: "Add it once at your app entry point. No tracking code needed in your components.",
   },
 ];
 
@@ -33,7 +38,8 @@ export function IntegrateSection() {
         description="Keep your agent framework and backend. The SDK captures events OpenUI already emits as it renders."
         steps={STEPS}
         code={OBSERVABILITY_EXAMPLE}
-        highlightLines={[0, 2]}
+        highlightLines={[3, 5]}
+        dimUnchanged
         codeLabel="OpenUI Observability client configuration"
         titleSize="medium"
       />

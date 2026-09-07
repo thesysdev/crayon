@@ -105,7 +105,7 @@ const FEATURES: Feature[] = [
       </>
     ),
     description:
-      "Replay conversations with the generated UI your users saw, not just the response text. Follow queries, actions, generated interface changes, and responses in order.",
+      "Replay the exact interface and every interaction to find where the journey broke—without guessing what the user experienced.",
   },
   {
     title: "Triage",
@@ -118,7 +118,7 @@ const FEATURES: Feature[] = [
       </>
     ),
     description:
-      "Review issues by severity, compare what users asked with what they saw, and check related occurrences before opening a session.",
+      "Get to the sessions that need attention first. Keep severity, user intent, rendered output, and related failures together.",
   },
   {
     title: "Annotations",
@@ -131,14 +131,14 @@ const FEATURES: Feature[] = [
       </>
     ),
     description:
-      "Annotate the exact response, set severity, and share it with the session attached. Your team can investigate without reproducing the issue.",
+      "Turn a broken experience into an actionable handoff. Mark the exact response and share the session so anyone can investigate without reproducing it.",
   },
   {
     title: "Evals",
     shot: "evals-figma",
     headline: "Catch repeat issues before users do",
     description:
-      "Turn production failures into repeatable evals, rerun them after changes, and catch regressions before they reach users.",
+      "Keep the same failure from reaching users twice. Convert production issues into repeatable evals and catch regressions before release.",
   },
 ];
 

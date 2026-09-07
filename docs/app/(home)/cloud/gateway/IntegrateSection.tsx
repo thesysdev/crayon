@@ -10,7 +10,7 @@ const STEPS: CloudIntegrationStep[] = [
   {
     title: "Update your base URL and model",
     description:
-      "Use the Gateway endpoint as your base URL and choose any model string from models.dev.",
+      "Use the Gateway endpoint as your base URL and choose any provider/model identifier.",
   },
   {
     title: "Enable Gateway in your prompt",

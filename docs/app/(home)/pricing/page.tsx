@@ -12,6 +12,7 @@ import {
 } from "../sections/FeatureGridSection/FeatureGridSection";
 import { Footer } from "../sections/Footer/Footer";
 import { HeroSection } from "../sections/HeroSection/HeroSection";
+import { LogoStrip } from "../sections/LogoStrip/LogoStrip";
 import { ProductLabel } from "../sections/ProductSection/ProductSection";
 import styles from "./page.module.css";
 
@@ -25,20 +26,19 @@ export const metadata: Metadata = {
 const BILLING_DETAILS: GridFeature[] = [
   {
     icon: "chart",
-    title: "No markup on LLMs",
+    title: "Pay only provider rates",
     description:
-      "Tokens are billed separately from API calls at provider list prices. Bring your own OpenAI, Anthropic, or Google keys if you prefer.",
+      "Keep model spend predictable with zero token markup, or bring your existing provider keys.",
   },
   {
     icon: "shield",
-    title: "Repair is included",
-    description:
-      "Validation and correction calls are part of your Gateway plan and are not billed separately.",
+    title: "Never pay extra for repair",
+    description: "Every validation and correction call is already included in your Gateway plan.",
   },
   {
     icon: "database",
-    title: "Zero data retention available",
-    description: "Zero data retention is available on paid models when you need it.",
+    title: "Keep requests private",
+    description: "Chat Completions requests use zero data retention by default.",
   },
 ];
 
@@ -166,8 +166,8 @@ export default function PricingPage() {
             </div>
             <div className={styles.supporting}>
               <p className={layout.lead}>
-                Validate and repair model output before it reaches users, with provider fallbacks,
-                usage dashboards, and one OpenAI-compatible endpoint.
+                Ship Generative UI your users can trust. Gateway repairs invalid output, keeps
+                requests moving through provider outages, and shows where usage and spend go.
               </p>
               <p className={styles.priceNote}>From $0 per month</p>
             </div>
@@ -176,6 +176,10 @@ export default function PricingPage() {
           <div className={layout.diagram}>
             <GatewayPlans detailed />
           </div>
+          <LogoStrip
+            variant="cloud"
+            title="Trusted by teams shipping OpenUI products in production."
+          />
           <div className={styles.billingDetails}>
             <FeatureGridSection
               features={BILLING_DETAILS}
@@ -189,8 +193,7 @@ export default function PricingPage() {
           </div>
           <p className={styles.freeModelNote}>
             API calls are included in each plan. LLM tokens are billed separately at provider rates.
-            Annual billing saves up to 20%. Free models have zero LLM cost and may use data for
-            training.
+            Annual billing saves up to 20%. Free models have zero LLM cost.
           </p>
         </section>
 
@@ -209,7 +212,7 @@ export default function PricingPage() {
                 <BevelButton
                   href="/cloud/observability"
                   variant="primary"
-                  label="Join the waitlist"
+                  label="Join waitlist"
                   badge={<ArrowRight size={16} />}
                 />
               </div>

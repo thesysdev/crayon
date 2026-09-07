@@ -61,7 +61,7 @@ export const GATEWAY_PRODUCT: ProductSectionProps = {
   tag: "Gateway",
   headline: "Production reliability for OpenUI",
   description:
-    "An OpenAI-compatible API that validates and repairs model output against your component library as it streams.",
+    "Keep invalid model output away from users without replacing your SDK. Gateway validates and repairs every response as it streams.",
   primaryCta: {
     label: "Get API key",
     href: "https://console.thesys.dev/keys",
@@ -76,24 +76,23 @@ export const GATEWAY_PRODUCT: ProductSectionProps = {
   cards: [
     {
       Icon: ArrowsLeftRight,
-      title: "OpenAI-compatible",
-      description: "Chat Completions and Responses endpoints work with your existing SDKs.",
+      title: "Keep your existing SDK",
+      description: "Chat Completions and Responses work through the same OpenAI-compatible API.",
     },
     {
       Icon: Wrench,
-      title: "Fix invalid output",
+      title: "Repair before users see it",
       description:
         "Invalid output is repaired in the streaming path, not through a retry your user waits for.",
     },
     {
       Icon: ArrowsClockwise,
-      title: "Provider fallbacks",
-      description:
-        "If a provider is unavailable, Gateway serves the same model through another provider.",
+      title: "Stay online through outages",
+      description: "Gateway keeps the same model serving through another provider.",
     },
     {
       Icon: Key,
-      title: "Bring your keys",
+      title: "Use existing LLM spend",
       description:
         "Use your existing OpenAI, Anthropic, or Google Vertex credentials and commitments. Or use OpenUI-managed credits.",
     },

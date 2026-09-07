@@ -7,7 +7,7 @@ import { GATEWAY_PLANS } from "./gateway-plans";
 import details from "./GatewayPlans.module.css";
 import styles from "./sections.module.css";
 
-const STRIP = ["Free models available", "Zero data retention available"];
+const STRIP = ["Free models", "Zero data retention"];
 const formatPrice = (price: number) =>
   new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -55,15 +55,20 @@ export function GatewayPlans({ detailed = false }: { detailed?: boolean }) {
             const price = annualBilling ? plan.annualMonthly : plan.monthly;
             return (
               <article
-                className={`${styles.planCard} ${detailed ? details.card : ""}`}
+                className={`${styles.planCard} ${detailed ? details.card : ""} ${
+                  plan.recommended ? details.recommended : ""
+                }`}
                 key={plan.name}
                 aria-labelledby={`${id}-${plan.name}`}
               >
                 <div className={`${styles.planHeader} ${detailed ? details.header : ""}`}>
-                  <h3 id={`${id}-${plan.name}`} className={styles.planName}>
+                  <h3
+                    id={`${id}-${plan.name}`}
+                    className={`${styles.planName} ${detailed ? details.name : ""}`}
+                  >
                     {plan.name}
                   </h3>
-                  <span className={styles.planPrice}>
+                  <span className={`${styles.planPrice} ${detailed ? details.price : ""}`}>
                     {price === null ? "Custom" : price === 0 ? "$0" : `${formatPrice(price)}/mo`}
                   </span>
                   {price !== null && price > 0 ? (
@@ -77,7 +82,6 @@ export function GatewayPlans({ detailed = false }: { detailed?: boolean }) {
                       &nbsp;
                     </span>
                   ) : null}
-                  {detailed && <p className={details.description}>{plan.description}</p>}
                 </div>
                 {detailed ? (
                   <>
@@ -94,7 +98,7 @@ export function GatewayPlans({ detailed = false }: { detailed?: boolean }) {
                         className={details.cta}
                         href={plan.href}
                         external
-                        variant="primary"
+                        variant={plan.recommended ? "primary" : "secondary"}
                         label={plan.cta}
                         badge={<ArrowUpRight size={16} strokeWidth={2.25} />}
                       />

@@ -22,22 +22,21 @@ import { WhySection } from "./WhySection";
 const TRUST_ITEMS: GridFeature[] = [
   {
     icon: "key",
-    title: "Control what you send",
+    title: "Send only what you need",
     description:
-      "Choose metadata-only capture to keep generated responses in the browser. Edit or drop events before they’re sent.",
+      "Keep generated responses in the browser with metadata-only capture. Edit or drop any event before it leaves.",
   },
   {
     icon: "shield",
-    title: "No training on your data",
-    description:
-      "Your data is not used to train models. Self-hosting and VPC deployments are available on Scale.",
+    title: "Your data stays yours",
+    description: "Your OpenUI data is never used to train models. Deploy in your VPC or self-host.",
   },
   {
     icon: "database",
-    title: "Compliance",
+    title: "Clear security review faster",
     description: (
       <>
-        GDPR, SOC 2, and ISO 27001 details are available in the{" "}
+        Find GDPR, SOC 2, and ISO 27001 evidence in the{" "}
         <ExternalTextLink href="https://trust.thesys.dev">Trust centre</ExternalTextLink>.
       </>
     ),

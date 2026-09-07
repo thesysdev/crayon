@@ -11,39 +11,38 @@ import styles from "./sections.module.css";
 const STACK_FEATURES: GridFeature[] = [
   {
     icon: "chart",
-    title: "No token markup",
-    description: "Tokens are billed at model providers’ standard rates.",
+    title: "Pay provider rates",
+    description: "Keep model spend predictable with zero Gateway markup on tokens.",
   },
   {
     icon: "cloud",
-    title: "OpenAI-compatible",
-    description: "Chat Completions and Responses endpoints work with your existing SDKs.",
+    title: "Keep your SDK",
+    description: "Add Gateway without rebuilding your client.",
   },
   {
     icon: "key",
-    title: "Bring your own API keys",
+    title: "Use existing LLM spend",
     description:
-      "Use your existing OpenAI, Anthropic, or Google Vertex credentials and commitments.",
+      "Bring your OpenAI, Anthropic, or Google Vertex keys and keep your existing commitments.",
   },
   {
     icon: "handshake",
-    title: "Works with other gateways",
-    description: "Run Gateway behind Portkey or any other OpenAI-compatible gateway.",
+    title: "Keep your routing stack",
+    description: "Run Gateway behind any OpenAI-compatible gateway, including Portkey.",
   },
   {
     icon: "database",
-    title: "Keep your cache setup",
-    description: "Your existing upstream cache configuration continues to work.",
+    title: "Keep your cache",
+    description: "Preserve your upstream cache behavior when you add Gateway.",
   },
   {
     icon: "signal",
-    title: "Broad model support",
+    title: "Route any model",
     description: (
       <>
-        Use models listed on{" "}
-        <ExternalTextLink href="https://models.dev">models.dev</ExternalTextLink>, with more
-        available through{" "}
-        <ExternalTextLink href="https://openrouter.ai">OpenRouter</ExternalTextLink>.
+        Use any model through one OpenAI-compatible API.{" "}
+        <ExternalTextLink href="/docs/openui-cloud/models-and-byok">View routing</ExternalTextLink>
+        {"."}
       </>
     ),
   },

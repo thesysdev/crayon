@@ -1,3 +1,4 @@
+import { LogoStrip } from "../../sections/LogoStrip/LogoStrip";
 import { GatewayPlans } from "./GatewayPlans";
 import styles from "./sections.module.css";
 
@@ -17,13 +18,17 @@ export function PricingSection() {
             </h2>
           </div>
           <p className={styles.lead}>
-            Each plan includes monthly API calls and all correction calls. Every response uses an
-            API call plus LLM tokens. Tokens are billed separately at model provider rates.
+            Start free, pay less per response as you scale, and never pay extra for corrections. LLM
+            tokens stay at provider rates.
           </p>
         </div>
         <div className={styles.diagram}>
-          <GatewayPlans />
+          <GatewayPlans detailed />
         </div>
+        <LogoStrip
+          variant="cloud"
+          title="Trusted by teams shipping OpenUI products in production."
+        />
       </section>
     </div>
   );

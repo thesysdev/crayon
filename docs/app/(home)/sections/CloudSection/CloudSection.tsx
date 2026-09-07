@@ -48,7 +48,7 @@ export function CloudSection() {
                 className={styles.observabilityCta}
                 variant="dark"
                 href="/cloud/observability"
-                label="Join the waitlist"
+                label="Join waitlist"
                 badge={<ArrowRight size={16} weight="bold" />}
               />
             </div>

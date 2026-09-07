@@ -2,8 +2,10 @@
 
 import { useTheme } from "next-themes";
 import { Highlight, themes } from "prism-react-renderer";
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 import styles from "./CloudCodeBlock.module.css";
+
+const subscribeToHydration = () => () => {};
 
 /* `highlightLines` are 0-based indices into the trimmed source. It defaults to
    the single line Cloud's integration section has always marked, so existing
@@ -11,19 +13,23 @@ import styles from "./CloudCodeBlock.module.css";
 export function CloudCodeBlock({
   code,
   highlightLines = [4],
+  dimUnchanged = false,
 }: {
   code: string;
   highlightLines?: number[];
+  dimUnchanged?: boolean;
 }) {
   const { resolvedTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => setMounted(true), []);
+  const mounted = useSyncExternalStore(
+    subscribeToHydration,
+    () => true,
+    () => false,
+  );
 
   const isDark = mounted && resolvedTheme === "dark";
 
   return (
-    <div className={styles.panel}>
+    <div className={`${styles.panel} ${dimUnchanged ? styles.dimUnchanged : ""}`.trim()}>
       <Highlight
         theme={isDark ? themes.vsDark : themes.github}
         code={code.trim()}

@@ -62,6 +62,7 @@ export function CloudIntegrationSetup({
   codeLabel,
   action,
   highlightLines,
+  dimUnchanged = false,
   titleSize = "default",
 }: {
   title: ReactNode;
@@ -72,6 +73,7 @@ export function CloudIntegrationSetup({
   codeLabel: string;
   action?: { label: string; href: string };
   highlightLines?: number[];
+  dimUnchanged?: boolean;
   titleSize?: "default" | "medium";
 }) {
   return (
@@ -89,12 +91,7 @@ export function CloudIntegrationSetup({
               <span className={styles.stepMarker}>{index + 1}</span>
               <div className={styles.stepContent}>
                 {step.href ? (
-                  <a
-                    className={styles.stepLink}
-                    href={step.href}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
+                  <a className={styles.stepLink} href={step.href} target="_blank" rel="noreferrer">
                     {step.title}
                     <ArrowUpRight size={16} strokeWidth={2} aria-hidden="true" />
                   </a>
@@ -118,7 +115,7 @@ export function CloudIntegrationSetup({
         id={`${titleId ?? "cloud-integration"}-code`}
         aria-label={codeLabel}
       >
-        <CloudCodeBlock code={code} highlightLines={highlightLines} />
+        <CloudCodeBlock code={code} highlightLines={highlightLines} dimUnchanged={dimUnchanged} />
       </div>
     </div>
   );
