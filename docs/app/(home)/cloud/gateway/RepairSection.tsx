@@ -41,7 +41,7 @@ const STACK_FEATURES: GridFeature[] = [
     description: (
       <>
         Use any model through one OpenAI-compatible API.{" "}
-        <ExternalTextLink href="/docs/openui-cloud/models-and-byok">View routing</ExternalTextLink>
+        <ExternalTextLink href="/docs/gateway/models">View routing</ExternalTextLink>
         {"."}
       </>
     ),
