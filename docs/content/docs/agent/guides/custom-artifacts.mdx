@@ -1,0 +1,82 @@
+---
+title: Custom artifacts
+description: "Add a custom artifact type: produce the data, write a renderer, and register it."
+---
+
+When your agent produces a first-class output such as a code snippet or a custom app, you add an artifact type: a tool returns the data, a renderer turns it into UI, and the `artifactRenderers` prop registers it. The same renderer draws the artifact whether it just streamed in or was loaded from storage.
+
+This guide builds one custom artifact end to end: a code snippet the agent generates. For the concept, see [Artifacts](/docs/agent/core-concepts/artifacts). For every renderer field and edge case, see [defineArtifactRenderer](/docs/agent/reference/define-artifact-renderer).
+
+## 1. Produce the artifact
+
+An artifact reaches the UI as the result of a tool call. Your agent calls a `create_code_artifact` tool, and its arguments are the artifact's data.
+
+```ts
+interface CodeArtifact {
+  language: string;
+  title: string;
+  code: string;
+}
+```
+
+## 2. Write the renderer
+
+A renderer is keyed to an artifact `type`, not to a tool. Describe it with `defineArtifactRenderer`: a `parser` that reads the raw envelope into typed props, a `preview` for the inline chat card, and an `actual` view for the side panel or page.
+
+The `parser` must never throw. It runs on every stream update, including before the result exists, so read `response` as the source of truth, fall back to a tolerant parse of `args` for an early preview, and return `null` until there is enough to draw.
+
+```tsx
+import { defineArtifactRenderer, CodeBlock } from "@openuidev/react-ui";
+
+const codeArtifactRenderer = defineArtifactRenderer({
+  type: "code_artifact",
+  toolName: "create_code_artifact",
+
+  parser: ({ args, response }, { isStreaming }) => {
+    const data = (response as CodeArtifact | null) ?? tryParse(args);
+    if (!data?.title) return null;
+
+    return {
+      props: data,
+      meta: isStreaming
+        ? null
+        : { id: `code:${data.title}`, version: 1, heading: data.title },
+    };
+  },
+
+  preview: (props, controls) => (
+    <button type="button" onClick={controls.open} data-active={controls.isActive}>
+      <span>{props.title}</span>
+      <span>
+        {props.language}
+        {controls.isStreaming ? " · building…" : ""}
+      </span>
+    </button>
+  ),
+
+  actual: (props) => (
+    <CodeBlock language={props.language || "text"} codeString={props.code} />
+  ),
+});
+
+function tryParse(args: unknown): CodeArtifact | null {
+  if (typeof args !== "string") return null;
+  try {
+    return JSON.parse(args) as CodeArtifact;
+  } catch {
+    return null;
+  }
+}
+```
+
+## 3. Register it
+
+Pass the renderer to `<AgentInterface>` through the `artifactRenderers` prop:
+
+```tsx
+import { AgentInterface } from "@openuidev/react-ui";
+
+<AgentInterface llm={llm} artifactRenderers={[codeArtifactRenderer]} />;
+```
+
+The interface indexes each renderer by `toolName` for streamed tool calls and by `type` for stored artifacts. If registrations duplicate a `toolName` or `type`, the first one wins.

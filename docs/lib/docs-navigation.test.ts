@@ -41,6 +41,7 @@ describe("global docs navigation", () => {
         url: "/docs/openui-lang/comparison",
         children: undefined,
       },
+      { type: "page", name: "Coding Agent Setup", url: "/docs/mcp", children: undefined },
       { type: "separator", name: "Build", url: undefined, children: undefined },
       {
         type: "page",
@@ -52,12 +53,6 @@ describe("global docs navigation", () => {
         type: "page",
         name: "Build Agents",
         url: "/docs/build-agents",
-        children: undefined,
-      },
-      {
-        type: "page",
-        name: "Agent Interface",
-        url: "/docs/agent/getting-started/introduction",
         children: undefined,
       },
       { type: "separator", name: "Production", url: undefined, children: undefined },
@@ -81,10 +76,7 @@ describe("global docs navigation", () => {
   it("treats nested roots as navigation sections rather than products", () => {
     assert.equal(getNestedRootForEntryUrl("/docs/openui-lang"), "openui-lang");
     assert.equal(getNestedRootForEntryUrl("/docs/build-agents"), "build-agents");
-    assert.equal(
-      getNestedRootForEntryUrl("/docs/agent/getting-started/introduction"),
-      "agent-interface",
-    );
+    assert.equal(getNestedRootForEntryUrl("/docs/agent/getting-started/introduction"), undefined);
     assert.equal(getNestedRootForEntryUrl("/docs/gateway"), "gateway");
     assert.equal(getNestedRootForEntryUrl("/docs/observability"), "observability");
     assert.equal(getNestedRootForEntryUrl("/docs/api-reference"), "api-reference");
@@ -102,7 +94,7 @@ describe("global docs navigation", () => {
     });
     assert.deepEqual(getDefaultSidebarMode("/docs/agent/core-concepts/tools"), {
       kind: "nested",
-      root: "agent-interface",
+      root: "build-agents",
     });
     assert.deepEqual(getDefaultSidebarMode("/docs/build-agents/assistant-ui"), {
       kind: "nested",
@@ -110,7 +102,7 @@ describe("global docs navigation", () => {
     });
     assert.deepEqual(
       getDefaultSidebarMode("/docs/agent/agent-runtimes/vercel-ai-sdk"),
-      { kind: "nested", root: "agent-interface" },
+      { kind: "nested", root: "build-agents" },
     );
     assert.deepEqual(getDefaultSidebarMode("/docs/api-reference/cli"), {
       kind: "nested",
@@ -164,7 +156,7 @@ describe("global docs navigation", () => {
     assert.equal(getGlobalActiveItemUrl("/docs/openui-lang/renderer"), "/docs/openui-lang");
     assert.equal(
       getGlobalActiveItemUrl("/docs/agent/core-concepts/tools"),
-      "/docs/agent/getting-started/introduction",
+      "/docs/build-agents",
     );
     assert.equal(getGlobalActiveItemUrl("/docs/build-agents/copilotkit"), "/docs/build-agents");
     assert.equal(getGlobalActiveItemUrl("/docs/gateway/api/responses"), "/docs/gateway");
@@ -195,14 +187,35 @@ describe("nested docs navigation", () => {
       },
       {
         type: "folder",
+        name: "Build Agents",
+        root: true,
+        $ref: { folder: "build-agents" },
+        children: [
+          { type: "page", name: "Overview", url: "/docs/build-agents" },
+          { type: "page", name: "Backend Setup", url: "/docs/build-agents/backend-setup" },
+          { type: "separator", name: "Chat UIs" },
+          { type: "page", name: "assistant-ui", url: "/docs/build-agents/assistant-ui" },
+        ],
+      },
+      {
+        type: "folder",
         name: "Agent Interface",
         $ref: { folder: "agent" },
         children: [
+          { type: "separator", name: "Getting Started" },
           {
             type: "page",
             name: "Introduction",
             url: "/docs/agent/getting-started/introduction",
           },
+          { type: "separator", name: "Core Concepts" },
+          { type: "page", name: "Artifacts", url: "/docs/agent/core-concepts/artifacts" },
+          { type: "separator", name: "Guides" },
+          { type: "page", name: "Custom artifacts", url: "/docs/agent/guides/custom-artifacts" },
+          { type: "separator", name: "Reference" },
+          { type: "page", name: "Props", url: "/docs/agent/reference/agentinterface-props" },
+          { type: "separator", name: "Examples" },
+          { type: "page", name: "Vercel AI SDK", url: "/docs/agent/agent-runtimes/vercel-ai-sdk" },
         ],
       },
     ],
@@ -220,12 +233,70 @@ describe("nested docs navigation", () => {
     });
   });
 
+  it("combines Agent Interface and existing chat integrations under Build Agents", () => {
+    assert.deepEqual(getNestedDocsTree(fullTree, "build-agents"), {
+      type: "root",
+      $id: "docs:nested:build-agents",
+      name: "Build Agents",
+      children: [
+        { type: "page", name: "Overview", url: "/docs/build-agents" },
+        { type: "page", name: "Backend Setup", url: "/docs/build-agents/backend-setup" },
+        {
+          type: "folder",
+          name: "Agent Interface",
+          defaultOpen: true,
+          children: [
+            {
+              type: "page",
+              name: "Introduction",
+              url: "/docs/agent/getting-started/introduction",
+            },
+            { type: "separator", name: "Core Concepts" },
+            { type: "page", name: "Artifacts", url: "/docs/agent/core-concepts/artifacts" },
+            { type: "separator", name: "Guides" },
+            {
+              type: "page",
+              name: "Custom artifacts",
+              url: "/docs/agent/guides/custom-artifacts",
+            },
+            { type: "separator", name: "Reference" },
+            {
+              type: "page",
+              name: "Props",
+              url: "/docs/agent/reference/agentinterface-props",
+            },
+          ],
+        },
+        {
+          type: "folder",
+          name: "Existing Chat UIs",
+          defaultOpen: true,
+          children: [
+            { type: "page", name: "assistant-ui", url: "/docs/build-agents/assistant-ui" },
+          ],
+        },
+        {
+          type: "folder",
+          name: "Agent Runtime Examples",
+          defaultOpen: true,
+          children: [
+            {
+              type: "page",
+              name: "Vercel AI SDK",
+              url: "/docs/agent/agent-runtimes/vercel-ai-sdk",
+            },
+          ],
+        },
+      ],
+    });
+  });
+
   it("maps any page within a nested section to its root", () => {
     assert.equal(getNestedRootForPathname("/docs/openui-lang/renderer"), "openui-lang");
     assert.equal(getNestedRootForPathname("/docs/api-reference"), "api-reference");
     assert.equal(
       getNestedRootForPathname("/docs/agent/customize/sidebar"),
-      "agent-interface",
+      "build-agents",
     );
     assert.equal(getNestedRootForPathname("/docs/build-agents/custom-chat-ui"), "build-agents");
     assert.equal(getNestedRootForPathname("/docs"), undefined);

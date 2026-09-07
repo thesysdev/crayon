@@ -155,21 +155,6 @@ const config = {
         permanent: true,
       },
       {
-        source: "/docs/agent/core-concepts/artifacts",
-        destination: "/docs/agent/reference/define-artifact-renderer",
-        permanent: true,
-      },
-      {
-        source: "/docs/agent/guides/custom-artifacts",
-        destination: "/docs/agent/reference/define-artifact-renderer",
-        permanent: true,
-      },
-      {
-        source: "/docs/agent/guides/open-ended-html",
-        destination: "/docs/agent/reference/define-artifact-renderer",
-        permanent: true,
-      },
-      {
         source: "/docs/agent/agent-interface",
         destination: "/docs/agent/getting-started/introduction",
         permanent: true,

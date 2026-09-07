@@ -1,12 +1,6 @@
 import type * as PageTree from "fumadocs-core/page-tree";
 
-export type NestedDocsRoot =
-  | "openui-lang"
-  | "build-agents"
-  | "agent-interface"
-  | "gateway"
-  | "observability"
-  | "api-reference";
+export type NestedDocsRoot = "openui-lang" | "build-agents" | "gateway" | "observability" | "api-reference";
 
 export type SidebarMode =
   | { kind: "global" }
@@ -33,12 +27,6 @@ export const NESTED_DOCS_SECTIONS: Record<NestedDocsRoot, NestedSection> = {
     entryUrl: "/docs/openui-lang",
     pathPrefix: "/docs/openui-lang",
     treeFolder: "openui-lang",
-  },
-  "agent-interface": {
-    title: "Agent Interface",
-    entryUrl: "/docs/agent/getting-started/introduction",
-    pathPrefix: "/docs/agent",
-    treeFolder: "agent",
   },
   "build-agents": {
     title: "Build Agents",
@@ -71,6 +59,7 @@ const promotedGlobalUrls = new Set([
   "/docs/getting-started",
   "/docs/architecture",
   "/docs/openui-lang/comparison",
+  "/docs/mcp",
 ]);
 
 export const GLOBAL_DOCS_TREE: PageTree.Root = {
@@ -91,6 +80,7 @@ export const GLOBAL_DOCS_TREE: PageTree.Root = {
       name: "OpenUI vs others",
       url: "/docs/openui-lang/comparison",
     },
+    { type: "page", name: "Coding Agent Setup", url: "/docs/mcp" },
     { type: "separator", name: "Build" },
     {
       type: "page",
@@ -101,11 +91,6 @@ export const GLOBAL_DOCS_TREE: PageTree.Root = {
       type: "page",
       name: NESTED_DOCS_SECTIONS["build-agents"].title,
       url: NESTED_DOCS_SECTIONS["build-agents"].entryUrl,
-    },
-    {
-      type: "page",
-      name: NESTED_DOCS_SECTIONS["agent-interface"].title,
-      url: NESTED_DOCS_SECTIONS["agent-interface"].entryUrl,
     },
     { type: "separator", name: "Production" },
     {
@@ -138,6 +123,8 @@ export function getNestedRootForEntryUrl(url: string): NestedDocsRoot | undefine
 }
 
 export function getNestedRootForPathname(pathname: string): NestedDocsRoot | undefined {
+  if (isPathWithin(pathname, "/docs/agent")) return "build-agents";
+
   return (Object.entries(NESTED_DOCS_SECTIONS) as [NestedDocsRoot, NestedSection][])
     .sort(([, a], [, b]) => b.pathPrefix.length - a.pathPrefix.length)
     .find(([, section]) => isPathWithin(pathname, section.pathPrefix))?.[0];
@@ -181,6 +168,48 @@ function findNestedFolder(nodes: PageTree.Node[], treeFolder: string): PageTree.
 export function getNestedDocsTree(tree: PageTree.Root, root: NestedDocsRoot): PageTree.Root {
   const folder = findNestedFolder(tree.children, NESTED_DOCS_SECTIONS[root].treeFolder);
   if (!folder) throw new Error(`Nested docs root "${root}" was not found in the page tree.`);
+
+  if (root === "build-agents") {
+    const agentFolder = findNestedFolder(tree.children, "agent");
+    if (!agentFolder) throw new Error('Nested docs folder "agent" was not found in the page tree.');
+
+    const chatUIsIndex = folder.children.findIndex(
+      (node) => node.type === "separator" && node.name === "Chat UIs",
+    );
+    const examplesIndex = agentFolder.children.findIndex(
+      (node) => node.type === "separator" && node.name === "Examples",
+    );
+    if (chatUIsIndex < 0 || examplesIndex < 0) {
+      throw new Error("Build Agents navigation groups were not found in the page tree.");
+    }
+
+    return {
+      type: "root",
+      $id: "docs:nested:build-agents",
+      name: "Build Agents",
+      children: [
+        ...folder.children.slice(0, chatUIsIndex),
+        {
+          type: "folder",
+          name: "Agent Interface",
+          defaultOpen: true,
+          children: agentFolder.children.slice(1, examplesIndex),
+        },
+        {
+          type: "folder",
+          name: "Existing Chat UIs",
+          defaultOpen: true,
+          children: folder.children.slice(chatUIsIndex + 1),
+        },
+        {
+          type: "folder",
+          name: "Agent Runtime Examples",
+          defaultOpen: true,
+          children: agentFolder.children.slice(examplesIndex + 1),
+        },
+      ],
+    };
+  }
 
   return {
     type: "root",
