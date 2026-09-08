@@ -27,6 +27,10 @@ implementation in `src/agent/agent.ts` instead.
 If you selected LangGraph, the Vercel AI SDK, or Vercel Eve, the generated app includes a `get_weather`
 example. Ask “What’s the weather in Berlin?” to exercise its native tool loop.
 
+Eve's `eve start` / `eve:start` script builds a Docker sandbox image. Install
+Docker Desktop (or OrbStack / Colima) before running that command. `pnpm dev`
+does not require Docker.
+
 ## Framework deployments
 
 The Vercel AI SDK scaffold runs its backend inside the Next.js API route, so the
