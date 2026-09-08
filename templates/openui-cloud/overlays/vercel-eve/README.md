@@ -13,9 +13,6 @@ the app will not sit idle until the first message.
 ## Prerequisites
 
 - Node.js 24
-- Docker (Docker Desktop, OrbStack, Colima, or a compatible daemon) if you run
-  `eve start`. That command builds a sandbox image before it listens. `pnpm dev`
-  is the usual local command and does not require Docker.
 
 ## Getting Started
 
@@ -45,7 +42,7 @@ directly:
 ```bash
 pnpm eve:dev
 pnpm eve:build
-pnpm eve:start   # requires Docker
+pnpm eve:start
 ```
 
 ## SDK packages

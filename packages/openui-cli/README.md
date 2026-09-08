@@ -131,7 +131,7 @@ The default implementation is part of each base template. For LangGraph or Verce
 
 In Cloud framework variants, the selected framework owns the agent orchestration and application tool loop. OpenUI Cloud is attached as the model provider and conversation store. Reports, presentations, web search, image search, and configured MCP tools remain provider-executed Cloud tools on the default, LangGraph, and Vercel AI SDK Cloud routes, while application tools such as `get_weather` execute inside the selected framework. The Eve Cloud overlay uses Cloud as the Chat Completions provider and does not attach those provider-executed Cloud tools. Choosing a Cloud framework does not configure a user-owned model provider; choose `openui-self-hosted` for that.
 
-`eve start` (the `eve:start` script) builds a Docker sandbox image. Docker Desktop, OrbStack, or Colima must be running first. `dev` via `withEve()` does not require Docker. An unknown `OPENUI_MODEL` fails when the Eve agent loads.
+An unknown `OPENUI_MODEL` fails when the Eve agent loads.
 
 The Cloud graph needs `THESYS_API_KEY`; the self-hosted graph needs the selected provider credentials such as `OPENAI_API_KEY`.
 

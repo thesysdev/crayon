@@ -43,11 +43,6 @@ and maps each Cloud `threadId` to an in-memory Eve session cursor; it does not
 use `/api/chat`. Browser `localStorage` holds only the selected model on
 non-Eve scaffolds.
 
-Eve's `eve start` / `eve:start` script builds a Docker sandbox image. Install
-Docker Desktop (or OrbStack / Colima) before running that command. `pnpm dev`
-does not require Docker. An unknown `OPENUI_MODEL` fails when the Eve agent
-loads, with the bad id in the error.
-
 The Vercel AI SDK route does not create a second store. Add a LangGraph
 checkpointer separately only if the graph needs durable state, interrupts, or
 resumable runs.

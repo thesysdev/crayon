@@ -9,9 +9,6 @@ agent. Eve keeps its native session and resumable-streaming protocol. OpenUI's
 - Node.js 24
 - pnpm, npm, or Bun
 - An API key for [OpenUI Cloud](https://console.thesys.dev/keys)
-- Docker (Docker Desktop, OrbStack, Colima, or a compatible daemon) if you run
-  `pnpm eve:start`. Eve builds a sandbox image before that command listens.
-  `pnpm dev` does not require Docker.
 
 ## Run locally
 
@@ -77,7 +74,7 @@ The normal development command is `pnpm dev`. The package also exposes Eve direc
 ```bash
 pnpm eve:dev
 pnpm eve:build
-pnpm eve:start   # requires Docker
+pnpm eve:start
 ```
 
 For a production-style Next.js run:
