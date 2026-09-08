@@ -1,8 +1,7 @@
 import { generateSystemPrompt } from "@openuidev/lang-core";
 import { defineDynamic, defineInstructions } from "eve/instructions";
 // Eve's runtime module-map loads this file as native ESM, so relative
-// imports need an explicit .ts extension (extensionless only works under
-// Eve's compile-time rolldown bundler). JSON imports also need the
+// imports need an explicit .ts extension. JSON imports also need the
 // `with { type: "json" }` attribute.
 import librarySpec from "../../src/generated/spec.json" with { type: "json" };
 import { promptOptions } from "../../src/lib/prompt-options.ts";
