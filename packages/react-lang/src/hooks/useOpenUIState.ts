@@ -127,7 +127,7 @@ export function useOpenUIState(
       : null;
     if (!bundle.program) return null;
     try {
-      return sp.set(bundle.program);
+      return sp.set(bundle.program, !isStreaming);
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
       parseExceptionRef.current = {
@@ -138,7 +138,7 @@ export function useOpenUIState(
       };
       return null;
     }
-  }, [sp, bundle.program, bundle.error]);
+  }, [sp, bundle.program, bundle.error, isStreaming]);
 
   // ─── Store (holds everything: $bindings + form fields) ───
   const store = useMemo<Store>(() => createStore(), []);

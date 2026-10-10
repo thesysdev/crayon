@@ -42,12 +42,24 @@ describe("store defaults while streaming", () => {
   it("keeps a value the user set mid-stream", () => {
     const store = createStore();
     streamInto(store, (text) => {
-      if (text.includes("$checked = []\n") && !store.get("$checked")?.length) {
+      if (text.includes("$checked = []\n") && !(store.get("$checked") as string[] | null)?.length) {
         store.set("$checked", ["2 limes"]);
       }
     });
     expect(store.get("$checked")).toEqual(["2 limes"]);
     expect(store.get("$ingredients")).toHaveLength(11);
+  });
+
+  it.each(["", "\n"])("declares a $name that ends the program (trailing %j)", (end) => {
+    const src = `root = Col([Input(email)])\nemail = $email${end}`;
+    const sp = createStreamingParser(schema, "Col");
+    const store = createStore();
+    for (let i = 5; i < src.length; i += 5)
+      store.initialize(sp.set(src.slice(0, i)).stateDeclarations, {});
+    store.initialize(sp.set(src, true).stateDeclarations, {});
+    const batch = createParser(schema, "Col").parse(src).stateDeclarations;
+    expect(batch).toEqual({ $email: null });
+    expect(store.getSnapshot()).toEqual(batch);
   });
 
   it("a value restored with pristine: true (@Reset) can still be replaced", () => {
