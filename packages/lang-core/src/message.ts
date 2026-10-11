@@ -3,6 +3,11 @@
 
 const PREFIX = "]]>openui:";
 const MARKER = /^\]\]>openui:([a-z]+)(?:\?(.*))?$/;
+// A sanitizer retry writes its content line right after the failed attempt, with no newline
+// before it. Start it on its own line so the retry wins, like the old lastIndexOf reader.
+const RETRY = /(?<=[^\n])(?=\]\]>openui:content(?:\?|\r?\n|$))/g;
+// While streaming, hold back a mid-line `]]>openui:con` that may become a retry line.
+const RETRY_CUT = /(?<=[^\n])\]\]>[a-z:]*$/;
 
 export interface ParsedMessage {
   /** Body of the last `content` section, or the whole text when there is none. */
@@ -60,7 +65,10 @@ function readAttributes(query = ""): Record<string, string> {
 
 /** Splits a stored message into its content, context, attributes and end flag. */
 export function parseMessage(raw: string, { streaming }: ParseMessageOptions = {}): ParsedMessage {
-  const lines = raw.split("\n");
+  let text = raw.replace(RETRY, "\n");
+  const cut = streaming ? RETRY_CUT.exec(text) : null;
+  if (cut && `${PREFIX}content`.startsWith(cut[0])) text = text.slice(0, cut.index);
+  const lines = text.split("\n");
   const last = lines[lines.length - 1];
   const held = streaming && last !== "" && (last.startsWith(PREFIX) || PREFIX.startsWith(last));
   if (held) lines.pop();

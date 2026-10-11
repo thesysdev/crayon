@@ -263,7 +263,11 @@ describe("parseResponseBundle", () => {
 
   it("reads the sanitizer retry when its content line follows the failed attempt mid-line", () => {
     const header = "]]>openui:content?thesys=true";
-    const response = `${header}\nroot = Text("Broken${header}\n${body}\n]]>openui:end`;
-    expect(parseResponseBundle(response, false)).toMatchObject({ program: body, complete: true });
+    const response = `${header}\nroot = Text("Broken${header}\n${program}${scriptsSection([script])}]]>openui:end`;
+    expect(parseResponseBundle(response, false)).toMatchObject({
+      program: body,
+      scripts: new Set(["sales_total"]),
+      complete: true,
+    });
   });
 });

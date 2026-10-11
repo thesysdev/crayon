@@ -38,4 +38,27 @@ describe("message protocol", () => {
     expect(parseMessage(raw, { streaming: true }).content).toBe("root = A()");
     expect(parseMessage(raw).content).toBe("root = A()\n]]>open");
   });
+
+  it("reads the sanitizer retry when its content line follows the failed attempt mid-line", () => {
+    const header = "]]>openui:content?thesys=true";
+    const raw = `${header}\nroot = A("Broken${header}\nroot = B()\n]]>openui:end`;
+    expect(parseMessage(raw)).toMatchObject({
+      content: "root = B()",
+      attributes: { thesys: "true" },
+      end: true,
+    });
+  });
+
+  it("holds back a retry content line cut mid-stream", () => {
+    const raw = ']]>openui:content\nroot = A("Broken]]>openui:content?thesys=true\nroot = B()';
+    const header = raw.indexOf("]]>", 3);
+    // Chunks end inside the retry line: `]]>`, `]]>openui:cont`, then the whole line.
+    for (const end of [header + 3, header + 14, raw.indexOf("\nroot = B")]) {
+      expect(parseMessage(raw.slice(0, end), { streaming: true }).content).toBe('root = A("Broken');
+    }
+    expect(parseMessage(raw, { streaming: true })).toMatchObject({
+      content: "root = B()",
+      attributes: { thesys: "true" },
+    });
+  });
 });
