@@ -87,7 +87,7 @@ export default function OuiOnePage() {
       <div className={gatewayStyles.heroArtwork}>
         <iframe
           src="/oui-1/hero.html"
-          title="OUI-1 writes OpenUI Lang for a health dashboard, and the code rearranges into the rendered interface"
+          title="The same question answered two ways: a wall of streamed text without OpenUI, and a rendered health dashboard with it"
           className={styles.ouiArtFrame}
           scrolling="no"
         />
