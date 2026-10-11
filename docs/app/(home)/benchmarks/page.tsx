@@ -8,6 +8,9 @@ import {
 } from "@/lib/benchmark-agent-data";
 import {
   BENCHMARK_VERSION,
+  blankScreens,
+  COST_MODELS,
+  costPerPass,
   LINKS,
   MODEL_BOARD_SIZE,
   RUNS_PER_FORMAT,
@@ -21,9 +24,16 @@ const { outputPerScreen } = tokens;
 const fewerTokensThan = (json: number) => Math.round((1 - outputPerScreen.openui / json) * 100);
 const TOKEN_ANSWER = `Use a compact UI language instead of JSON. Across ${RUNS_PER_FORMAT.toLocaleString("en-US")} runs per format on the same 46 interfaces, OpenUI Lang averaged ${outputPerScreen.openui.toLocaleString("en-US")} output tokens per screen, versus ${outputPerScreen.jsonRender.toLocaleString("en-US")} for json-render and ${outputPerScreen.a2ui.toLocaleString("en-US")} for A2UI, both JSON formats. That is ${fewerTokensThan(outputPerScreen.jsonRender)}% and ${fewerTokensThan(outputPerScreen.a2ui)}% fewer tokens, which lowers cost and shortens streaming time.`;
 
+const costRatios = COST_MODELS.flatMap((model) =>
+  (["a2ui", "jsonRender"] as const).map(
+    (format) => costPerPass[model]![format] / costPerPass[model]!.openui,
+  ),
+);
+const INTRO = `We generated the same 46 interfaces with 6 models in 3 generative UI formats: OpenUI, A2UI and json-render. OpenUI had the fewest blank screens (${blankScreens.openui} in ${RUNS_PER_FORMAT.toLocaleString("en-US")} runs), used about half the tokens, and cost ${Math.min(...costRatios).toFixed(1)} to ${Math.max(...costRatios).toFixed(1)}× less on every priced model.`;
+
 export const metadata: Metadata = {
-  title: "Generative UI Benchmark: JSON vs OpenUI Lang token usage",
-  description: `We generated the same 46 interfaces with 6 models and 3 UI formats. OpenUI produced the fewest blank screens, used the fewest tokens, and cost the least on every priced model.`,
+  title: { absolute: "Generative UI benchmark: OpenUI vs A2UI vs json-render | OpenUI" },
+  description: INTRO,
   alternates: {
     canonical: "/benchmarks",
     types: {
@@ -37,13 +47,13 @@ export const metadata: Metadata = {
     type: "article",
     url: "/benchmarks",
     title: "Generative UI Benchmark | OpenUI",
-    description: `OpenUI results across ${MODEL_BOARD_SIZE} models, plus a six-model comparison across OpenUI, A2UI and json-render.`,
+    description: INTRO,
     modifiedTime: MODEL_BOARD_UPDATED_ISO,
   },
   twitter: {
     card: "summary_large_image",
     title: "Generative UI Benchmark | OpenUI",
-    description: `OpenUI results across ${MODEL_BOARD_SIZE} models, plus a six-model comparison across OpenUI, A2UI and json-render.`,
+    description: INTRO,
   },
 };
 
@@ -126,7 +136,7 @@ export default function BenchmarksPage() {
           __html: JSON.stringify(structuredData).replaceAll("<", "\\u003c"),
         }}
       />
-      <BenchmarksContent />
+      <BenchmarksContent intro={INTRO} />
       <Footer />
     </>
   );
