@@ -10,6 +10,7 @@ import homeStyles from "../page.module.css";
 import { FeatureGridSection } from "../sections/FeatureGridSection/FeatureGridSection";
 import { Footer } from "../sections/Footer/Footer";
 import { HeroSection } from "../sections/HeroSection/HeroSection";
+import { OuiFlare } from "./OuiFlare";
 
 export const metadata: Metadata = {
   title: "OUI-1 | An open model built for Generative UI",
@@ -28,22 +29,15 @@ const model = "https://huggingface.co/thesysdev/OUI-1";
 const research = "/blog/oui-1";
 export default function OuiOnePage() {
   const artwork = (
-    <div className={`${gatewayStyles.heroArtSpace} ${styles.stage}`}>
+    <div className={`${gatewayStyles.heroArtSpace} ${styles.ouiArtStage}`}>
       <FadedDither band="light" className={gatewayStyles.heroShader} />
-      <div
-        className={`${gatewayStyles.heroArtwork} ${styles.modelStage}`}
-        role="img"
-        aria-label="OUI-1"
-      >
-        <span className={styles.modelMark} aria-hidden="true">
-          <span className={styles.modelGhost}>OUI-1</span>
-          <span className={styles.modelText}>OUI-1</span>
-        </span>
+      <div className={gatewayStyles.heroArtwork}>
+        <OuiFlare />
       </div>
     </div>
   );
   return (
-    <div className={`${homeStyles.page} ${styles.pageFocus}`}>
+    <div className={`${homeStyles.page} ${styles.pageFocus} ${styles.ouiPage}`}>
       <div className={homeStyles.heroShell}>
         <HeroSection
           align="left"
@@ -54,16 +48,15 @@ export default function OuiOnePage() {
           flushInnerInlinePadding
           title={
             <span className={gatewayStyles.titleBlock}>
-              <span className={gatewayStyles.eyebrow}>
-                OpenUI <span className={gatewayStyles.cloudTag}>OUI-1</span>
-              </span>
+              <span className={gatewayStyles.eyebrow}>OpenUI OUI-1</span>
               <span className={gatewayStyles.title}>An open model built for Generative UI</span>
             </span>
           }
           subtitle={
-            <span className={gatewayStyles.subtitle}>
-              Turn requests into interfaces built from your components. OUI-1 writes OpenUI Lang,
-              ready for OpenUI to render as it arrives.
+            <span className={`${gatewayStyles.subtitle} ${styles.heroSubtitle}`}>
+              Generate interfaces from your own components.{" "}
+              <span className={styles.noWrap}>OUI-1</span> writes{" "}
+              <span className={styles.noWrap}>OpenUI Lang,</span> ready to render as it streams.
             </span>
           }
           commandSlot={
@@ -144,6 +137,7 @@ export default function OuiOnePage() {
           </div>
         </div>
         <CloudCtaSection
+          className={`${styles.closingCta} ${styles.ouiClosing}`}
           title="Build your next interface with OUI-1."
           primary={{ label: "Get the model", href: model, external: true }}
           secondary={{ label: "Read the research", href: research }}

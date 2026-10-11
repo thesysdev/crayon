@@ -1,12 +1,13 @@
-import { ArrowRight, ArrowUpRight } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import type { Metadata } from "next";
-import Link from "next/link";
 import { CloudCtaSection } from "../cloud/CloudCtaSection";
 import gatewayStyles from "../cloud/gateway/page.module.css";
 import { BevelButton } from "../components/Button/BevelButton";
+import { FadedDither } from "../components/FadedDither/FadedDither";
 import styles from "../components/ProductLanding.module.css";
 import { SectionHeader } from "../components/SectionHeader/SectionHeader";
 import homeStyles from "../page.module.css";
+import { AutofixSection } from "../sections/AutofixSection/AutofixSection";
 import { FeatureGridSection } from "../sections/FeatureGridSection/FeatureGridSection";
 import { Footer } from "../sections/Footer/Footer";
 import { HeroSection } from "../sections/HeroSection/HeroSection";
@@ -27,12 +28,15 @@ export const metadata: Metadata = {
 const github = "https://github.com/thesysdev/appless";
 export default function AppLessPage() {
   const demo = (
-    <div className={`${gatewayStyles.heroArtSpace} ${styles.stage}`}>
-      <AppLessDemo />
+    <div className={`${gatewayStyles.heroArtSpace} ${styles.appDemoStage}`}>
+      <FadedDither band="light" className={gatewayStyles.heroShader} />
+      <div className={gatewayStyles.heroArtwork}>
+        <AppLessDemo />
+      </div>
     </div>
   );
   return (
-    <div className={`${homeStyles.page} ${styles.pageFocus}`}>
+    <div className={`${homeStyles.page} ${styles.pageFocus} ${styles.applessPage}`}>
       <div className={homeStyles.heroShell}>
         <HeroSection
           align="left"
@@ -48,13 +52,13 @@ export default function AppLessPage() {
             </span>
           }
           subtitle={
-            <span className={gatewayStyles.subtitle}>
+            <span className={`${gatewayStyles.subtitle} ${styles.heroSubtitle}`}>
               Ask for what you need. AppLess creates a native interface for the task, then builds
               the next screen when you tap.
             </span>
           }
           commandSlot={
-            <div className={gatewayStyles.ctaGroup}>
+            <div className={`${gatewayStyles.ctaGroup} ${styles.appHeroActions}`}>
               <BevelButton
                 href={github}
                 external
@@ -70,10 +74,6 @@ export default function AppLessPage() {
           desktopPreviewSlot={demo}
           mobilePreviewSlot={demo}
         />
-        <p className={styles.disclosure}>
-          A replay of the presentation demo, rendered from OpenUI Lang. Orders and payments are
-          simulated.
-        </p>
       </div>
       <main>
         <div className={styles.featuresBand}>
@@ -111,25 +111,36 @@ export default function AppLessPage() {
             />
           </div>
         </div>
-        <section className={styles.powered} aria-labelledby="appless-powered">
-          <h2 id="appless-powered">Powered by OUI-1 and OpenUI</h2>
-          <div>
-            <p>
-              OUI-1 generates the interface in OpenUI Lang. OpenUI renders it into native components
-              as it streams.
-            </p>
-            <div className={styles.textLinks}>
-              <Link href="/oui-1">
-                Meet OUI-1 <ArrowRight size={16} />
-              </Link>
-              <Link href="/docs/openui-lang">
-                Explore OpenUI Lang <ArrowRight size={16} />
-              </Link>
-            </div>
-          </div>
-        </section>
+        <div className={styles.poweredBanner}>
+          <AutofixSection
+            actionOnRight
+            content={{
+              title: <>Powered by OUI-1 and OpenUI</>,
+              description: (
+                <>
+                  OUI-1 generates the interface in OpenUI Lang. OpenUI renders it into native
+                  components as it streams.
+                </>
+              ),
+              action: { label: "Meet OUI-1", href: "/oui-1" },
+            }}
+          />
+        </div>
         <CloudCtaSection
-          title="Make AppLess your own."
+          className={styles.closingCta}
+          title="A glimpse of what comes next"
+          description={
+            <>
+              <p>
+                AppLess explores a future where software takes shape around your intent. It’s an
+                open-source experiment you can fork, extend, and connect to real services.
+              </p>
+              <p>
+                Today, bookings, purchases, and payments are simulated. Optional search tools can
+                ground screen content in real information.
+              </p>
+            </>
+          }
           primary={{ label: "Explore GitHub", href: github, external: true }}
           secondary={{
             label: "Read the setup guide",

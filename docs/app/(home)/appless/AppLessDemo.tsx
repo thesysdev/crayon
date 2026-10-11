@@ -1,7 +1,22 @@
 "use client";
 
 import { createParser, type ElementNode } from "@openuidev/lang-core";
-import { BatteryFull, Check, Code2, Pause, Play, RotateCcw, Smartphone, Wifi } from "lucide-react";
+import {
+  Check,
+  ChevronRight,
+  Clock3,
+  CreditCard,
+  Flame,
+  Home,
+  MessageCircle,
+  Pause,
+  Pizza,
+  Play,
+  RotateCcw,
+  Utensils,
+  Wallet,
+  type LucideIcon,
+} from "lucide-react";
 import Image from "next/image";
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import styles from "./AppLessDemo.module.css";
@@ -17,6 +32,10 @@ const signatures: Record<string, string[]> = {
   Toggle: ["title", "on", "icon", "subtitle"],
   KVList: ["rows", "header"],
   ImageBlock: ["src", "caption"],
+  FoodCategory: ["title", "image"],
+  ProductDetails: ["title", "description", "price", "rating", "eta"],
+  ProductItem: ["title", "subtitle", "image", "price"],
+  DeliveryMap: ["address", "eta"],
   Chips: ["labels"],
   Button: ["label", "action", "variant"],
   Buttons: ["children", "direction"],
@@ -32,16 +51,20 @@ const parser = createParser({
 const nodes = (v: unknown): ElementNode[] =>
   Array.isArray(v) ? v.filter((n): n is ElementNode => !!n && n.type === "element") : [];
 const str = (v: unknown) => (typeof v === "string" || typeof v === "number" ? String(v) : "");
-const emoji: Record<string, string> = {
-  pizza: "🍕",
-  utensils: "🍽️",
-  flame: "🔥",
-  home: "🏠",
-  clock: "🕒",
-  "message-circle": "💬",
-  "credit-card": "💳",
-  wallet: "👛",
+const icons: Record<string, LucideIcon> = {
+  pizza: Pizza,
+  utensils: Utensils,
+  flame: Flame,
+  home: Home,
+  clock: Clock3,
+  "message-circle": MessageCircle,
+  "credit-card": CreditCard,
+  wallet: Wallet,
 };
+function LeadingIcon({ name }: { name: string }) {
+  const Icon = icons[name];
+  return Icon ? <Icon size={16} strokeWidth={1.8} /> : null;
+}
 
 function DemoNode({
   node,
@@ -72,31 +95,131 @@ function DemoNode({
       return (
         <>
           {heading}
-          <div className={styles.list}>{children(p.items)}</div>
+          <div className={`${styles.list} ${p.header === "CATEGORIES" ? styles.categories : ""}`}>
+            {children(p.items)}
+          </div>
         </>
       );
     case "ListItem": {
       const body = (
         <>
-          <span className={styles.emoji} aria-hidden="true">
-            {emoji[str(p.leading)] ?? ""}
+          <span
+            className={str(p.leading).startsWith("/") ? styles.restaurantPhoto : styles.leading}
+            aria-hidden="true"
+          >
+            {str(p.leading).startsWith("/") ? (
+              <Image src={str(p.leading)} alt="" width={80} height={80} />
+            ) : (
+              <LeadingIcon name={str(p.leading)} />
+            )}
           </span>
           <span className={styles.rowCopy}>
             <b>{str(p.title)}</b>
             {p.subtitle ? <small>{str(p.subtitle)}</small> : null}
           </span>
-          {p.trailing ? <span className={styles.trailing}>{str(p.trailing)}</span> : null}
+          {p.trailing ? (
+            <span className={styles.trailing}>
+              {p.trailing === "Selected" ? (
+                <Check size={15} aria-label="Selected" className={styles.selectedCheck} />
+              ) : (
+                str(p.trailing)
+              )}
+            </span>
+          ) : null}
         </>
       );
       return node.statementId === "luigi" ? (
         <button className={styles.row} onClick={() => advance(1)}>
           {body}
-          <span aria-hidden="true">›</span>
+          <ChevronRight size={15} aria-hidden="true" />
         </button>
       ) : (
         <div className={styles.row}>{body}</div>
       );
     }
+    case "FoodCategory":
+      return (
+        <div className={styles.categoryPhoto}>
+          <Image src={str(p.image)} alt={str(p.title)} width={160} height={140} />
+          <b>{str(p.title)}</b>
+        </div>
+      );
+    case "ProductDetails":
+      return (
+        <div className={styles.productDetails}>
+          <div className={styles.productTitle}>
+            <h3>{str(p.title)}</h3>
+            <strong>{str(p.price)}</strong>
+          </div>
+          <p>{str(p.description)}</p>
+          <div className={styles.productMeta}>
+            <span>★ {str(p.rating)}</span>
+            <span>
+              <Clock3 size={12} /> {str(p.eta)}
+            </span>
+          </div>
+        </div>
+      );
+    case "ProductItem":
+      return (
+        <div className={styles.productItem}>
+          <Image src={str(p.image)} alt={str(p.title)} width={240} height={180} />
+          <div>
+            <b>{str(p.title)}</b>
+            <small>{str(p.subtitle)}</small>
+            <span className={styles.cartPrice}>
+              <strong>{str(p.price)}</strong>
+              <small>Qty 1</small>
+            </span>
+          </div>
+        </div>
+      );
+    case "DeliveryMap":
+      return (
+        <div className={styles.deliveryMap}>
+          <svg
+            viewBox="0 0 300 150"
+            role="img"
+            aria-label={`Illustrative delivery map to ${str(p.address)}`}
+          >
+            <rect width="300" height="150" fill="#e9e8e2" />
+            <path d="M0 0H46L15 150H0Z" fill="#bfdbe3" />
+            <path d="M200 4h78v35h-78zM57 96h43v44H57z" fill="#c6d5be" />
+            <g stroke="#fff" strokeWidth="9">
+              <path d="M60-10 35 160M112-10 87 160M170-10 145 160M227-10 202 160M283-10 258 160M25 45 310 89M20 95 300 139M35-8 300 33" />
+            </g>
+            <path
+              d="m95 115 8-55 111 17 6-40"
+              fill="none"
+              stroke="#92a7d1"
+              strokeWidth="9"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+            <path
+              d="m95 115 8-55 111 17 6-40"
+              fill="none"
+              stroke="#3877d0"
+              strokeWidth="4"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+            <circle cx="95" cy="115" r="6" fill="#3877d0" stroke="white" strokeWidth="3" />
+            <circle cx="220" cy="37" r="13" fill="#202a35" />
+            <path d="m214 38 6-6 6 6v6h-4v-5h-4v5h-4z" fill="white" />
+            <text x="130" y="119" fontSize="8" fill="#6d736f" transform="rotate(9 130 119)">
+              WEST 14TH ST
+            </text>
+          </svg>
+          <div>
+            <span>
+              <b>Arriving in {str(p.eta)}</b>
+              <small>{str(p.address)}</small>
+            </span>
+            <span className={styles.deliveryDot} />
+          </div>
+        </div>
+      );
     case "Toggle":
       return (
         <label className={styles.row}>
@@ -111,7 +234,7 @@ function DemoNode({
       return (
         <>
           {heading}
-          <dl className={styles.kv}>
+          <dl className={`${styles.kv} ${p.header === "ORDER SUMMARY" ? styles.orderSummary : ""}`}>
             {(Array.isArray(p.rows) ? p.rows : []).map(
               (row: { label?: string; value?: string }, i) => (
                 <div key={i}>
@@ -127,7 +250,6 @@ function DemoNode({
       return (
         <figure className={styles.photo}>
           <Image src={str(p.src)} alt={str(p.caption)} width={520} height={280} />
-          <figcaption>{str(p.caption)}</figcaption>
         </figure>
       );
     case "Chips":
@@ -185,14 +307,16 @@ export function AppLessDemo() {
   const [frame, setFrame] = useState({ scene: 0, tick: 0 });
   const [paused, setPaused] = useState(false);
   const [reduced, setReduced] = useState(false);
+  const [compact, setCompact] = useState(false);
   const host = useRef<HTMLDivElement>(null);
   const code = useRef<HTMLPreElement>(null);
   const phone = useRef<HTMLDivElement>(null);
   const visible = useRef(false);
   const scene = scenes[frame.scene];
   const lines = useMemo(() => scene.source.split("\n"), [scene]);
-  const count = reduced ? lines.length : Math.min(frame.tick, lines.length);
+  const count = reduced ? lines.length : Math.min(Math.floor(frame.tick / 4), lines.length);
   const complete = count === lines.length;
+  const elapsed = (Math.min(frame.tick, lines.length * 4) * 0.04).toFixed(2);
   const parse = (source: string) => parser.parse(source.replace(/^@AppIcon.*\n?/gm, ""));
   const settled = useMemo(() => nodes(parse(scene.source).root?.props.children), [scene]);
   const current = useMemo(
@@ -201,6 +325,10 @@ export function AppLessDemo() {
   );
 
   useEffect(() => {
+    const mobile = matchMedia("(max-width: 767px)");
+    const readMobile = () => setCompact(mobile.matches);
+    readMobile();
+    mobile.addEventListener("change", readMobile);
     const query = matchMedia("(prefers-reduced-motion: reduce)");
     const read = () => setReduced(query.matches);
     read();
@@ -214,6 +342,7 @@ export function AppLessDemo() {
     if (host.current) observer.observe(host.current);
     return () => {
       query.removeEventListener("change", read);
+      mobile.removeEventListener("change", readMobile);
       observer.disconnect();
     };
   }, []);
@@ -222,20 +351,29 @@ export function AppLessDemo() {
     const timer = setInterval(() => {
       if (!visible.current || document.hidden) return;
       setFrame((previous) =>
-        previous.tick >= scenes[previous.scene].source.split("\n").length + 14
+        previous.tick >= scenes[previous.scene].source.split("\n").length * 4 + 100
           ? { scene: (previous.scene + 1) % scenes.length, tick: 0 }
           : { ...previous, tick: previous.tick + 1 },
       );
-    }, 280);
+    }, 40);
     return () => clearInterval(timer);
   }, [paused, reduced]);
   useEffect(() => {
     if (code.current) code.current.scrollTop = code.current.scrollHeight;
     if (phone.current && count === 0) phone.current.scrollTop = 0;
   }, [count]);
+  useEffect(() => {
+    if (!complete || paused || reduced) return;
+    const timer = setTimeout(() => {
+      if (visible.current && phone.current) {
+        phone.current.scrollTo({ top: phone.current.scrollHeight, behavior: "smooth" });
+      }
+    }, 1400);
+    return () => clearTimeout(timer);
+  }, [complete, paused, reduced, frame.scene]);
   const advance = (next: number) => {
     setPaused(true);
-    setFrame({ scene: next, tick: scenes[next].source.split("\n").length });
+    setFrame({ scene: next, tick: scenes[next].source.split("\n").length * 4 });
   };
 
   return (
@@ -245,12 +383,24 @@ export function AppLessDemo() {
       data-demo-scene={scene.key}
       data-demo-complete={complete}
     >
-      <div className={styles.codePanel}>
+      <div className={styles.codePanel} inert={compact}>
         <div className={styles.panelHeader}>
-          <span>
-            <Code2 size={16} /> OpenUI Lang
-          </span>
-          <span className={styles.replayLabel}>Demo replay</span>
+          <span>OpenUI Lang</span>
+          <div
+            className={`${styles.timer} ${complete ? styles.timerDone : ""}`}
+            title="Elapsed time of the scripted browser replay, not model inference latency"
+          >
+            {reduced ? (
+              <small>Static preview</small>
+            ) : (
+              <strong>
+                <time>
+                  {elapsed}
+                  <span>s</span>
+                </time>
+              </strong>
+            )}
+          </div>
         </div>
         <p className={styles.request}>{scene.request}</p>
         <pre
@@ -271,36 +421,26 @@ export function AppLessDemo() {
             ))}
           </code>
         </pre>
-        <div className={styles.codeStatus}>
-          <span>
-            {complete ? <Check size={14} /> : <span className={styles.dot} />}{" "}
-            {complete ? "Ready to explore" : "Rendering components"}
-          </span>
-          <span>
-            {count}/{lines.length}
-          </span>
-        </div>
       </div>
       <div className={styles.phoneSide}>
         <div className={styles.phone}>
+          {/* Status-bar proportions follow the original presentation phone shell. */}
           <div className={styles.statusBar} aria-hidden="true">
             <span>9:41</span>
-            <span className={styles.island} />
-            <span>
-              <Wifi size={12} />
-              <BatteryFull size={15} />
-            </span>
-          </div>
-          <div className={styles.phoneNav}>
-            <Smartphone size={12} />
-            <span>AppLess</span>
-            <span>
-              {frame.scene + 1} / {scenes.length}
-            </span>
+            <svg width="58" height="12" viewBox="0 0 58 12" fill="currentColor">
+              <path d="M0 8h3v4H0zm5-3h3v7H5zm5-3h3v10h-3zm5-2h3v12h-3z" />
+              <path d="M23 4a10 10 0 0 1 14 0l-1.5 1.5a8 8 0 0 0-11 0zm3 3a6 6 0 0 1 8 0l-1.5 1.5a4 4 0 0 0-5 0zm2.5 3 1.5-1 1.5 1L30 12z" />
+              <rect x="41" y="2" width="14" height="8" rx="2" fill="none" stroke="currentColor" />
+              <rect x="43" y="4" width="10" height="4" rx=".5" />
+              <path d="M57 4h1v4h-1z" />
+            </svg>
           </div>
           <div
             className={styles.screen}
             ref={phone}
+            inert={compact}
+            onPointerDown={() => setPaused(true)}
+            onFocusCapture={() => setPaused(true)}
             aria-label="Rendered phone interface"
             key={scene.key}
           >
@@ -321,7 +461,6 @@ export function AppLessDemo() {
         </div>
       </div>
       <div className={styles.controls}>
-        <span>Code becomes a native interface</span>
         <div>
           {!reduced && (
             <button
