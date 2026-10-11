@@ -1,0 +1,677 @@
+.features {
+  --oui-ink: var(--openui-text-neutral-primary);
+  --oui-muted: var(--openui-text-neutral-secondary);
+  --oui-panel: var(--openui-foreground);
+  --oui-line: var(--home-hairline);
+  --oui-fill: color-mix(in srgb, var(--oui-ink) 5%, transparent);
+
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 64px 24px;
+}
+
+.feature {
+  min-width: 0;
+}
+.feature[data-span="half"] {
+  grid-column: span 3;
+}
+.feature[data-span="full"] {
+  grid-column: span 6;
+}
+.feature[data-span="third"] {
+  grid-column: span 2;
+}
+
+/* The same stage the hero uses: shader behind, artwork on top. The stroke is
+   the shader's own base colour; keep in step with TONES in FadedDitherCanvas. */
+.stage {
+  --stage-stroke: #f8f8f8;
+
+  container-type: inline-size;
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  border: 1px solid var(--stage-stroke);
+  border-radius: 24px;
+}
+[data-theme="dark"] .stage {
+  --stage-stroke: #0e0e0e;
+}
+.stage[data-flat] {
+  background: var(--stage-stroke);
+}
+.feature[data-span="half"] .stage {
+  aspect-ratio: 588 / 360;
+}
+.feature[data-span="full"] .stage {
+  aspect-ratio: 1200 / 420;
+}
+.feature[data-span="third"] .stage {
+  aspect-ratio: 384 / 280;
+}
+.stageShader {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+}
+.stageShader > * {
+  width: 100%;
+  height: 100%;
+}
+.stageArt {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  color: var(--oui-ink);
+}
+
+.title {
+  margin: 20px 0 0;
+  font-family: var(--home-font-display);
+  font-size: var(--home-heading-size);
+  font-weight: var(--home-heading-weight);
+  line-height: var(--home-heading-leading);
+  letter-spacing: var(--home-heading-tracking);
+  color: var(--oui-ink);
+}
+.description {
+  max-width: 44ch;
+  margin: 8px 0 0;
+  font-size: var(--home-body-size);
+  line-height: var(--home-body-leading);
+  color: var(--oui-muted);
+}
+
+/* ---------- shared illustration parts ---------- */
+.panel {
+  box-sizing: border-box;
+  border: 1px solid var(--oui-line);
+  border-radius: 12px;
+  background: var(--oui-panel);
+}
+.stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+.caption {
+  font-family: var(--home-font-mono);
+  font-size: 12px;
+  line-height: 1;
+  color: var(--oui-muted);
+}
+
+/* ---------- stream ---------- */
+/* Bezel and screen match the hero device (public/oui-1/hero.html). */
+.streamScene {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 588px;
+  height: 360px;
+  transform-origin: 0 0;
+  /* stage width / 588px as a unitless ratio */
+  transform: scale(tan(atan2(100cqw, 588px)));
+}
+.device {
+  --device-screen: #ebebec;
+  --device-ink: #16171c;
+  --device-card: #fff;
+  --device-bubble: #fff;
+  --device-accent: #4b4bf7;
+  --device-accent-line: rgb(255 255 255 / 0.55);
+  --device-user: var(--device-ink);
+  --device-on-user: var(--device-screen);
+  --device-ai: #4b4bf7;
+  --device-font: inherit;
+  --device-radius-card: 12px;
+  --device-radius-pill: 999px;
+  --device-radius-bar: 3px;
+  --device-edge: none;
+
+  position: absolute;
+  top: 32px;
+  left: 88px;
+  width: 640px;
+  height: 480px;
+  box-sizing: border-box;
+  padding: 9px 0 0 9px;
+  border-radius: 22px 0 0;
+  background: linear-gradient(152deg, #56565c 0%, #24242a 9%, #101014 26%, #0a0a0d 50%);
+  box-shadow:
+    inset 0 1px 1px rgb(255 255 255 / 0.38),
+    0 22px 44px rgb(0 0 0 / 0.12);
+}
+[data-theme="dark"] .device {
+  --device-screen: #171717;
+  --device-ink: #f2f2f2;
+  --device-card: #222222;
+  --device-bubble: #262626;
+  --device-accent: #9d9dff;
+  --device-accent-line: #3a3ad0;
+
+  background: linear-gradient(152deg, #585858 0%, #262626 9%, #111111 26%, #0b0b0b 50%);
+}
+.screen {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  height: 100%;
+  box-sizing: border-box;
+  padding: 20px;
+  border-radius: 14px 0 0;
+  background: var(--device-screen);
+  box-shadow: inset 0 0 0 1.5px #000;
+  color: var(--device-ink);
+  font-family: var(--device-font);
+}
+.chatRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.avatar {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 24px;
+  height: 24px;
+  border-radius: var(--device-radius-pill);
+}
+.avatarUser {
+  background: var(--device-user);
+  color: var(--device-on-user);
+}
+.avatarAi {
+  background: var(--device-ai);
+  color: #fff;
+}
+.bubble {
+  padding: 6px 12px;
+  border-radius: var(--device-radius-pill);
+  background: var(--device-bubble);
+  box-shadow: var(--device-edge);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 14px;
+  white-space: nowrap;
+}
+.bubbleUser {
+  background: var(--device-user);
+  color: var(--device-on-user);
+}
+.chartCard {
+  display: flex;
+  flex-direction: column;
+  width: 560px;
+  box-sizing: border-box;
+  margin-top: 4px;
+  padding: 16px;
+  border-radius: var(--device-radius-card);
+  background: var(--device-card);
+  box-shadow: var(--device-edge);
+}
+.chartCardHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.chartCardTitle {
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 20px;
+  color: color-mix(in srgb, var(--device-ink) 60%, transparent);
+}
+.chartCardTotal {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+  font-size: 12px;
+  line-height: 24px;
+}
+.chartCardTotal b {
+  font-size: 20px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+.chartCardTotal i {
+  font-style: normal;
+  color: color-mix(in srgb, var(--device-ink) 50%, transparent);
+}
+.chartCardDelta {
+  padding: 3px 6px;
+  border-radius: 6px;
+  background: color-mix(in srgb, #30a46c 14%, transparent);
+  color: #30a46c;
+  font-weight: 500;
+  line-height: 12px;
+  font-variant-numeric: tabular-nums;
+}
+.plot {
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr);
+  height: 88px;
+  margin-top: 24px;
+}
+.plotAxis {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  /* centre each label on its gridline */
+  margin-block: -6px;
+  font-size: 12px;
+  line-height: 12px;
+  font-variant-numeric: tabular-nums;
+  color: color-mix(in srgb, var(--device-ink) 45%, transparent);
+}
+.streamBars,
+.streamDays {
+  display: grid;
+  grid-template-columns: repeat(30, minmax(0, 1fr));
+}
+.streamBars {
+  position: relative;
+  height: 100%;
+  background:
+    linear-gradient(
+        color-mix(in srgb, var(--device-ink) 8%, transparent),
+        color-mix(in srgb, var(--device-ink) 8%, transparent)
+      )
+      0 0 / 100% 1px no-repeat,
+    linear-gradient(
+        color-mix(in srgb, var(--device-ink) 8%, transparent),
+        color-mix(in srgb, var(--device-ink) 8%, transparent)
+      )
+      0 50% / 100% 1px no-repeat,
+    linear-gradient(
+        color-mix(in srgb, var(--device-ink) 8%, transparent),
+        color-mix(in srgb, var(--device-ink) 8%, transparent)
+      )
+      0 100% / 100% 1px no-repeat;
+}
+.barSlot {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  height: 100%;
+}
+/* a bright column with a darker stroke down its centre */
+.bar {
+  position: relative;
+  width: 6px;
+  border-radius: var(--device-radius-bar) var(--device-radius-bar) 0 0;
+  background: var(--device-accent);
+  transform-origin: bottom;
+  animation: streamBar 6s cubic-bezier(0.32, 0.72, 0, 1) infinite both;
+}
+.bar::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  bottom: 3px;
+  left: 50%;
+  width: 1px;
+  margin-left: -0.5px;
+  border-radius: 1px;
+  background: var(--device-accent-line);
+}
+.barValue {
+  position: absolute;
+  left: 50%;
+  margin-bottom: 4px;
+  padding: 3px 5px;
+  border-radius: 5px;
+  background: var(--device-ink);
+  color: var(--device-card);
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 12px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  transform: translateX(-50%);
+  animation: streamValue 6s cubic-bezier(0.32, 0.72, 0, 1) infinite both;
+}
+.streamDays {
+  margin: 8px 0 0 32px;
+}
+.streamDays span {
+  display: flex;
+  justify-content: center;
+  font-size: 12px;
+  line-height: 1;
+  white-space: nowrap;
+  color: color-mix(in srgb, var(--device-ink) 50%, transparent);
+}
+.streamBlock {
+  animation: 6s cubic-bezier(0.32, 0.72, 0, 1) infinite both;
+}
+.streamA {
+  animation-name: streamA;
+}
+.streamB {
+  animation-name: streamB;
+}
+.streamC {
+  animation-name: streamC;
+}
+@keyframes streamA {
+  0%,
+  6% {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  12%,
+  92% {
+    opacity: 1;
+    transform: none;
+  }
+  100% {
+    opacity: 0;
+    transform: none;
+  }
+}
+@keyframes streamB {
+  0%,
+  22% {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  28%,
+  92% {
+    opacity: 1;
+    transform: none;
+  }
+  100% {
+    opacity: 0;
+    transform: none;
+  }
+}
+@keyframes streamC {
+  0%,
+  36% {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  42%,
+  92% {
+    opacity: 1;
+    transform: none;
+  }
+  100% {
+    opacity: 0;
+    transform: none;
+  }
+}
+@keyframes streamValue {
+  0%,
+  56% {
+    opacity: 0;
+  }
+  62%,
+  100% {
+    opacity: 1;
+  }
+}
+@keyframes streamBar {
+  0%,
+  42% {
+    transform: scaleY(0);
+  }
+  54%,
+  100% {
+    transform: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .streamBlock,
+  .bar,
+  .barValue {
+    animation: none;
+  }
+}
+
+/* ---------- pipeline ---------- */
+.pipeScene {
+  --pipe-accent: #4b4bf7;
+
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 588px;
+  height: 360px;
+  transform-origin: 0 0;
+  transform: scale(tan(atan2(100cqw, 588px)));
+}
+[data-theme="dark"] .pipeScene {
+  --pipe-accent: #9d9dff;
+}
+/* the token field runs a little way under the panel, so blocks flow into it */
+.pipeRows {
+  position: absolute;
+  top: 84px;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 360px;
+  overflow: hidden;
+  mask-image: linear-gradient(to right, transparent, #000 45%);
+}
+.pipeRow {
+  display: flex;
+  gap: 4px;
+  width: max-content;
+  animation: pipeFlow linear infinite;
+}
+.pipeRow span {
+  flex: none;
+  height: 6px;
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--oui-ink) 12%, transparent);
+}
+.pipeRow span[data-tone="strong"] {
+  background: color-mix(in srgb, var(--oui-ink) 28%, transparent);
+}
+.pipeRow span[data-tone="accent"] {
+  background: var(--pipe-accent);
+}
+@keyframes pipeFlow {
+  from {
+    transform: translateX(-50%);
+  }
+  to {
+    transform: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pipeRow {
+    animation: none;
+  }
+}
+.pipePanel {
+  position: absolute;
+  top: 64px;
+  left: 340px;
+  display: flex;
+  flex-direction: column;
+  width: 216px;
+  height: 232px;
+  padding: 16px;
+  box-shadow: 0 12px 32px rgb(0 0 0 / 0.08);
+}
+.pipeTitle {
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--oui-muted);
+}
+.pipeTotal {
+  margin-top: 2px;
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 24px;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+.pipeBars {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  align-items: end;
+  justify-items: center;
+  height: 64px;
+  margin-top: 16px;
+  border-bottom: 1px solid var(--oui-line);
+}
+.pipeBars span {
+  width: 6px;
+  border-radius: 3px 3px 0 0;
+  background: var(--pipe-accent);
+}
+.pipeList {
+  margin-top: auto;
+  font-size: 12px;
+  line-height: 24px;
+  font-variant-numeric: tabular-nums;
+}
+.pipeList div {
+  display: flex;
+  justify-content: space-between;
+}
+.pipeList div + div {
+  border-top: 1px solid var(--oui-line);
+}
+.pipeList span:first-child {
+  color: var(--oui-muted);
+}
+
+/* ---------- benchmark ---------- */
+.chart {
+  width: 100%;
+  height: 100%;
+}
+.chartCurve {
+  fill: none;
+  stroke: color-mix(in srgb, var(--oui-ink) 30%, transparent);
+  stroke-width: 1.5;
+}
+.chartAreaTop {
+  stop-color: var(--oui-ink);
+  stop-opacity: 0.08;
+}
+.chartAreaBottom {
+  stop-color: var(--oui-ink);
+  stop-opacity: 0;
+}
+.chartLabel {
+  fill: var(--oui-muted);
+  font-variant-numeric: tabular-nums;
+}
+.chartDot {
+  fill: color-mix(in srgb, var(--oui-ink) 35%, transparent);
+}
+.chartHeroHalo {
+  fill: color-mix(in srgb, var(--oui-ink) 10%, transparent);
+}
+.chartHero {
+  fill: var(--oui-ink);
+}
+.chartHeroLabel {
+  fill: var(--oui-ink);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- params ---------- */
+.params {
+  position: relative;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--oui-ink) 8%, transparent);
+  font-family: var(--home-font-mono);
+  font-size: 12px;
+  line-height: 1;
+}
+.paramsTotal {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  color: var(--oui-muted);
+}
+/* concentric with the outer corner: 12px radius less the 8px inset */
+.paramsActive {
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+  display: grid;
+  place-items: center;
+  border-radius: 4px;
+  background: var(--oui-ink);
+  color: var(--oui-panel);
+  font-weight: 500;
+}
+
+/* ---------- hardware ---------- */
+.chipPin {
+  stroke: color-mix(in srgb, var(--oui-ink) 25%, transparent);
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+.chipBody {
+  fill: var(--oui-panel);
+  stroke: var(--oui-line);
+}
+.chipRing {
+  stroke: color-mix(in srgb, var(--oui-ink) 10%, transparent);
+  stroke-dasharray: 2 4;
+}
+.chipTrace {
+  stroke: color-mix(in srgb, var(--oui-ink) 12%, transparent);
+}
+.chipMark {
+  fill: color-mix(in srgb, var(--oui-ink) 30%, transparent);
+}
+.chipCore {
+  fill: var(--oui-fill);
+  stroke: var(--oui-line);
+}
+.chipText {
+  fill: var(--oui-ink);
+  font-family: var(--home-font-mono);
+  font-weight: 500;
+}
+.chipSub {
+  fill: var(--oui-muted);
+  font-family: var(--home-font-mono);
+}
+
+@media (min-width: 768px) and (max-width: 899.98px) {
+  .features {
+    gap: 48px 16px;
+  }
+}
+@media (max-width: 767px) {
+  .features {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 40px;
+  }
+  .feature[data-span] {
+    grid-column: auto;
+  }
+  .stage {
+    border-radius: 12px;
+  }
+  .feature[data-span] .stage {
+    aspect-ratio: 358 / 260;
+  }
+  .feature[data-span="full"] .stage {
+    aspect-ratio: 360 / 300;
+  }
+}
