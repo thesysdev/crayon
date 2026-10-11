@@ -1,8 +1,14 @@
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import type { Metadata } from "next";
+import { CloudCtaSection } from "../cloud/CloudCtaSection";
 import { BevelButton } from "../components/Button/BevelButton";
+import { InsightBar } from "../components/InsightBar/InsightBar";
 import styles from "../components/ProductLanding.module.css";
+import homeStyles from "../page.module.css";
+import type { GridFeature } from "../sections/FeatureGridSection/FeatureGridSection";
+import { FeatureGridSection } from "../sections/FeatureGridSection/FeatureGridSection";
 import { Footer } from "../sections/Footer/Footer";
+import { HeroSection } from "../sections/HeroSection/HeroSection";
 import { AppLessDemo } from "./AppLessDemo";
 
 export const metadata: Metadata = {
@@ -21,21 +27,21 @@ export const metadata: Metadata = {
 
 const github = "https://github.com/thesysdev/appless";
 
-const steps = [
+const features: GridFeature[] = [
   {
-    number: "01",
+    icon: "search",
     title: "Just ask",
     description:
       "Describe the interface you need, from a weather dashboard or restaurant list to a booking form. AppLess generates the screen on demand.",
   },
   {
-    number: "02",
+    icon: "devices",
     title: "Native on each platform",
     description:
       "OpenUI renders the same generated screen with Cupertino components on iOS and Material 3 components on Android.",
   },
   {
-    number: "03",
+    icon: "interaction",
     title: "Keep exploring",
     description:
       "Tap a row, button, or card to request the next screen. Optional prefetch trades extra model requests for faster navigation.",
@@ -43,15 +49,32 @@ const steps = [
 ];
 
 export default function AppLessPage() {
+  const preview = <AppLessDemo />;
+
   return (
-    <div className={styles.page}>
-      <main>
-        <section className={`${styles.shell} ${styles.applessHero}`}>
-          <div className={styles.heroCopy}>
-            <p className={styles.productName}>AppLess</p>
-            <h1 className={styles.heroTitle}>What if your phone had no apps?</h1>
-            <p className={styles.heroLead}>{metadata.description}</p>
-            <div className={styles.actions}>
+    <div className={`${homeStyles.page} ${styles.sectionRhythm}`}>
+      <div className={homeStyles.heroShell}>
+        <HeroSection
+          align="left"
+          desktopFromTablet
+          title={
+            <span className={styles.titleBlock}>
+              <span className={styles.eyebrow}>AppLess</span>
+              <span className={styles.title}>What if your phone had no apps?</span>
+            </span>
+          }
+          subtitle={
+            <span className={styles.subtitle}>
+              Ask for what you need. AppLess generates a native interface for the task, then builds
+              the next screen when you tap.
+            </span>
+          }
+          smallSubtitle
+          tightDesktopSpacing={false}
+          splitLockup
+          flushInnerInlinePadding
+          commandSlot={
+            <div className={styles.ctaGroup}>
               <BevelButton
                 href={github}
                 external
@@ -60,107 +83,79 @@ export default function AppLessPage() {
                 badge={<ArrowUpRight size={16} strokeWidth={2.25} />}
               />
             </div>
-          </div>
-          <AppLessDemo />
-        </section>
+          }
+          showPlaygroundButton={false}
+          showGitHubBanner={false}
+          showTagline={false}
+          desktopPreviewSlot={preview}
+          mobilePreviewSlot={preview}
+        />
+      </div>
 
-        <section className={`${styles.shell} ${styles.section}`}>
+      <main className={styles.main}>
+        <section className={styles.contentSection} aria-labelledby="appless-interface-heading">
           <div className={styles.sectionHeader}>
-            <h2>One request becomes a native interface</h2>
+            <h2 id="appless-interface-heading">An interface for whatever you have in mind</h2>
             <p>
-              AppLess keeps the interaction loop on the phone while generating each screen for the
-              task in front of you.
+              Ask for a task, use the native interface it creates, then keep moving as AppLess
+              generates the next screen.
             </p>
           </div>
-          <div className={styles.stepGrid}>
-            {steps.map((step) => (
-              <article className={styles.step} key={step.number}>
-                <span className={styles.stepNumber} aria-hidden="true">
-                  {step.number}
-                </span>
-                <h3>{step.title}</h3>
-                <p>{step.description}</p>
-              </article>
-            ))}
-          </div>
-        </section>
-
-        <section className={styles.softBand}>
-          <div className={`${styles.shell} ${styles.mechanism}`}>
+          <FeatureGridSection
+            features={features}
+            showHeader={false}
+            showCompat={false}
+            showBottomSeparator={false}
+            showTopSeparator
+            flushSectionPadding
+            mobileAccordion={false}
+          />
+          <div className={styles.mechanismBlock}>
             <div className={styles.sectionHeader}>
-              <h2>Powered by OUI-1 and OpenUI</h2>
+              <h2 id="appless-powered-heading">Powered by OUI-1 and OpenUI</h2>
               <p>
-                The app’s component contract tells OUI-1 which interfaces it can compose. OUI-1
-                writes OpenUI Lang, and OpenUI renders the stream as native components.
+                OUI-1 generates the interface in OpenUI Lang. OpenUI validates and renders it into
+                native components as the response arrives.
               </p>
             </div>
-            <ol className={styles.pipeline}>
-              <li>
-                <span>Component contract</span>
-                Defines the native components the model can use.
-              </li>
-              <li>
-                <span>OUI-1</span>
-                Generates an OpenUI Lang screen from the request.
-              </li>
-              <li>
-                <span>OpenUI renderer</span>
-                Parses the stream into Cupertino or Material 3 components.
-              </li>
-            </ol>
-            <p className={styles.technicalNote}>
-              OUI-1 runs on a separate vLLM GPU server. The phone is the client.
-            </p>
+            <div className={styles.linkRow}>
+              <BevelButton
+                href="/oui-1"
+                variant="secondary"
+                label="Meet OUI-1"
+                badge={<ArrowRight size={16} strokeWidth={2.25} />}
+              />
+              <BevelButton
+                href="/docs/openui-lang"
+                variant="secondary"
+                label="Explore OpenUI Lang"
+                badge={<ArrowRight size={16} strokeWidth={2.25} />}
+              />
+            </div>
           </div>
         </section>
 
-        <section className={`${styles.shell} ${styles.boundarySection}`}>
-          <div className={styles.sectionHeader}>
-            <h2>Real information and real actions are separate</h2>
-            <p>
-              AppLess can ground what a screen shows without pretending that every button is
-              connected to a service.
-            </p>
-          </div>
-          <div className={styles.boundaryGrid}>
-            <article>
-              <h3>Optional grounding</h3>
-              <p>Web and image tools can bring current information into generated screens.</p>
-            </article>
-            <article>
-              <h3>Your integrations</h3>
+        <section className={styles.softBand} aria-labelledby="appless-future-heading">
+          <div className={styles.bandInner}>
+            <div className={styles.sectionHeader}>
+              <h2 id="appless-future-heading">A glimpse of what comes next</h2>
               <p>
-                Ordering, booking, paying, playback, and other state-changing actions remain
-                simulations until a developer connects the relevant service.
+                AppLess is an open-source experiment in software that forms around the task, then
+                changes as the task evolves.
               </p>
-            </article>
+            </div>
+            <InsightBar>
+              Bookings, purchases, and payments in the demo are simulated. Optional search can
+              ground generated content in live results.
+            </InsightBar>
           </div>
         </section>
 
-        <section className={`${styles.shell} ${styles.closing}`}>
-          <div>
-            <h2>An open experiment, ready to be extended</h2>
-            <p>
-              Fork AppLess, connect the tools and systems you choose, or inspect the model and
-              language behind it.
-            </p>
-          </div>
-          <div className={styles.actions}>
-            <BevelButton
-              href={github}
-              external
-              variant="primary"
-              label="Fork AppLess on GitHub"
-              badge={<ArrowUpRight size={16} strokeWidth={2.25} />}
-            />
-            <BevelButton
-              href="/oui-1"
-              variant="secondary"
-              label="Meet OUI-1"
-              badge={<ArrowRight size={16} strokeWidth={2.25} />}
-            />
-          </div>
-        </section>
+        <CloudCtaSection
+          title="Make it your own."
+          primary={{ label: "Explore on GitHub", href: github, external: true }}
+          secondary={{ label: "Meet OUI-1", href: "/oui-1" }}
+        />
       </main>
       <Footer />
     </div>

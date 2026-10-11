@@ -29,7 +29,7 @@ export function AppLessDemo() {
             <Image
               className={`${styles.demoPoster} ${styles.demoPosterLight}`}
               src="/nav/appless-light.webp"
-              alt="Two AppLess phone screens showing generated food and order interfaces"
+              alt="Two AppLess phone screens showing a generated request screen and order interface"
               width={560}
               height={323}
               priority
@@ -56,8 +56,8 @@ export function AppLessDemo() {
         </button>
       </div>
       <figcaption className={styles.demoCaption}>
-        The demo generates interactive native screens, but bookings, purchases, payments, and other
-        state-changing actions are simulated.
+        AppLess generates native screens for the request and the next interaction. Bookings,
+        purchases, payments, and other state-changing actions are simulated.
       </figcaption>
     </figure>
   );
