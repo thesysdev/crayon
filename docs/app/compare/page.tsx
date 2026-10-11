@@ -6,8 +6,6 @@ export const metadata = createPageMetadata({
   pathname: "/compare",
   title: "Compare OpenUI",
   description: "Compare rendered Markdown, OpenUI OSS, and OpenUI Cloud side by side.",
-  image: "/nav/compare-light.webp",
-  imageAlt: "OpenUI comparison preview",
 });
 
 export default async function ComparePage(props: PageProps<"/compare">) {

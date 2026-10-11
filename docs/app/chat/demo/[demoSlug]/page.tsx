@@ -23,8 +23,6 @@ export async function generateMetadata({ params }: DemoChatPageProps) {
     pathname: getDemoConversationPath(conversation),
     title: `${conversation.title} | OpenUI Cloud Chat`,
     description: conversation.description,
-    image: "/nav/chat-light.webp",
-    imageAlt: `${conversation.title} demo preview`,
   });
 }
 
