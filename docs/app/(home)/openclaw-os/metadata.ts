@@ -6,7 +6,7 @@ export default {
   description:
     "OpenClaw OS is the default workspace for OpenClaw. Generate interactive apps and artifacts instantly for any use case, always updated with live data.",
   openGraph: {
-    title: "OpenClaw OS — The Default Workspace for OpenClaw",
+    title: "OpenClaw OS",
     description:
       "The default workspace for OpenClaw. Generate interactive apps and artifacts instantly, always updated with live data.",
   },

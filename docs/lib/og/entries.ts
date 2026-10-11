@@ -1,8 +1,4 @@
 import { getIntegrationPageMetadata, integrations } from "@/app/(home)/integrations/data";
-import {
-  DEMO_CONVERSATIONS,
-  getDemoConversationPageMetadata,
-} from "@/app/chat/_components/demo-conversations";
 import { ogPages } from "@/generated/og-pages";
 import { pageOgImage } from "../page-metadata";
 import { blog, source } from "../source";
@@ -25,7 +21,6 @@ export function getOgImages(): Map<string, OgImage> {
   // Dynamic routes: one adapter per content collection.
   all.push(
     ...integrations.map((integration) => pageOgImage(getIntegrationPageMetadata(integration))),
-    ...DEMO_CONVERSATIONS.map((demo) => pageOgImage(getDemoConversationPageMetadata(demo))),
     ...blog.getPages().map(blogOgImage),
     ...source.getPages().map(docsOgImage),
   );

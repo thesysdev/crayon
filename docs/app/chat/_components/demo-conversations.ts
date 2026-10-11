@@ -1,5 +1,4 @@
 import { DEFAULT_MODEL } from "@/lib/openui-cloud/models";
-import type { PageMetadataInput } from "@/lib/page-metadata";
 import type { Artifact, Message, UserMessage } from "@openuidev/react-headless";
 import { STOCK_REPORT_PROGRAM } from "./stock-report-program";
 
@@ -714,14 +713,6 @@ export function getDemoConversationBySlug(slug: string): DemoConversation | unde
 
 export function getDemoConversationPath(conversation: DemoConversation): string {
   return `/chat/demo/${conversation.slug}`;
-}
-
-export function getDemoConversationPageMetadata(conversation: DemoConversation): PageMetadataInput {
-  return {
-    pathname: getDemoConversationPath(conversation),
-    title: `${conversation.title} | OpenUI Cloud Chat`,
-    description: conversation.description,
-  };
 }
 
 export function getDemoArtifact(id: string): DemoArtifact | undefined {

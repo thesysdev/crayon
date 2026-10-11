@@ -6,7 +6,7 @@ export default {
   description:
     "Compare OpenUI, Google A2UI, and Vercel json-render across six models and 46 interface briefs, with exact server-rendered results and downloads.",
   openGraph: {
-    title: "Generative UI framework benchmark",
+    title: "Framework benchmark",
     description: "OpenUI versus Google A2UI versus Vercel json-render under one condition.",
   },
 } satisfies PageMetadataInput;

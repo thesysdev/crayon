@@ -6,7 +6,7 @@ export default {
   title: "OpenUI language and model benchmark | OpenUI",
   description: `Compare structural validity and measured cost across ${MODEL_BOARD_SIZE} models generating OpenUI, with exact server-rendered data and machine-readable downloads.`,
   openGraph: {
-    title: "OpenUI language and model benchmark",
+    title: "Language and model benchmark",
     description: `Structural validity and cost across ${MODEL_BOARD_SIZE} models generating OpenUI.`,
   },
 } satisfies PageMetadataInput;
