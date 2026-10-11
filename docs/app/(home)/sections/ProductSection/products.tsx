@@ -49,7 +49,7 @@ export const LANG_PRODUCT: ProductSectionProps = {
   // The illustration renders the same OpenUI Lang string shown in its code panel.
   art: <OpenSourceIllustration />,
   fullBleedArt: true,
-  stageAspectRatio: "1120 / 440",
+  stageAspectRatio: "1120 / 520",
   /* Keep the rendered example and complete response legible on phones. */
   stageMobileAspectRatio: "1 / 1.35",
   /* No cards. Interactive, Bring your UI library, Safe by default and Stream UI
