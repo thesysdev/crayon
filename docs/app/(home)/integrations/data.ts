@@ -262,7 +262,7 @@ const integrationCatalog: Integration[] = [
       },
       {
         label: "Integration guide",
-        href: "/docs/agent/agent-runtimes/langgraph-platform",
+        href: "/docs/build-agents/frameworks/langgraph",
         kind: "Guide",
       },
       exampleLink("agent-frameworks/langgraph-platform"),
@@ -304,7 +304,7 @@ const integrationCatalog: Integration[] = [
       },
       {
         label: "Integration guide",
-        href: "/docs/agent/agent-runtimes/vercel-ai-sdk",
+        href: "/docs/build-agents/frameworks/vercel-ai-sdk",
         kind: "Guide",
       },
       ...packageLinks("@openuidev/react-headless", "react-headless"),
@@ -522,7 +522,7 @@ const integrationCatalog: Integration[] = [
     links: [
       {
         label: "Integration guide",
-        href: "/docs/agent/agent-runtimes/vercel-eve",
+        href: "/docs/build-agents/frameworks/vercel-eve",
         kind: "Guide",
       },
       exampleLink("agent-frameworks/vercel-eve", "OpenUI harness"),
@@ -559,7 +559,7 @@ const integrationCatalog: Integration[] = [
     links: [
       {
         label: "Integration guide",
-        href: "/docs/agent/agent-runtimes/pi",
+        href: "/docs/build-agents/frameworks/pi",
         kind: "Guide",
       },
       exampleLink("harnesses/pi", "OpenUI harness"),

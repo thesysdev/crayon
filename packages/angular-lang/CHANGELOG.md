@@ -1,5 +1,19 @@
 # @openuidev/angular-lang
 
+## 0.4.1
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @openuidev/lang-core@0.4.1
+
+## 0.4.0
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @openuidev/lang-core@0.4.0
+
 ## 0.3.2
 
 ### Patch Changes
