@@ -176,7 +176,7 @@ The self-hosted variants do not configure durable storage. `AgentInterface` keep
     - `oauth` — sign in with Thesys in the browser and mint a key for your org
     - `skip` — leave `THESYS_API_KEY` empty and add it later (get one at <https://console.thesys.dev/keys>)
   - `--auth manual` is deprecated but remains available for backward compatibility; use `--api-key` for scripted setup instead
-  - when run by a coding agent (or without a TTY) and not signed in, the CLI starts a background sign-in, prints the link, and scaffolds without a key. After `openui auth wait`, run `openui generate-api-key` in the project
+  - when run by a coding agent (or without a TTY) and not signed in, the CLI starts a background sign-in, prints the link, and scaffolds without a key. Then run `openui generate-api-key` in the project; it waits for the sign-in to finish
   - in a non-interactive terminal without `--api-key`, the cloud template fails because a key is required
 - **Self-hosted** — prompts for your OpenAI-compatible provider API key and writes `OPENAI_API_KEY` to `.env` (interactive mode only). Leave blank to skip.
 
@@ -237,21 +237,18 @@ Signs in to Thesys once so `create` and `generate-api-key` can mint API keys wit
 
 ```bash
 openui auth login [--json]
-openui auth wait [--timeout <seconds>] [--json]
 openui auth logout
 ```
 
-In a terminal, `login` opens the browser and waits. When a coding agent runs it (or there's no TTY), `login` starts the sign-in in the background and prints the link right away. The agent shows the link to the user, then runs `auth wait`:
+In a terminal, sign-in opens the browser and waits. When a coding agent runs the CLI (or there's no TTY), any command that needs sign-in (`auth login`, `generate-api-key`, `create`) starts it in the background, prints the link, and exits with `75`. The agent shows the link to the user and re-runs the command, which waits up to 60 seconds for the sign-in to finish:
 
-- `0`: signed in
-- `75`: still waiting (run `openui auth wait` again)
-- `1`: sign-in failed or expired (run `openui auth login` again)
+- `0`: signed in, and the command carried on
+- `75`: still waiting; re-run the same command
+- `1`: sign-in failed or expired; re-run for a new link
 
 ```bash
-openui auth login --json
-# {"status":"pending","url":"https://…","expiresAt":"…","next":"openui auth wait"}
-openui auth wait --timeout 60
-openui generate-api-key
+openui generate-api-key   # exit 75, prints the sign-in link
+openui generate-api-key   # waits for the sign-in, then writes the key
 ```
 
 ### `openui generate-api-key`

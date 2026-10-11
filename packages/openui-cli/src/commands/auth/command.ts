@@ -2,7 +2,7 @@ import { Command, Option } from "commander";
 
 import { context } from "../../lib/context";
 
-import { runAuthLogin, runAuthLogout, runAuthWait } from "./run";
+import { runAuthLogin, runAuthLogout } from "./run";
 
 const jsonOption = () => new Option("--json", "Print machine-readable JSON");
 
@@ -16,22 +16,14 @@ const loginCommand = new Command("login")
 In a terminal, this opens the browser and waits for you to sign in.
 
 When run by a coding agent (or without a TTY), it starts the sign-in in the
-background and prints the link right away. Show the link to the user, then run
-\`openui auth wait\` until it succeeds.
-
-Exit codes for \`openui auth wait\`: 0 = signed in, 75 = still waiting (run it again).
+background, prints the link, and exits 75. Show the link to the user and re-run
+the command: it waits for the sign-in to finish (exit 0), or exits 75 again if
+the user isn't done yet. create and generate-api-key behave the same way, so
+running this first is optional.
 `,
   )
   .action(async (options: { json?: boolean; backgroundChild?: boolean }) => {
     await runAuthLogin(options, context);
-  });
-
-const waitCommand = new Command("wait")
-  .description("Wait for a sign-in started by `openui auth login` (exits 75 if still pending)")
-  .option("-t, --timeout <seconds>", "How long to wait before exiting with code 75", "60")
-  .addOption(jsonOption())
-  .action(async (options: { json?: boolean; timeout: string }) => {
-    await runAuthWait(options);
   });
 
 const logoutCommand = new Command("logout")
@@ -44,5 +36,4 @@ const logoutCommand = new Command("logout")
 export const authCommand = new Command("auth")
   .description("Sign in to Thesys for API key generation")
   .addCommand(loginCommand)
-  .addCommand(waitCommand)
   .addCommand(logoutCommand);

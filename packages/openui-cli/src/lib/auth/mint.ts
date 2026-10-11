@@ -1,6 +1,6 @@
 import { CliCancelledError, CreateError } from "../errors";
 import { Authenticator } from "./authenticator";
-import { canSignInInline, startBackgroundLogin } from "./background";
+import { canSignInInline, signInInBackground } from "./background";
 import { clearSession, loadSession, saveSession, type SavedSession } from "./session";
 import type { AuthTelemetryClient } from "./telemetry";
 
@@ -144,22 +144,6 @@ export async function signIn(
   return session;
 }
 
-/**
- * Sign in for a command that can't wait on the browser (coding agents, non-TTY):
- * start a background sign-in and fail fast with the URL and what to do next.
- */
-async function signInRequired(nextStep: string): Promise<never> {
-  const { url } = await cloudAuthStep("browser_auth", "SIGN_IN_START_FAILED", () =>
-    startBackgroundLogin(),
-  );
-  throw new CloudAuthError(
-    "browser_auth",
-    "SIGN_IN_PENDING",
-    `Sign-in required. Open this link to sign in to Thesys:\n  ${url}\n` +
-      `Then run \`openui auth wait\` and ${nextStep}.`,
-  );
-}
-
 async function requestApiKey(session: SavedSession, projectName: string): Promise<Response> {
   return cloudAuthStep("key_mint_request", "API_KEY_MINT_FAILED", () =>
     fetch(`${THESYS_API_URL}/application/application.createApiKeyWithOidc`, {
@@ -205,8 +189,8 @@ async function readApiKey(res: Response): Promise<string> {
 /**
  * Mint an OpenUI Cloud API key for the user's org. Reuses a saved sign-in when
  * there is one; otherwise signs in via the browser, or — when this process can't
- * wait on the browser — starts a background sign-in and throws with the URL.
- * `nextStep` finishes the "then run `openui auth wait` and …" hint.
+ * hold the terminal — via a background sign-in (see signInInBackground).
+ * `nextStep` tells the agent what to run once the user has the link.
  */
 export async function mintCloudApiKey(
   projectName: string,
@@ -220,7 +204,7 @@ export async function mintCloudApiKey(
     clearSession(); // revoked or expired early → sign in again
   }
 
-  const session = canSignInInline() ? await signIn(tel) : await signInRequired(nextStep);
+  const session = canSignInInline() ? await signIn(tel) : await signInInBackground(nextStep);
   console.info("🔑 Creating an OpenUI Cloud API key…");
   return readApiKey(await requestApiKey(session, projectName));
 }
@@ -241,13 +225,17 @@ export async function resolveCloudApiKey(opts: {
   const provided = opts.apiKey?.trim();
   if (provided) return { key: provided, method: "apikey-flag" };
 
-  // After a background sign-in the project already exists, so the follow-up is generate-api-key.
+  // If the user hasn't signed in yet, the project gets scaffolded without a key,
+  // so the follow-up is generate-api-key rather than re-running create.
   const nextStep = "run `openui generate-api-key` inside the project";
 
   let method = opts.auth;
   if (!method && loadSession()) method = "oauth"; // already signed in → mint silently
+  if (!method && !canSignInInline()) {
+    await signInInBackground(nextStep); // returns once signed in, else throws with the link
+    method = "oauth";
+  }
   if (!method) {
-    if (!canSignInInline()) await signInRequired(nextStep);
     if (!opts.interactive) {
       throw new CloudAuthError(
         "method_resolution",

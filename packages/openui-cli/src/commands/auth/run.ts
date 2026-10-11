@@ -2,8 +2,8 @@ import { SIGN_IN_TIMEOUT_MS } from "../../lib/auth/authenticator";
 import {
   canSignInInline,
   SIGN_IN_PENDING_EXIT_CODE,
-  startBackgroundLogin,
-  waitForSignIn,
+  signInInBackground,
+  SignInPendingError,
 } from "../../lib/auth/background";
 import { signIn } from "../../lib/auth/mint";
 import {
@@ -16,7 +16,6 @@ import {
 } from "../../lib/auth/session";
 import { AuthTelemetryClient } from "../../lib/auth/telemetry";
 import type { CliContext } from "../../lib/context";
-import { CreateError } from "../../lib/errors";
 
 type Output = { json?: boolean };
 
@@ -58,45 +57,22 @@ export async function runAuthLogin(
 
   if (canSignInInline()) {
     await signIn(tel);
-    report(opts, { status: "signed_in" }, "✅ Signed in to Thesys.");
-    return;
+  } else {
+    try {
+      await signInInBackground("re-run `openui auth login`");
+    } catch (error) {
+      if (!(error instanceof SignInPendingError)) throw error;
+      report(
+        opts,
+        { status: "pending", url: error.url, next: "openui auth login" },
+        `Open this link to sign in to Thesys (it may already be open in your browser):\n  ${error.url}\n` +
+          "Then re-run `openui auth login`; it waits for the sign-in to finish.",
+      );
+      process.exitCode = SIGN_IN_PENDING_EXIT_CODE;
+      return;
+    }
   }
-
-  const login = await startBackgroundLogin();
-  report(
-    opts,
-    {
-      status: "pending",
-      url: login.url,
-      expiresAt: new Date(login.expiresAt).toISOString(),
-      next: "openui auth wait",
-    },
-    `Open this link to sign in to Thesys (it may already be open in your browser):\n  ${login.url}\n` +
-      "Then run `openui auth wait`.",
-  );
-}
-
-export async function runAuthWait(opts: Output & { timeout: string }): Promise<void> {
-  const seconds = Number(opts.timeout);
-  if (!Number.isInteger(seconds) || seconds < 0) {
-    throw new CreateError(
-      "auth_wait",
-      `Invalid --timeout "${opts.timeout}". Use a whole number of seconds.`,
-      "invalid_input",
-      "INVALID_TIMEOUT",
-    );
-  }
-
-  if (await waitForSignIn(seconds * 1000)) {
-    report(opts, { status: "signed_in" }, "✅ Signed in to Thesys.");
-    return;
-  }
-  report(
-    opts,
-    { status: "pending", next: "openui auth wait" },
-    "Still waiting for sign-in. Run `openui auth wait` again.",
-  );
-  process.exitCode = SIGN_IN_PENDING_EXIT_CODE;
+  report(opts, { status: "signed_in" }, "✅ Signed in to Thesys.");
 }
 
 export function runAuthLogout(opts: Output): void {

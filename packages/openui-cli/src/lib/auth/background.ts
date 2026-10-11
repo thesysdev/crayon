@@ -11,13 +11,16 @@ import {
   loadSession,
   readPendingLogin,
   type PendingLogin,
+  type SavedSession,
 } from "./session";
 
 // Compiled layout: dist/lib/auth/background.js → dist/index.js
 const CLI_ENTRY = path.resolve(__dirname, "..", "..", "index.js");
 const URL_READY_TIMEOUT_MS = 15_000;
+// Stays well under typical agent shell-tool timeouts (Claude Code defaults to 2 min).
+const WAIT_FOR_SIGN_IN_MS = 60_000;
 
-/** Exit code for `openui auth wait` when sign-in is still pending (EX_TEMPFAIL). */
+/** Exit code while sign-in is still pending (EX_TEMPFAIL): re-run the same command. */
 export const SIGN_IN_PENDING_EXIT_CODE = 75;
 
 /**
@@ -31,23 +34,47 @@ export const canSignInInline = () =>
 const authError = (code: string, message: string) =>
   new CreateError("cloud_auth", message, "authentication", code);
 
-/**
- * Start (or reuse) a detached `openui auth login` that runs the normal browser
- * sign-in and saves the session when it completes. Resolves once the sign-in
- * URL is known, so the caller can hand it to the user and exit right away.
- */
-export async function startBackgroundLogin(): Promise<PendingLogin & { url: string }> {
-  const existing = readPendingLogin();
-  if (
-    existing?.status === "pending" &&
-    existing.url &&
-    existing.expiresAt > Date.now() &&
-    isProcessAlive(existing.pid)
+/** The user hasn't finished signing in yet; carries the link to show them. */
+export class SignInPendingError extends CreateError {
+  constructor(
+    public readonly url: string,
+    nextStep: string,
   ) {
-    return { ...existing, url: existing.url };
+    super(
+      "cloud_auth",
+      `Sign-in required. Open this link to sign in to Thesys:\n  ${url}\n` +
+        `Then ${nextStep}; it waits for the sign-in to finish.`,
+      "authentication",
+      "SIGN_IN_PENDING",
+      { auth_failure_stage: "browser_auth" },
+    );
+    this.name = "SignInPendingError";
   }
-  clearPendingLogin();
+}
 
+/** The background sign-in still in progress, if any. Throws (once) if it failed. */
+function runningLogin(): (PendingLogin & { url: string }) | null {
+  const login = readPendingLogin();
+  if (!login) return null;
+  if (login.status === "failed") {
+    clearPendingLogin();
+    throw authError(
+      "SIGN_IN_FAILED",
+      `Sign-in failed: ${login.error}. Re-run the command to try again.`,
+    );
+  }
+  if (login.url && login.expiresAt > Date.now() && isProcessAlive(login.pid)) {
+    return { ...login, url: login.url };
+  }
+  clearPendingLogin(); // expired or the process died: start over
+  return null;
+}
+
+/**
+ * Start a detached `openui auth login` that runs the normal browser sign-in and
+ * saves the session when it completes. Resolves once the sign-in URL is known.
+ */
+async function startBackgroundLogin(): Promise<string> {
   const child = spawn(process.execPath, [CLI_ENTRY, "auth", "login", "--background-child"], {
     detached: true,
     stdio: "ignore",
@@ -63,9 +90,10 @@ export async function startBackgroundLogin(): Promise<PendingLogin & { url: stri
     const login = readPendingLogin();
     if (login && login.pid === child.pid) {
       if (login.status === "failed") {
+        clearPendingLogin();
         throw authError("SIGN_IN_START_FAILED", `Could not start sign-in: ${login.error}`);
       }
-      if (login.url) return { ...login, url: login.url };
+      if (login.url) return login.url;
     }
     await sleep(200);
   }
@@ -73,31 +101,25 @@ export async function startBackgroundLogin(): Promise<PendingLogin & { url: stri
 }
 
 /**
- * Wait up to `timeoutMs` for a background sign-in to finish.
- * Resolves true once signed in, false if still pending; throws if it failed.
+ * Sign in without holding the terminal for long. The first call starts a
+ * background sign-in and throws SignInPendingError with the link; re-running
+ * the command waits (bounded) for that sign-in and resolves with the session.
  */
-export async function waitForSignIn(timeoutMs: number): Promise<boolean> {
-  const deadline = Date.now() + timeoutMs;
-  for (;;) {
-    if (loadSession()) return true;
-    const login = readPendingLogin();
-    if (!login) {
+export async function signInInBackground(nextStep: string): Promise<SavedSession> {
+  const running = runningLogin();
+  if (!running) throw new SignInPendingError(await startBackgroundLogin(), nextStep);
+
+  const deadline = Date.now() + WAIT_FOR_SIGN_IN_MS;
+  while (Date.now() < deadline) {
+    const session = loadSession();
+    if (session) return session;
+    if (!runningLogin()) {
       // The child saves the session before clearing its status file; re-check to close that gap.
-      if (loadSession()) return true;
-      throw authError("NO_SIGN_IN", "No sign-in in progress. Run `openui auth login` first.");
+      const finished = loadSession();
+      if (finished) return finished;
+      throw authError("SIGN_IN_EXPIRED", "Sign-in expired. Re-run the command for a new link.");
     }
-    if (login.status === "failed") {
-      clearPendingLogin();
-      throw authError("SIGN_IN_FAILED", `Sign-in failed: ${login.error}`);
-    }
-    if (login.expiresAt <= Date.now() || !isProcessAlive(login.pid)) {
-      clearPendingLogin();
-      throw authError(
-        "SIGN_IN_EXPIRED",
-        "Sign-in expired before it was completed. Run `openui auth login` again.",
-      );
-    }
-    if (Date.now() >= deadline) return false;
     await sleep(1000);
   }
+  throw new SignInPendingError(running.url, nextStep);
 }

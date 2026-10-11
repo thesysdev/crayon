@@ -315,25 +315,22 @@ Signs in to Thesys once so `create` and `generate-api-key` can mint API keys wit
 
 ```
 openui auth login [--json]
-openui auth wait [--timeout <seconds>] [--json]
 openui auth logout
 ```
 
-In a terminal, `login` opens the browser and waits. When a coding agent runs it (or there's no TTY), `login` starts the sign-in in the background and prints the link right away. The agent shows the link to the user, then runs `auth wait`, which exits with:
+In a terminal, sign-in opens the browser and waits. When a coding agent runs the CLI (or there's no TTY), any command that needs sign-in (`auth login`, `generate-api-key`, `create`) starts it in the background, prints the link, and exits with `75`. The agent shows the link to the user and re-runs the same command, which waits up to 60 seconds for the sign-in to finish:
 
-| Exit code | Meaning                                                  |
-| --------- | -------------------------------------------------------- |
-| `0`       | Signed in                                                |
-| `75`      | Still waiting; run `openui auth wait` again              |
-| `1`       | Sign-in failed or expired; run `openui auth login` again |
+| Exit code | Meaning                                          |
+| --------- | ------------------------------------------------ |
+| `0`       | Signed in; the command carried on                |
+| `75`      | Still waiting; re-run the same command           |
+| `1`       | Sign-in failed or expired; re-run for a new link |
 
-`create` and `generate-api-key` follow the same rule: if an agent runs them before signing in, they start the background sign-in and print the link instead of waiting on the browser.
+`create` can't be re-run on the same directory, so it scaffolds without a key and tells the agent to run `generate-api-key` next.
 
 ```bash
-openui auth login --json
-# {"status":"pending","url":"https://…","expiresAt":"…","next":"openui auth wait"}
-openui auth wait --timeout 60
-openui generate-api-key
+openui generate-api-key   # exit 75, prints the sign-in link
+openui generate-api-key   # waits for the sign-in, then writes the key
 ```
 
 ## `generate-api-key`
