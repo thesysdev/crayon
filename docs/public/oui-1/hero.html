@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>OUI-1 — health dashboard (listing)</title>
+<title>OUI-1 — text vs generative UI</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
@@ -64,6 +64,21 @@
     padding: 20px 20px 0;      /* the device bleeds off the bottom edge */
     overflow: hidden;
     box-sizing: border-box;
+  }
+  .head { padding: 22px 2px; text-align: center; }
+  .head h1 {
+    margin: 0;
+    font-size: 27px;
+    font-weight: 650;
+    line-height: 1.2;
+    letter-spacing: -0.022em;
+    color: var(--ink);
+  }
+  .head h1 span {
+    display: block;
+    margin-top: 3px;
+    font-weight: 500;
+    color: var(--ink-muted);
   }
   .stage { flex: 1; min-height: 0; }
 
@@ -559,12 +574,98 @@
   @media (prefers-reduced-motion: reduce) {
     .cbar span, .meter i, .hm b { transition: none; }
   }
+
+  /* ---------- one device, two answers ---------- */
+  .fitbox { position: relative; flex: none; }
+  .viz {
+    width: 1584px;
+    height: 891px;          /* 16:9 */
+    aspect-ratio: auto;
+    flex: none;
+    transform-origin: top left;
+  }
+  .notch {
+    position: absolute;
+    top: 0;
+    z-index: 2;
+    transform: translateX(-50%);
+    height: 26px;
+    padding: 0 18px;
+    border-radius: 0 0 14px 14px;
+    background: #050506;
+    color: #fff;
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: -0.005em;
+    line-height: 25px;
+    white-space: nowrap;
+  }
+  .notch.l { left: 25%; }
+  .notch.r { left: 75%; }
+  .split {
+    flex: 1;
+    min-height: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+  .split > .app { min-height: 0; height: 100%; padding: 6px 30px 15px; }   /* more air either side of the divider */
+  /* the divider runs the full height of the screen, through the status bar */
+  .sep {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 1px;
+    transform: translateX(-50%);
+    background: rgb(0 0 0 / .09);
+    z-index: 1;
+  }
+
+  /* ---------- the text-only answer ---------- */
+  .t-row, .t-ans {
+    opacity: 0;
+    transform: translateY(6px);
+    transition: opacity .38s var(--ease), transform .38s var(--ease);
+  }
+  .t-row.in, .t-ans.in { opacity: 1; transform: none; }
+  .t-row { display: flex; align-items: center; gap: 8px; }
+  .t-ans { display: flex; align-items: flex-start; gap: 10px; margin-top: 16px; }
+  .t-body {
+    padding-top: 4px;
+    max-width: 680px;
+    font-size: 13.5px;
+    line-height: 1.6;
+    letter-spacing: -0.005em;
+    color: var(--app-ink);
+  }
+  .t-body p  { margin: 0 0 12px; }
+  .t-body h5 { margin: 14px 0 4px; font-size: 13.5px; font-weight: 650; }
+  .t-body ul { margin: 0 0 4px; padding: 0; list-style: none; }
+  .t-body ul + p { margin-top: 12px; }
+  .t-body li { margin: 0 0 2px; }
+  .t-body .dot { color: var(--app-mute); margin-right: 7px; }
+  .t-body .w { opacity: 0; transition: opacity .16s ease-out; }
+  .t-body .w.on { opacity: 1; }
 </style>
 <style>
   /* transparent so the host page's shader shows through */
   html, body { height: 100%; overflow: hidden; background: transparent; }
   body { display: block; padding: 0; }
-  .viz { position: fixed; left: 0; top: 0; width: 800px; aspect-ratio: 800 / 672; border-radius: 0; background: transparent; transform-origin: top left; cursor: pointer; }
+  .fitbox { position: fixed; top: 0; }
+  .viz { border-radius: 0; background: transparent; cursor: pointer; }
+  /* two devices: OUI-1 in front, the text answer behind it, lower and overlapped */
+  .stage { position: relative; }
+  .device { position: absolute; width: 784px; height: 1000px; margin-top: 0; transform: none; }
+  .device.back  { top: 168px; left: 100px; z-index: 1; }
+  .device.front { top: 56px; left: 660px; z-index: 2; }
+  .device.front::before {   /* the front device's shadow on the one behind */
+    content: ""; position: absolute; inset: 0 auto 0 -48px; width: 48px;
+    background: linear-gradient(to left, rgb(0 0 0 / .16), transparent); pointer-events: none;
+  }
+  .notch { left: 50%; }
+  .screen > .app { flex: 1; min-height: 0; padding: 6px 30px 15px; }
+  .t-body { max-width: 470px; }
+  .notch { height: 30px; padding: 0 20px; border-radius: 0 0 16px 16px; font-size: 13.5px; line-height: 29px; }   /* larger tab labels */
 
   /* ---------- dark theme, for a dark host page ---------- */
   :root[data-theme="dark"] {
@@ -618,11 +719,61 @@
 </head>
 <body>
 
+<div class="fitbox" id="fitbox">
 <figure class="viz">
 
   <div class="stage">
-   <div class="device">
+   <!-- behind: the same question answered in text -->
+   <div class="device back">
     <div class="screen">
+      <div class="notch">General-purpose models</div>
+
+      <div class="status">
+        <span class="time">9:41</span>
+        <span class="sys">
+          <!-- signal -->
+          <svg width="17" height="11" viewBox="0 0 17 11" fill="#16171c" aria-hidden="true">
+            <rect x="0" y="7.5" width="3" height="3.5" rx="1"/>
+            <rect x="4.5" y="5.5" width="3" height="5.5" rx="1"/>
+            <rect x="9" y="3" width="3" height="8" rx="1"/>
+            <rect x="13.5" y="0" width="3" height="11" rx="1"/>
+          </svg>
+          <!-- battery -->
+          <svg width="25" height="12" viewBox="0 0 25 12" aria-hidden="true">
+            <rect x=".6" y=".6" width="20.8" height="10.8" rx="3.4" fill="none" stroke="#16171c" stroke-opacity=".35" stroke-width="1.2"/>
+            <rect x="2.4" y="2.4" width="14.5" height="7.2" rx="2" fill="#16171c"/>
+            <path d="M23 4.3v3.4a2 2 0 0 0 0-3.4z" fill="#16171c" fill-opacity=".35"/>
+          </svg>
+        </span>
+      </div>
+
+      <div class="app">
+        <div class="chat">
+          <div class="t-row">
+            <i class="av user">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="#fff" aria-hidden="true">
+              <circle cx="8" cy="5.5" r="2.9"/>
+              <path d="M2.7 14.2c0-3 2.4-5.1 5.3-5.1s5.3 2.1 5.3 5.1z"/>
+            </svg>
+          </i>
+            <div class="q">How did I do today?</div>
+          </div>
+          <div class="t-ans">
+            <i class="av ai">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="#fff" aria-hidden="true">
+              <path d="M8 1.4 9.6 5.9 14.2 7.5 9.6 9.1 8 13.6 6.4 9.1 1.8 7.5 6.4 5.9z"/>
+            </svg>
+          </i>
+            <div class="t-body" id="tbody"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+   </div>
+   <!-- in front: the answer OUI-1 renders -->
+   <div class="device front">
+    <div class="screen">
+      <div class="notch">OUI-1</div>
 
       <div class="status">
         <span class="time">9:41</span>
@@ -813,12 +964,12 @@
       </div>
       </div>
       </div>
-
     </div>
    </div>
   </div>
 
 </figure>
+</div>
 
 <script>
 // hero dot field
@@ -1256,7 +1407,7 @@ function play() {
         });
         after(1300, fillBoard);
         after(2700, () => layer.remove());
-        after(8000, play);                        // loop while embedded
+        after(8000, () => { play(); playText(); });   // loop while embedded
       }));
     }));
   });
@@ -1268,13 +1419,112 @@ document.querySelector('.viz').addEventListener('click', play);   // click to re
 
 </script>
 
+
 <script>
-const fit = () => {
-  const s = Math.min(innerWidth / 800, innerHeight / 560);
-  document.querySelector('.viz').style.transform =
-    `translate(${(innerWidth - 800 * s) / 2}px,0px) scale(${s})`;
-};
-addEventListener('resize', fit); fit();
+/* ---- the text-only side --------------------------------------------
+ * The same question answered the usual way: words streaming in left to
+ * right, one after another, over the same window the right side uses.
+ * Every number here matches the board on the right.
+ * ------------------------------------------------------------------ */
+const TEXT = [
+  ['p', "Overall, today was a solid day. You've reached 84% of your daily goals so far, which is up 6% compared with yesterday, so you're trending in the right direction. Here's a detailed breakdown of how each area of your health is looking."],
+  ['h', 'Running goal'],
+  ['p', "You're very close to a new personal best. If you manage two more runs this week, you'll beat your longest running streak to date. Even short, easy runs would count toward keeping the streak alive."],
+  ['h', 'Active minutes'],
+  ['p', 'Your activity has been climbing steadily. This is the third week in a row that your active minutes have gone up. Over the last four weeks you logged 150, 220, 290 and 360 active minutes respectively, which is a strong and consistent upward trend.'],
+  ['h', 'Heart rate'],
+  ['p', 'Your resting heart rate today is 58 bpm, which sits in a healthy range and suggests your cardiovascular fitness is in good shape.'],
+  ['h', 'Sleep'],
+  ['p', 'Last night you got 6.4 hours of sleep against your goal of 8 hours, so you fell a little short. Broken down by stage, you spent 3 hours 36 minutes in core sleep, 1 hour 29 minutes in deep sleep and 1 hour 19 minutes in REM sleep, and you were awake for about 21 minutes during the night.'],
+  ['h', 'Move streak for September'],
+  ['p', "You've closed your move ring on 8 of the last 14 days, specifically on the 13th, 14th, 15th, 17th, 19th, 20th, 23rd and 24th. On the 12th, 16th, 18th, 21st and 22nd you came close but didn't quite close it. Today you're at 35% of your move goal so far."],
+  ['h', 'Recommendations for today'],
+  ['p', "For fiber, you've had 18 g out of your 30 g target, which is good progress, and you have 12 g left to go. For water, you've had 6 of your 8 cups, so you're on track and need 2 more cups. Movement is the area that needs the most attention: you've done 30 of your 60 minutes, leaving 30 minutes to go."],
+  ['p', "If you drink two more cups of water and fit in a 30 minute walk this evening, you'll round the day out nicely and move closer to closing all of your goals."]
+];
+
+let tTimers = [];
+const tAfter = (ms, fn) => tTimers.push(setTimeout(fn, ms));
+
+function buildText() {
+  const body = document.getElementById('tbody');
+  body.innerHTML = '';
+  const words = [];
+  let list = null;
+  const addWords = (el, text) => {
+    text.split(' ').forEach((w, i) => {
+      if (i) el.appendChild(document.createTextNode(' '));
+      const s = document.createElement('span');
+      s.className = 'w';
+      s.textContent = w;
+      el.appendChild(s);
+      words.push(s);
+    });
+  };
+  for (const [kind, text] of TEXT) {
+    if (kind === 'li') {
+      if (!list) { list = document.createElement('ul'); body.appendChild(list); }
+      const li = document.createElement('li');
+      const dot = document.createElement('span');
+      dot.className = 'w dot';
+      dot.textContent = '•';
+      li.appendChild(dot);
+      words.push(dot);
+      addWords(li, text);
+      list.appendChild(li);
+    } else {
+      list = null;
+      const el = document.createElement(kind === 'h' ? 'h5' : 'p');
+      addWords(el, text);
+      body.appendChild(el);
+    }
+  }
+  return words;
+}
+
+function playText() {
+  tTimers.forEach(clearTimeout);
+  tTimers = [];
+  const row = document.querySelector('.t-row');
+  const ans = document.querySelector('.t-ans');
+  row.classList.remove('in');
+  ans.classList.remove('in');
+  const words = buildText();
+
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    row.classList.add('in'); ans.classList.add('in');
+    words.forEach(w => w.classList.add('on'));
+    return;
+  }
+
+  tAfter(400,  () => row.classList.add('in'));
+  tAfter(1300, () => ans.classList.add('in'));
+  // one token after another, with the small unevenness real streaming has
+  let t = 1450;
+  words.forEach(w => {
+    tAfter(t, () => w.classList.add('on'));
+    t += 15 + Math.random() * 14;
+  });
+}
+
+// fit the wide composition to the width of the frame it is embedded in; a
+// frame shorter than 16:9 crops the bottom
+function fit() {
+  const box = document.getElementById('fitbox');
+  const k = window.innerWidth / 1584;
+  box.style.width = 1584 * k + 'px';
+  box.style.height = 891 * k + 'px';
+  box.style.left = (window.innerWidth - 1584 * k) / 2 + 'px';
+  box.firstElementChild.style.transform = `scale(${k})`;
+}
+fit();
+window.addEventListener('resize', fit);
+
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(playText);
+else playText();
+document.querySelector('.viz').addEventListener('click', playText);   // replays with the right side
 </script>
+
+
 </body>
 </html>
