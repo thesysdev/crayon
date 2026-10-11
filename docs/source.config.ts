@@ -37,6 +37,7 @@ export const blogPosts = defineCollections({
     author: z.string(),
     date: z.string().date().or(z.date()),
     featured: z.boolean().optional(),
+    related: z.array(z.object({ title: z.string(), href: z.string() })).optional(),
   }),
 });
 

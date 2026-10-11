@@ -222,6 +222,7 @@ const integrationCatalog: Integration[] = [
       },
     ],
     links: [
+      { label: "React Email API reference", href: "/docs/api-reference/react-email", kind: "Docs" },
       ...packageLinks("@openuidev/react-email", "react-email", "/docs/api-reference/react-email"),
       exampleLink("miscellaneous/react-email"),
       { label: "React Email", href: "https://react.email", kind: "Website" },
@@ -419,6 +420,7 @@ const integrationCatalog: Integration[] = [
       },
     ],
     links: [
+      { label: "assistant-ui guide", href: "/docs/build-agents/assistant-ui", kind: "Docs" },
       ...packageLinks("@openuidev/assistant-ui", "assistant-ui"),
       {
         label: "assistant-ui guide",
@@ -703,6 +705,7 @@ const integrationCatalog: Integration[] = [
       },
     ],
     links: [
+      { label: "Vue Lang API reference", href: "/docs/api-reference/vue-lang", kind: "Docs" },
       ...packageLinks("@openuidev/vue-lang", "vue-lang"),
       exampleLink("app-frameworks/vue"),
       { label: "Vue", href: "https://vuejs.org", kind: "Website" },
@@ -738,6 +741,11 @@ const integrationCatalog: Integration[] = [
       },
     ],
     links: [
+      {
+        label: "Angular Lang API reference",
+        href: "/docs/api-reference/angular-lang",
+        kind: "Docs",
+      },
       ...packageLinks(
         "@openuidev/angular-lang",
         "angular-lang",
@@ -810,6 +818,7 @@ const integrationCatalog: Integration[] = [
       },
     ],
     links: [
+      { label: "Svelte Lang API reference", href: "/docs/api-reference/svelte-lang", kind: "Docs" },
       ...packageLinks("@openuidev/svelte-lang", "svelte-lang"),
       exampleLink("app-frameworks/svelte"),
       { label: "Svelte", href: "https://svelte.dev", kind: "Website" },

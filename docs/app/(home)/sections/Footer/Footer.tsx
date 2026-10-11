@@ -2,6 +2,7 @@
 import svgPaths from "@/imports/svg-urruvoh2be";
 import { Monitor, Moon, Sun } from "@phosphor-icons/react";
 import { useTheme } from "next-themes";
+import Link from "next/link";
 import { useId, useSyncExternalStore } from "react";
 import styles from "./Footer.module.css";
 
@@ -174,6 +175,37 @@ function ThemeTabs() {
 // Main component
 // ---------------------------------------------------------------------------
 
+const INTEGRATION_LINKS = [
+  { label: "LangGraph generative UI", href: "/integrations/langchain-langgraph" },
+  { label: "Vercel AI SDK generative UI", href: "/integrations/vercel-ai-sdk" },
+  { label: "Google ADK agent UI", href: "/integrations/google-adk" },
+  { label: "AG-UI frontend", href: "/integrations/ag-ui" },
+  { label: "assistant-ui", href: "/integrations/assistant-ui" },
+  { label: "Generative UI for Vue", href: "/integrations/vue" },
+  { label: "Generative UI for Svelte", href: "/integrations/svelte" },
+  { label: "Generative UI for Angular", href: "/integrations/angular" },
+  { label: "Generative UI benchmark", href: "/benchmarks" },
+];
+
+function IntegrationLinks() {
+  return (
+    <nav className={styles.linkGroup} aria-labelledby="footer-integrations">
+      <p id="footer-integrations" className={styles.linkGroupTitle}>
+        Integrations
+      </p>
+      <ul className={styles.linkList}>
+        {INTEGRATION_LINKS.map((link) => (
+          <li key={link.href}>
+            <Link className={styles.linkGroupLink} href={link.href}>
+              {link.label}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  );
+}
+
 export function Footer() {
   return (
     <footer className={styles.footer}>
@@ -186,6 +218,8 @@ export function Footer() {
             <ThesysLogo />
             <ThemeTabs />
           </div>
+
+          <IntegrationLinks />
 
           {/* Bottom bar */}
           <div className={styles.bottomBar}>
