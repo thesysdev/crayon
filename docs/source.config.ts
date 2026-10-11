@@ -2,6 +2,7 @@ import { metaSchema, pageSchema } from "fumadocs-core/source/schema";
 import { defineCollections, defineConfig, defineDocs } from "fumadocs-mdx/config";
 import lastModified from "fumadocs-mdx/plugins/last-modified";
 import { z } from "zod";
+import { getGitLastModified } from "./lib/git-last-modified";
 
 const docsPageSchema = pageSchema.extend({
   customHeader: z.boolean().optional().default(false),
@@ -34,10 +35,16 @@ export const blogPosts = defineCollections({
   schema: pageSchema.extend({
     author: z.string(),
     date: z.string().date().or(z.date()),
+    updatedAt: z.string().date().or(z.date()).optional(),
     featured: z.boolean().optional(),
   }),
 });
 
 export default defineConfig({
-  plugins: [lastModified()],
+  plugins: [
+    lastModified({
+      filter: (collection) => collection === "docs",
+      versionControl: async (filePath) => getGitLastModified(filePath),
+    }),
+  ],
 });

@@ -2,7 +2,7 @@ import { RootProvider } from "fumadocs-ui/provider/next";
 import type { Metadata } from "next";
 import { Geist_Mono, Inter } from "next/font/google";
 import Script from "next/script";
-import { BASE_URL } from "../lib/source";
+import { BASE_URL, SITE_IMAGE } from "../lib/source";
 import "./global.css";
 import { PHProvider } from "./providers";
 
@@ -18,13 +18,12 @@ const geistMono = Geist_Mono({
 const SITE_TITLE = "OpenUI - The Open Standard for Intelligent UI";
 const SITE_DESCRIPTION =
   "OpenUI is the open standard for Intelligent UI. Full-stack, framework-agnostic Generative UI built on OpenUI Lang, a streaming-first language with first-party runtimes for React, Vue, Svelte, and Angular, and up to 67% fewer tokens than JSON.";
-const SITE_IMAGE = "/meta-image.png?v=20261008";
 
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
   title: {
     default: SITE_TITLE,
-    template: `%s | ${SITE_TITLE}`,
+    template: "%s | OpenUI",
   },
   description: SITE_DESCRIPTION,
   applicationName: SITE_TITLE,

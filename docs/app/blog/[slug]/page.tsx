@@ -1,6 +1,6 @@
 import { GitHubButton } from "@/app/(home)/components/GitHubButton/GitHubButton";
 import { Footer } from "@/app/(home)/sections/Footer/Footer";
-import { blog } from "@/lib/source";
+import { SITE_IMAGE, blog } from "@/lib/source";
 import { getMDXComponents } from "@/mdx-components";
 import { TOCProvider, TOCScrollArea } from "fumadocs-ui/components/toc";
 import { TOCItem, TOCItems } from "fumadocs-ui/components/toc/default";
@@ -73,6 +73,14 @@ export async function generateMetadata(props: {
     description: page.data.description,
     alternates: {
       canonical: page.url,
+    },
+    openGraph: {
+      type: "article",
+      url: page.url,
+      siteName: "OpenUI",
+      title: page.data.title,
+      description: page.data.description,
+      images: [{ url: SITE_IMAGE, width: 1800, height: 942, alt: "OpenUI preview" }],
     },
   };
 }
