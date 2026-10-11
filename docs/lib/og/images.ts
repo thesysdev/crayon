@@ -32,11 +32,19 @@ export function ogImageUrl({ path, card }: OgImage) {
   return `/og${path}?v=${hash.digest("hex").slice(0, 10)}`;
 }
 
+/**
+ * Blog covers are photographic, so they ship as JPEG to stay small (WhatsApp drops previews for
+ * large images). Text cards stay PNG for crisp type.
+ */
+export function ogImageFormat(card: OgCardData) {
+  return card.template === "cover" ? "jpeg" : "png";
+}
+
 export function ogImageMetadata(image: OgImage) {
   return {
     url: ogImageUrl(image),
     ...OG_SIZE,
-    type: "image/png",
+    type: `image/${ogImageFormat(image.card)}`,
     alt: image.card.title,
   };
 }

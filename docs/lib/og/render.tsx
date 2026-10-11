@@ -1,6 +1,7 @@
 import { ImageResponse } from "@takumi-rs/image-response";
 import { readFile } from "node:fs/promises";
 import { extname, join } from "node:path";
+import { ogImageFormat } from "./images";
 import { OG_SIZE, OgCard, type OgCardData, OgCover } from "./templates";
 
 let fonts: Promise<{ name: string; weight: number; data: Buffer }[]> | undefined;
@@ -55,5 +56,10 @@ export async function renderOgCard(card: OgCardData) {
         partnerLogo={card.partnerLogo && (await publicImage(card.partnerLogo))}
       />
     );
-  return new ImageResponse(node, { ...OG_SIZE, format: "png", fonts: await loadFonts() });
+  return new ImageResponse(node, {
+    ...OG_SIZE,
+    format: ogImageFormat(card),
+    quality: 85,
+    fonts: await loadFonts(),
+  });
 }

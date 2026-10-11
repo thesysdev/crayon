@@ -42,7 +42,9 @@ export function DocsPageView({ page }: { page: DocsSourcePage }) {
 }
 
 export function getDocsPageMetadata(page: DocsSourcePage): Metadata {
-  return withOgImage(docsMetadata(page), docsOgImage(page));
+  const image = docsOgImage(page);
+  const description = image.card.template === "card" ? image.card.description : undefined;
+  return withOgImage(docsMetadata(page), image, { description });
 }
 
 function docsMetadata(page: DocsSourcePage): Metadata {

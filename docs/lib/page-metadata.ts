@@ -3,6 +3,21 @@ import { type OgImage, ogImageMetadata } from "./og/images";
 
 export const SITE_NAME = "OpenUI - The Open Standard for Intelligent UI";
 
+/** Site-wide card, used by the homepage and the blog index. */
+export const SITE_OPEN_GRAPH = {
+  type: "website",
+  siteName: SITE_NAME,
+  images: [
+    {
+      url: "/meta-image.png?v=20261008",
+      type: "image/png",
+      width: 1800,
+      height: 942,
+      alt: "OpenUI preview",
+    },
+  ],
+} satisfies Metadata["openGraph"];
+
 /**
  * A page's title, description, and OG artwork, declared once. Static routes keep this in a
  * colocated `metadata.ts` (picked up by `scripts/generate-og-map.mjs`); dynamic routes build it
@@ -71,6 +86,7 @@ export function withOgImage(
     openGraph: {
       siteName: SITE_NAME,
       type: "website",
+      url: metadata.alternates?.canonical ?? image.path,
       ...metadata.openGraph,
       ...preview,
       images,

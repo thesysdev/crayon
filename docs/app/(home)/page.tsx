@@ -1,3 +1,4 @@
+import { SITE_OPEN_GRAPH } from "@/lib/page-metadata";
 import { BASE_URL } from "@/lib/source";
 import type { Metadata } from "next";
 import { AGENT_SETUP_PROMPT, AgentPicker } from "./components/AgentPicker/AgentPicker";
@@ -18,6 +19,7 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "/",
   },
+  openGraph: { ...SITE_OPEN_GRAPH, url: "/" },
 };
 
 const structuredData = {
