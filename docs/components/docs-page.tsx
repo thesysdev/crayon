@@ -54,7 +54,7 @@ export function DocsPageView({ page }: { page: DocsSourcePage }) {
 export function getDocsPageMetadata(page: DocsSourcePage): Metadata {
   const image = docsOgImage(page);
   const description = image.card.template === "card" ? image.card.description : undefined;
-  return withOgImage(docsMetadata(page), image, { description });
+  return withOgImage({ ...docsMetadata(page), description }, image, { description });
 }
 
 function docsMetadata(page: DocsSourcePage): Metadata {
