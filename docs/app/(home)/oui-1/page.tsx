@@ -1,111 +1,153 @@
-import { ArrowRight, ArrowUpRight } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import type { Metadata } from "next";
-import Link from "next/link";
+import { CloudCtaSection } from "../cloud/CloudCtaSection";
+import gatewayStyles from "../cloud/gateway/page.module.css";
 import { BevelButton } from "../components/Button/BevelButton";
+import { FadedDither } from "../components/FadedDither/FadedDither";
 import styles from "../components/ProductLanding.module.css";
+import { SectionHeader } from "../components/SectionHeader/SectionHeader";
+import homeStyles from "../page.module.css";
+import { FeatureGridSection } from "../sections/FeatureGridSection/FeatureGridSection";
 import { Footer } from "../sections/Footer/Footer";
+import { HeroSection } from "../sections/HeroSection/HeroSection";
 
 export const metadata: Metadata = {
   title: "OUI-1 | An open model built for Generative UI",
   description:
-    "A DiffusionGemma 26B-A4B finetune that writes OpenUI Lang, with 4B active parameters, a 71.7% Generative UI Benchmark score, and Apache 2.0 weights.",
+    "A DiffusionGemma finetune that writes OpenUI Lang, with 4B active parameters, a 71.7% Generative UI Benchmark score, and Apache 2.0 weights.",
   alternates: { canonical: "/oui-1" },
   openGraph: {
     title: "OUI-1 | An open model built for Generative UI",
-    description: "A DiffusionGemma 26B-A4B finetune built to generate interfaces in OpenUI Lang.",
+    description:
+      "Generate interfaces from your components with an open-weight model built for OpenUI Lang.",
     url: "/oui-1",
     type: "website",
   },
 };
-
 const model = "https://huggingface.co/thesysdev/OUI-1";
 const research = "/blog/oui-1";
-const facts = [
-  {
-    title: "4B active parameters",
-    description: "A compact model purpose-built for Generative UI, with 26B total parameters.",
-  },
-  {
-    title: "71.7% benchmark score",
-    description: "5.5× its base model’s score on the Generative UI Benchmark.",
-  },
-  {
-    title: "Streams as it generates",
-    description:
-      "OpenUI renders complete components as the response arrives, so the interface takes shape as it’s generated.",
-  },
-  {
-    title: "Your components, generated",
-    description:
-      "Describe your component library. OUI-1 composes it into interfaces using OpenUI Lang.",
-  },
-  {
-    title: "Run on your own hardware",
-    description:
-      "Self-host on a compatible GPU. The AppLess setup documents FP8 inference on an RTX 5090.",
-  },
-  {
-    title: "Open weights, Apache 2.0",
-    description:
-      "Download the weights, adapt the model, and build with your own component library.",
-  },
-];
-function Actions() {
-  return (
-    <div className={styles.actions}>
-      <BevelButton
-        href={model}
-        external
-        variant="primary"
-        label="Get the model"
-        badge={<ArrowUpRight size={16} />}
-      />
-      <Link className={styles.textAction} href={research}>
-        Read the research <ArrowRight size={16} />
-      </Link>
+export default function OuiOnePage() {
+  const artwork = (
+    <div className={`${gatewayStyles.heroArtSpace} ${styles.stage}`}>
+      <FadedDither band="light" className={gatewayStyles.heroShader} />
+      <div
+        className={`${gatewayStyles.heroArtwork} ${styles.modelStage}`}
+        role="img"
+        aria-label="OUI-1"
+      >
+        <span className={styles.modelMark} aria-hidden="true">
+          <span className={styles.modelGhost}>OUI-1</span>
+          <span className={styles.modelText}>OUI-1</span>
+        </span>
+      </div>
     </div>
   );
-}
-export default function OuiOnePage() {
   return (
-    <div className={styles.page}>
-      <main className={styles.container}>
-        <section className={styles.modelHero} aria-labelledby="oui-title">
-          <p className={styles.eyebrow}>OpenUI OUI-1</p>
-          <h1 id="oui-title">An open model built for Generative UI</h1>
-          <p className={styles.lead}>
-            Turn requests into interfaces built from your components. OUI-1 writes OpenUI Lang,
-            ready for OpenUI to render as it arrives.
-          </p>
-          <Actions />
-          <div className={styles.modelArtwork} role="img" aria-label="OUI-1">
-            <div className={styles.modelDots} />
-            <span>OUI-1</span>
+    <div className={`${homeStyles.page} ${styles.pageFocus}`}>
+      <div className={homeStyles.heroShell}>
+        <HeroSection
+          align="left"
+          desktopFromTablet
+          smallSubtitle
+          tightDesktopSpacing={false}
+          splitLockup
+          flushInnerInlinePadding
+          title={
+            <span className={gatewayStyles.titleBlock}>
+              <span className={gatewayStyles.eyebrow}>
+                OpenUI <span className={gatewayStyles.cloudTag}>OUI-1</span>
+              </span>
+              <span className={gatewayStyles.title}>An open model built for Generative UI</span>
+            </span>
+          }
+          subtitle={
+            <span className={gatewayStyles.subtitle}>
+              Turn requests into interfaces built from your components. OUI-1 writes OpenUI Lang,
+              ready for OpenUI to render as it arrives.
+            </span>
+          }
+          commandSlot={
+            <div className={gatewayStyles.ctaGroup}>
+              <BevelButton
+                href={model}
+                external
+                variant="primary"
+                label="Get the model"
+                badge={<ArrowUpRight size={16} strokeWidth={2.25} />}
+              />
+              <BevelButton
+                href={research}
+                variant="secondary"
+                label="Read the research"
+                badge={<ArrowUpRight size={16} strokeWidth={2.25} />}
+              />
+            </div>
+          }
+          showPlaygroundButton={false}
+          showGitHubBanner={false}
+          showTagline={false}
+          desktopPreviewSlot={artwork}
+          mobilePreviewSlot={artwork}
+        />
+      </div>
+      <main>
+        <div className={styles.featuresBand}>
+          <div className={styles.featuresInner}>
+            <div className={styles.featureHeading}>
+              <SectionHeader title="Built for interfaces, ready for your product" />
+            </div>
+            <FeatureGridSection
+              showHeader={false}
+              showCompat={false}
+              showBottomSeparator={false}
+              fadeColumnLines
+              flushSectionPadding
+              mobileAccordion={false}
+              features={[
+                {
+                  icon: "pulse",
+                  title: "4B active parameters",
+                  description:
+                    "A compact model purpose-built for Generative UI, with 26B total parameters.",
+                },
+                {
+                  icon: "chart",
+                  title: "71.7% benchmark score",
+                  description: "5.5× its base model’s score on the Generative UI Benchmark.",
+                },
+                {
+                  icon: "signal",
+                  title: "Streams as it generates",
+                  description:
+                    "OpenUI renders complete components as the response arrives, so the interface takes shape as it’s generated.",
+                },
+                {
+                  icon: "interaction",
+                  title: "Your components, generated",
+                  description:
+                    "Describe your component library. OUI-1 composes it into interfaces using OpenUI Lang.",
+                },
+                {
+                  icon: "devices",
+                  title: "Run on your own hardware",
+                  description:
+                    "Self-host on a compatible GPU. The AppLess setup documents FP8 inference on an RTX 5090.",
+                },
+                {
+                  icon: "key",
+                  title: "Open weights, Apache 2.0",
+                  description:
+                    "Download the weights, adapt the model, and build with your own component library.",
+                },
+              ]}
+            />
           </div>
-        </section>
-        <section className={styles.section} aria-labelledby="oui-features">
-          <h2 id="oui-features" className={styles.sectionTitle}>
-            Built for interfaces, ready for your product
-          </h2>
-          <p className={styles.sectionIntro}>
-            A model trained to compose interfaces, with open weights you can run and adapt yourself.
-          </p>
-          <div className={styles.featureGrid}>
-            {facts.map((fact) => (
-              <article className={styles.feature} key={fact.title}>
-                <h3>{fact.title}</h3>
-                <p>{fact.description}</p>
-              </article>
-            ))}
-          </div>
-        </section>
-        <section className={styles.closing} aria-labelledby="oui-build">
-          <h2 id="oui-build">Give your product a model that speaks UI</h2>
-          <p className={styles.closingLead}>
-            Download OUI-1 and start generating interfaces with your own component library.
-          </p>
-          <Actions />
-        </section>
+        </div>
+        <CloudCtaSection
+          title="Build your next interface with OUI-1."
+          primary={{ label: "Get the model", href: model, external: true }}
+          secondary={{ label: "Read the research", href: research }}
+        />
       </main>
       <Footer />
     </div>
