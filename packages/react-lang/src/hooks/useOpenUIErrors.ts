@@ -23,6 +23,10 @@ export interface UseOpenUIErrorsOptions {
   querySnapshot: QuerySnapshot;
   parseExceptionRef: CurrentRef<OpenUIError | null>;
   runtimeErrorsRef: CurrentRef<OpenUIError[]>;
+  /** Runtime errors from Query/Mutation statements and the last action's values. */
+  statementErrorsRef?: CurrentRef<Record<string, OpenUIError[]>>;
+  /** Bumped when an action reports errors, since a click may not re-render otherwise. */
+  actionErrorRevision?: number;
   renderErrorsRef: CurrentRef<OpenUIError[]>;
   onError?: (errors: OpenUIError[]) => void;
 }
@@ -37,6 +41,8 @@ export function useOpenUIErrors({
   querySnapshot,
   parseExceptionRef,
   runtimeErrorsRef,
+  statementErrorsRef,
+  actionErrorRevision,
   renderErrorsRef,
   onError,
 }: UseOpenUIErrorsOptions): OpenUIErrorsResult {
@@ -86,6 +92,7 @@ export function useOpenUIErrors({
     }
 
     errors.push(...runtimeErrorsRef.current);
+    errors.push(...Object.values(statementErrorsRef?.current ?? {}).flat());
     errors.push(...renderErrorsRef.current);
     renderErrorsRef.current = [];
     errors.push(...(querySnapshot.__openui_errors ?? []));
@@ -112,6 +119,8 @@ export function useOpenUIErrors({
     library,
     parseExceptionRef,
     runtimeErrorsRef,
+    statementErrorsRef,
+    actionErrorRevision,
     renderErrorsRef,
   ]);
 

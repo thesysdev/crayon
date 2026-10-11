@@ -18,7 +18,7 @@ import {
   type ToolProvider,
 } from "@openuidev/lang-core";
 import type React from "react";
-import { useCallback, useEffect, useMemo, useRef, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import type { OpenUIContextValue } from "../context";
 import type { Library } from "../library";
 import { parseResponseBundle } from "../responseBundle";
@@ -36,6 +36,25 @@ function unwrapFieldValue(v: unknown): unknown {
     return (v as Record<string, unknown>).value;
   }
   return v;
+}
+
+/** Evaluation context whose function errors land in `errors`, like evaluate-tree's per-prop wrapper. */
+function reportingContext(
+  ctx: EvaluationContext,
+  errors: OpenUIError[],
+  where: { statementId?: string; label: string },
+): EvaluationContext {
+  return {
+    ...ctx,
+    reportError: (msg) =>
+      errors.push({
+        source: "runtime",
+        code: "runtime-error",
+        statementId: where.statementId,
+        message: `Evaluating ${where.label} failed: ${msg}`,
+        hint: `Check the expression used for ${where.label}`,
+      }),
+  };
 }
 
 export interface UseOpenUIStateOptions {
@@ -205,15 +224,38 @@ export function useOpenUIState(
     [store, queryManager, functions, schema.actions],
   );
 
+  const isStreamingRef = useRef(isStreaming);
+  isStreamingRef.current = isStreaming;
+
+  // ─── Runtime errors outside props: Query/Mutation statements and action-time values ───
+  // Each pass replaces its own list, so re-evaluating the same bad args does not pile up.
+  const statementErrorsRef = useRef({
+    queries: [] as OpenUIError[],
+    mutations: [] as OpenUIError[],
+    actions: [] as OpenUIError[],
+  });
+  const [actionErrorRevision, setActionErrorRevision] = useState(0);
+  const actionErrorsResultRef = useRef(result);
+  if (actionErrorsResultRef.current !== result) {
+    // A new program clears errors from earlier clicks
+    actionErrorsResultRef.current = result;
+    statementErrorsRef.current.actions = [];
+  }
+
   // ─── Evaluate and submit queries ───
   useEffect(() => {
     // Keep the existing query lifecycle until streaming finishes and the bundle is ready.
     if (blocked) return;
 
+    const errors: OpenUIError[] = [];
     const queryStmts = result?.queryStatements ?? [];
     const evaluatedNodes = queryStmts.map((qn) => {
       const relevantDeps: Record<string, unknown> = {};
-      const toolName = qn.toolAST ? (evaluate(qn.toolAST, evaluationContext) as string) : "";
+      const ctx = reportingContext(evaluationContext, errors, {
+        statementId: qn.statementId,
+        label: `Query "${qn.statementId}"`,
+      });
+      const toolName = qn.toolAST ? (evaluate(qn.toolAST, ctx) as string) : "";
       if (qn.deps) {
         for (const ref of qn.deps) {
           relevantDeps[ref] = storeSnapshot[ref];
@@ -223,16 +265,15 @@ export function useOpenUIState(
       return {
         statementId: qn.statementId,
         toolName,
-        args: qn.argsAST ? evaluate(qn.argsAST, evaluationContext) : null,
-        defaults: qn.defaultsAST ? evaluate(qn.defaultsAST, evaluationContext) : null,
-        refreshInterval: qn.refreshAST
-          ? (evaluate(qn.refreshAST, evaluationContext) as number)
-          : undefined,
+        args: qn.argsAST ? evaluate(qn.argsAST, ctx) : null,
+        defaults: qn.defaultsAST ? evaluate(qn.defaultsAST, ctx) : null,
+        refreshInterval: qn.refreshAST ? (evaluate(qn.refreshAST, ctx) as number) : undefined,
         deps: Object.keys(relevantDeps).length > 0 ? relevantDeps : undefined,
         complete: qn.complete,
       };
     });
 
+    statementErrorsRef.current.queries = errors;
     // Always call — empty array clears removed queries and their errors
     queryManager.evaluateQueries(evaluatedNodes);
   }, [
@@ -249,11 +290,19 @@ export function useOpenUIState(
   useEffect(() => {
     if (blocked) return;
 
+    const errors: OpenUIError[] = [];
     const mutStmts = result?.mutationStatements ?? [];
-    const nodes = mutStmts.map((mn) => ({
-      statementId: mn.statementId,
-      toolName: mn.toolAST ? (evaluate(mn.toolAST, evaluationContext) as string) : "",
-    }));
+    const nodes = mutStmts.map((mn) => {
+      const ctx = reportingContext(evaluationContext, errors, {
+        statementId: mn.statementId,
+        label: `Mutation "${mn.statementId}"`,
+      });
+      return {
+        statementId: mn.statementId,
+        toolName: mn.toolAST ? (evaluate(mn.toolAST, ctx) as string) : "",
+      };
+    });
+    statementErrorsRef.current.mutations = errors;
     // Always call — empty array clears removed mutations and their errors
     queryManager.registerMutations(nodes);
   }, [blocked, result?.mutationStatements, evaluationContext, queryManager]);
@@ -365,6 +414,14 @@ export function useOpenUIState(
       // Form state is read per step so an earlier @Set in the same plan is visible.
       const actionPlan = action as ActionPlan | undefined;
       if (actionPlan?.steps) {
+        const errors: OpenUIError[] = [];
+        // Report this click's errors once the plan ends, halted or not; skipped while streaming like render errors
+        const reportActionErrors = () => {
+          if (isStreamingRef.current) return;
+          if (!errors.length && !statementErrorsRef.current.actions.length) return;
+          statementErrorsRef.current.actions = errors;
+          setActionErrorRevision((r) => r + 1);
+        };
         for (const step of actionPlan.steps) {
           switch (step.type) {
             case ACTION_STEPS.Run: {
@@ -373,10 +430,16 @@ export function useOpenUIState(
                   (m) => m.statementId === step.statementId,
                 );
                 const evaluatedArgs = mn?.argsAST
-                  ? (evaluate(mn.argsAST, evaluationContext) as Record<string, unknown>)
+                  ? (evaluate(
+                      mn.argsAST,
+                      reportingContext(evaluationContext, errors, {
+                        statementId: mn.statementId,
+                        label: `Mutation "${mn.statementId}" args`,
+                      }),
+                    ) as Record<string, unknown>)
                   : {};
                 const ok = await queryManager.fireMutation(step.statementId, evaluatedArgs);
-                if (!ok) return; // halt on failure
+                if (!ok) return reportActionErrors(); // halt on failure
               } else {
                 queryManager.invalidate([step.statementId]);
               }
@@ -414,7 +477,10 @@ export function useOpenUIState(
                 console.warn(`[openui] Set action for ${step.target} has no valueAST — skipping`);
                 break;
               }
-              const value = evaluate(step.valueAST, evaluationContext);
+              const value = evaluate(
+                step.valueAST,
+                reportingContext(evaluationContext, errors, { label: `@Set ${step.target} value` }),
+              );
               store.set(step.target, value);
               break;
             }
@@ -427,7 +493,7 @@ export function useOpenUIState(
             }
           }
         }
-        return;
+        return reportActionErrors();
       }
 
       // Default — ContinueConversation with label
@@ -444,8 +510,6 @@ export function useOpenUIState(
 
   // ─── reportError (for error boundary) ───
   const renderErrorsRef = useRef<OpenUIError[]>([]);
-  const isStreamingRef = useRef(isStreaming);
-  isStreamingRef.current = isStreaming;
   const reportError = useCallback((error: OpenUIError) => {
     // Skip during streaming — render errors are transient and onError won't fire until streaming stops
     if (isStreamingRef.current) return;
@@ -527,6 +591,8 @@ export function useOpenUIState(
     querySnapshot,
     parseExceptionRef,
     runtimeErrorsRef,
+    statementErrorsRef,
+    actionErrorRevision,
     renderErrorsRef,
     onError,
   });
