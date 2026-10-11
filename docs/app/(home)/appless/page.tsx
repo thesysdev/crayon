@@ -1,14 +1,9 @@
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import type { Metadata } from "next";
-import { CloudCtaSection } from "../cloud/CloudCtaSection";
+import Link from "next/link";
 import { BevelButton } from "../components/Button/BevelButton";
-import { InsightBar } from "../components/InsightBar/InsightBar";
 import styles from "../components/ProductLanding.module.css";
-import homeStyles from "../page.module.css";
-import type { GridFeature } from "../sections/FeatureGridSection/FeatureGridSection";
-import { FeatureGridSection } from "../sections/FeatureGridSection/FeatureGridSection";
 import { Footer } from "../sections/Footer/Footer";
-import { HeroSection } from "../sections/HeroSection/HeroSection";
 import { AppLessDemo } from "./AppLessDemo";
 
 export const metadata: Metadata = {
@@ -27,135 +22,99 @@ export const metadata: Metadata = {
 
 const github = "https://github.com/thesysdev/appless";
 
-const features: GridFeature[] = [
+const features = [
   {
-    icon: "search",
     title: "Just ask",
     description:
-      "Describe the interface you need, from a weather dashboard or restaurant list to a booking form. AppLess generates the screen on demand.",
+      "From a weather dashboard to a booking form, describe the task and watch the screen appear.",
   },
   {
-    icon: "devices",
-    title: "Native on each platform",
-    description:
-      "OpenUI renders the same generated screen with Cupertino components on iOS and Material 3 components on Android.",
+    title: "Native on your phone",
+    description: "Interactive components render as Cupertino on iOS and Material 3 on Android.",
   },
   {
-    icon: "interaction",
     title: "Keep exploring",
     description:
-      "Tap a row, button, or card to request the next screen. Optional prefetch trades extra model requests for faster navigation.",
+      "Tap a row, button, or card to generate the next screen. Optional prefetch makes likely destinations ready sooner.",
   },
 ];
 
 export default function AppLessPage() {
-  const preview = <AppLessDemo />;
-
   return (
-    <div className={`${homeStyles.page} ${styles.sectionRhythm}`}>
-      <div className={homeStyles.heroShell}>
-        <HeroSection
-          align="left"
-          desktopFromTablet
-          title={
-            <span className={styles.titleBlock}>
-              <span className={styles.eyebrow}>AppLess</span>
-              <span className={styles.title}>What if your phone had no apps?</span>
-            </span>
-          }
-          subtitle={
-            <span className={styles.subtitle}>
-              Ask for what you need. AppLess generates a native interface for the task, then builds
+    <div className={styles.page}>
+      <main className={styles.container}>
+        <section className={styles.appHero} aria-labelledby="appless-title">
+          <div className={styles.heroCopy}>
+            <p className={styles.eyebrow}>AppLess</p>
+            <h1 id="appless-title">What if your phone had no apps?</h1>
+            <p className={styles.lead}>
+              Ask for what you need. AppLess creates a native interface for the task, then builds
               the next screen when you tap.
-            </span>
-          }
-          smallSubtitle
-          tightDesktopSpacing={false}
-          splitLockup
-          flushInnerInlinePadding
-          commandSlot={
-            <div className={styles.ctaGroup}>
+            </p>
+            <div className={styles.actions}>
               <BevelButton
                 href={github}
                 external
                 variant="primary"
                 label="Explore on GitHub"
-                badge={<ArrowUpRight size={16} strokeWidth={2.25} />}
+                badge={<ArrowUpRight size={16} />}
               />
             </div>
-          }
-          showPlaygroundButton={false}
-          showGitHubBanner={false}
-          showTagline={false}
-          desktopPreviewSlot={preview}
-          mobilePreviewSlot={preview}
-        />
-      </div>
-
-      <main className={styles.main}>
-        <section className={styles.contentSection} aria-labelledby="appless-interface-heading">
-          <div className={styles.sectionHeader}>
-            <h2 id="appless-interface-heading">An interface for whatever you have in mind</h2>
-            <p>
-              Ask for a task, use the native interface it creates, then keep moving as AppLess
-              generates the next screen.
-            </p>
           </div>
-          <FeatureGridSection
-            features={features}
-            showHeader={false}
-            showCompat={false}
-            showBottomSeparator={false}
-            showTopSeparator
-            flushSectionPadding
-            mobileAccordion={false}
-          />
-          <div className={styles.mechanismBlock}>
-            <div className={styles.sectionHeader}>
-              <h2 id="appless-powered-heading">Powered by OUI-1 and OpenUI</h2>
+          <AppLessDemo />
+        </section>
+
+        <section className={styles.section} aria-labelledby="appless-features">
+          <h2 id="appless-features" className={styles.sectionTitle}>
+            From a request to a native interface
+          </h2>
+          <div className={styles.featureGrid}>
+            {features.map((feature) => (
+              <article className={styles.feature} key={feature.title}>
+                <h3>{feature.title}</h3>
+                <p>{feature.description}</p>
+              </article>
+            ))}
+          </div>
+          <div className={styles.powered}>
+            <h3>Powered by OUI-1 and OpenUI</h3>
+            <div>
               <p>
-                OUI-1 generates the interface in OpenUI Lang. OpenUI validates and renders it into
-                native components as the response arrives.
+                OUI-1 generates the interface in OpenUI Lang. OpenUI renders it into native
+                components as it streams.
               </p>
-            </div>
-            <div className={styles.linkRow}>
-              <BevelButton
-                href="/oui-1"
-                variant="secondary"
-                label="Meet OUI-1"
-                badge={<ArrowRight size={16} strokeWidth={2.25} />}
-              />
-              <BevelButton
-                href="/docs/openui-lang"
-                variant="secondary"
-                label="Explore OpenUI Lang"
-                badge={<ArrowRight size={16} strokeWidth={2.25} />}
-              />
+              <div className={styles.textLinks}>
+                <Link href="/oui-1">
+                  Meet OUI-1 <ArrowRight size={16} />
+                </Link>
+                <Link href="/docs/openui-lang">
+                  Explore OpenUI Lang <ArrowRight size={16} />
+                </Link>
+              </div>
             </div>
           </div>
         </section>
 
-        <section className={styles.softBand} aria-labelledby="appless-future-heading">
-          <div className={styles.bandInner}>
-            <div className={styles.sectionHeader}>
-              <h2 id="appless-future-heading">A glimpse of what comes next</h2>
-              <p>
-                AppLess is an open-source experiment in software that forms around the task, then
-                changes as the task evolves.
-              </p>
-            </div>
-            <InsightBar>
-              Bookings, purchases, and payments in the demo are simulated. Optional search can
-              ground generated content in live results.
-            </InsightBar>
+        <section className={styles.closing} aria-labelledby="appless-future">
+          <h2 id="appless-future">A glimpse of what comes next</h2>
+          <p className={styles.closingLead}>
+            Start with an open-source experiment in software that takes shape around your intent.
+            Fork AppLess, extend its components, and connect it to your own services.
+          </p>
+          <p className={styles.disclosure}>
+            Today, bookings, purchases, and payments are simulated. Optional search tools can ground
+            screen content in real information.
+          </p>
+          <div className={styles.actions}>
+            <BevelButton
+              href={github}
+              external
+              variant="primary"
+              label="Fork AppLess"
+              badge={<ArrowUpRight size={16} />}
+            />
           </div>
         </section>
-
-        <CloudCtaSection
-          title="Make it your own."
-          primary={{ label: "Explore on GitHub", href: github, external: true }}
-          secondary={{ label: "Meet OUI-1", href: "/oui-1" }}
-        />
       </main>
       <Footer />
     </div>
