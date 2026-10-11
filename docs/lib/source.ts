@@ -25,15 +25,6 @@ export const blog = loader({
   source: toFumadocsSource(blogPosts, []),
 });
 
-export function getPageImage(page: InferPageType<typeof source>) {
-  const segments = [...page.slugs, "image.png"];
-
-  return {
-    segments,
-    url: `/og/docs/${segments.join("/")}`,
-  };
-}
-
 export async function getLLMText(page: InferPageType<typeof source>) {
   const processed = await page.data.getText("processed");
   const description = page.data.description || `OpenUI documentation for ${page.data.title}.`;

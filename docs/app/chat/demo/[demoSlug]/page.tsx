@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import {
   DEMO_CONVERSATIONS,
   getDemoConversationBySlug,
-  getDemoConversationPath,
+  getDemoConversationPageMetadata,
 } from "../../_components/demo-conversations";
 
 interface DemoChatPageProps {
@@ -19,11 +19,7 @@ export async function generateMetadata({ params }: DemoChatPageProps) {
   const conversation = getDemoConversationBySlug(demoSlug);
   if (!conversation) return {};
 
-  return createPageMetadata({
-    pathname: getDemoConversationPath(conversation),
-    title: `${conversation.title} | OpenUI Cloud Chat`,
-    description: conversation.description,
-  });
+  return createPageMetadata(getDemoConversationPageMetadata(conversation));
 }
 
 export default async function DemoChatPage({ params }: DemoChatPageProps) {
