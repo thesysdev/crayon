@@ -154,6 +154,11 @@ const config = {
         permanent: true,
       },
       {
+        source: "/docs/openui-lang/:page(specification-v05|specification-v01|evolution-guide)",
+        destination: "/docs/openui-lang/versions/:page",
+        permanent: true,
+      },
+      {
         source: "/docs/agent",
         destination: "/docs/agent/getting-started/introduction",
         permanent: true,
