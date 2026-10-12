@@ -15,7 +15,6 @@ const messagesEnd = ref<HTMLDivElement>();
 
 // Chat class internally uses Vue refs for messages/status/error
 // We poll state via a shallow ref that re-triggers on changes
-// Keep the conversation in localStorage so a reload brings it back.
 const MESSAGES_KEY = "openui-vue:messages";
 function loadMessages(): UIMessage[] {
   try {
@@ -57,9 +56,7 @@ watch(status, (current) => {
   if (current !== "ready" || chat.messages.length === 0) return;
   try {
     localStorage.setItem(MESSAGES_KEY, JSON.stringify(chat.messages));
-  } catch {
-    // Storage is full or blocked; the chat still works for this visit.
-  }
+  } catch {}
 });
 
 const starters = [

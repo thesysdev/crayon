@@ -17,25 +17,24 @@ export default function Page() {
     document.body.setAttribute("data-theme", mode);
   }, [mode]);
 
-  const llm = useMemo(
+  const { llm, storage } = useMemo(
     () =>
-      fetchLLM({
-        url: "/api/chat",
-        streamAdapter: openAIAdapter(),
-        messageFormat: openAIMessageFormat,
-      }),
+      withLocalHistory(
+        fetchLLM({
+          url: "/api/chat",
+          streamAdapter: openAIAdapter(),
+          messageFormat: openAIMessageFormat,
+        }),
+        "openui-shadcn",
+      ),
     [],
   );
-
-  // Threads live in this browser's localStorage, so switching chats or
-  // reloading brings the whole conversation back.
-  const chat = useMemo(() => withLocalHistory(llm, "openui-shadcn"), [llm]);
 
   return (
     <div className="h-screen w-screen overflow-hidden relative">
       <AgentInterface
-        llm={chat.llm}
-        storage={chat.storage}
+        llm={llm}
+        storage={storage}
         componentLibrary={shadcnChatLibrary}
         agentName="shadcn/ui Chat"
         theme={{ mode }}

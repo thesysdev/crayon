@@ -18,25 +18,24 @@ export default function Home() {
   // AgentInterface uses its built-in in-memory storage default (wiped on reload).
   // fetchLLM POSTs { threadId, messages }; the route keys a persistent pi
   // AgentSession on that threadId. The Cloud system prompt is attached server-side.
-  const llm = useMemo(
+  const { llm, storage } = useMemo(
     () =>
-      fetchLLM({
-        url: "/api/chat",
-        streamAdapter: openAIReadableStreamAdapter(),
-        messageFormat: openAIMessageFormat,
-      }),
+      withLocalHistory(
+        fetchLLM({
+          url: "/api/chat",
+          streamAdapter: openAIReadableStreamAdapter(),
+          messageFormat: openAIMessageFormat,
+        }),
+        "openui-pi",
+      ),
     [],
   );
-
-  // Threads live in this browser's localStorage, so switching chats or
-  // reloading brings the whole conversation back.
-  const chat = useMemo(() => withLocalHistory(llm, "openui-pi"), [llm]);
 
   return (
     <div className="h-screen w-screen overflow-hidden">
       <AgentInterface
-        llm={chat.llm}
-        storage={chat.storage}
+        llm={llm}
+        storage={storage}
         componentLibrary={openuiLibrary}
         agentName="OpenUI Agent Harness"
         theme={{ mode }}

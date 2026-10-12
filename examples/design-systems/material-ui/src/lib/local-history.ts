@@ -7,14 +7,6 @@ import {
   type UserMessage,
 } from "@openuidev/react-headless";
 
-/**
- * Keeps threads in the browser's localStorage, so switching chats or reloading
- * brings the whole conversation back. Nothing is stored on the server.
- *
- * Wrap the chat's `llm` with this and pass both results to the chat:
- * every send saves the thread so far, and the reply is saved once it finishes
- * streaming, in the same shape the chat shows it.
- */
 export function withLocalHistory(
   llm: ChatLLM,
   key: string,
@@ -33,9 +25,7 @@ export function withLocalHistory(
   const write = (itemKey: string, value: unknown) => {
     try {
       localStorage.setItem(itemKey, JSON.stringify(value));
-    } catch {
-      // Storage is full or blocked (private mode); the chat still works for this visit.
-    }
+    } catch {}
   };
   const threads = () => read<Thread[]>(threadsKey, []);
 
@@ -44,7 +34,6 @@ export function withLocalHistory(
     const response = await llm.send(params);
     if (!response.ok || !response.body) return response;
 
-    // Read a copy of the stream the way the chat does, then save the reply.
     const [forChat, forStorage] = response.body.tee();
     const reply = new Map<string, Message>();
     const keep = (message: Message) => reply.set(message.id, message);
@@ -94,9 +83,7 @@ export function withLocalHistory(
           );
           try {
             localStorage.removeItem(messagesKey(id));
-          } catch {
-            // Ignore blocked storage.
-          }
+          } catch {}
         },
       },
     },

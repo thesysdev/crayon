@@ -54,22 +54,17 @@ function ChatBody({ onClose }: { onClose: () => void }) {
   const setMessages = useThread((s) => s.setMessages);
   const [input, setInput] = useState("");
 
-  // Keep the conversation in localStorage so a reload brings it back.
   useEffect(() => {
     try {
       const saved = JSON.parse(localStorage.getItem(MESSAGES_KEY) ?? "[]");
       if (Array.isArray(saved) && saved.length > 0) setMessages(saved as Message[]);
-    } catch {
-      // Unreadable or blocked storage: start a fresh conversation.
-    }
+    } catch {}
   }, [setMessages]);
   useEffect(() => {
     if (isRunning || messages.length === 0) return;
     try {
       localStorage.setItem(MESSAGES_KEY, JSON.stringify(messages));
-    } catch {
-      // Storage is full or blocked; the chat still works for this visit.
-    }
+    } catch {}
   }, [messages, isRunning]);
   const scrollerRef = useRef<HTMLDivElement>(null);
 

@@ -8,24 +8,23 @@ import { useMemo } from "react";
 export default function Page() {
   const mode = useSystemThemeMode();
 
-  const llm = useMemo(
+  const { llm, storage } = useMemo(
     () =>
-      fetchLLM({
-        url: "/api/chat",
-        streamAdapter: agUIAdapter(),
-      }),
+      withLocalHistory(
+        fetchLLM({
+          url: "/api/chat",
+          streamAdapter: agUIAdapter(),
+        }),
+        "openui-langgraph",
+      ),
     [],
   );
-
-  // Threads live in this browser's localStorage, so switching chats or
-  // reloading brings the whole conversation back.
-  const chat = useMemo(() => withLocalHistory(llm, "openui-langgraph"), [llm]);
 
   return (
     <div className="app-shell">
       <AgentInterface
-        llm={chat.llm}
-        storage={chat.storage}
+        llm={llm}
+        storage={storage}
         componentLibrary={openuiLibrary}
         agentName="OpenUI + DeepAgents Chat"
         theme={{ mode }}

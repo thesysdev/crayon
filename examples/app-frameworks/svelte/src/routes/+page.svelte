@@ -11,7 +11,6 @@
   import ChatInput from "./ChatInput.svelte";
 
   let messagesEnd = $state<HTMLDivElement>();
-  // Keep the conversation in localStorage so a reload brings it back.
   const MESSAGES_KEY = "openui-svelte:messages";
   function loadMessages(): UIMessage[] {
     try {
@@ -39,9 +38,7 @@
     if (chat.status !== "ready" || chat.messages.length === 0) return;
     try {
       localStorage.setItem(MESSAGES_KEY, JSON.stringify(chat.messages));
-    } catch {
-      // Storage is full or blocked; the chat still works for this visit.
-    }
+    } catch {}
   });
 
   $effect(() => {

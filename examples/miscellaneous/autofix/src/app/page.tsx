@@ -14,25 +14,24 @@ import { useMemo } from "react";
 
 export default function Page() {
   const mode = useSystemThemeMode();
-  const llm = useMemo(
+  const { llm, storage } = useMemo(
     () =>
-      fetchLLM({
-        url: "/api/chat",
-        streamAdapter: openAIAdapter(),
-        messageFormat: openAIMessageFormat,
-      }),
+      withLocalHistory(
+        fetchLLM({
+          url: "/api/chat",
+          streamAdapter: openAIAdapter(),
+          messageFormat: openAIMessageFormat,
+        }),
+        "openui-autofix",
+      ),
     [],
   );
-
-  // Threads live in this browser's localStorage, so switching chats or
-  // reloading brings the whole conversation back.
-  const chat = useMemo(() => withLocalHistory(llm, "openui-autofix"), [llm]);
 
   return (
     <main className="autofix-app">
       <AgentInterface
-        llm={chat.llm}
-        storage={chat.storage}
+        llm={llm}
+        storage={storage}
         componentLibrary={library}
         agentName="OpenUI Autofix"
         theme={{ mode }}

@@ -16,25 +16,24 @@ export default function Page() {
 
   // The route returns the AI SDK's native UIMessage stream, so the browser
   // decodes it with the SDK's own adapter and message format.
-  const llm = useMemo(
+  const { llm, storage } = useMemo(
     () =>
-      fetchLLM({
-        url: "/api/chat",
-        streamAdapter: vercelAIAdapter(),
-        messageFormat: vercelAIMessageFormat,
-      }),
+      withLocalHistory(
+        fetchLLM({
+          url: "/api/chat",
+          streamAdapter: vercelAIAdapter(),
+          messageFormat: vercelAIMessageFormat,
+        }),
+        "openui-vercel-ai-sdk",
+      ),
     [],
   );
-
-  // Threads live in this browser's localStorage, so switching chats or
-  // reloading brings the whole conversation back.
-  const chat = useMemo(() => withLocalHistory(llm, "openui-vercel-ai-sdk"), [llm]);
 
   return (
     <div className="app-shell">
       <AgentInterface
-        llm={chat.llm}
-        storage={chat.storage}
+        llm={llm}
+        storage={storage}
         componentLibrary={openuiLibrary}
         agentName="OpenUI + Vercel AI SDK"
         theme={{ mode }}

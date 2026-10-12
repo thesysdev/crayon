@@ -15,19 +15,18 @@ import { muiChatLibrary } from "@/lib/mui-genui";
 export default function Page() {
   const { mode, toggle } = useColorMode();
 
-  const llm = useMemo(
+  const { llm, storage } = useMemo(
     () =>
-      fetchLLM({
-        url: "/api/chat",
-        streamAdapter: openAIAdapter(),
-        messageFormat: openAIMessageFormat,
-      }),
+      withLocalHistory(
+        fetchLLM({
+          url: "/api/chat",
+          streamAdapter: openAIAdapter(),
+          messageFormat: openAIMessageFormat,
+        }),
+        "openui-material-ui",
+      ),
     [],
   );
-
-  // Threads live in this browser's localStorage, so switching chats or
-  // reloading brings the whole conversation back.
-  const chat = useMemo(() => withLocalHistory(llm, "openui-material-ui"), [llm]);
 
   return (
     <Box sx={{ height: "100vh", width: "100vw", overflow: "hidden", position: "relative" }}>
@@ -44,8 +43,8 @@ export default function Page() {
       </Box>
 
       <AgentInterface
-        llm={chat.llm}
-        storage={chat.storage}
+        llm={llm}
+        storage={storage}
         componentLibrary={muiChatLibrary}
         agentName="Material UI Chat"
         theme={{ mode }}

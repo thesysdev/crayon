@@ -11,24 +11,23 @@ export default function Page() {
   // fetchLLM's default message format POSTs { messages, threadId, ... } —
   // exactly what the Mastra route expects. Storage is omitted, so
   // AgentInterface uses its built-in in-memory default (wiped on reload).
-  const llm = useMemo(
+  const { llm, storage } = useMemo(
     () =>
-      fetchLLM({
-        url: "/api/chat",
-        streamAdapter: agUIAdapter(),
-      }),
+      withLocalHistory(
+        fetchLLM({
+          url: "/api/chat",
+          streamAdapter: agUIAdapter(),
+        }),
+        "openui-mastra",
+      ),
     [],
   );
-
-  // Threads live in this browser's localStorage, so switching chats or
-  // reloading brings the whole conversation back.
-  const chat = useMemo(() => withLocalHistory(llm, "openui-mastra"), [llm]);
 
   return (
     <div className="app-shell">
       <AgentInterface
-        llm={chat.llm}
-        storage={chat.storage}
+        llm={llm}
+        storage={storage}
         componentLibrary={openuiLibrary}
         agentName="OpenUI + Mastra Chat"
         theme={{ mode }}
