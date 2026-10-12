@@ -9,6 +9,7 @@ import {
 } from "@openuidev/react-lang";
 import { FormSchema } from "./schema";
 
+export { FormRow, FormRowSchema } from "./FormRow";
 export { FormSchema } from "./schema";
 
 type FormRenderProps = ComponentRenderProps<{ name: string; buttons: unknown; fields: unknown }>;
@@ -21,7 +22,11 @@ export const FormRenderer = ({ props, renderNode }: FormRenderProps) => {
   return (
     <FormValidationContext.Provider value={formValidation}>
       <FormNameContext.Provider value={formName}>
-        <div role="form" style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+        <div
+          role="form"
+          className="openui-genui-form"
+          style={{ display: "flex", flexDirection: "column", gap: "16px" }}
+        >
           {renderNode(props.fields)}
           {renderNode(props.buttons)}
         </div>
