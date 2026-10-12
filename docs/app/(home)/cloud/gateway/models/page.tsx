@@ -53,7 +53,7 @@ export default function GatewayModelsPage() {
             <header className={styles.sectionHeader}>
               <h2>{p.title}</h2>
             </header>
-            <ModelsTable group={p.group} preview={5} />
+            <ModelsTable group={p.group} preview={5} pageSize={15} />
           </section>
         ))}
 

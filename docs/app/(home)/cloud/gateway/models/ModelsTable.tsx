@@ -8,6 +8,8 @@ import {
   ArrowUpDown,
   Check,
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
   ChevronUp,
   Copy,
   Info,
@@ -232,13 +234,25 @@ export function FreeModelsTable() {
   );
 }
 
-/** Without `preview`, the table shows every model and no show more row. */
-export function ModelsTable({ group, preview }: { group: ModelGroup; preview?: number }) {
+/**
+ * Without `preview`, the table shows every model and no show more row.
+ * With `pageSize`, the expanded table is split into pages of that size.
+ */
+export function ModelsTable({
+  group,
+  preview,
+  pageSize,
+}: {
+  group: ModelGroup;
+  preview?: number;
+  pageSize?: number;
+}) {
   const { data: allModels, failed } = useRequest(getModels);
   const { data: zdrIds } = useRequest(getZdrModelIds);
   const [query, setQuery] = useState("");
   const [sort, setSort] = useState<Sort>({ key: "released", dir: "desc" });
   const [expanded, setExpanded] = useState(false);
+  const [page, setPage] = useState(0);
 
   const models = useMemo(
     () => allModels?.filter((m) => isListed(m) && groupOf(m) === group) ?? null,
@@ -251,6 +265,7 @@ export function ModelsTable({ group, preview }: { group: ModelGroup; preview?: n
         ? { key, dir: s.dir === "asc" ? "desc" : "asc" }
         : { key, dir: key === "name" ? "asc" : "desc" },
     );
+    setPage(0);
   };
 
   const rows = useMemo(() => {
@@ -264,7 +279,11 @@ export function ModelsTable({ group, preview }: { group: ModelGroup; preview?: n
   }, [models, query, sort, zdrIds]);
 
   const limit = preview ?? rows.length;
-  const visibleRows = expanded ? rows : rows.slice(0, limit);
+  const perPage = expanded && pageSize ? pageSize : rows.length;
+  const pageCount = Math.max(1, Math.ceil(rows.length / perPage));
+  const current = Math.min(page, pageCount - 1);
+  const start = current * perPage;
+  const visibleRows = expanded ? rows.slice(start, start + perPage) : rows.slice(0, limit);
   const canToggle = expanded || rows.length > limit;
   const label = PROVIDERS.find((p) => p.group === group)?.label ?? "other";
   // OpenRouter's ZDR list is shown for the first-party providers only.
@@ -278,7 +297,10 @@ export function ModelsTable({ group, preview }: { group: ModelGroup; preview?: n
         <input
           type="search"
           value={query}
-          onChange={(e) => setQuery(e.target.value)}
+          onChange={(e) => {
+            setQuery(e.target.value);
+            setPage(0);
+          }}
           placeholder="Search models"
           aria-label={`Search ${label} models by name or ID`}
           className={styles.searchInput}
@@ -346,7 +368,10 @@ export function ModelsTable({ group, preview }: { group: ModelGroup; preview?: n
                     type="button"
                     className={styles.toggle}
                     aria-expanded={expanded}
-                    onClick={() => setExpanded(!expanded)}
+                    onClick={() => {
+                      setExpanded(!expanded);
+                      setPage(0);
+                    }}
                   >
                     {expanded ? (
                       <ChevronUp aria-hidden="true" size={16} />
@@ -361,6 +386,37 @@ export function ModelsTable({ group, preview }: { group: ModelGroup; preview?: n
           </tbody>
         </table>
       </div>
+
+      {pageCount > 1 ? (
+        <div className={styles.pagination}>
+          <span>
+            {start + 1}-{start + visibleRows.length} of {rows.length}
+          </span>
+          <div className={styles.pageControls}>
+            <button
+              type="button"
+              className={styles.pageButton}
+              aria-label="Previous page"
+              disabled={current === 0}
+              onClick={() => setPage(current - 1)}
+            >
+              <ChevronLeft aria-hidden="true" size={16} />
+            </button>
+            <span>
+              Page {current + 1} of {pageCount}
+            </span>
+            <button
+              type="button"
+              className={styles.pageButton}
+              aria-label="Next page"
+              disabled={current === pageCount - 1}
+              onClick={() => setPage(current + 1)}
+            >
+              <ChevronRight aria-hidden="true" size={16} />
+            </button>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }
