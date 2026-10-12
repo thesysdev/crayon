@@ -1,8 +1,9 @@
 "use client";
 
 import { useStore } from "zustand";
-import { createJSONStorage, persist } from "zustand/middleware";
+import { persist } from "zustand/middleware";
 import { createStore } from "zustand/vanilla";
+import { createPreferenceStorage } from "../../utils/persistStorage";
 import { useIsomorphicLayoutEffect } from "../Charts/hooks/core/useIsomorphicLayoutEffect";
 import type { ThemeMode } from "./types";
 import { useSystemThemeMode } from "./useSystemThemeMode";
@@ -39,7 +40,7 @@ const createPreferenceStore = (storageKey: string) =>
       }),
       {
         name: storageKey,
-        storage: createJSONStorage(() => localStorage),
+        storage: createPreferenceStorage(),
         skipHydration: true,
         partialize: (state) => ({ preference: state.preference }),
         merge: (persisted, current) => {

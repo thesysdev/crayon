@@ -1,7 +1,8 @@
 import { createContext, useContext, useEffect, useMemo } from "react";
 import { create } from "zustand";
-import { createJSONStorage, persist } from "zustand/middleware";
+import { persist } from "zustand/middleware";
 import { useShallow } from "zustand/react/shallow";
+import { createPreferenceStorage } from "../../../../utils/persistStorage";
 import { useIsomorphicLayoutEffect } from "../../../Charts/hooks/core/useIsomorphicLayoutEffect";
 
 interface AgentInterfaceState {
@@ -58,7 +59,7 @@ export const createAgentInterfaceStore = ({
       }),
       {
         name: SIDEBAR_STORAGE_KEY,
-        storage: createJSONStorage(() => localStorage),
+        storage: createPreferenceStorage(),
         // Restored by AgentInterfaceStoreProvider after hydration, before
         // paint; SidebarContainer applies it (desktop only, without animating)
         // and Container stays hidden until then.
