@@ -1,6 +1,6 @@
 "use client";
 
-import { useLocalStorage } from "@/lib/local-storage";
+import { localStorageChat } from "@/lib/local-storage";
 import { starters } from "@/lib/starters";
 import { library } from "@/library";
 import {
@@ -11,17 +11,17 @@ import {
   useSystemThemeMode,
 } from "@openuidev/react-ui";
 
+const { llm, storage } = localStorageChat(
+  fetchLLM({
+    url: "/api/chat",
+    streamAdapter: openAIAdapter(),
+    messageFormat: openAIMessageFormat,
+  }),
+  "openui-autofix",
+);
+
 export default function Page() {
   const mode = useSystemThemeMode();
-  const { llm, storage } = useLocalStorage(
-    fetchLLM({
-      url: "/api/chat",
-      streamAdapter: openAIAdapter(),
-      messageFormat: openAIMessageFormat,
-    }),
-    "openui-autofix",
-  );
-
   return (
     <main className="autofix-app">
       <AgentInterface

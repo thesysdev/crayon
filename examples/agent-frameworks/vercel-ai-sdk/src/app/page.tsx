@@ -1,6 +1,6 @@
 "use client";
 
-import { useLocalStorage } from "@/lib/local-storage";
+import { localStorageChat } from "@/lib/local-storage";
 import {
   AgentInterface,
   fetchLLM,
@@ -10,20 +10,20 @@ import {
 } from "@openuidev/react-ui";
 import { openuiLibrary } from "@openuidev/react-ui/genui-lib";
 
+const { llm, storage } = localStorageChat(
+  fetchLLM({
+    url: "/api/chat",
+    streamAdapter: vercelAIAdapter(),
+    messageFormat: vercelAIMessageFormat,
+  }),
+  "openui-vercel-ai-sdk",
+);
+
 export default function Page() {
   const mode = useSystemThemeMode();
 
   // The route returns the AI SDK's native UIMessage stream, so the browser
   // decodes it with the SDK's own adapter and message format.
-  const { llm, storage } = useLocalStorage(
-    fetchLLM({
-      url: "/api/chat",
-      streamAdapter: vercelAIAdapter(),
-      messageFormat: vercelAIMessageFormat,
-    }),
-    "openui-vercel-ai-sdk",
-  );
-
   return (
     <div className="app-shell">
       <AgentInterface

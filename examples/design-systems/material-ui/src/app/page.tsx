@@ -8,20 +8,20 @@ import Tooltip from "@mui/material/Tooltip";
 import { AgentInterface, fetchLLM, openAIAdapter, openAIMessageFormat } from "@openuidev/react-ui";
 
 import { useColorMode } from "@/hooks/use-system-theme";
-import { useLocalStorage } from "@/lib/local-storage";
+import { localStorageChat } from "@/lib/local-storage";
 import { muiChatLibrary } from "@/lib/mui-genui";
+
+const { llm, storage } = localStorageChat(
+  fetchLLM({
+    url: "/api/chat",
+    streamAdapter: openAIAdapter(),
+    messageFormat: openAIMessageFormat,
+  }),
+  "openui-material-ui",
+);
 
 export default function Page() {
   const { mode, toggle } = useColorMode();
-
-  const { llm, storage } = useLocalStorage(
-    fetchLLM({
-      url: "/api/chat",
-      streamAdapter: openAIAdapter(),
-      messageFormat: openAIMessageFormat,
-    }),
-    "openui-material-ui",
-  );
 
   return (
     <Box sx={{ height: "100vh", width: "100vw", overflow: "hidden", position: "relative" }}>

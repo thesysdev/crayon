@@ -7,19 +7,19 @@ import {
   openAIReadableStreamAdapter,
 } from "@openuidev/react-ui";
 import { openuiLibrary } from "@openuidev/react-ui/genui-lib";
-import { useLocalStorage } from "./lib/local-storage";
+import { localStorageChat } from "./lib/local-storage";
+
+const { llm, storage } = localStorageChat(
+  fetchLLM({
+    url: "/api/chat",
+    streamAdapter: openAIReadableStreamAdapter(),
+    messageFormat: openAIMessageFormat,
+  }),
+  "openui-fastapi",
+);
 
 export default function App() {
   // The Cloud system prompt is attached on the FastAPI side as a system message.
-  const { llm, storage } = useLocalStorage(
-    fetchLLM({
-      url: "/api/chat",
-      streamAdapter: openAIReadableStreamAdapter(),
-      messageFormat: openAIMessageFormat,
-    }),
-    "openui-fastapi",
-  );
-
   return (
     <div className="h-screen w-screen overflow-hidden">
       <AgentInterface
