@@ -9,6 +9,7 @@ import { ArchitectureDiagram } from "./components/architecture-diagram";
 import { ImageResolutionDemo } from "./components/image-resolution-demo";
 import { SliderInteraction } from "./components/slider-interaction";
 import { StreamTimeline } from "./components/stream-timeline";
+import faqStyles from "@/app/(home)/sections/FaqSection/FaqSection.module.css";
 
 ## What is Intelligent UI?
 
@@ -398,25 +399,53 @@ A response is stored once, but it can be opened from clients that cannot run it,
 
 ## FAQ
 
-### What is DIL in ChatGPT?
-
-DIL is the language GPT-6 writes when ChatGPT answers with Intelligent UI. It combines Markdown for prose, JSX-like tags for components from ChatGPT's catalog (such as `<slider>` and `<box>`), and JavaScript for state and logic. ChatGPT's server compiles DIL into a JavaScript program and a JSON document before anything runs in the browser.
-
-### How does ChatGPT Intelligent UI work under the hood?
-
-OpenAI describes a library of native components and a compiler. In practice, ChatGPT Intelligent UI has five parts: GPT-6 writes the interface in DIL; the server compiles each partial response into a JavaScript program and JSON data; a sandboxed Web Worker runs the program and produces UI operations; ChatGPT draws those operations with its native components; and a catalog of about 70 components and design tokens limits what each step can use.
-
-### Does ChatGPT call the model again when I interact with Intelligent UI?
-
-Not for most interactions. Interaction state in ChatGPT Intelligent UI lives in a sandboxed worker in the browser. Moving a slider or ticking a checkbox updates state in the worker, which re-renders and returns update operations without a model call. Only actions that call `issueNewTurn`, such as submitting a form, send a new user message to the model.
-
-### Is ChatGPT Intelligent UI generative UI?
-
-Yes. Generative UI means a model composes the interface at response time instead of returning only text. ChatGPT Intelligent UI sits at the catalog end of that range: GPT-6 chooses from ChatGPT's own components and design tokens, and a compiler validates its choices. AppBlocks cover the open-ended end, where the model writes a full HTML, CSS, and JavaScript app.
-
-### How can I build something like ChatGPT Intelligent UI in my own app?
-
-You need the same pieces ChatGPT uses: a compact language the model can stream, a component catalog for it to choose from, a renderer that draws only known components, and local state so interactions don't need a model call. [OpenUI](/docs) is an open-source, MIT-licensed framework built on that pattern. OpenUI Lang is a streaming-first language with [reactive `$variables`](/docs/openui-lang/reactive-state), prompts are generated from your component library, and renderers ship for React, Vue, Svelte, and Angular.
+<div className={faqStyles.list}>
+  <details className={faqStyles.item} id="what-is-dil-in-chatgpt" name="intelligent-ui-faq">
+    <summary className={faqStyles.question}>
+      <span className={faqStyles.questionText}>What is DIL in ChatGPT?</span>
+      <span className={faqStyles.marker} aria-hidden="true" />
+    </summary>
+    <div className={faqStyles.answer}>
+      <p className={faqStyles.paragraph}>DIL is the language GPT-6 writes when ChatGPT answers with Intelligent UI. It combines Markdown for prose, JSX-like tags for components from ChatGPT's catalog (such as `<slider>` and `<box>`), and JavaScript for state and logic. ChatGPT's server compiles DIL into a JavaScript program and a JSON document before anything runs in the browser.</p>
+    </div>
+  </details>
+  <details className={faqStyles.item} id="how-does-chatgpt-intelligent-ui-work-under-the-hood" name="intelligent-ui-faq">
+    <summary className={faqStyles.question}>
+      <span className={faqStyles.questionText}>How does ChatGPT Intelligent UI work under the hood?</span>
+      <span className={faqStyles.marker} aria-hidden="true" />
+    </summary>
+    <div className={faqStyles.answer}>
+      <p className={faqStyles.paragraph}>OpenAI describes a library of native components and a compiler. In practice, ChatGPT Intelligent UI has five parts: GPT-6 writes the interface in DIL; the server compiles each partial response into a JavaScript program and JSON data; a sandboxed Web Worker runs the program and produces UI operations; ChatGPT draws those operations with its native components; and a catalog of about 70 components and design tokens limits what each step can use.</p>
+    </div>
+  </details>
+  <details className={faqStyles.item} id="does-chatgpt-call-the-model-again-when-i-interact-with-intelligent-ui" name="intelligent-ui-faq">
+    <summary className={faqStyles.question}>
+      <span className={faqStyles.questionText}>Does ChatGPT call the model again when I interact with Intelligent UI?</span>
+      <span className={faqStyles.marker} aria-hidden="true" />
+    </summary>
+    <div className={faqStyles.answer}>
+      <p className={faqStyles.paragraph}>Not for most interactions. Interaction state in ChatGPT Intelligent UI lives in a sandboxed worker in the browser. Moving a slider or ticking a checkbox updates state in the worker, which re-renders and returns update operations without a model call. Only actions that call `issueNewTurn`, such as submitting a form, send a new user message to the model.</p>
+    </div>
+  </details>
+  <details className={faqStyles.item} id="is-chatgpt-intelligent-ui-generative-ui" name="intelligent-ui-faq">
+    <summary className={faqStyles.question}>
+      <span className={faqStyles.questionText}>Is ChatGPT Intelligent UI generative UI?</span>
+      <span className={faqStyles.marker} aria-hidden="true" />
+    </summary>
+    <div className={faqStyles.answer}>
+      <p className={faqStyles.paragraph}>Yes. Generative UI means a model composes the interface at response time instead of returning only text. ChatGPT Intelligent UI sits at the catalog end of that range: GPT-6 chooses from ChatGPT's own components and design tokens, and a compiler validates its choices. AppBlocks cover the open-ended end, where the model writes a full HTML, CSS, and JavaScript app.</p>
+    </div>
+  </details>
+  <details className={faqStyles.item} id="how-can-i-build-something-like-chatgpt-intelligent-ui-in-my-own-app" name="intelligent-ui-faq">
+    <summary className={faqStyles.question}>
+      <span className={faqStyles.questionText}>How can I build something like ChatGPT Intelligent UI in my own app?</span>
+      <span className={faqStyles.marker} aria-hidden="true" />
+    </summary>
+    <div className={faqStyles.answer}>
+      <p className={faqStyles.paragraph}>You need the same pieces ChatGPT uses: a compact language the model can stream, a component catalog for it to choose from, a renderer that draws only known components, and local state so interactions don't need a model call. [OpenUI](/docs) is an open-source, MIT-licensed framework built on that pattern. OpenUI Lang is a streaming-first language with [reactive `$variables`](/docs/openui-lang/reactive-state), prompts are generated from your component library, and renderers ship for React, Vue, Svelte, and Angular.</p>
+    </div>
+  </details>
+</div>
 
 <script
   type="application/ld+json"
