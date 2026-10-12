@@ -61,4 +61,9 @@ describe("message protocol", () => {
       attributes: { thesys: "true" },
     });
   });
+
+  it("ignores an end line before the winning content", () => {
+    const raw = `]]>openui:context\n{"$x":1}\n]]>openui:end\n]]>openui:content\nroot = A()`;
+    expect(parseMessage(raw)).toMatchObject({ content: "root = A()", context: null, end: false });
+  });
 });

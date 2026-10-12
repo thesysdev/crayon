@@ -16,7 +16,7 @@ export interface ParsedMessage {
   context: unknown;
   /** String attributes of the winning `content` marker. */
   attributes: Record<string, string>;
-  /** An `end` line is present. */
+  /** An `end` line follows the winning `content` section. */
   end: boolean;
 }
 
@@ -79,7 +79,7 @@ export function parseMessage(raw: string, { streaming }: ParseMessageOptions = {
     const body = sections[sections.length - 1].lines;
     if (body.length) body[body.length - 1] = body[body.length - 1].replace(/\r$/, "");
   };
-  let end = false;
+  let endAt = -1;
   for (const [i, line] of lines.entries()) {
     const match = MARKER.exec(line.replace(/\r$/, ""));
     if (!match) {
@@ -88,7 +88,7 @@ export function parseMessage(raw: string, { streaming }: ParseMessageOptions = {
     }
     close();
     if (match[1] === "end") {
-      end = true;
+      endAt = sections.length - 1;
       if (i === lines.length - 2 && lines[i + 1] === "") break;
       continue;
     }
@@ -107,6 +107,8 @@ export function parseMessage(raw: string, { streaming }: ParseMessageOptions = {
     // Not JSON (yet): keep the raw text.
   }
   const winner = sections[win];
+  // Like context, an `end` before the winning content belongs to an earlier attempt.
+  const end = endAt >= win;
   return { content: winner.lines.join("\n"), context, attributes: winner.attributes, end };
 }
 
