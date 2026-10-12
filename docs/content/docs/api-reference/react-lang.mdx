@@ -92,7 +92,7 @@ interface Library {
   toJSONSchema(): LibraryJSONSchema;
   toSpec(): PromptSpec;
   /** Derive a new library. Optional, like functions. */
-  extend?(extension: LibraryExtension): Library;
+  extend?(extension: LibraryExtension): Required<Library>;
 }
 
 interface PromptOptions {
@@ -287,6 +287,8 @@ interface OpenUIError {
   statementId?: string;
   component?: string;
   path?: string;
+  /** Tool name for query and mutation errors. */
+  toolName?: string;
   hint?: string;
   /** "warning" when the page still rendered; absent means error. */
   severity?: "warning";
@@ -355,17 +357,26 @@ interface LibraryJSONSchema {
   >;
 }
 
-function createParser(schema: LibraryJSONSchema): Parser;
-function createStreamingParser(schema: LibraryJSONSchema): StreamParser;
+function createParser(schema: LibraryJSONSchema, rootName?: string): Parser;
+function createStreamingParser(schema: LibraryJSONSchema, rootName?: string): StreamParser;
 
 interface Parser {
   parse(input: string): ParseResult;
 }
 
 interface StreamParser {
-  push(chunk: string): ParseResult;
-  getResult(): ParseResult;
+  /** Pass complete once the stream has ended. */
+  push(chunk: string, complete?: boolean): ParseResult;
+  /** Set the full text so far. Only the new part is parsed. */
+  set(fullText: string, complete?: boolean): ParseResult;
+  getResult(complete?: boolean): ParseResult;
 }
+```
+
+Pass the root component name as `rootName`, usually `library.root`. A program without a `root` statement then falls back to the first statement that calls that component. Without `rootName`, such a program reports `no-root` and has no root.
+
+```ts
+const parser = createParser(library.toJSONSchema(), library.root);
 ```
 
 Core parsed types:
@@ -463,7 +474,7 @@ function useSetFieldValue(): (
 function useFormName(): string | undefined;
 function useSetDefaultValue(options: {
   formName?: string;
-  componentType: string;
+  componentType?: string;
   name: string;
   existingValue: any;
   defaultValue: any;
@@ -476,6 +487,7 @@ function useSetDefaultValue(options: {
 ```ts
 interface FormValidationContextValue {
   errors: Record<string, string | undefined>;
+  getFieldError: (name: string) => string | undefined;
   validateField: (name: string, value: unknown, rules: ParsedRule[]) => boolean;
   registerField: (name: string, rules: ParsedRule[], getValue: () => unknown) => void;
   unregisterField: (name: string) => void;

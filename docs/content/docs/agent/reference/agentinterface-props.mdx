@@ -1,6 +1,6 @@
 ---
 title: "<AgentInterface> props"
-description: Every prop of AgentInterface, grouped by area (adapters, rendering, theme, branding, starters, routing, and children).
+description: Every prop of AgentInterface, grouped by area (adapters, rendering, theme, branding, starters, routing, scrolling, and children).
 ---
 
 `AgentInterface` from `@openuidev/react-ui` is the only chat component you mount. It owns the layout: sidebar, thread list, composer, routing, and the workspace rail. You configure all of it through `AgentInterfaceProps`. This page lists every prop, grouped by what it controls.
@@ -9,25 +9,29 @@ The only required prop is `llm`. Everything else is optional and falls back to a
 
 ## At a glance
 
-| Prop                   | Type                                         | Required | Default                        |
-| ---------------------- | -------------------------------------------- | -------- | ------------------------------ |
-| `llm`                  | `ChatLLM`                                    | **Yes**  | none                           |
-| `storage`              | `ChatStorage`                                | No       | internal in-memory (ephemeral) |
-| `artifactRenderers`    | `ReadonlyArray<ArtifactRendererConfig<any>>` | No       | none                           |
-| `artifactCategories`   | `ArtifactCategory[]`                         | No       | none (single "Artifacts" item) |
-| `componentLibrary`     | `Library`                                    | No       | none (markdown rendering)      |
-| `onAction`             | `(event: ActionEvent) => void`               | No       | none                           |
-| `components`           | `AgentInterfaceComponents`                   | No       | none                           |
-| `theme`                | `ThemeProps`                                 | No       | built-in theme                 |
-| `disableThemeProvider` | `boolean`                                    | No       | `false`                        |
-| `logoUrl`              | `string`                                     | No       | none                           |
-| `agentName`            | `string`                                     | No       | none                           |
-| `starters`             | `ConversationStarterProps[]`                 | No       | none                           |
-| `starterVariant`       | `"short" \| "long"`                          | No       | none                           |
-| `path`                 | `string`                                     | No       | none (uncontrolled)            |
-| `defaultPath`          | `string`                                     | No       | thread view (`undefined`)      |
-| `onNavigate`           | `(next: string \| undefined) => void`        | No       | none (uncontrolled)            |
-| `children`             | `ReactNode`                                  | No       | none                           |
+| Prop                   | Type                                          | Required | Default                        |
+| ---------------------- | --------------------------------------------- | -------- | ------------------------------ |
+| `llm`                  | `ChatLLM`                                     | **Yes**  | none                           |
+| `storage`              | `ChatStorage`                                 | No       | internal in-memory (ephemeral) |
+| `artifactRenderers`    | `ReadonlyArray<ArtifactRendererConfig<any>>`  | No       | none                           |
+| `artifactCategories`   | `ArtifactCategory[]`                          | No       | none (single "Artifacts" item) |
+| `artifactAutoOpen`     | `boolean`                                     | No       | `false`                        |
+| `componentLibrary`     | `Library`                                     | No       | none (markdown rendering)      |
+| `onAction`             | `(event: ActionEvent) => void`                | No       | none                           |
+| `components`           | `AgentInterfaceComponents`                    | No       | none                           |
+| `theme`                | `ThemeProps`                                  | No       | built-in theme                 |
+| `disableThemeProvider` | `boolean`                                     | No       | `false`                        |
+| `logoUrl`              | `string`                                      | No       | none                           |
+| `agentName`            | `string`                                      | No       | none                           |
+| `labels`               | `AgentInterfaceLabels`                        | No       | built-in labels                |
+| `starters`             | `ConversationStarterProps[]`                  | No       | none                           |
+| `starterVariant`       | `"short" \| "long"`                           | No       | none                           |
+| `path`                 | `string`                                      | No       | none (uncontrolled)            |
+| `defaultPath`          | `string`                                      | No       | thread view (`undefined`)      |
+| `onNavigate`           | `(next: string \| undefined) => void`         | No       | none (uncontrolled)            |
+| `scrollVariant`        | `"always" \| "once" \| "user-message-anchor"` | No       | `"user-message-anchor"`        |
+| `scrollOnLoad`         | `boolean`                                     | No       | `true`                         |
+| `children`             | `ReactNode`                                   | No       | none                           |
 
 The rest of this page explains each group.
 
@@ -57,6 +61,7 @@ These props control how the assistant's output renders: artifacts such as dashbo
 | -------------------- | -------------------------------------------- | -------- | ------- | ------------------------------------------------------------------------------------- |
 | `artifactRenderers`  | `ReadonlyArray<ArtifactRendererConfig<any>>` | No       | none    | Renderers that display artifacts (from a tool call or from stored content).           |
 | `artifactCategories` | `ArtifactCategory[]`                         | No       | none    | User-defined groupings for the artifact browser and workspace rail.                   |
+| `artifactAutoOpen`   | `boolean`                                    | No       | `false` | Opens a new artifact in the workspace panel while it streams. At most one per reply.  |
 | `componentLibrary`   | `Library`                                    | No       | none    | Turns on Generative UI: components rendered inline in chat.                           |
 | `onAction`           | `(event: ActionEvent) => void`               | No       | none    | Receives the Generative UI actions the chat does not handle, such as custom actions.  |
 | `components`         | `AgentInterfaceComponents`                   | No       | none    | Replace assistant answers, user messages, and the turn's tool timeline independently. |
@@ -138,10 +143,11 @@ Set `disableThemeProvider` to `true` when `AgentInterface` is mounted inside an 
 
 ## Branding
 
-| Prop        | Type     | Required | Default | Description                                             |
-| ----------- | -------- | -------- | ------- | ------------------------------------------------------- |
-| `logoUrl`   | `string` | No       | none    | Logo shown in the sidebar header and the mobile header. |
-| `agentName` | `string` | No       | none    | Agent name shown next to the logo.                      |
+| Prop        | Type                   | Required | Default         | Description                                                                                   |
+| ----------- | ---------------------- | -------- | --------------- | --------------------------------------------------------------------------------------------- |
+| `logoUrl`   | `string`               | No       | none            | Logo shown in the sidebar header and the mobile header.                                       |
+| `agentName` | `string`               | No       | none            | Agent name shown next to the logo.                                                            |
+| `labels`    | `AgentInterfaceLabels` | No       | built-in labels | Text for the artifact browser and workspace: `{ defaultCategory?, workspaceToggle?, tabs? }`. |
 
 These feed the default `SidebarHeader` and `MobileHeader`. To go further, replace those slots. See [Sidebar](/docs/agent/customize/sidebar).
 
@@ -177,6 +183,13 @@ Controlled consumers must round-trip the reserved artifact-browser paths (`artif
 // Controlled: drive the route from your own state/router.
 <AgentInterface llm={llm} path={path} onNavigate={setPath} />;
 ```
+
+## Scrolling
+
+| Prop            | Type                                          | Required | Default                 | Description                                                                                                                                                                                         |
+| --------------- | --------------------------------------------- | -------- | ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `scrollVariant` | `"always" \| "once" \| "user-message-anchor"` | No       | `"user-message-anchor"` | `"user-message-anchor"` pins the latest user message to the top. `"always"` follows the reply to the bottom until the user scrolls up. `"once"` scrolls to the bottom once when a message is added. |
+| `scrollOnLoad`  | `boolean`                                     | No       | `true`                  | Scroll to the latest message when a thread loads or the user switches threads.                                                                                                                      |
 
 ## Children
 
