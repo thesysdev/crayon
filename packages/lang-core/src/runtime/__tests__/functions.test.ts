@@ -77,6 +77,16 @@ describe("library functions", () => {
     expect(run("@Sum2([1], null)").value).toBe("1");
   });
 
+  it("validate literal args in Query and Mutation statements at parse time", () => {
+    const errors = createParser(schema, "Text").parse(
+      `root = Text("a")\nq = Query("save", { p: @Sum2([@Percent("bad")]), n: @Percent(3) })\nm = Mutation("save", { p: @Percent("bad") })`,
+    ).meta.errors;
+    expect(errors.map((e) => [e.code, e.statementId])).toEqual([
+      ["type-mismatch", "q"],
+      ["type-mismatch", "m"],
+    ]);
+  });
+
   it("validate dynamic args at runtime without touching the data", () => {
     const state = { $n: [1, "x", 2] };
     expect(run("@Sum2($n)", state)).toMatchObject({ value: "3", parseErrors: [] });
