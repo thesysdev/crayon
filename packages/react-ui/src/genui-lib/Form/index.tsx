@@ -38,6 +38,7 @@ export const FormRenderer = ({ props, renderNode }: FormRenderProps) => {
 export const Form = defineComponent({
   name: "Form",
   props: FormSchema,
-  description: "Form container with fields and explicit action buttons",
+  description:
+    "Form container for essential input that cannot be picked from options, such as a name, an email, exact dates or free text: Form(name, buttons, fields), with one FormControl or FormRow per field and exactly one primary submit Button. Keep it to the fewest fields. When the user is choosing between options, offer tappable ImageCard or InsightCard tiles or Buttons instead of a Form.",
   component: FormRenderer,
 });

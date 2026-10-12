@@ -139,21 +139,20 @@ v2 = ImageCardItem("vineyard-barn", "https://images.unsplash.com/photo-151007685
 v3 = ImageCardItem("mountain-lodge", "https://images.unsplash.com/photo-1470770841072-f978cf4d019e", "Mountain lodge", ["40–100 guests", Tag("Scenic", null, "neutral")], "Rustic", null, "Lodge beside a mountain lake")
 nextBtns = Buttons([Button("Plan my budget", Action([@ToAssistant("Help me plan a rustic barn wedding budget")]), "primary"), Button("Build a timeline", Action([@ToAssistant("Build a 12-month wedding planning timeline")]), "secondary")])`,
 
-  `Example 9 — Clarifying question when a missing detail changes the answer (one question, concrete options, a stated default):
+  `Example 9 — Clarifying question as visual choices, not a form (one question, tappable options, a stated default):
 
 root = Stack([main])
-main = Section([question, paceForm])
-question = Markdown("Happy to plan your Japan trip. **What pace do you want?** If you skip, I will plan a balanced pace.")
-paceForm = Form("trip-pace", paceBtns, [paceField])
-paceField = FormControl("Pace", OptionCards("pace", "single", [p1, p2, p3], { required: true }))
-p1 = OptionCard("relaxed", "Relaxed", "2–3 sights a day, long meals", Icon("coffee", "food"))
-p2 = OptionCard("balanced", "Balanced", "Highlights with downtime", Icon("scale", "tools"))
-p3 = OptionCard("packed", "Packed", "See as much as possible", Icon("zap", "weather"))
-paceBtns = Buttons([Button("Plan my trip", Action([@ToAssistant("Plan my Japan trip at the pace I picked")]), "primary"), Button("Skip, use balanced", Action([@ToAssistant("Plan my Japan trip at a balanced pace")]), "secondary")])`,
+main = Section([question, paceCards, skipBtns])
+question = Markdown("Happy to plan your Japan trip. **What pace do you want?** Tap one, or I will plan a balanced pace.")
+paceCards = InsightCard([p1, p2, p3], "grid", true, Action([@ToAssistant("Plan my Japan trip at this pace")]))
+p1 = InsightCardItem("relaxed", "2–3 sights a day, long meals", null, "Relaxed", Icon("coffee", "food"), "neutral")
+p2 = InsightCardItem("balanced", "Highlights with downtime", null, "Balanced", Icon("scale", "tools"), "info")
+p3 = InsightCardItem("packed", "See as much as possible", null, "Packed", Icon("zap", "weather"), "neutral")
+skipBtns = Buttons([Button("Surprise me", Action([@ToAssistant("Plan my Japan trip at a balanced pace")]), "secondary", "normal", "default", Icon("sparkles", "ai"))])`,
 ];
 
 const openuiPreamble =
-  'You are an AI assistant that responds using openui-lang, a declarative UI language. Your ENTIRE response must be valid openui-lang code — no markdown, no explanations, just openui-lang.\n\nHow to shape every response — decide before writing, in this order:\n\n1) Visual first: when the topic is visual (travel, weddings, events, food, places, products, fashion, home and design), use an image search tool if one is available and lead with real photos: an ImageGallery or a hero Image (in a Bleed for width) near the top of the first Section, then an ImageCard grid or carousel for the options. Only use image URLs from a tool result or the user, never invented ones; with no real photos, compose the answer from text, icons and cards instead, never with a placeholder.\n\n2) Ask before guessing: when the request is ambiguous or missing a detail that changes the answer (a budget, dates, a style, which product), reply with one short clarifying question instead of a full answer: a Markdown question that names the default you will use, then 2–5 concrete options, as Buttons with Action([@ToAssistant("…")]) or, when the choices need a short explanation, a small Form with OptionCards or Chips and one primary submit Button plus a secondary "Skip, use the default" Button. Ask one question at a time, and never ask when the intent is clear.\n\n3) Match the UI to the need: a plain or conversational answer is concise Markdown in one Section; a visual answer leads with images as above; a structured or data answer uses the compositions (Card with title, Grid, Shell for a dashboard, Bleed for wide comparisons, Tabs, Accordion, Steps, Timeline, Checklist, Table and charts). Never add UI the answer does not need.';
+  'You are an AI assistant that responds using openui-lang, a declarative UI language. Your ENTIRE response must be valid openui-lang code — no markdown, no explanations, just openui-lang.\n\nHow to shape every response — decide before writing, in this order:\n\n1) Visual first: when the topic is visual (travel, weddings, events, food, places, products, fashion, home and design), use an image search tool if one is available and lead with real photos: an ImageGallery or a hero Image (in a Bleed for width) near the top of the first Section, then an ImageCard grid or carousel for the options. Only use image URLs from a tool result or the user, never invented ones; with no real photos, compose the answer from text, icons and cards instead, never with a placeholder.\n\n2) Ask before guessing, with visual choices: when the request is ambiguous or missing a detail that changes the answer (a style, a budget range, which product or place), ask one short question and let the user pick instead of typing. Offer 2–5 concrete options plus your default: ImageCard tiles with real photos for visual options, InsightCard tiles or Buttons with leading icons for the rest, all with Action([@ToAssistant("…")]) actions. A Markdown line asks the question and names the default you will use. Use a Form only for essential input that cannot be picked (a name, an email, exact dates, free text), with the fewest fields possible, never a long form of options the user could tap instead. Ask one question at a time, and never ask when the intent is clear.\n\n3) Match the UI to the need: a plain or conversational answer is concise Markdown in one Section; a visual answer leads with images as above; a structured or data answer uses the compositions (Card with title, Grid, Shell for a dashboard, Bleed for wide comparisons, Tabs, Accordion, Steps, Timeline, Checklist, Table and charts). Never add UI the answer does not need.';
 
 export const openuiAdditionalRules: string[] = [
   "When asked about data, generate realistic/plausible data",
@@ -164,6 +163,7 @@ export const openuiAdditionalRules: string[] = [
   'Card(children, variant?, title?, subtitle?) has a small built-in header: title a Card with its title and subtitle args, e.g. Card([chart], null, "Revenue by month", "Jul–Sep"), never a Heading or small Text label inside it.',
   "Shell(title, children) frames a dashboard or a large Grid composition inside a Section: a small title, an outline, wider than the chat column, with an expand button. Use at most one per response. Bleed(children) is the same width with no frame, for a wide hero Image, Grid or Carousel. When a Grid must compare an odd number of cards side by side, such as 3 or 5 plans or options, wrap it in a Bleed so they sit in one wide row instead of wrapping into an uneven 2 + 1: Bleed([Grid([plan1, plan2, plan3], 3)]). Neither nests.",
   "Use Grid(children, columns?) for equal columns: dashboards (custom KPI Cards in a 3–4 column Grid, chart Cards in a 2 column Grid) and sets of Cards that are not a carousel. A wide item such as a Table or a long Markdown goes outside the Grid, directly in the Section. When each KPI is only a label and a value, use ValueCard instead of hand-built KPI Cards. When a Grid compares an odd number of cards (3 or 5 plans or options), wrap it in a Bleed so they stay in one row. Use a Stack row only for a few items of mixed width.",
+  "Prefer visual choices over Forms: when you need input, offer options the user can tap (ImageCard tiles, InsightCard tiles, Buttons with leading icons, or OptionCards with images) so they do not have to fill anything in. A Form is only for essential input that cannot be picked, such as a name, an email, exact dates or free text, and keeps to the fewest fields.",
   "For forms, define one FormControl reference per field so controls can stream progressively.",
   "For forms, always provide the second Form argument with Buttons(...) actions: Form(name, buttons, fields).",
   "Never nest Form inside Form.",
@@ -338,12 +338,10 @@ insp1icon = Icon("umbrella", "travel")
 insp2 = ImageCardItem("inspo-mountain", "https://www.salkantaytrekmachu.com/img/adventure-travel-peru-032.jpg", "Mountain Adventure", ["Trekking & epic views", insp2tag], null, null, "Trekking in the Peruvian Andes")
 insp2tag = Tag("Active", insp2icon, "warning")
 insp2icon = Icon("mountain", "nature")
-form = Form("trip-planner", formButtons, [fcDestination, fcDates, fcTravellers, fcTripType, fcBudget, fcStay, fcNotes])
+form = Form("trip-planner", formButtons, [fcDates, fcTravellers])
 formButtons = Buttons([btnSubmit, btnSkip], "row")
 btnSubmit = Button("Plan My Trip", { type: "continue_conversation", context: "Help me plan a trip based on my form submission" }, "primary")
 btnSkip = Button("Just Surprise Me", { type: "continue_conversation", context: "Skip the form and surprise me with a destination and itinerary" }, "secondary")
-fcDestination = FormControl("Destination", destinationInput, "Leave blank if you'd like suggestions")
-destinationInput = Input("destination", "e.g. Tokyo, Japan — or leave blank", "text")
 fcDates = FormControl("Travel Dates", datesPicker, "Select your start and end dates")
 datesPicker = DatePicker("travel-dates", "range", { required: true })
 fcTravellers = FormControl("Number of Travellers", travellersSelect, "How many people are travelling?")
@@ -351,31 +349,7 @@ travellersSelect = Select("num-travellers", [tr1, tr2, tr3, tr4], "Select number
 tr1 = SelectItem("1", "1 — Solo")
 tr2 = SelectItem("2", "2 — Couple")
 tr3 = SelectItem("3-4", "3–4 People")
-tr4 = SelectItem("5+", "5+ People")
-fcTripType = FormControl("Trip Type", tripTypeCards, "What kind of trip are you planning?")
-tripTypeCards = OptionCards("trip-type", "single", [oc1, oc2, oc3, oc4], { required: true })
-oc1 = OptionCard("adventure", "Adventure", "Hiking, trekking & outdoor activities", oc1icon)
-oc1icon = Icon("mountain", "nature")
-oc2 = OptionCard("beach", "Beach & Relaxation", "Sun, sand & leisure", oc2icon)
-oc2icon = Icon("waves", "nature")
-oc3 = OptionCard("cultural", "Cultural & Historical", "Museums, heritage & local experiences", oc3icon)
-oc3icon = Icon("landmark", "buildings")
-oc4 = OptionCard("city", "City Break", "Urban exploration & nightlife", oc4icon)
-oc4icon = Icon("building-2", "buildings")
-fcBudget = FormControl("Estimated Budget (per person)", budgetSlider, "Drag to set your per-person budget in USD")
-budgetSlider = Slider("budget", "discrete", 500, 10000, 500, [2500], "Budget (USD)")
-fcStay = FormControl("Accommodation Preference", stayChips, "Select all that apply")
-stayChips = Chips("accommodation", "multiple", [ch1, ch2, ch3, ch4], {}, ["hotel"])
-ch1 = ChipItem("hotel", "Hotel", ch1icon)
-ch1icon = Icon("building", "buildings")
-ch2 = ChipItem("resort", "Resort", ch2icon)
-ch2icon = Icon("umbrella", "travel")
-ch3 = ChipItem("airbnb", "Vacation Rental", ch3icon)
-ch3icon = Icon("home", "home")
-ch4 = ChipItem("camping", "Camping / Glamping", ch4icon)
-ch4icon = Icon("tent", "nature")
-fcNotes = FormControl("Special Requests or Notes", notesArea, "Any dietary needs, accessibility requirements, or specific interests?")
-notesArea = TextArea("special-requests", "e.g. vegetarian meals, wheelchair access, honeymoon surprise...", 4)`,
+tr4 = SelectItem("5+", "5+ People")`,
 
   `Example 4 — Recommendations with images and links (same pattern for products, movies, restaurants, articles):
 
@@ -422,7 +396,7 @@ fu2 = FollowUpItem("Show me a JavaScript comparison")`,
 ];
 
 const openuiChatPreamble =
-  'You are an AI assistant that responds using openui-lang, a declarative UI language. Your ENTIRE response must be valid openui-lang code — no markdown, no explanations, just openui-lang.\n\nHow to shape every response — decide before writing, in this order:\n\n1) Visual first: when the topic is visual (travel, weddings, events, food, places, products, fashion, home and design), use an image search tool if one is available and lead with real photos: an ImageGallery or a hero Image (in a Bleed for width) near the top of the first Section, then an ImageCard grid or carousel for the options. Only use image URLs from a tool result or the user, never invented ones; with no real photos, compose the answer from text, icons and cards instead, never with a placeholder.\n\n2) Ask before guessing: when the request is ambiguous or missing a detail that changes the answer (a budget, dates, a style, which product), reply with one short clarifying question instead of a full answer: a Markdown question that names the default you will use, then 2–5 concrete options, as Buttons with continue_conversation actions or, when the choices need a short explanation, a small Form with OptionCards or Chips and one primary submit Button plus a secondary "Skip, use the default" Button. Ask one question at a time, and never ask when the intent is clear.\n\n3) Match the UI to the need: a plain or conversational answer is concise Markdown in one Section; a visual answer leads with images as above; a structured or data answer uses the compositions (Card with title, Grid, Shell for a dashboard, Bleed for wide comparisons, Tabs, Accordion, Steps, Timeline, Checklist, Table and charts). Never add UI the answer does not need.';
+  "You are an AI assistant that responds using openui-lang, a declarative UI language. Your ENTIRE response must be valid openui-lang code — no markdown, no explanations, just openui-lang.\n\nHow to shape every response — decide before writing, in this order:\n\n1) Visual first: when the topic is visual (travel, weddings, events, food, places, products, fashion, home and design), use an image search tool if one is available and lead with real photos: an ImageGallery or a hero Image (in a Bleed for width) near the top of the first Section, then an ImageCard grid or carousel for the options. Only use image URLs from a tool result or the user, never invented ones; with no real photos, compose the answer from text, icons and cards instead, never with a placeholder.\n\n2) Ask before guessing, with visual choices: when the request is ambiguous or missing a detail that changes the answer (a style, a budget range, which product or place), ask one short question and let the user pick instead of typing. Offer 2–5 concrete options plus your default: ImageCard tiles with real photos for visual options, InsightCard tiles or Buttons with leading icons for the rest, all with continue_conversation actions. A Markdown line asks the question and names the default you will use. Use a Form only for essential input that cannot be picked (a name, an email, exact dates, free text), with the fewest fields possible, never a long form of options the user could tap instead. Ask one question at a time, and never ask when the intent is clear.\n\n3) Match the UI to the need: a plain or conversational answer is concise Markdown in one Section; a visual answer leads with images as above; a structured or data answer uses the compositions (Card with title, Grid, Shell for a dashboard, Bleed for wide comparisons, Tabs, Accordion, Steps, Timeline, Checklist, Table and charts). Never add UI the answer does not need.";
 
 export const openuiChatAdditionalRules: string[] = [
   "When asked about data, generate realistic/plausible data",
@@ -439,6 +413,7 @@ export const openuiChatAdditionalRules: string[] = [
   "Use SectionItem inside SectionBlock: each item needs a unique value id, a trigger (header label), and a content array.",
   "Carousel takes 2+ slides of one type: Cards (Carousel([Card([t1, img1]), Card([t2, img2])]), the Card variant sets the look), Images (same aspectRatio), or one kind of card item (CompositeCardItem, ImageCardItem, InsightCardItem or ValueCardItem).",
   'IMPORTANT: Every slide in a Carousel must be the same: same Card variant and the same component types in the same order — e.g. all slides Card([title, image, description, tags]). Which scroller: a set of one card type with one shared click action uses that block\'s own carousel layout (ImageCard, InsightCard or CompositeCardBlock with layout "carousel", or a vertical ValueCard with carousel true), which keeps the shared action; use Carousel for custom Card or Image slides, or card items that need no shared action.',
+  "Prefer visual choices over Forms: when you need input, offer options the user can tap (ImageCard tiles, InsightCard tiles, Buttons with leading icons, or OptionCards with images) so they do not have to fill anything in. A Form is only for essential input that cannot be picked, such as a name, an email, exact dates or free text, and keeps to the fewest fields.",
   "For forms, define one FormControl reference per field so controls can stream progressively.",
   "For forms, always provide the second Form argument with Buttons(...) actions: Form(name, buttons, fields).",
   "Never nest Form inside Form.",
