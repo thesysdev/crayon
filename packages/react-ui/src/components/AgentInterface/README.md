@@ -301,10 +301,10 @@ Mounted by `<ChatProvider>`. Read via hooks:
 Two **separate** zustand stores are mounted in `Container.tsx`. They are _not_ the same store and
 serve different consumers:
 
-| Store                   | File                                                                  | Holds                                                                                                                                     | Read with                | Used by                                                                                                |
-| ----------------------- | --------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- | ------------------------ | ------------------------------------------------------------------------------------------------------ |
-| **AgentInterfaceStore** | `_shared/store/store.tsx`                                             | `isSidebarOpen` (default **false**), saved sidebar preferences (see below), `isWorkspaceOpen` (default **false**), `agentName`, `logoUrl` | `useAgentInterfaceStore` | All AgentInterface chrome (sidebar, workspace toggles, header)                                         |
-| **ShellStore**          | `../_shared/store/store.tsx` (library-wide, shared with `OpenUIChat`) | `isSidebarOpen`, `isWorkspaceOpen` (default **true**), `agentName`, `logoUrl`, `showAssistantLogo`                                        | `useShellStore`          | The GenUI assistant-message components, which read `agentName`/`logoUrl`/`showAssistantLogo` from here |
+| Store                   | File                                                                  | Holds                                                                                                            | Read with                | Used by                                                                                                |
+| ----------------------- | --------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- | ------------------------ | ------------------------------------------------------------------------------------------------------ |
+| **AgentInterfaceStore** | `_shared/store/store.tsx`                                             | `isSidebarOpen` (default **false**), `isHydrated`, `isWorkspaceOpen` (default **false**), `agentName`, `logoUrl` | `useAgentInterfaceStore` | All AgentInterface chrome (sidebar, workspace toggles, header)                                         |
+| **ShellStore**          | `../_shared/store/store.tsx` (library-wide, shared with `OpenUIChat`) | `isSidebarOpen`, `isWorkspaceOpen` (default **true**), `agentName`, `logoUrl`, `showAssistantLogo`               | `useShellStore`          | The GenUI assistant-message components, which read `agentName`/`logoUrl`/`showAssistantLogo` from here |
 
 Both are seeded from the same `logoUrl`/`agentName` and kept in sync to props via effects, but
 their `isWorkspaceOpen` defaults differ and they are **not** cross-synced. See
@@ -317,14 +317,14 @@ Saved UI preferences go through one helper, `utils/preferences.ts` (`readPrefere
 kept). Each is read once after hydration, before paint, so server HTML and the client's first
 render match.
 
-- **Sidebar open** (`openui-agent-sidebar-open`): `savedDesktopSidebarOpen` in AgentInterfaceStore,
-  written by its setter and read by `AgentInterfaceStoreProvider`. `isSidebarOpen` is the live
-  state; the saved desktop choice is kept apart so opening the drawer on mobile isn't remembered
-  on desktop. `SidebarContainer` applies it without animating.
+- **Sidebar open** (`openui-agent-sidebar-open`): read and written by `SidebarContainer` (desktop
+  only, so opening the drawer on mobile isn't remembered on desktop). The store holds just the
+  live `isSidebarOpen`; once `isHydrated` is set, `SidebarContainer` restores the saved choice
+  without animating.
 - **Sidebar width** (`openui-agent-sidebar-width`): read and written by `SidebarResizeEdge`, which
   sets it straight on the container as a CSS variable.
 - **Theme** (`openui-theme-mode`): `ThemeProvider/useThemeModePreference.ts`.
-- **Reveal:** until `hasRestoredSidebar` is set, `Container` hides its contents (`visibility`, so
+- **Reveal:** until `isHydrated` is set, `Container` hides its contents (`visibility`, so
   layout still measures) under a fading loader, and keeps transitions off until the restored
   styles settle.
 

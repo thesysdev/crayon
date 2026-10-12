@@ -3,11 +3,19 @@ import clsx from "clsx";
 import { PanelLeft } from "lucide-react";
 import { createContext, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useLayoutContext } from "../../context/LayoutContext";
+import { readPreference, writePreference } from "../../utils/preferences";
 import { useIsomorphicLayoutEffect } from "../Charts/hooks/core/useIsomorphicLayoutEffect";
 import { IconButton } from "../IconButton";
 import { SidebarResizeEdge } from "./SidebarResizeEdge";
 import { AgentInterfaceTooltip } from "./_shared/AgentInterfaceTooltip";
 import { useAgentInterfaceStore } from "./_shared/store";
+
+/**
+ * The saved desktop open/closed choice. Mobile never writes it, so opening the
+ * drawer on a phone isn't remembered on desktop.
+ */
+const SIDEBAR_OPEN_KEY = "openui-agent-sidebar-open";
+const readSavedDesktopOpen = () => readPreference<boolean>(SIDEBAR_OPEN_KEY) === true;
 
 const SIDEBAR_FADE_DURATION_MS = 90;
 const SIDEBAR_RESIZE_DURATION_MS = 160;
@@ -28,18 +36,10 @@ export const SidebarContainer = ({
   children?: React.ReactNode;
   className?: string;
 }) => {
-  const {
-    isSidebarOpen,
-    setIsSidebarOpen,
-    savedDesktopSidebarOpen,
-    setSavedDesktopSidebarOpen,
-    hasRestoredSidebar,
-  } = useAgentInterfaceStore((state) => ({
+  const { isSidebarOpen, setIsSidebarOpen, isHydrated } = useAgentInterfaceStore((state) => ({
     isSidebarOpen: state.isSidebarOpen,
     setIsSidebarOpen: state.setIsSidebarOpen,
-    savedDesktopSidebarOpen: state.savedDesktopSidebarOpen,
-    setSavedDesktopSidebarOpen: state.setSavedDesktopSidebarOpen,
-    hasRestoredSidebar: state.hasRestoredSidebar,
+    isHydrated: state.isHydrated,
   }));
   const { isDetailedViewActive } = useActiveDetailedView();
   const { layout } = useLayoutContext() || {};
@@ -63,17 +63,18 @@ export const SidebarContainer = ({
     };
   }, []);
 
-  // The saved desktop choice is restored just after hydration. Apply it once,
-  // before paint and without animating, as if the sidebar had started that
-  // way. The effect below then finds it already in place.
+  // Once hydrated, restore the saved desktop choice: once, before paint and
+  // without animating, as if the sidebar had started that way. The effect
+  // below then finds it already in place.
   useIsomorphicLayoutEffect(() => {
-    if (!hasRestoredSidebar || appliedRestoreRef.current) return;
+    if (!isHydrated || appliedRestoreRef.current) return;
     appliedRestoreRef.current = true;
-    if (isMobile || isSidebarOpen === savedDesktopSidebarOpen) return;
-    setIsSidebarOpen(savedDesktopSidebarOpen);
-    setIsCollapsedLayout(!savedDesktopSidebarOpen);
-    setVisualState(savedDesktopSidebarOpen ? "expanded" : "collapsed");
-  }, [hasRestoredSidebar, isMobile]);
+    const savedOpen = readSavedDesktopOpen();
+    if (isMobile || isSidebarOpen === savedOpen) return;
+    setIsSidebarOpen(savedOpen);
+    setIsCollapsedLayout(!savedOpen);
+    setVisualState(savedOpen ? "expanded" : "collapsed");
+  }, [isHydrated, isMobile]);
 
   useEffect(() => {
     clearAnimationTimeouts();
@@ -85,16 +86,16 @@ export const SidebarContainer = ({
     // Mobile always starts closed; coming back from mobile restores the
     // desktop choice.
     if (justSwitchedLayout) {
-      const targetOpen = isMobile ? false : isFirstRun ? isSidebarOpen : savedDesktopSidebarOpen;
+      const targetOpen = isMobile ? false : isFirstRun ? isSidebarOpen : readSavedDesktopOpen();
       if (isSidebarOpen !== targetOpen) {
         setIsSidebarOpen(targetOpen);
         return;
       }
     }
 
-    // Only after the restore (as rendered), so the collapsed default never
-    // overwrites the saved choice.
-    if (!isMobile && hasRestoredSidebar) setSavedDesktopSidebarOpen(isSidebarOpen);
+    // Desktop only (mobile always starts closed), and only once hydrated so
+    // the collapsed default never overwrites the saved choice.
+    if (!isMobile && isHydrated) writePreference(SIDEBAR_OPEN_KEY, isSidebarOpen);
 
     if (isMobile) {
       setIsCollapsedLayout(!isSidebarOpen);
@@ -141,7 +142,7 @@ export const SidebarContainer = ({
         );
       }, SIDEBAR_FADE_DURATION_MS),
     );
-  }, [isMobile, isSidebarOpen, hasRestoredSidebar]);
+  }, [isMobile, isSidebarOpen, isHydrated]);
 
   const contextValue = useMemo(
     () => ({

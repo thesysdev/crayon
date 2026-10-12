@@ -66,7 +66,7 @@ const ContainerSurface = ({
   className?: string;
   children?: React.ReactNode;
 }) => {
-  const isRestoring = useAgentInterfaceStore((state) => !state.hasRestoredSidebar);
+  const isRestoring = useAgentInterfaceStore((state) => !state.isHydrated);
   // The loader outlives the restore by its fade-out, then unmounts.
   const [showLoader, setShowLoader] = useState(true);
   useEffect(() => {

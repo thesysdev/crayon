@@ -1,30 +1,23 @@
 import { createContext, useContext, useEffect, useMemo } from "react";
 import { create } from "zustand";
 import { useShallow } from "zustand/react/shallow";
-import { readPreference, writePreference } from "../../../../utils/preferences";
 import { useIsomorphicLayoutEffect } from "../../../Charts/hooks/core/useIsomorphicLayoutEffect";
 
 interface AgentInterfaceState {
   isSidebarOpen: boolean;
-  /** The desktop open/closed choice; saved as a preference. */
-  savedDesktopSidebarOpen: boolean;
-  /** True once the saved choice has been read (just after hydration). */
-  hasRestoredSidebar: boolean;
+  /**
+   * True once hydrated (set before the first paint). Saved preferences are
+   * read from then on, so server and client first renders match.
+   */
+  isHydrated: boolean;
   isWorkspaceOpen: boolean;
   agentName: string;
   logoUrl: string;
   setIsSidebarOpen: (isOpen: boolean) => void;
-  setSavedDesktopSidebarOpen: (isOpen: boolean) => void;
   setIsWorkspaceOpen: (isOpen: boolean) => void;
   setAgentName: (name: string) => void;
   setLogoUrl: (url: string) => void;
 }
-
-/**
- * Saved desktop sidebar choice. Kept apart from `isSidebarOpen` so opening the
- * drawer on mobile isn't remembered on desktop.
- */
-const SIDEBAR_OPEN_KEY = "openui-agent-sidebar-open";
 
 export const createAgentInterfaceStore = ({
   logoUrl,
@@ -34,19 +27,14 @@ export const createAgentInterfaceStore = ({
   agentName: string;
 }) =>
   create<AgentInterfaceState>((set) => ({
-    // Collapsed until the saved choice is restored after hydration, so the
-    // server and the client's first render produce the same markup.
+    // Collapsed until hydrated, so the server and the client's first render
+    // produce the same markup; SidebarContainer then restores the saved choice.
     isSidebarOpen: false,
-    savedDesktopSidebarOpen: false,
-    hasRestoredSidebar: false,
+    isHydrated: false,
     isWorkspaceOpen: false,
     agentName: agentName,
     logoUrl: logoUrl,
     setIsSidebarOpen: (isOpen: boolean) => set({ isSidebarOpen: isOpen }),
-    setSavedDesktopSidebarOpen: (isOpen: boolean) => {
-      set({ savedDesktopSidebarOpen: isOpen });
-      writePreference(SIDEBAR_OPEN_KEY, isOpen);
-    },
     setIsWorkspaceOpen: (isOpen: boolean) => set({ isWorkspaceOpen: isOpen }),
     setAgentName: (name: string) => set({ agentName: name }),
     setLogoUrl: (url: string) => set({ logoUrl: url }),
@@ -76,14 +64,10 @@ export const AgentInterfaceStoreProvider = ({
 }) => {
   const shellStore = useMemo(() => createAgentInterfaceStore({ agentName, logoUrl }), []);
 
-  // After hydration, before paint: restore the saved choice. SidebarContainer
-  // applies it (desktop only, without animating) and Container stays hidden
-  // until then.
+  // Hydrated, before paint: SidebarContainer restores the saved sidebar state
+  // and Container reveals its contents.
   useIsomorphicLayoutEffect(() => {
-    shellStore.setState({
-      savedDesktopSidebarOpen: readPreference<boolean>(SIDEBAR_OPEN_KEY) === true,
-      hasRestoredSidebar: true,
-    });
+    shellStore.setState({ isHydrated: true });
   }, [shellStore]);
 
   useEffect(() => {
