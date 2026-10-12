@@ -92,6 +92,18 @@ const shopLibrary = openuiChatLibrary.extend({
 
 The derived library has no `id`. Create it once at module scope. See [Extending a library](/docs/openui-lang/defining-components#extending-a-library).
 
+## Entry rule
+
+The entry is the statement named `root`. Without one, the first statement that calls the library's root component is used, with a `no-root` warning. See [Entry Statement](/docs/openui-lang/versions/specification-v10#entry-statement).
+
+On the server, pass the root component name to the parser so this fallback works:
+
+```ts
+const parser = createParser(library.toJSONSchema(), library.root);
+```
+
+`createStreamingParser` takes the same second argument. Without it, a program with no `root` statement reports `no-root` and renders nothing.
+
 ## Message format
 
 `buildMessage` and `parseMessage` read and write responses wrapped in `]]>openui:` marker lines, with optional context such as form values. The `Renderer` accepts a stored message as `response`.
@@ -106,3 +118,7 @@ title = TextContent("Order 42")
 ```
 
 See [Message Protocol](/docs/openui-lang/message-protocol).
+
+## Vue, Svelte, and Angular
+
+`@openuidev/vue-lang`, `@openuidev/svelte-lang`, and `@openuidev/angular-lang` stay on 0.4. Keep `@openuidev/lang-core` at `^0.4` with them. The 1.0 language features (single-step actions, custom functions, custom actions) need the React renderer for now.
