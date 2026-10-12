@@ -27,7 +27,7 @@ export async function generateMetadata(props: {
   if (!integration) notFound();
 
   return {
-    title: `${integration.name} integration`,
+    title: { absolute: `${integration.seoTitle} | OpenUI` },
     description: integration.summary,
     alternates: { canonical: `/integrations/${integration.slug}` },
     openGraph: {

@@ -69,7 +69,7 @@ export async function generateMetadata(props: {
   if (!page) notFound();
 
   return {
-    title: page.data.title,
+    title: page.data.seoTitle ? { absolute: `${page.data.seoTitle} | OpenUI` } : page.data.title,
     description: page.data.description,
     alternates: {
       canonical: page.url,
