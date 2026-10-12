@@ -1,7 +1,7 @@
 import { generateSystemPrompt, type LibrarySpec } from "@openuidev/lang-core";
 import { readFileSync } from "fs";
 import { join } from "path";
-import { promptOptions } from "./prompt-options";
+import { promptOptions } from "./prompt-options.ts";
 
 /** Load the generated openuiLibrary spec and wrap it in Cloud's managed prompt block. */
 export function cloudInstructions(extra?: string): string {

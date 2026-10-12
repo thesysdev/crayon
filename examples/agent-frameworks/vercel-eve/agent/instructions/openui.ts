@@ -1,4 +1,4 @@
-import { cloudInstructions } from "../../src/lib/cloud-prompt";
+import { cloudInstructions } from "../../src/lib/cloud-prompt.ts";
 import { defineDynamic, defineInstructions } from "eve/instructions";
 
 /**
