@@ -13,7 +13,7 @@ const TOKEN_ROWS = (() => {
     seed = (seed * 1103515245 + 12345) % 2147483648;
     return seed / 2147483648;
   };
-  return Array.from({ length: 12 }, (_, row) => ({
+  return Array.from({ length: 11 }, (_, row) => ({
     // seconds for one full pass; neighbouring rows never share a speed
     duration: 2.5 + ((row * 5) % 7) * 0.3,
     blocks: Array.from({ length: 30 }, () => ({
