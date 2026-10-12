@@ -9,7 +9,7 @@ import {
   jsonLdHtml,
   THESYS_ORGANIZATION,
 } from "@/lib/structured-data";
-import { getMDXComponents } from "@/mdx-components";
+import { getMDXComponents, MdxLink } from "@/mdx-components";
 import { DocsBody, DocsDescription, DocsPage, DocsTitle } from "fumadocs-ui/layouts/docs/page";
 import { createRelativeLink } from "fumadocs-ui/mdx";
 import type { Metadata } from "next";
@@ -87,7 +87,7 @@ export function DocsPageView({ page }: { page: DocsSourcePage }) {
         <MDX
           components={getMDXComponents({
             // this allows you to link to other pages with relative file paths
-            a: createRelativeLink(source, page),
+            a: createRelativeLink(source, page, MdxLink),
           })}
         />
       </DocsBody>
