@@ -396,6 +396,80 @@ A response is stored once, but it can be opened from clients that cannot run it,
 - **Layouts are fixed.** Responses use fixed column counts and pixel widths, and none of the captured responses used the available breakpoint hooks.
 - **`AppBlock` apps are isolated.** Their state lives in their own JavaScript variables and is lost on reload, and they made no calls back to ChatGPT.
 
+## FAQ
+
+### What is DIL in ChatGPT?
+
+DIL is the language GPT-6 writes when ChatGPT answers with Intelligent UI. It combines Markdown for prose, JSX-like tags for components from ChatGPT's catalog (such as `<slider>` and `<box>`), and JavaScript for state and logic. ChatGPT's server compiles DIL into a JavaScript program and a JSON document before anything runs in the browser.
+
+### How does ChatGPT Intelligent UI work under the hood?
+
+OpenAI describes a library of native components and a compiler. In practice, ChatGPT Intelligent UI has five parts: GPT-6 writes the interface in DIL; the server compiles each partial response into a JavaScript program and JSON data; a sandboxed Web Worker runs the program and produces UI operations; ChatGPT draws those operations with its native components; and a catalog of about 70 components and design tokens limits what each step can use.
+
+### Does ChatGPT call the model again when I interact with Intelligent UI?
+
+Not for most interactions. Interaction state in ChatGPT Intelligent UI lives in a sandboxed worker in the browser. Moving a slider or ticking a checkbox updates state in the worker, which re-renders and returns update operations without a model call. Only actions that call `issueNewTurn`, such as submitting a form, send a new user message to the model.
+
+### Is ChatGPT Intelligent UI generative UI?
+
+Yes. Generative UI means a model composes the interface at response time instead of returning only text. ChatGPT Intelligent UI sits at the catalog end of that range: GPT-6 chooses from ChatGPT's own components and design tokens, and a compiler validates its choices. AppBlocks cover the open-ended end, where the model writes a full HTML, CSS, and JavaScript app.
+
+### How can I build something like ChatGPT Intelligent UI in my own app?
+
+You need the same pieces ChatGPT uses: a compact language the model can stream, a component catalog for it to choose from, a renderer that draws only known components, and local state so interactions don't need a model call. [OpenUI](/docs) is an open-source, MIT-licensed framework built on that pattern. OpenUI Lang is a streaming-first language with [reactive `$variables`](/docs/openui-lang/reactive-state), prompts are generated from your component library, and renderers ship for React, Vue, Svelte, and Angular.
+
+<script
+  type="application/ld+json"
+  dangerouslySetInnerHTML={{
+    __html: JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is DIL in ChatGPT?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "DIL is the language GPT-6 writes when ChatGPT answers with Intelligent UI. It combines Markdown for prose, JSX-like tags for components from ChatGPT's catalog (such as <slider> and <box>), and JavaScript for state and logic. ChatGPT's server compiles DIL into a JavaScript program and a JSON document before anything runs in the browser."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How does ChatGPT Intelligent UI work under the hood?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "OpenAI describes a library of native components and a compiler. In practice, ChatGPT Intelligent UI has five parts: GPT-6 writes the interface in DIL; the server compiles each partial response into a JavaScript program and JSON data; a sandboxed Web Worker runs the program and produces UI operations; ChatGPT draws those operations with its native components; and a catalog of about 70 components and design tokens limits what each step can use."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Does ChatGPT call the model again when I interact with Intelligent UI?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Not for most interactions. Interaction state in ChatGPT Intelligent UI lives in a sandboxed worker in the browser. Moving a slider or ticking a checkbox updates state in the worker, which re-renders and returns update operations without a model call. Only actions that call issueNewTurn, such as submitting a form, send a new user message to the model."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is ChatGPT Intelligent UI generative UI?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. Generative UI means a model composes the interface at response time instead of returning only text. ChatGPT Intelligent UI sits at the catalog end of that range: GPT-6 chooses from ChatGPT's own components and design tokens, and a compiler validates its choices. AppBlocks cover the open-ended end, where the model writes a full HTML, CSS, and JavaScript app."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How can I build something like ChatGPT Intelligent UI in my own app?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "You need the same pieces ChatGPT uses: a compact language the model can stream, a component catalog for it to choose from, a renderer that draws only known components, and local state so interactions don't need a model call. OpenUI is an open-source, MIT-licensed framework built on that pattern. OpenUI Lang is a streaming-first language with reactive $variables, prompts are generated from your component library, and renderers ship for React, Vue, Svelte, and Angular."
+          }
+        }
+      ]
+    }),
+  }}
+/>
+
 ## Methodology
 
 All observations come from our own ChatGPT accounts, from the traffic the ChatGPT web app generates, and from the JavaScript that chatgpt.com serves publicly. They were made in October 2026 with GPT-6 and GPT-6 Thinking.
