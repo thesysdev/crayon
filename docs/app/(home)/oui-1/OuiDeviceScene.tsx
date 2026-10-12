@@ -8,12 +8,63 @@ const MONTH = [
 ];
 const AXIS_MAX = 10;
 
-/* The query, the reply and the chart arrive in turn, on a loop. */
-export function DeviceScene() {
+/* The response both device illustrations show: a month of revenue as a bar
+   chart. `animated` plays it arriving in step with the stream scene; without
+   it the card is still. */
+export function RevenueCard({ animated }: { animated?: boolean }) {
   const month = MONTH;
   const total = month.reduce((sum, v) => sum + v, 0).toFixed(1);
   const peak = Math.max(...month);
 
+  return (
+    <div
+      className={
+        animated
+          ? `${styles.streamBlock} ${styles.chartCard} ${styles.streamC}`
+          : `${styles.chartCard} ${styles.chartCardStill}`
+      }
+    >
+      <div className={styles.chartCardHead}>
+        <span className={styles.chartCardTitle}>Monthly revenue</span>
+      </div>
+      <div className={styles.chartCardTotal}>
+        <b>${total}k</b>
+        <span className={styles.chartCardDelta}>+12%</span>
+        <i>vs August</i>
+      </div>
+      <div className={styles.plot}>
+        <div className={styles.plotAxis}>
+          {[AXIS_MAX, AXIS_MAX / 2, 0].map((tick) => (
+            <span key={tick}>${tick}k</span>
+          ))}
+        </div>
+        <div className={styles.streamBars}>
+          {month.map((v, i) => (
+            <span key={i} className={styles.barSlot}>
+              {v === peak && (
+                <em className={styles.barValue} style={{ bottom: `${(v / AXIS_MAX) * 100}%` }}>
+                  ${v}k
+                </em>
+              )}
+              <span
+                className={styles.bar}
+                style={{ height: `${(v / AXIS_MAX) * 100}%`, animationDelay: `${i * 20}ms` }}
+              />
+            </span>
+          ))}
+        </div>
+      </div>
+      <div className={styles.streamDays}>
+        {month.map((_, i) => (
+          <span key={i}>{i % 7 === 0 ? `Sep ${i + 1}` : ""}</span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* The query, the reply and the chart arrive in turn, on a loop. */
+export function DeviceScene() {
   return (
     /* The same device the hero uses, set off-centre so the stage crops its
        right and bottom edges. The scene is a fixed 588x360 composition that
@@ -40,46 +91,7 @@ export function DeviceScene() {
             </i>
             <span className={styles.bubble}>Here’s September, day by day.</span>
           </div>
-          <div className={`${styles.streamBlock} ${styles.chartCard} ${styles.streamC}`}>
-            <div className={styles.chartCardHead}>
-              <span className={styles.chartCardTitle}>Monthly revenue</span>
-            </div>
-            <div className={styles.chartCardTotal}>
-              <b>${total}k</b>
-              <span className={styles.chartCardDelta}>+12%</span>
-              <i>vs August</i>
-            </div>
-            <div className={styles.plot}>
-              <div className={styles.plotAxis}>
-                {[AXIS_MAX, AXIS_MAX / 2, 0].map((tick) => (
-                  <span key={tick}>${tick}k</span>
-                ))}
-              </div>
-              <div className={styles.streamBars}>
-                {month.map((v, i) => (
-                  <span key={i} className={styles.barSlot}>
-                    {v === peak && (
-                      <em
-                        className={styles.barValue}
-                        style={{ bottom: `${(v / AXIS_MAX) * 100}%` }}
-                      >
-                        ${v}k
-                      </em>
-                    )}
-                    <span
-                      className={styles.bar}
-                      style={{ height: `${(v / AXIS_MAX) * 100}%`, animationDelay: `${i * 20}ms` }}
-                    />
-                  </span>
-                ))}
-              </div>
-            </div>
-            <div className={styles.streamDays}>
-              {month.map((_, i) => (
-                <span key={i}>{i % 7 === 0 ? `Sep ${i + 1}` : ""}</span>
-              ))}
-            </div>
-          </div>
+          <RevenueCard animated />
         </div>
       </div>
     </div>

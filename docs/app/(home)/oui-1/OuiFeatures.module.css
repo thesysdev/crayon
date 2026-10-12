@@ -118,7 +118,9 @@
   /* stage width / 588px as a unitless ratio */
   transform: scale(tan(atan2(100cqw, 588px)));
 }
-.device {
+/* The device palette. The pipeline scene shares it so its card matches. */
+.device,
+.pipeScene {
   --device-screen: #ebebec;
   --device-ink: #16171c;
   --device-card: #fff;
@@ -133,7 +135,8 @@
   --device-radius-pill: 999px;
   --device-radius-bar: 3px;
   --device-edge: none;
-
+}
+.device {
   position: absolute;
   top: 32px;
   left: 88px;
@@ -147,14 +150,16 @@
     inset 0 1px 1px rgb(255 255 255 / 0.38),
     0 22px 44px rgb(0 0 0 / 0.12);
 }
-[data-theme="dark"] .device {
+[data-theme="dark"] .device,
+[data-theme="dark"] .pipeScene {
   --device-screen: #171717;
   --device-ink: #f2f2f2;
   --device-card: #222222;
   --device-bubble: #262626;
   --device-accent: #9d9dff;
   --device-accent-line: #3a3ad0;
-
+}
+[data-theme="dark"] .device {
   background: linear-gradient(152deg, #585858 0%, #262626 9%, #111111 26%, #0b0b0b 50%);
 }
 .screen {
@@ -442,8 +447,6 @@
 
 /* ---------- pipeline ---------- */
 .pipeScene {
-  --pipe-accent: #4b4bf7;
-
   position: absolute;
   top: 0;
   left: 0;
@@ -452,9 +455,6 @@
   transform-origin: 0 0;
   transform: scale(tan(atan2(100cqw, 588px)));
 }
-[data-theme="dark"] .pipeScene {
-  --pipe-accent: #9d9dff;
-}
 /* the token field runs a little way under the panel, so blocks flow into it */
 .pipeRows {
   position: absolute;
@@ -462,8 +462,8 @@
   left: 0;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  width: 360px;
+  gap: 12px;
+  width: 252px;
   overflow: hidden;
   mask-image: linear-gradient(to right, transparent, #000 45%);
 }
@@ -475,7 +475,7 @@
 }
 .pipeRow span {
   flex: none;
-  height: 6px;
+  height: 4px;
   border-radius: 2px;
   background: color-mix(in srgb, var(--oui-ink) 12%, transparent);
 }
@@ -483,7 +483,7 @@
   background: color-mix(in srgb, var(--oui-ink) 28%, transparent);
 }
 .pipeRow span[data-tone="accent"] {
-  background: var(--pipe-accent);
+  background: var(--device-accent);
 }
 @keyframes pipeFlow {
   from {
@@ -498,59 +498,25 @@
     animation: none;
   }
 }
-.pipePanel {
+/* the response card: positioned so the stage crops its right edge, as the
+   device does in the stream illustration */
+.pipeCard {
   position: absolute;
-  top: 64px;
-  left: 340px;
-  display: flex;
-  flex-direction: column;
-  width: 216px;
-  height: 232px;
-  padding: 16px;
-  box-shadow: 0 12px 32px rgb(0 0 0 / 0.08);
+  top: 74px;
+  left: 232px;
+  border-radius: 12px;
+  box-shadow:
+    0 0 0 1px var(--oui-line),
+    0 12px 32px rgb(0 0 0 / 0.08);
+  color: var(--device-ink);
 }
-.pipeTitle {
-  font-size: 12px;
-  line-height: 16px;
-  color: var(--oui-muted);
+.pipeCard .chartCard {
+  margin-top: 0;
 }
-.pipeTotal {
-  margin-top: 2px;
-  font-size: 20px;
-  font-weight: 500;
-  line-height: 24px;
-  letter-spacing: -0.02em;
-  font-variant-numeric: tabular-nums;
-}
-.pipeBars {
-  display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
-  align-items: end;
-  justify-items: center;
-  height: 64px;
-  margin-top: 16px;
-  border-bottom: 1px solid var(--oui-line);
-}
-.pipeBars span {
-  width: 6px;
-  border-radius: 3px 3px 0 0;
-  background: var(--pipe-accent);
-}
-.pipeList {
-  margin-top: auto;
-  font-size: 12px;
-  line-height: 24px;
-  font-variant-numeric: tabular-nums;
-}
-.pipeList div {
-  display: flex;
-  justify-content: space-between;
-}
-.pipeList div + div {
-  border-top: 1px solid var(--oui-line);
-}
-.pipeList span:first-child {
-  color: var(--oui-muted);
+/* a still card: no arrival, bars at full height */
+.chartCardStill .bar,
+.chartCardStill .barValue {
+  animation: none;
 }
 
 /* ---------- benchmark ---------- */
