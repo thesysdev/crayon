@@ -26,7 +26,7 @@ function Specimen({ rows }: { rows: { label: string; view: ReactNode }[] }) {
   );
 }
 
-// The sidebar beside the /design chat page: white, no header, the compact RadioInput at the bottom.
+// The sidebar beside the Radio chat page: white, no header, the compact RadioInput at the bottom.
 export function SidebarPreview() {
   return (
     <div className="f1-sidebar-stage">

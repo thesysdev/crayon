@@ -413,7 +413,7 @@ export function RadioInputPreview() {
       <p className="ref-note">
         <code>{'<RadioInput onSend={fn} />'}</code>. Props: <code>size</code> (full, compact: a floating warm-white slanted bar),{" "}
         <code>channel</code>, <code>placeholder</code>, <code>value</code>, <code>onChange</code>,{" "}
-        <code>onSend</code>, <code>sound</code>. Typing clicks are synthesised with Web Audio; the send sound is <code>public/sounds/f1-radio-send.mp3</code>. The typing loops stay silent. The /design chat plays the send sound only (<code>sound="send"</code>).
+        <code>onSend</code>, <code>sound</code>. Typing clicks are synthesised with Web Audio; the send sound is <code>public/sounds/f1-radio-send.mp3</code>. The typing loops stay silent. The Radio chat plays the send sound only (<code>sound="send"</code>).
       </p>
     </div>
   );
