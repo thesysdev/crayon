@@ -136,7 +136,7 @@ export default function BenchmarksPage() {
           __html: JSON.stringify(structuredData).replaceAll("<", "\\u003c"),
         }}
       />
-      <BenchmarksContent intro={INTRO} />
+      <BenchmarksContent />
       <Footer />
     </>
   );

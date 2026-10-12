@@ -14,9 +14,7 @@ import { DemoCreditsDialog } from "@/components/DemoCreditsDialog";
 import { isDemoCreditsErrorPayload } from "@/lib/demo-credits";
 import { Send, Square } from "lucide-react";
 import { useTheme } from "next-themes";
-import Link from "next/link";
 import { useCallback, useRef, useState } from "react";
-import { VS_JSON_ROWS, VS_JSON_SUMMARY } from "./summary";
 
 export default function DemosPage() {
   const { theme, setTheme } = useTheme();
@@ -152,33 +150,6 @@ export default function DemosPage() {
         <div className="content-wrapper">
           <div className="prompt-section">
             <h1 className="prompt-heading">What do you want to build?</h1>
-
-            <section className="vs-json-summary" aria-label="OpenUI vs JSON benchmark summary">
-              <p>{VS_JSON_SUMMARY}</p>
-              <table>
-                <thead>
-                  <tr>
-                    <th scope="col">Format</th>
-                    <th scope="col">Output tokens per screen</th>
-                    <th scope="col">Tokens vs OpenUI</th>
-                    <th scope="col">Cost vs OpenUI</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {VS_JSON_ROWS.map((row) => (
-                    <tr key={row.format}>
-                      <th scope="row">{row.format}</th>
-                      <td>{row.output}</td>
-                      <td>{row.relative}</td>
-                      <td>{row.cost}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-              <p className="vs-json-source">
-                Source: <Link href="/benchmarks">Generative UI benchmark</Link>
-              </p>
-            </section>
 
             <div className="prompt-container">
               <textarea

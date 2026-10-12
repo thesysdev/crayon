@@ -257,9 +257,6 @@ function ViewComparisonTray({ pair }: { pair: ComparisonPair }) {
               Learn more about OpenUI Cloud
               <ArrowRight size={15} strokeWidth={2} aria-hidden="true" />
             </Link>
-            <Link href="/benchmarks" prefetch={false} className={styles.comparisonSecondaryLink}>
-              Generative UI benchmark
-            </Link>
           </div>
         </div>
       </div>

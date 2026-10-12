@@ -122,7 +122,7 @@ function Section({
   );
 }
 
-export function BenchmarksContent({ intro }: { intro: string }) {
+export function BenchmarksContent() {
   return (
     <main id="benchmark-content" className={s.page}>
       <VizSkin vivid>
@@ -140,7 +140,6 @@ export function BenchmarksContent({ intro }: { intro: string }) {
               <h1 className={s.heroTitle}>
                 <span>Generative UI</span> <span>Benchmark</span>
               </h1>
-              <p className={s.heroIntro}>{intro}</p>
             </div>
             <div className={s.heroActions}>
               <BevelButton

@@ -5,7 +5,6 @@ import { getMDXComponents } from "@/mdx-components";
 import { TOCProvider, TOCScrollArea } from "fumadocs-ui/components/toc";
 import { TOCItem, TOCItems } from "fumadocs-ui/components/toc/default";
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 
 export default async function BlogPostPage(props: { params: Promise<{ slug: string }> }) {
@@ -50,28 +49,6 @@ export default async function BlogPostPage(props: { params: Promise<{ slug: stri
             <article className="prose mt-8 min-w-0">
               <Mdx components={getMDXComponents()} />
             </article>
-            {page.data.related?.length ? (
-              <nav
-                aria-label="Related"
-                className="mt-12 border-t border-[color:var(--home-hairline)] pt-8 font-[family-name:var(--home-font-text)] text-[length:var(--home-body-size)]"
-              >
-                <p className="mb-3 font-medium text-[color:var(--openui-text-neutral-primary)]">
-                  Related
-                </p>
-                <ul className="space-y-2">
-                  {page.data.related.map((item) => (
-                    <li key={item.href}>
-                      <Link
-                        href={item.href}
-                        className="text-[color:var(--openui-text-neutral-secondary)] underline underline-offset-4 hover:text-[color:var(--openui-text-neutral-primary)]"
-                      >
-                        {item.title}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </nav>
-            ) : null}
             <div className="mt-12 border-t border-[color:var(--home-hairline)] pt-8">
               <GitHubButton variant="desktopGlow" />
             </div>
