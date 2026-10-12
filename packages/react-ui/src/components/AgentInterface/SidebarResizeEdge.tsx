@@ -1,4 +1,5 @@
 import { useLayoutEffect, useRef, type PointerEvent } from "react";
+import { readPreference, writePreference } from "../../utils/preferences";
 import { useAgentInterfaceStore } from "./_shared/store";
 
 /* Keep DEFAULT in step with $sidebar-width in sidebar.scss. */
@@ -11,10 +12,11 @@ const COLLAPSE_AT = 150;
 /* Lands on the default width when released within this many px of it. */
 const SNAP_DISTANCE = 14;
 const SAVE_DELAY_MS = 300;
+const WIDTH_KEY = "openui-agent-sidebar-width";
 const WIDTH_VAR = "--openui-agent-sidebar-width";
 
-const isValidWidth = (width: number | null): width is number =>
-  width !== null && width >= MIN_WIDTH && width <= MAX_WIDTH;
+const isValidWidth = (width: unknown): width is number =>
+  typeof width === "number" && width >= MIN_WIDTH && width <= MAX_WIDTH;
 
 const fitWidth = (raw: number) => {
   const width = Math.min(Math.max(raw, MIN_WIDTH), MAX_WIDTH);
@@ -25,18 +27,13 @@ const fitWidth = (raw: number) => {
  * The sidebar's right edge, draggable. It has no look of its own beyond the
  * resize cursor. The width lives in a CSS variable on the sidebar container,
  * written straight to the element so a drag doesn't re-render the tree, and is
- * saved with the other sidebar preferences (the AgentInterface store) once the
- * pointer settles.
+ * saved as a preference once the pointer settles.
  */
 export const SidebarResizeEdge = () => {
-  const { isSidebarOpen, setIsSidebarOpen, savedWidth, setSavedWidth } = useAgentInterfaceStore(
-    (state) => ({
-      isSidebarOpen: state.isSidebarOpen,
-      setIsSidebarOpen: state.setIsSidebarOpen,
-      savedWidth: state.savedSidebarWidth,
-      setSavedWidth: state.setSavedSidebarWidth,
-    }),
-  );
+  const { isSidebarOpen, setIsSidebarOpen } = useAgentInterfaceStore((state) => ({
+    isSidebarOpen: state.isSidebarOpen,
+    setIsSidebarOpen: state.setIsSidebarOpen,
+  }));
   const edgeRef = useRef<HTMLDivElement>(null);
   const widthRef = useRef(DEFAULT_WIDTH);
   const openRef = useRef(isSidebarOpen);
@@ -53,30 +50,30 @@ export const SidebarResizeEdge = () => {
 
   const scheduleSave = () => {
     if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
-    saveTimeoutRef.current = setTimeout(() => setSavedWidth(widthRef.current), SAVE_DELAY_MS);
+    saveTimeoutRef.current = setTimeout(
+      () => writePreference(WIDTH_KEY, widthRef.current),
+      SAVE_DELAY_MS,
+    );
   };
 
-  // The saved width arrives with the other sidebar preferences, just after
-  // hydration and before paint. Land on it without animating from the
-  // default: apply it with transitions off, force the style to settle, then
-  // let transitions back on. A drag's own save is already applied, so skips.
+  // Before paint, so the sidebar opens at its saved width rather than the
+  // default and then jumping: apply it with transitions off, force the style
+  // to settle, then let transitions back on.
   useLayoutEffect(() => {
+    const saved = readPreference<number>(WIDTH_KEY);
     const el = container();
-    if (!el || !isValidWidth(savedWidth) || savedWidth === widthRef.current) return;
-    el.classList.add("openui-agent-sidebar-container--resizing");
-    widthRef.current = savedWidth;
-    el.style.setProperty(WIDTH_VAR, `${savedWidth}px`);
-    void el.offsetWidth;
-    el.classList.remove("openui-agent-sidebar-container--resizing");
-  }, [savedWidth]);
-
-  useLayoutEffect(
-    () => () => {
+    if (el && isValidWidth(saved)) {
+      el.classList.add("openui-agent-sidebar-container--resizing");
+      widthRef.current = saved;
+      el.style.setProperty(WIDTH_VAR, `${saved}px`);
+      void el.offsetWidth;
+      el.classList.remove("openui-agent-sidebar-container--resizing");
+    }
+    return () => {
       if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
       container()?.style.removeProperty(WIDTH_VAR);
-    },
-    [],
-  );
+    };
+  }, []);
 
   const handlePointerDown = (event: PointerEvent<HTMLDivElement>) => {
     if (event.button !== 0) return;

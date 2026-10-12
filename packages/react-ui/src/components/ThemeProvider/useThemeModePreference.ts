@@ -1,9 +1,7 @@
 "use client";
 
-import { useStore } from "zustand";
-import { persist } from "zustand/middleware";
-import { createStore } from "zustand/vanilla";
-import { createPreferenceStorage } from "../../utils/persistStorage";
+import { useCallback, useState } from "react";
+import { readPreference, writePreference } from "../../utils/preferences";
 import { useIsomorphicLayoutEffect } from "../Charts/hooks/core/useIsomorphicLayoutEffect";
 import type { ThemeMode } from "./types";
 import { useSystemThemeMode } from "./useSystemThemeMode";
@@ -21,47 +19,8 @@ export const THEME_MODE_STORAGE_KEY = "openui-theme-mode";
  */
 export const THEME_MODE_ATTRIBUTE = "data-openui-theme";
 
-interface ThemeModePreferenceState {
-  preference: ThemeModePreference;
-  setPreference: (next: ThemeModePreference) => void;
-}
-
 const isPreference = (value: unknown): value is ThemeModePreference =>
   value === "light" || value === "dark" || value === "system";
-
-// Saved with zustand `persist`, like the AgentInterface sidebar preferences:
-// "system" until restored after hydration, so server-rendered markup matches.
-const createPreferenceStore = (storageKey: string) =>
-  createStore<ThemeModePreferenceState>()(
-    persist(
-      (set) => ({
-        preference: "system",
-        setPreference: (preference) => set({ preference }),
-      }),
-      {
-        name: storageKey,
-        storage: createPreferenceStorage(),
-        skipHydration: true,
-        partialize: (state) => ({ preference: state.preference }),
-        merge: (persisted, current) => {
-          const saved = (persisted as Partial<ThemeModePreferenceState> | undefined)?.preference;
-          return { ...current, preference: isPreference(saved) ? saved : "system" };
-        },
-      },
-    ),
-  );
-
-// One store per key, so every component using the hook shares the choice.
-const preferenceStores = new Map<string, ReturnType<typeof createPreferenceStore>>();
-
-const getPreferenceStore = (storageKey: string) => {
-  let store = preferenceStores.get(storageKey);
-  if (!store) {
-    store = createPreferenceStore(storageKey);
-    preferenceStores.set(storageKey, store);
-  }
-  return store;
-};
 
 /**
  * The user's Light / Dark / System choice, saved to localStorage and mirrored
@@ -73,16 +32,22 @@ export function useThemeModePreference(storageKey: string = THEME_MODE_STORAGE_K
   setPreference: (next: ThemeModePreference) => void;
   mode: ThemeMode;
 } {
-  const store = getPreferenceStore(storageKey);
-  const preference = useStore(store, (state) => state.preference);
-  const setPreference = useStore(store, (state) => state.setPreference);
   const systemMode = useSystemThemeMode();
-
-  // After hydration, before paint. `persist` is missing when storage is
-  // unavailable; the choice then lives for the page only.
+  // "system" for the first render (as on the server), then the saved choice
+  // before paint, so server-rendered markup hydrates cleanly.
+  const [preference, setPreferenceState] = useState<ThemeModePreference>("system");
   useIsomorphicLayoutEffect(() => {
-    void store.persist?.rehydrate();
-  }, [store]);
+    const saved = readPreference(storageKey);
+    setPreferenceState(isPreference(saved) ? saved : "system");
+  }, [storageKey]);
+
+  const setPreference = useCallback(
+    (next: ThemeModePreference) => {
+      setPreferenceState(next);
+      writePreference(storageKey, next === "system" ? undefined : next);
+    },
+    [storageKey],
+  );
 
   const mode: ThemeMode = preference === "system" ? systemMode : preference;
 

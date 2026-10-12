@@ -312,16 +312,18 @@ their `isWorkspaceOpen` defaults differ and they are **not** cross-synced. See
 
 ### Saved preferences & server rendering
 
-Preferences that outlive a page load all use zustand `persist` the same way: the store is created
-with `skipHydration`, renders its defaults first (so server HTML and the client's first render
-match), and restores in a layout effect right after hydration, before paint.
+Saved UI preferences go through one helper, `utils/preferences.ts` (`readPreference` /
+`writePreference`: JSON values, never throws, so blocked or full storage just means nothing is
+kept). Each is read once after hydration, before paint, so server HTML and the client's first
+render match.
 
-- **Sidebar** (AgentInterfaceStore, key `openui-agent-sidebar`): `savedDesktopSidebarOpen` and
-  `savedSidebarWidth`. `isSidebarOpen` is the live state; the saved desktop choice is kept apart so
-  opening the drawer on mobile isn't remembered on desktop. `SidebarContainer` applies the restored
-  choice without animating, and `SidebarResizeEdge` applies the width.
-- **Theme** (`ThemeProvider/useThemeModePreference.ts`, key `openui-theme-mode`): one store per key,
-  shared by every component calling the hook.
+- **Sidebar open** (`openui-agent-sidebar-open`): `savedDesktopSidebarOpen` in AgentInterfaceStore,
+  written by its setter and read by `AgentInterfaceStoreProvider`. `isSidebarOpen` is the live
+  state; the saved desktop choice is kept apart so opening the drawer on mobile isn't remembered
+  on desktop. `SidebarContainer` applies it without animating.
+- **Sidebar width** (`openui-agent-sidebar-width`): read and written by `SidebarResizeEdge`, which
+  sets it straight on the container as a CSS variable.
+- **Theme** (`openui-theme-mode`): `ThemeProvider/useThemeModePreference.ts`.
 - **Reveal:** until `hasRestoredSidebar` is set, `Container` hides its contents (`visibility`, so
   layout still measures) under a fading loader, and keeps transitions off until the restored
   styles settle.
