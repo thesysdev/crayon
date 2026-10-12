@@ -356,6 +356,17 @@
       background-color: oklch(from #{cssUtils.$text-neutral-primary} l c h / 0.04);
       color: cssUtils.$text-neutral-primary;
     }
+
+    // No browser focus ring. Radix focuses a tab on click in a way that
+    // counts as :focus-visible, so the selected tab shows focus through its
+    // grey fill only; keyboard focus on another tab gets a quiet neutral ring.
+    &:focus {
+      outline: none;
+    }
+    &:not([data-state="active"]):focus-visible {
+      outline: 2px solid cssUtils.$border-interactive-emphasis;
+      outline-offset: 2px;
+    }
   }
 
   // Leading: an inline Icon, Avatar or Emoji, without the old tile.
