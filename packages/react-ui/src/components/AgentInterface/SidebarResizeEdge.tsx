@@ -10,18 +10,11 @@ const MAX_WIDTH = 420;
 const COLLAPSE_AT = 150;
 /* Lands on the default width when released within this many px of it. */
 const SNAP_DISTANCE = 14;
-const STORAGE_KEY = "openui-agent-sidebar-width";
 const SAVE_DELAY_MS = 300;
 const WIDTH_VAR = "--openui-agent-sidebar-width";
 
-const readStoredWidth = () => {
-  try {
-    const value = Number(window.localStorage.getItem(STORAGE_KEY));
-    return value >= MIN_WIDTH && value <= MAX_WIDTH ? value : null;
-  } catch {
-    return null;
-  }
-};
+const isValidWidth = (width: number | null): width is number =>
+  width !== null && width >= MIN_WIDTH && width <= MAX_WIDTH;
 
 const fitWidth = (raw: number) => {
   const width = Math.min(Math.max(raw, MIN_WIDTH), MAX_WIDTH);
@@ -32,13 +25,18 @@ const fitWidth = (raw: number) => {
  * The sidebar's right edge, draggable. It has no look of its own beyond the
  * resize cursor. The width lives in a CSS variable on the sidebar container,
  * written straight to the element so a drag doesn't re-render the tree, and is
- * saved to localStorage once the pointer settles.
+ * saved with the other sidebar preferences (the AgentInterface store) once the
+ * pointer settles.
  */
 export const SidebarResizeEdge = () => {
-  const { isSidebarOpen, setIsSidebarOpen } = useAgentInterfaceStore((state) => ({
-    isSidebarOpen: state.isSidebarOpen,
-    setIsSidebarOpen: state.setIsSidebarOpen,
-  }));
+  const { isSidebarOpen, setIsSidebarOpen, savedWidth, setSavedWidth } = useAgentInterfaceStore(
+    (state) => ({
+      isSidebarOpen: state.isSidebarOpen,
+      setIsSidebarOpen: state.setIsSidebarOpen,
+      savedWidth: state.savedSidebarWidth,
+      setSavedWidth: state.setSavedSidebarWidth,
+    }),
+  );
   const edgeRef = useRef<HTMLDivElement>(null);
   const widthRef = useRef(DEFAULT_WIDTH);
   const openRef = useRef(isSidebarOpen);
@@ -55,35 +53,30 @@ export const SidebarResizeEdge = () => {
 
   const scheduleSave = () => {
     if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
-    saveTimeoutRef.current = setTimeout(() => {
-      try {
-        window.localStorage.setItem(STORAGE_KEY, String(widthRef.current));
-      } catch {
-        // Storage can be unavailable (private mode, blocked site data).
-      }
-    }, SAVE_DELAY_MS);
+    saveTimeoutRef.current = setTimeout(() => setSavedWidth(widthRef.current), SAVE_DELAY_MS);
   };
 
-  // Before paint, so the sidebar opens at its saved width rather than the
-  // default and then jumping.
+  // The saved width arrives with the other sidebar preferences, just after
+  // hydration and before paint. Land on it without animating from the
+  // default: apply it with transitions off, force the style to settle, then
+  // let transitions back on. A drag's own save is already applied, so skips.
   useLayoutEffect(() => {
-    const stored = readStoredWidth();
     const el = container();
-    if (stored !== null && el) {
-      // Land on the saved width without animating to it from the default:
-      // apply it with transitions off, force the style to settle, then let
-      // transitions back on for later changes.
-      el.classList.add("openui-agent-sidebar-container--resizing");
-      widthRef.current = stored;
-      el.style.setProperty(WIDTH_VAR, `${stored}px`);
-      void el.offsetWidth;
-      el.classList.remove("openui-agent-sidebar-container--resizing");
-    }
-    return () => {
+    if (!el || !isValidWidth(savedWidth) || savedWidth === widthRef.current) return;
+    el.classList.add("openui-agent-sidebar-container--resizing");
+    widthRef.current = savedWidth;
+    el.style.setProperty(WIDTH_VAR, `${savedWidth}px`);
+    void el.offsetWidth;
+    el.classList.remove("openui-agent-sidebar-container--resizing");
+  }, [savedWidth]);
+
+  useLayoutEffect(
+    () => () => {
       if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
       container()?.style.removeProperty(WIDTH_VAR);
-    };
-  }, []);
+    },
+    [],
+  );
 
   const handlePointerDown = (event: PointerEvent<HTMLDivElement>) => {
     if (event.button !== 0) return;

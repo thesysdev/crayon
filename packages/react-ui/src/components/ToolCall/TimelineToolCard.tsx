@@ -2,7 +2,7 @@ import type { ToolActivity } from "@openuidev/react-headless";
 import { ChevronRight } from "lucide-react";
 import { memo } from "react";
 import { SourceIcon } from "./SourceIcon";
-import { ToolCall } from "./ToolCallPrimitives";
+import { ToolCall, isToolRunning } from "./ToolCallPrimitives";
 import { TIMELINE_GLYPH, toolIcon } from "./ToolGlyphs";
 import { extractToolSources, type ToolResultSource } from "./toolSources";
 
@@ -63,9 +63,7 @@ export const TimelineToolCard = memo(function TimelineToolCard({
   onOpenChange?: (open: boolean) => void;
 }) {
   const Icon = toolIcon(activity.toolName, activity.status);
-  const running =
-    inProgress ??
-    ((activity.status === "streaming" || activity.status === "executing") && isLast && isRunning);
+  const running = inProgress ?? (isToolRunning(activity.status) && isLast && isRunning);
   // Links speak for themselves; the raw block would only repeat them. A failure
   // always falls back to it, since that's where the error text lives.
   const sources =

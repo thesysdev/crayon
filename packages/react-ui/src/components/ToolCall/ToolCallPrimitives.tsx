@@ -2,7 +2,7 @@ import type { ToolActivity, ToolCallStatus } from "@openuidev/react-headless";
 import clsx from "clsx";
 import { createContext, createElement, useContext, useId, useState, type ReactNode } from "react";
 import { toolIcon } from "./ToolGlyphs";
-import { toolLabel, useToolLabels, type ToolLabels } from "./toolLabels";
+import { toolLabel, useToolLabels } from "./toolLabels";
 
 /**
  * Compound, reusable building blocks for rendering one tool call + its result.
@@ -65,19 +65,11 @@ function renderPart<State, Props extends Record<string, unknown>>(
   return createElement(tag, defaultProps);
 }
 
-const isRunning = (status: ToolCallStatus) => status === "streaming" || status === "executing";
+/** Whether a tool call is still in flight (arguments streaming or executing). */
+export const isToolRunning = (status: ToolCallStatus) =>
+  status === "streaming" || status === "executing";
 
-// ── Shared label / formatting helpers ──
-
-/**
- * Default human label for a status + tool name ("Searching the web", "Used
- * image search"); see {@link toolLabel} and {@link ToolLabelsProvider}.
- *
- * @category Functions
- */
-export function defaultLabel(status: ToolCallStatus, name: string, overrides?: ToolLabels): string {
-  return toolLabel(status, name, overrides);
-}
+// ── Shared formatting helpers ──
 
 /** Pretty-prints a JSON result string, falling back to the raw string. @category Functions */
 export function prettyResult(value?: string): string {
@@ -186,7 +178,7 @@ const StatusIcon = ({
   size = 14,
 }: PartProps<{ status: ToolCallStatus }> & { size?: number }) => {
   const { activity, isLast, running } = useToolCall();
-  const spin = isRunning(activity.status) && isLast && running;
+  const spin = isToolRunning(activity.status) && isLast && running;
   const Icon = toolIcon(activity.toolName, activity.status);
   return renderPart(
     render,
@@ -220,8 +212,8 @@ const StatusText = ({
 }: PartProps<{ status: ToolCallStatus; label: string }>) => {
   const { activity, isLast, running } = useToolCall();
   const labels = useToolLabels();
-  const label = activity.statusMessage ?? defaultLabel(activity.status, activity.toolName, labels);
-  const shimmer = isRunning(activity.status) && isLast && running;
+  const label = activity.statusMessage ?? toolLabel(activity.status, activity.toolName, labels);
+  const shimmer = isToolRunning(activity.status) && isLast && running;
   return renderPart(
     render,
     "span",
