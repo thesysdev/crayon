@@ -642,5 +642,5 @@ A step is `{ "click": "<statementId>" }`, `{ "type": ["<statementId>", "<text>"]
 
 ## Appendix C. Changelog
 
-- **2026-09-30**: 1.0. The entry is the `root` statement, or the first statement that calls the library's root component, with a real `no-root` code. Added custom functions, custom actions, single-step actions, any-value `@ToAssistant` context, form state read when the step runs, the `unknown-function` code, and the fixture layout. Streaming must equal a batch parse, and edits merge with the parser's statement boundaries.
+- **2026-10-12**: 1.0, released with `@openuidev/lang-core` and `@openuidev/react-lang` 1.0.0. The entry is the `root` statement, or the first value statement whose value calls the library's root component, with a real `no-root` code. Added custom functions, custom actions, single-step actions, any-value `@ToAssistant` context, form state read when the step runs, the `unknown-function` code, and the fixture layout. Streaming must equal a batch parse, and edits merge with the parser's statement boundaries.
 - Earlier drafts: 0.9 community review (2026-07-22) and 1.0-beta (2026-08-05). See the git history.

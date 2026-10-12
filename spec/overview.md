@@ -16,7 +16,8 @@ This file explains. The other two define. Where they disagree, language.md and p
 
 - **Message protocol.** One format for streamed and stored responses (section 4).
 - **Production readiness.** Backward-compatibility rules for libraries (section 3), a LibrarySpec with `id` and `version`, a deterministic system prompt, and conformance fixtures any client can test against.
-- **Custom functions.** A library adds its own `@` functions, like `@Percent` (section 2.11).
+- **Custom functions and actions.** A library adds its own `@` functions, like `@Percent` (section 2.11), and its own action steps, which the host handles.
+- **Extending a library.** `library.extend()` derives a library with components added, replaced, or removed (prompt.md, section 2.8).
 - **Small conveniences.** Single-step actions and any value as `@ToAssistant` context.
 - **Fixes.** One clear entry rule, streamed results that always match a full parse, and edits that keep multi-line statements whole.
 
@@ -172,7 +173,7 @@ For more than one step, wrap them in `Action([...])`. Steps run in order:
 closeBtn = Button("Close ticket", Action([@Run(save), @Set($showModal, false), @ToAssistant("Ticket closed")]))
 ```
 
-There are five steps: `@ToAssistant`, `@OpenUrl`, `@Set` and `@Reset` (for state, section 2.9), and `@Run` (for queries and mutations, section 2.10). A failed mutation stops the steps after it. Rules in language.md, section 6.3.
+There are five steps: `@ToAssistant`, `@OpenUrl`, `@Set` and `@Reset` (for state, section 2.9), and `@Run` (for queries and mutations, section 2.10). A library can add its own steps, such as `@CopyToClipboard(text)`, which the host receives as events. A failed mutation stops the steps after it. Rules in language.md, section 6.3.
 
 ### 2.5 Forms and validation
 
@@ -318,7 +319,7 @@ A stored program has no prop names. `Button("Save", saveAction, "primary")` mean
 2. **Never reorder or remove a prop.** Leave an unused prop in place and ignore it.
 3. **A new required prop needs a default**, because stored calls do not pass it.
 
-Built-in names are reserved, so a library never uses a name like `@Count`. Each library has an `id` and a `version`. They are metadata and do not change parsing. The same rules for library authors are in prompt.md, section 3.2.
+Built-in names are reserved, so a library never uses a name like `@Count`. A library can have an `id` and a `version`. They are metadata and do not change parsing. The same rules for library authors are in prompt.md, section 3.2.
 
 ## 4. Streaming and storing responses
 

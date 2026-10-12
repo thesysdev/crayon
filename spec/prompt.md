@@ -169,6 +169,20 @@ The LibrarySpec drives prompt generation and validation, not rendering. Each pla
 
 Fixtures: none. The spec shape is checked on the library, not by program fixtures.
 
+### 2.8 Extending a library
+
+`library.extend({ components, functions, actions })` returns a new library and leaves the base unchanged.
+
+- `components.add` appends components. An entry `{ component, slots }` also adds the component to those slots' `$ref` unions. A slot is `"Parent.prop"`, or `"Parent"` when the parent has one content slot.
+- `components.override` replaces a component by name. Every slot that referred to the old one refers to the new one.
+- `components.remove` drops components from the list, from every slot union, and from `componentGroups`. Removing the root, or the only type a prop accepts, is an error.
+- `functions.add` and `actions.add` add custom functions and actions (section 2.5).
+- Adding a name that already exists is an error.
+
+The result is an ordinary library. Its LibrarySpec follows this section, without the base's `id`.
+
+Fixtures: none. Checked on the library.
+
 ## 3. Rules for libraries
 
 ### 3.1 Conformance
@@ -417,5 +431,5 @@ Fixtures: none in `spec/fixtures/`.
 
 ## Appendix A. Changelog
 
-- **2026-09-30: 1.0.** The LibrarySpec is one document with `id`, `version`, `root`, the schema, signatures, and `functions`. Prompts are deterministic. Libraries follow backward-compatibility rules. The message protocol uses `content`, `context`, and `end` marker lines.
+- **2026-10-12: 1.0.** The LibrarySpec is one document with `id`, `version`, `root`, the schema, signatures, `functions`, and `actions`. Libraries can be extended. Prompts are deterministic. Libraries follow backward-compatibility rules. The message protocol uses `content`, `context`, and `end` marker lines.
 - Earlier drafts: 0.9 community review (2026-07-22) and 1.0-beta (2026-08-05). See the git history for their changes.
