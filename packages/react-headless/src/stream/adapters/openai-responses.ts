@@ -62,12 +62,12 @@ export const openAIResponsesAdapter = (): StreamProtocolAdapter => ({
     const itemIdToCallId: Record<string, string> = {};
     // The text output-item currently streaming.
     let textItemId: string | null = null;
-    // Hosted tool calls use their item id. When a backend omits it, a stand-in id
-    // is made unique per call and remembered by output_index, so the done event
-    // resolves to the call its added event started; a done item with no added
-    // event still starts its own call.
+    // Remember every added hosted call by its known output_index, including
+    // supplied ids: either event can omit its id. Missing indices cannot identify
+    // a call, so never group unrelated index-less events under an undefined key.
+    // A done item without an added event still starts its own call.
     const startedHostedIds = new Set<string>();
-    const standInIdsByIndex = new Map<number, string>();
+    const hostedIdsByIndex = new Map<number, string>();
     const standInId = (type: string, outputIndex: number | undefined): string => {
       const base = `${type}_${outputIndex ?? 0}`;
       let id = base;
@@ -130,7 +130,9 @@ export const openAIResponsesAdapter = (): StreamProtocolAdapter => ({
               };
             } else if (HOSTED_TOOLS[item.type]) {
               const toolCallId = item.id ?? standInId(item.type, event.output_index);
-              if (!item.id) standInIdsByIndex.set(event.output_index, toolCallId);
+              if (typeof event.output_index === "number") {
+                hostedIdsByIndex.set(event.output_index, toolCallId);
+              }
               startedHostedIds.add(toolCallId);
               yield {
                 type: EventType.TOOL_CALL_START,
@@ -269,10 +271,21 @@ export const openAIResponsesAdapter = (): StreamProtocolAdapter => ({
             const hosted = HOSTED_TOOLS[event.item.type];
             if (hosted) {
               const hostedItem = event.item as HostedToolItem;
-              const fromAdded = standInIdsByIndex.get(event.output_index);
-              standInIdsByIndex.delete(event.output_index);
+              const outputIndex = event.output_index;
+              const fromAdded =
+                typeof outputIndex === "number" ? hostedIdsByIndex.get(outputIndex) : undefined;
+              // An already-started explicit id is authoritative. Otherwise use
+              // the index to retain the original id (including a stand-in).
+              const knownItemId =
+                event.item.id && startedHostedIds.has(event.item.id) ? event.item.id : undefined;
               const toolCallId =
-                fromAdded ?? event.item.id ?? standInId(event.item.type, event.output_index);
+                knownItemId ??
+                fromAdded ??
+                event.item.id ??
+                standInId(event.item.type, outputIndex);
+              if (fromAdded === toolCallId && typeof outputIndex === "number") {
+                hostedIdsByIndex.delete(outputIndex);
+              }
               if (!startedHostedIds.has(toolCallId)) {
                 startedHostedIds.add(toolCallId);
                 yield {

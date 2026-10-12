@@ -15,3 +15,4 @@ Stream adapters no longer end a turn silently when something went wrong:
 - Chat Completions adapters keep one tool call when a gateway repeats its id on argument chunks, preserving the name and accumulated arguments.
 - LangGraph accepts `tool_call_chunks: null` as well as an absent or empty array, without interrupting subsequent text or complete tool calls.
 - `openAIMessageFormat.fromApi` restores stored assistant refusal text so it stays visible after reload.
+- Hosted Responses tools retain the original call ID when the added item supplies it but the done item omits it. Interleaved results use their output indices; index-less events cannot steal a result from an explicitly identified call.

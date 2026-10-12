@@ -464,6 +464,140 @@ describe("openAIResponsesAdapter", () => {
     ]);
   });
 
+  it.each(["file_search_call", "code_interpreter_call", "image_generation_call"])(
+    "keeps the original %s id when its done item omits the id",
+    async (type) => {
+      const body =
+        sse(
+          responsesEvent("response.output_item.added", {
+            output_index: 0,
+            item: { id: "hosted_9", type, status: "in_progress" },
+          }),
+        ) +
+        sse(
+          responsesEvent("response.output_item.done", {
+            output_index: 0,
+            item: {
+              type,
+              status: "completed",
+              queries: ["q"],
+              results: [],
+              code: "1+1",
+              outputs: [],
+              result: "image",
+            },
+          }),
+        );
+      const events = await collect(openAIResponsesAdapter().parse(makeResponse(body)));
+      expect(events.filter((e) => e.type === EventType.TOOL_CALL_START)).toEqual([
+        {
+          type: EventType.TOOL_CALL_START,
+          toolCallId: "hosted_9",
+          toolCallName: type.replace("_call", ""),
+        },
+      ]);
+      expect(events.filter((e) => e.type === EventType.TOOL_CALL_RESULT)).toEqual([
+        expect.objectContaining({ toolCallId: "hosted_9", messageId: "hosted_9" }),
+      ]);
+      const { messages, error } = await consume(openAIResponsesAdapter(), makeResponse(body));
+      expect(error).toBeUndefined();
+      expect(messages.filter((m) => m.role === "tool")).toEqual([
+        expect.objectContaining({ toolCallId: "hosted_9" }),
+      ]);
+      expect(messages.filter((m) => m.role === "assistant")).toEqual([
+        expect.objectContaining({ toolCalls: [expect.objectContaining({ id: "hosted_9" })] }),
+      ]);
+    },
+  );
+
+  it.each(["file_search_call", "code_interpreter_call", "image_generation_call"])(
+    "routes interleaved %s results without ids by their output indices",
+    async (type) => {
+      const added = (id: string, index: number) =>
+        sse(
+          responsesEvent("response.output_item.added", {
+            output_index: index,
+            item: { id, type, status: "in_progress" },
+          }),
+        );
+      const done = (index: number, label: string) =>
+        sse(
+          responsesEvent("response.output_item.done", {
+            output_index: index,
+            item: {
+              type,
+              status: "completed",
+              queries: [label],
+              results: [{ file_id: label }],
+              code: label,
+              outputs: [label],
+              result: label,
+            },
+          }),
+        );
+      const events = await collect(
+        openAIResponsesAdapter().parse(
+          makeResponse(added("a", 0) + added("b", 1) + done(1, "b") + done(0, "a")),
+        ),
+      );
+      expect(
+        events
+          .filter((e) => e.type === EventType.TOOL_CALL_START)
+          .map((e) => (e as { toolCallId: string }).toolCallId),
+      ).toEqual(["a", "b"]);
+      expect(
+        events
+          .filter((e) => e.type === EventType.TOOL_CALL_RESULT)
+          .map((e) => (e as { toolCallId: string }).toolCallId),
+      ).toEqual(["b", "a"]);
+      if (type !== "image_generation_call") {
+        expect(
+          events
+            .filter((e) => e.type === EventType.TOOL_CALL_RESULT)
+            .map((e) => (e as { content: string }).content),
+        ).toEqual(
+          type === "file_search_call"
+            ? ['[{"file_id":"b"}]', '[{"file_id":"a"}]']
+            : ['["b"]', '["a"]'],
+        );
+      }
+    },
+  );
+
+  it("does not let an index-less, id-less added item steal an explicit-id result", async () => {
+    const body =
+      sse(
+        responsesEvent("response.output_item.added", {
+          item: { type: "file_search_call", status: "in_progress" },
+        }),
+      ) +
+      sse(
+        responsesEvent("response.output_item.added", {
+          item: { id: "known", type: "file_search_call", status: "in_progress" },
+        }),
+      ) +
+      sse(
+        responsesEvent("response.output_item.done", {
+          item: {
+            id: "known",
+            type: "file_search_call",
+            status: "completed",
+            queries: ["q"],
+            results: [],
+          },
+        }),
+      );
+    const events = await collect(openAIResponsesAdapter().parse(makeResponse(body)));
+    expect(
+      events
+        .filter((e) => e.type === EventType.TOOL_CALL_START)
+        .map((e) => (e as { toolCallId: string }).toolCallId),
+    ).toEqual(["file_search_call_0", "known"]);
+    expect(events.filter((e) => e.type === EventType.TOOL_CALL_RESULT)).toEqual([
+      expect.objectContaining({ toolCallId: "known", content: "[]" }),
+    ]);
+  });
+
   it("keeps interleaved hosted tools with ids apart, even without output_index", async () => {
     const added = (id: string) =>
       sse(
