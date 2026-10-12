@@ -1,0 +1,117 @@
+// KPI tiles: balanced rows, row lines shared through a subgrid, and tiles as tabs for the hero.
+
+.kit-kpis {
+  display: flex;
+  flex-direction: column;
+  margin: -4px;
+}
+/* A row of tiles; each tile spans the row's five lines (label, value, change,
+   sparkline, hint) through a subgrid, so values line up across the row. */
+.kit-kpis__row {
+  display: grid;
+  grid-template-rows: repeat(5, auto);
+  row-gap: 6px;
+}
+.kit-kpis__row + .kit-kpis__row {
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px solid var(--kit-border);
+}
+.kit-kpi {
+  display: grid;
+  grid-row: span 5;
+  grid-template-rows: subgrid;
+  align-content: start;
+  min-width: 0;
+  padding: 10px 18px 10px;
+  border-left: 1px solid var(--kit-border);
+}
+.kit-kpi:first-child {
+  border-left: 0;
+  padding-left: 6px;
+}
+.kit-kpi__label {
+  font: var(--kit-label);
+  color: var(--kit-ink-2);
+}
+.kit-kpi__value {
+  font: 600 26px/1.1 var(--kit-font);
+  letter-spacing: -0.025em;
+  color: var(--kit-ink);
+  white-space: nowrap;
+}
+.kit-kpi__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+}
+.kit-kpi__previous {
+  font: 400 12px/1.4 var(--kit-font);
+  color: var(--kit-ink-3);
+  white-space: nowrap;
+}
+.kit-kpi__hint {
+  font: 400 11.5px/1.4 var(--kit-font);
+  color: var(--kit-ink-3);
+}
+
+/* With a shared $binding, each tile is a button that shows its metric in the
+   hero chart; the selected one carries an accent bar along its top edge. */
+.kit-kpi--tab {
+  position: relative;
+  margin: 0;
+  border-top: 0;
+  border-right: 0;
+  border-bottom: 0;
+  border-radius: 10px;
+  background: none;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.kit-kpi--tab:hover {
+  background: var(--kit-sunk);
+}
+.kit-kpi--tab::before {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: 14px;
+  right: 14px;
+  height: 2px;
+  border-radius: 0 0 2px 2px;
+  background: var(--kit-accent);
+  transform: scaleX(0);
+  transition: transform 0.25s ease;
+}
+.kit-kpi--tab:first-child::before {
+  left: 4px;
+}
+.kit-kpi--tab[aria-pressed="true"] {
+  background: color-mix(in oklch, var(--kit-accent) 7%, var(--kit-card));
+}
+.kit-kpi--tab[aria-pressed="true"]::before {
+  transform: scaleX(1);
+}
+.kit-kpi--tab[aria-pressed="true"] .kit-kpi__label {
+  color: var(--kit-accent);
+}
+.kit-kpi--tab:focus-visible {
+  outline: 2px solid var(--kit-accent);
+  outline-offset: -2px;
+}
+
+@media (max-width: 640px) {
+  .kit-kpi {
+    padding-inline: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kit-kpi--tab::before {
+    transition: none;
+  }
+}

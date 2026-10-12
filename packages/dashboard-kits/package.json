@@ -1,0 +1,130 @@
+{
+  "name": "@openuidev/dashboard-kits",
+  "version": "0.0.0",
+  "description": "Dashboard kits for OpenUI: domain component libraries, data-tool contracts, prompts, and sample data a model composes into e-commerce and product analytics dashboards",
+  "license": "MIT",
+  "type": "module",
+  "main": "dist/index.cjs",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.cts",
+  "sideEffects": [
+    "*.css"
+  ],
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    },
+    "./ecommerce": {
+      "import": {
+        "types": "./dist/ecommerce.d.mts",
+        "default": "./dist/ecommerce.mjs"
+      },
+      "require": {
+        "types": "./dist/ecommerce.d.cts",
+        "default": "./dist/ecommerce.cjs"
+      }
+    },
+    "./analytics": {
+      "import": {
+        "types": "./dist/analytics.d.mts",
+        "default": "./dist/analytics.mjs"
+      },
+      "require": {
+        "types": "./dist/analytics.d.cts",
+        "default": "./dist/analytics.cjs"
+      }
+    },
+    "./server": {
+      "import": {
+        "types": "./dist/server.d.mts",
+        "default": "./dist/server.mjs"
+      },
+      "require": {
+        "types": "./dist/server.d.cts",
+        "default": "./dist/server.cjs"
+      }
+    },
+    "./styles.css": {
+      "default": "./dist/styles.css"
+    }
+  },
+  "scripts": {
+    "build": "rimraf dist && tsdown && pnpm run build:scss",
+    "build:scss": "sass src/styles/index.scss dist/styles.css --style compressed --no-source-map",
+    "watch": "concurrently \"tsdown --watch\" \"pnpm run build:scss --watch\"",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "lint:check": "eslint ./src",
+    "lint:fix": "eslint ./src --fix",
+    "format:fix": "prettier --write ./src",
+    "format:check": "prettier --check ./src",
+    "check:publint": "publint",
+    "check:attw": "attw --pack . --ignore-rules no-resolution",
+    "prepare": "pnpm run build",
+    "prepublishOnly": "pnpm run check:publint && pnpm run check:attw",
+    "ci": "pnpm run lint:check && pnpm run format:check && pnpm run test"
+  },
+  "keywords": [
+    "openui",
+    "generative-ui",
+    "dashboard",
+    "analytics",
+    "e-commerce",
+    "product-analytics",
+    "charts",
+    "openui-lang"
+  ],
+  "homepage": "https://openui.com",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/thesysdev/openui.git",
+    "directory": "packages/dashboard-kits"
+  },
+  "bugs": {
+    "url": "https://github.com/thesysdev/openui/issues"
+  },
+  "author": "engineering@thesys.dev",
+  "dependencies": {
+    "clsx": "^2.1.1",
+    "d3-scale": "^4.0.2",
+    "d3-selection": "^3.0.0",
+    "d3-shape": "^3.2.0"
+  },
+  "peerDependencies": {
+    "@openuidev/lang-core": ">=0.3.0 <0.5.0",
+    "@openuidev/react-lang": ">=0.3.0 <0.5.0",
+    "@openuidev/react-ui": ">=0.17.0 <0.18.0",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@openuidev/lang-core": "workspace:^",
+    "@openuidev/react-lang": "workspace:^",
+    "@openuidev/react-ui": "workspace:^",
+    "@types/d3-scale": "^4.0.9",
+    "@types/d3-selection": "^3.0.11",
+    "@types/d3-shape": "^3.1.8",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "concurrently": "^9.2.0",
+    "jsdom": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "rimraf": "^5.0.7",
+    "sass": "^1.83.4",
+    "vitest": "^4.0.18",
+    "zod": "^4.3.6"
+  }
+}

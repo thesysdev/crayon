@@ -1,0 +1,138 @@
+// Loading skeletons shaped like each component, and the empty state.
+
+.kit-skel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow: hidden;
+  padding: 2px 0;
+}
+.kit-skel::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    100deg,
+    transparent 20%,
+    color-mix(in oklch, var(--kit-card) 55%, transparent) 50%,
+    transparent 80%
+  );
+  transform: translateX(-100%);
+  animation: kit-shimmer 1.6s ease-in-out infinite;
+}
+@keyframes kit-shimmer {
+  to {
+    transform: translateX(100%);
+  }
+}
+.kit-skel__block {
+  display: block;
+  flex-shrink: 0;
+  border-radius: 5px;
+  background: color-mix(in srgb, var(--kit-ink) 7%, var(--kit-card));
+}
+.kit-skel__plot {
+  position: relative;
+  border-bottom: 1px solid var(--kit-border);
+}
+.kit-skel__grid {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--kit-grid);
+}
+.kit-skel__wave {
+  position: absolute;
+  inset: 20% 0 0;
+  width: 100%;
+  height: 80%;
+}
+.kit-skel__wave path {
+  fill: color-mix(in srgb, var(--kit-ink) 5%, var(--kit-card));
+}
+.kit-skel__columns {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 6px;
+  height: 200px;
+  padding-inline: 4px;
+  border-bottom: 1px solid var(--kit-border);
+}
+.kit-skel__columns .kit-skel__block {
+  flex: 1;
+  max-width: 24px;
+  border-radius: 4px 4px 0 0;
+}
+.kit-skel__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.kit-skel__row--table {
+  justify-content: flex-start;
+  padding-block: 6px;
+  border-top: 1px solid var(--kit-border);
+}
+.kit-skel__row--table .kit-skel__block:nth-child(3) {
+  margin-left: auto;
+}
+.kit-skel__tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 20px;
+}
+.kit-skel__tile,
+.kit-skel__stack {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+.kit-skel__stack {
+  flex: 1;
+}
+.kit-skel__card {
+  display: flex;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid var(--kit-border);
+  border-radius: 12px;
+}
+.kit-skel__grid-cells {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.kit-skel__cells {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 4px;
+}
+.kit-skel__cells .kit-skel__block {
+  height: 26px;
+}
+.kit-empty--state {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 20px 0;
+}
+.kit-empty--state svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kit-skel::after {
+    animation: none;
+  }
+}

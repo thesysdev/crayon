@@ -1,0 +1,64 @@
+{
+  "name": "@openuidev/example-dashboard-kits",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "generate": "openui generate src/kits/ecommerce-library.ts --spec --out src/generated/ecommerce.spec.json && openui generate src/kits/analytics-library.ts --spec --out src/generated/analytics.spec.json",
+    "predev": "npm run generate",
+    "dev": "next dev --hostname 127.0.0.1",
+    "prebuild": "npm run generate",
+    "build": "next build",
+    "start": "next start --hostname 127.0.0.1",
+    "precheck": "npm run generate",
+    "check": "tsx scripts/check-kits.ts",
+    "preverify": "npm run generate",
+    "verify": "tsx scripts/check-kits.ts && next build",
+    "kits:pack": "pnpm --dir ../../../packages/dashboard-kits run build && pnpm --dir ../../../packages/dashboard-kits pack --pack-destination ../../examples/miscellaneous/dashboard-kits/.kits && npm install ./.kits/openuidev-dashboard-kits-0.0.0.tgz --no-audit --no-fund"
+  },
+  "dependencies": {
+    "@openuidev/dashboard-kits": "file:.kits/openuidev-dashboard-kits-0.0.0.tgz",
+    "@openuidev/lang-core": "0.3.2",
+    "@openuidev/react-headless": "0.17.1",
+    "@openuidev/react-lang": "0.3.2",
+    "@openuidev/react-ui": "0.17.1",
+    "@openuidev/thesys": "0.14.0",
+    "@radix-ui/react-tooltip": "^1.2.8",
+    "next": "16.2.6",
+    "openai": "^6.49.0",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "zod": "^4.3.6",
+    "zustand": "^4.5.7"
+  },
+  "devDependencies": {
+    "@openuidev/cli": "0.5.1",
+    "@types/node": "^22.15.32",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "tsx": "^4.23.15",
+    "typescript": "^5"
+  },
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@openuidev/lang-core",
+      "esbuild",
+      "sharp"
+    ],
+    "peerDependencyRules": {
+      "allowedVersions": {
+        "@openuidev/thesys>@openuidev/react-ui": "0.17",
+        "@openuidev/thesys>@openuidev/react-headless": "0.17"
+      }
+    }
+  },
+  "overrides": {
+    "@openuidev/thesys": {
+      "@openuidev/react-ui": "$@openuidev/react-ui",
+      "@openuidev/react-headless": "$@openuidev/react-headless"
+    }
+  }
+}

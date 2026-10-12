@@ -1,0 +1,102 @@
+// The funnel as one grid: rows are subgrids, so every bar starts on the same edge.
+
+/* One grid for the whole funnel: rows are subgrids, so the label column is as
+   wide as the longest step name and every bar starts on the same edge. */
+.kit-funnel {
+  display: grid;
+  grid-template-columns: minmax(0, max-content) minmax(64px, 1fr) auto;
+  column-gap: 12px;
+  font: var(--kit-body);
+  color: var(--kit-ink);
+}
+.kit-funnel > * {
+  grid-column: 1 / -1;
+}
+.kit-funnel__row {
+  display: grid;
+  grid-template-columns: subgrid;
+  align-items: center;
+}
+.kit-funnel__label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.kit-funnel__index {
+  display: inline-grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  background: var(--kit-neutral-bg);
+  font: 600 11px var(--kit-font);
+  color: var(--kit-ink-2);
+}
+.kit-funnel__track {
+  display: block;
+  height: 22px;
+  border-radius: 6px;
+  background: var(--kit-sunk);
+}
+.kit-funnel__bar {
+  display: block;
+  height: 100%;
+  border-radius: 6px;
+}
+// Steps grow in top to bottom when the funnel first shows, and ease to new
+// lengths when a filter changes them.
+@media (prefers-reduced-motion: no-preference) {
+  .kit-funnel__bar {
+    transition: width 0.45s cubic-bezier(0.2, 0.7, 0.2, 1);
+    animation: kit-grow-x 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+}
+.kit-funnel__value {
+  min-width: 3.4rem;
+  text-align: right;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.kit-funnel__step {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  padding: 5px 0 5px 28px;
+  font: 400 12px/1.4 var(--kit-font);
+  color: var(--kit-ink-3);
+}
+.kit-funnel__rate {
+  font-weight: 600;
+  color: var(--kit-ink-2);
+}
+.kit-funnel__drop {
+  flex: 1;
+  min-width: 0;
+}
+.kit-funnel__total {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--kit-border);
+  color: var(--kit-ink-2);
+}
+.kit-funnel__overall {
+  display: inline-flex;
+  gap: 8px;
+  align-items: baseline;
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--kit-ink);
+  font-variant-numeric: tabular-nums;
+}
+.kit-funnel__overall span {
+  font-size: 12px;
+}

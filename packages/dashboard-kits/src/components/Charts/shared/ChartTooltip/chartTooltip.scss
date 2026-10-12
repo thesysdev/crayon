@@ -1,0 +1,72 @@
+// The hover readout every kit chart shares.
+
+@use "../../prefix" as brand;
+
+.kit-tooltip {
+  // Placed by a spring-driven transform from the frame's top-left corner.
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 3;
+  will-change: transform;
+  animation: #{brand.$prefix}-tooltip-in 0.12s ease both;
+  min-width: 168px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--kit-raised);
+  box-shadow: var(--kit-shadow-pop);
+  border: 1px solid var(--kit-border);
+  pointer-events: none;
+  font: var(--kit-body);
+}
+.kit-tooltip__title {
+  margin-bottom: 6px;
+  font: var(--kit-label);
+  color: var(--kit-ink-3);
+}
+.kit-tooltip__note {
+  margin: -2px 0 8px;
+  padding: 5px 8px;
+  border-radius: 6px;
+  background: color-mix(in oklch, var(--kit-s4) 14%, transparent);
+  font: 500 12px/1.35 var(--kit-font);
+  color: var(--kit-warn-ink);
+  max-width: 240px;
+}
+.kit-tooltip__row {
+  display: grid;
+  grid-template-columns: auto auto 1fr;
+  align-items: center;
+  gap: 8px;
+  padding: 2px 0;
+}
+.kit-tooltip__value {
+  font-weight: 600;
+  color: var(--kit-ink);
+  font-variant-numeric: tabular-nums;
+}
+.kit-tooltip__name {
+  color: var(--kit-ink-3);
+  font-size: 12.5px;
+}
+.kit-tooltip__footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px solid var(--kit-border);
+  color: var(--kit-ink-2);
+}
+
+@keyframes #{brand.$prefix}-tooltip-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kit-tooltip {
+    animation: none;
+  }
+}

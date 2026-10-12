@@ -1,0 +1,131 @@
+@use "../prefix" as brand;
+
+// Tremor-style status strip: one block per day against its target.
+
+.#{brand.$prefix}-tracker {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.#{brand.$prefix}-tracker-top {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 4px 16px;
+  font: var(--kit-body);
+}
+.#{brand.$prefix}-tracker-summary {
+  font-weight: 600;
+  color: var(--kit-ink);
+}
+.#{brand.$prefix}-tracker-readout {
+  color: var(--kit-ink-2);
+  font-variant-numeric: tabular-nums;
+}
+.#{brand.$prefix}-tracker-frame {
+  width: 100%;
+  min-width: 0;
+  outline: none;
+  touch-action: pan-y;
+
+  &:focus-visible {
+    box-shadow: 0 0 0 2px var(--kit-accent);
+    border-radius: 6px;
+  }
+}
+.#{brand.$prefix}-tracker-svg {
+  display: block;
+  overflow: visible;
+}
+.#{brand.$prefix}-tracker-block {
+  transition: opacity 0.15s ease;
+}
+// While a block is hovered, the others step back.
+.#{brand.$prefix}-tracker-blocks--hovering
+  .#{brand.$prefix}-tracker-block:not(.#{brand.$prefix}-tracker-block--active) {
+  opacity: 0.45;
+}
+.#{brand.$prefix}-tracker-block--good,
+.#{brand.$prefix}-tracker-key--good {
+  fill: color-mix(in srgb, var(--kit-good) 82%, var(--kit-card));
+  background: color-mix(in srgb, var(--kit-good) 82%, var(--kit-card));
+}
+.#{brand.$prefix}-tracker-block--warn,
+.#{brand.$prefix}-tracker-key--warn {
+  fill: var(--kit-warn);
+  background: var(--kit-warn);
+}
+.#{brand.$prefix}-tracker-block--bad,
+.#{brand.$prefix}-tracker-key--bad {
+  fill: var(--kit-bad);
+  background: var(--kit-bad);
+}
+.#{brand.$prefix}-tracker-key--none {
+  background: repeating-linear-gradient(
+    135deg,
+    var(--kit-sunk) 0 3px,
+    color-mix(in srgb, var(--kit-ink) 10%, var(--kit-card)) 3px 4px
+  );
+}
+.#{brand.$prefix}-tracker-hatch-ground {
+  fill: var(--kit-sunk);
+}
+.#{brand.$prefix}-tracker-hatch-line {
+  fill: color-mix(in srgb, var(--kit-ink) 10%, var(--kit-card));
+}
+// The hover ring glides from block to block (FadeFollower, crosshair spring).
+.#{brand.$prefix}-tracker-ring {
+  fill: none;
+  stroke: var(--kit-ink);
+  stroke-width: 1.5;
+}
+
+// Blocks rise into place left to right when the strip first shows.
+@media (prefers-reduced-motion: no-preference) {
+  .#{brand.$prefix}-tracker-block {
+    transform-box: fill-box;
+    transform-origin: bottom;
+    animation: #{brand.$prefix}-block-in 0.45s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+}
+@keyframes #{brand.$prefix}-block-in {
+  from {
+    opacity: 0;
+    transform: scaleY(0.35);
+  }
+}
+.#{brand.$prefix}-tracker-foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  font: 500 11.5px var(--kit-font);
+  color: var(--kit-ink-3);
+}
+.#{brand.$prefix}-tracker-counts {
+  display: inline-flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px 14px;
+}
+.#{brand.$prefix}-tracker-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.#{brand.$prefix}-tracker-key {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border-radius: 2px;
+}
+
+.#{brand.$prefix}-tracker--empty {
+  display: grid;
+  place-items: center;
+  min-height: 80px;
+}
+.#{brand.$prefix}-tracker-empty-text {
+  font: var(--kit-body);
+  color: var(--kit-ink-3);
+}

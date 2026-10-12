@@ -1,0 +1,84 @@
+@use "../shared/chartBase" as base;
+@use "../prefix" as brand;
+
+@include base.chart-frame("trend-chart");
+@include base.plot-axes("trend-chart");
+@include base.crosshair("trend-chart");
+@include base.series-entrance("trend-chart");
+
+// No `transition: d` on the lines: data-change motion is the spring data morph
+// in TrendSeries. Opacity transitions carry legend focus.
+.#{brand.$prefix}-trend-chart {
+  &-line {
+    fill: none;
+    stroke-width: 2;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+  }
+
+  &-series,
+  &-area,
+  &-gap {
+    transition: opacity 0.2s ease;
+  }
+
+  // End dots and labels step aside while the crosshair reads values.
+  &-ends {
+    transition: opacity 0.12s ease;
+
+    &--hidden {
+      opacity: 0;
+    }
+  }
+
+  // The gap between this period and the prior one: the good tone where the
+  // metric is ahead in its good direction, the bad tone where it is behind.
+  &-gap--good {
+    fill: color-mix(in oklch, var(--kit-good) 16%, transparent);
+  }
+
+  &-gap--bad {
+    fill: color-mix(in oklch, var(--kit-bad) 14%, transparent);
+  }
+
+  &-gap--neutral {
+    fill: color-mix(in oklch, var(--kit-accent) 12%, transparent);
+  }
+
+  &-dot--open {
+    stroke-width: 2;
+  }
+
+  &-end-label {
+    font: 600 12px var(--kit-font);
+    fill: var(--kit-ink);
+  }
+
+  // A goal is a dashed line; a benchmark range is a quiet band. Both are
+  // named in the legend.
+  &-target {
+    stroke: var(--kit-ink-2);
+    stroke-width: 1.25;
+    stroke-dasharray: 5 4;
+  }
+
+  &-band {
+    fill: color-mix(in srgb, var(--kit-good) 8%, transparent);
+    stroke: color-mix(in srgb, var(--kit-good) 30%, transparent);
+    stroke-dasharray: 2 4;
+  }
+
+  &-event-band {
+    fill: color-mix(in oklch, var(--kit-s4) 12%, transparent);
+    transition: fill 0.15s ease;
+  }
+
+  &-event--active &-event-band {
+    fill: color-mix(in oklch, var(--kit-s4) 22%, transparent);
+  }
+
+  &-event-label {
+    font: 600 11px var(--kit-font);
+    fill: var(--kit-warn-ink);
+  }
+}

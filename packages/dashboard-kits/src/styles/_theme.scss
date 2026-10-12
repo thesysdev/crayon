@@ -1,0 +1,234 @@
+/*
+ * Kit theme: the look every kit dashboard renders in.
+ *
+ * Wrap the Renderer in <div class="kit-theme" data-mode="light|dark">. The
+ * tokens below restyle the base dashboard (cards, headers, filters, tables)
+ * through its own --openui-* tokens, and the kit components read the --kit-*
+ * tokens directly. The chart colors are the validated data-viz palette:
+ * categorical slots in fixed order, a blue sequential ramp, status colors that
+ * never double as series. Dark mode is its own set of steps, not an inversion.
+ */
+
+.kit-theme {
+  color-scheme: light;
+
+  /* Surfaces: a cool neutral biased toward the blue accent. */
+  --kit-page: #f3f5f8;
+  --kit-card: #ffffff;
+  --kit-sunk: #f5f7fa;
+  --kit-raised: #ffffff;
+  --kit-border: rgba(15, 23, 42, 0.08);
+  --kit-border-strong: rgba(15, 23, 42, 0.14);
+  --kit-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 4px 16px -8px rgba(15, 23, 42, 0.08);
+  --kit-shadow-pop: 0 8px 28px -10px rgba(15, 23, 42, 0.28), 0 2px 6px rgba(15, 23, 42, 0.08);
+
+  /* Ink */
+  --kit-ink: #0d1424;
+  --kit-ink-2: #4a5468;
+  --kit-ink-3: #8a93a4;
+  --kit-grid: #edf0f4;
+  --kit-axis: #d4d9e1;
+  --kit-muted-mark: #c2c9d4;
+
+  /* Accent and categorical slots (fixed order: blue, orange, aqua, yellow,
+     magenta, green, violet, red). */
+  --kit-accent: #2a78d6;
+  --kit-s1: #2a78d6;
+  --kit-s2: #eb6834;
+  --kit-s3: #1baf7a;
+  --kit-s4: #eda100;
+  --kit-s5: #e87ba4;
+  --kit-s6: #008300;
+  --kit-s7: #4a3aa7;
+  --kit-s8: #e34948;
+
+  /* Ordinal blue ramp for ordered stages, darkest first. */
+  --kit-o1: #104281;
+  --kit-o2: #1c5cab;
+  --kit-o3: #2a78d6;
+  --kit-o4: #5598e7;
+  --kit-o5: #86b6ef;
+
+  /* Diverging poles for money in and out. */
+  --kit-up: #2a78d6;
+  --kit-down: #e34948;
+  --kit-total: #1f2a3d;
+
+  /* Status: never used for series. Text steps meet 4.5:1 on the card. */
+  --kit-good: #0ca30c;
+  --kit-good-ink: #0a7a2f;
+  --kit-good-bg: #e6f6ea;
+  --kit-bad: #d03b3b;
+  --kit-bad-ink: #c22f2f;
+  --kit-bad-bg: #fdecec;
+  --kit-warn: #fab219;
+  --kit-warn-ink: #8a5a00;
+  --kit-warn-bg: #fdf3dc;
+  --kit-info-ink: #1f5fb0;
+  --kit-info-bg: #e8f1fc;
+  --kit-neutral-bg: #eef1f5;
+
+  --kit-radius: 14px;
+  --kit-radius-sm: 8px;
+  --kit-font:
+    var(--font-sans, "Geist"), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --kit-font-mono: var(--font-mono, "Geist Mono"), ui-monospace, "SFMono-Regular", Menlo, monospace;
+
+  /* The base dashboard's typeface escape hatches. */
+  --c1-dashboard-font-body: var(--kit-font);
+  --c1-dashboard-font-heading: var(--kit-font);
+  --c1-dashboard-font-label: var(--kit-font);
+  --c1-dashboard-font-numbers: var(--kit-font);
+  --c1-dashboard-font-code: var(--kit-font-mono);
+
+  background: var(--kit-page);
+  color: var(--kit-ink);
+  font-family: var(--kit-font);
+  -webkit-font-smoothing: antialiased;
+}
+
+.kit-theme[data-mode="dark"] {
+  color-scheme: dark;
+
+  --kit-page: #08090d;
+  --kit-card: #10131a;
+  --kit-sunk: #161a22;
+  --kit-raised: #181c25;
+  --kit-border: rgba(255, 255, 255, 0.07);
+  --kit-border-strong: rgba(255, 255, 255, 0.13);
+  --kit-shadow: 0 1px 0 rgba(255, 255, 255, 0.03) inset, 0 8px 24px -16px rgba(0, 0, 0, 0.8);
+  --kit-shadow-pop: 0 12px 32px -12px rgba(0, 0, 0, 0.9), 0 0 0 1px rgba(255, 255, 255, 0.08);
+
+  --kit-ink: #f2f5fa;
+  --kit-ink-2: #a9b2c2;
+  --kit-ink-3: #6f7889;
+  --kit-grid: #1b2029;
+  --kit-axis: #2b313c;
+  --kit-muted-mark: #3c4452;
+
+  --kit-accent: #3987e5;
+  --kit-s1: #3987e5;
+  --kit-s2: #d95926;
+  --kit-s3: #199e70;
+  --kit-s4: #c98500;
+  --kit-s5: #d55181;
+  --kit-s6: #008300;
+  --kit-s7: #9085e9;
+  --kit-s8: #e66767;
+
+  --kit-o1: #9ec5f4;
+  --kit-o2: #6da7ec;
+  --kit-o3: #3987e5;
+  --kit-o4: #256abf;
+  --kit-o5: #184f95;
+
+  --kit-up: #3987e5;
+  --kit-down: #e66767;
+  --kit-total: #c9d2e0;
+
+  --kit-good-ink: #3ccf5a;
+  --kit-good-bg: rgba(12, 163, 12, 0.16);
+  --kit-bad-ink: #ff7b7b;
+  --kit-bad-bg: rgba(230, 103, 103, 0.16);
+  --kit-warn-ink: #fab219;
+  --kit-warn-bg: rgba(250, 178, 25, 0.14);
+  --kit-info-ink: #7fb3f0;
+  --kit-info-bg: rgba(57, 135, 229, 0.16);
+  --kit-neutral-bg: rgba(255, 255, 255, 0.06);
+}
+
+/* ── The base dashboard, restyled through its own tokens ──────────────── */
+
+.kit-theme .c1-dashboard {
+  --openui-background: var(--kit-page);
+  --openui-foreground: var(--kit-card);
+  --openui-sunk: var(--kit-sunk);
+  --openui-sunk-light: var(--kit-sunk);
+  --openui-elevated: var(--kit-raised);
+  --openui-border-default: var(--kit-border);
+  --openui-border-interactive: var(--kit-border-strong);
+  --openui-text-neutral-primary: var(--kit-ink);
+  --openui-text-neutral-secondary: var(--kit-ink-2);
+  --openui-text-neutral-tertiary: var(--kit-ink-3);
+  --openui-interactive-accent-default: var(--kit-accent);
+  --openui-radius-3xl: var(--kit-radius);
+  --openui-radius-4xl: var(--kit-radius);
+  --openui-radius-m: var(--kit-radius-sm);
+  gap: 20px;
+  max-width: 1440px;
+  margin: 0 auto;
+}
+
+.kit-theme .c1-dashboard-header {
+  padding: 4px 0 4px;
+}
+.kit-theme .c1-dashboard-header__title {
+  font: 650 30px/1.15 var(--kit-font);
+  letter-spacing: -0.025em;
+  color: var(--kit-ink);
+}
+.kit-theme .c1-dashboard-header__subtitle {
+  font: 400 14px/1.5 var(--kit-font);
+  color: var(--kit-ink-3);
+}
+.kit-theme .c1-section {
+  gap: 16px;
+}
+.kit-theme .c1-card-row {
+  --c1-card-row-gap: 16px;
+}
+
+/* Cards: flat panels on the page plane, set apart by a hairline and a soft lift. */
+.kit-theme .c1-dashboard .openui-card-card {
+  background: var(--kit-card);
+  border-color: var(--kit-border);
+  border-radius: var(--kit-radius);
+  box-shadow: var(--kit-shadow);
+  padding: 20px;
+  gap: 16px;
+}
+.kit-theme .c1-dashboard-card-header {
+  align-items: flex-start;
+}
+.kit-theme .c1-dashboard-card-header * {
+  font-family: var(--kit-font);
+}
+.kit-theme .c1-dashboard-text-block--type-number {
+  flex-direction: column-reverse;
+  gap: 4px;
+}
+.kit-theme .c1-dashboard-text-block--type-number .c1-dashboard-text-block__secondary {
+  font: 500 16px/1.5 var(--kit-font);
+  color: var(--kit-ink);
+}
+.kit-theme .c1-dashboard-text-block--type-number .c1-dashboard-text-block__primary {
+  font: 600 30px/1.1 var(--kit-font);
+  letter-spacing: -0.025em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Filters: one quiet row above everything they scope. */
+.kit-theme .c1-filter-bar,
+.kit-theme .c1-filter-bar__side {
+  flex-wrap: wrap;
+}
+.kit-theme .c1-filter-select__label {
+  font: 500 12px/1.3 var(--kit-font);
+  color: var(--kit-ink-3);
+}
+.kit-theme .c1-filter-single-select__trigger {
+  height: 34px;
+  border-color: var(--kit-border-strong);
+  border-radius: 9px;
+  background: var(--kit-card);
+  font: 500 13px/1 var(--kit-font);
+  box-shadow: 0 1px 1px rgba(15, 23, 42, 0.04);
+}
+.kit-theme .c1-filter-single-select__trigger:hover {
+  border-color: var(--kit-ink-3);
+}
+
+/* Base tables follow the kit table look. */
+.kit-theme .c1-dashboard table {
+  font-variant-numeric: tabular-nums;
+}

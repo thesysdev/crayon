@@ -1,0 +1,57 @@
+import { curveLinear } from "d3-shape";
+import { describe, expect, it } from "vitest";
+import { differencePaths, packTrend, spreadLabels, unpackTrend } from "./trendGeometry";
+
+describe("packTrend / unpackTrend", () => {
+  it("round-trips x positions, every series, and the guides", () => {
+    const xs = [0, 10, 20];
+    const ys = [
+      [5, 6, 7],
+      [8, 9, 10],
+    ];
+    const { xs: outX, ys: outY, guides } = unpackTrend(packTrend(xs, ys, [1, 2, 3]), 3, 2);
+    expect([...outX]).toEqual(xs);
+    expect(outY.map((s) => [...s])).toEqual(ys);
+    expect([...guides]).toEqual([1, 2, 3]);
+  });
+});
+
+describe("differencePaths", () => {
+  // Pixel space: a smaller y is higher on screen, so a larger value.
+  const d = differencePaths([0, 10], [10, 30], [30, 10], 0, 100, curveLinear);
+
+  it("draws one band between the two curves", () => {
+    expect(d.band).toBe("M0,10L10,30L10,10L0,30Z");
+  });
+
+  it("clips to the regions above and below the comparison curve", () => {
+    expect(d.aboveComparison).toBe("M0,30L10,10L10,0L0,0Z");
+    expect(d.belowComparison).toBe("M0,30L10,10L10,100L0,100Z");
+  });
+});
+
+describe("spreadLabels", () => {
+  it("pushes overlapping labels apart by the gap", () => {
+    const out = spreadLabels(
+      [
+        { key: "a", y: 50 },
+        { key: "b", y: 52 },
+      ],
+      0,
+      200,
+    );
+    expect(out.get("b")! - out.get("a")!).toBe(15);
+  });
+
+  it("shifts the stack up when it runs past the bottom", () => {
+    const out = spreadLabels(
+      [
+        { key: "a", y: 195 },
+        { key: "b", y: 198 },
+      ],
+      0,
+      200,
+    );
+    expect(out.get("b")).toBeLessThanOrEqual(200);
+  });
+});

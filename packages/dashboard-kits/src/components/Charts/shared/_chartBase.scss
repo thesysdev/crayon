@@ -1,0 +1,131 @@
+@use "../prefix" as brand;
+
+// Shared chart styling, included per chart with its own name — the same shape
+// as react-ui's `chartBase.scss`, on the kit's theme tokens.
+
+// Native-SVG text for ticks and axis labels.
+@mixin svg-tick-label {
+  font: 500 11px var(--kit-font);
+  fill: var(--kit-ink-3);
+  font-variant-numeric: tabular-nums;
+}
+
+// Root, frame, and svg of a chart that can fill its card. In a filling frame
+// the svg sits out of flow, so the frame can shrink again when its row does.
+@mixin chart-frame($name) {
+  .#{brand.$prefix}-#{$name} {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-width: 0;
+
+    &--fill {
+      flex: 1 1 auto;
+    }
+
+    &--empty {
+      display: grid;
+      place-items: center;
+      min-height: 120px;
+    }
+
+    &-empty-text {
+      font: var(--kit-body);
+      color: var(--kit-ink-3);
+    }
+
+    &-frame {
+      position: relative;
+      width: 100%;
+      min-width: 0;
+      outline: none;
+      touch-action: pan-y;
+
+      &:focus-visible {
+        box-shadow: 0 0 0 2px var(--kit-accent);
+        border-radius: 6px;
+      }
+
+      &--fill {
+        flex: 1 1 auto;
+
+        > svg {
+          position: absolute;
+          top: 0;
+          left: 0;
+        }
+      }
+    }
+
+    &-svg {
+      display: block;
+      overflow: visible;
+    }
+  }
+}
+
+// The series entrance every line chart shares: lines draw on, the wash under
+// them fades in as the line passes, and the marks that sit on the line (end
+// dots and labels, a dotted tail) arrive once it has drawn. Gated behind
+// reduced motion; the `--animated` classes come from the components.
+@mixin series-entrance($name) {
+  @media (prefers-reduced-motion: no-preference) {
+    .#{brand.$prefix}-#{$name}-line--animated {
+      stroke-dasharray: var(--path-length);
+      stroke-dashoffset: var(--path-length);
+      animation: #{brand.$prefix}-draw-line 0.9s cubic-bezier(0.3, 0.6, 0.3, 1) forwards;
+    }
+
+    .#{brand.$prefix}-#{$name}-area--animated,
+    .#{brand.$prefix}-#{$name}-wash--animated {
+      opacity: 0;
+      animation: #{brand.$prefix}-fade-appear 0.6s ease-out 0.3s forwards;
+    }
+
+    .#{brand.$prefix}-#{$name}-late--animated {
+      opacity: 0;
+      animation: #{brand.$prefix}-fade-appear 0.3s ease-out 0.75s forwards;
+    }
+  }
+}
+
+// Hairline gridlines, a firmer baseline, and tick labels.
+@mixin plot-axes($name) {
+  .#{brand.$prefix}-#{$name} {
+    &-grid {
+      stroke: var(--kit-grid);
+      stroke-width: 1;
+    }
+
+    &-baseline {
+      stroke: var(--kit-axis);
+      stroke-width: 1;
+    }
+
+    &-tick {
+      @include svg-tick-label;
+    }
+  }
+}
+
+// The hover crosshair and the dots that ride it, ringed in the card color.
+@mixin crosshair($name) {
+  .#{brand.$prefix}-#{$name} {
+    &-crosshair-line {
+      stroke: var(--kit-ink-3);
+      stroke-width: 1;
+    }
+
+    &-dot {
+      stroke: var(--kit-card);
+      stroke-width: 2;
+    }
+
+    // The dot riding each series at the hovered point: a card-colored ring
+    // around the series color, so it reads on top of any line or band.
+    &-active-dot-outer {
+      fill: var(--kit-card);
+      filter: drop-shadow(0 1px 2px rgb(0 0 0 / 0.18));
+    }
+  }
+}

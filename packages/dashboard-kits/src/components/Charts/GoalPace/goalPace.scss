@@ -1,0 +1,169 @@
+@use "../shared/chartBase" as base;
+@use "../prefix" as brand;
+
+@include base.plot-axes("goal-pace");
+@include base.crosshair("goal-pace");
+@include base.series-entrance("goal-pace");
+
+.#{brand.$prefix}-goal-pace {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+
+  &--empty {
+    display: grid;
+    place-items: center;
+    min-height: 120px;
+  }
+
+  &-empty-text {
+    font: var(--kit-body);
+    color: var(--kit-ink-3);
+  }
+
+  &-head {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  &-gauge {
+    flex-shrink: 0;
+    width: 112px;
+    height: 112px;
+  }
+
+  // Track and fill are d3 arcs: filled shapes, not stroked circles.
+  &-track {
+    fill: color-mix(in srgb, var(--kit-ink) 8%, var(--kit-card));
+  }
+
+  &-fill--good {
+    fill: var(--kit-good);
+  }
+
+  &-fill--warn {
+    fill: var(--kit-warn);
+  }
+
+  &-fill--bad {
+    fill: var(--kit-bad);
+  }
+
+  // Where the pace says the gauge should be by now.
+  &-marker {
+    stroke: var(--kit-ink);
+    stroke-width: 2;
+    stroke-linecap: round;
+  }
+
+  &-pct {
+    font: 650 24px var(--kit-font);
+    letter-spacing: -0.02em;
+    fill: var(--kit-ink);
+  }
+
+  &-of {
+    font: 500 11px var(--kit-font);
+    fill: var(--kit-ink-3);
+  }
+
+  &-summary {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    min-width: 0;
+  }
+
+  &-label {
+    font: var(--kit-label);
+    color: var(--kit-ink-2);
+  }
+
+  &-value {
+    font: 600 22px/1.15 var(--kit-font);
+    letter-spacing: -0.02em;
+    color: var(--kit-ink);
+
+    .kit-muted {
+      font: 500 13px var(--kit-font);
+      letter-spacing: 0;
+    }
+  }
+
+  &-stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    margin: 0;
+    border-block: 1px solid var(--kit-border);
+
+    > div {
+      padding: 10px 12px;
+      border-left: 1px solid var(--kit-border);
+    }
+
+    > div:first-child {
+      padding-left: 0;
+      border-left: 0;
+    }
+
+    dt {
+      font: 500 11.5px var(--kit-font);
+      color: var(--kit-ink-3);
+    }
+
+    dd {
+      margin: 2px 0 0;
+      font: 600 15px var(--kit-font);
+      font-variant-numeric: tabular-nums;
+      color: var(--kit-ink);
+    }
+  }
+
+  &-plot {
+    position: relative;
+  }
+
+  &-svg {
+    display: block;
+    overflow: visible;
+  }
+
+  &-goal {
+    stroke: var(--kit-ink-2);
+    stroke-width: 1.25;
+    stroke-dasharray: 5 4;
+  }
+
+  &-goal-label {
+    font: 600 11px var(--kit-font);
+    fill: var(--kit-ink-2);
+    paint-order: stroke;
+    stroke: var(--kit-card);
+    stroke-width: 3px;
+    stroke-linejoin: round;
+  }
+
+  &-pace {
+    fill: none;
+    stroke: var(--kit-muted-mark);
+    stroke-width: 1.5;
+    stroke-dasharray: 4 4;
+  }
+
+  &-area {
+    fill: color-mix(in srgb, var(--kit-accent) 12%, transparent);
+  }
+
+  &-line {
+    fill: none;
+    stroke-width: 2;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+  }
+
+  &-line--projected {
+    stroke-dasharray: 1 5;
+  }
+}

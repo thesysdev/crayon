@@ -1,0 +1,34 @@
+"use client";
+
+import { defineComponent } from "@openuidev/react-lang";
+import { z } from "zod/v4";
+import { ColumnChart as ColumnChartView } from "../components/Charts/ColumnChart";
+import { formatSchema, seriesSchema } from "../core/schemas";
+import { Pending } from "./Pending";
+
+export const ColumnChart = defineComponent({
+  name: "ColumnChart",
+  description:
+    'Column chart over time or categories, grouped or stacked, drawn by react-ui\'s BarChart with its tooltip, hover band, and legend; up to 4 series in a fixed color order. Name the unit in yLabel, since the axis prints plain numbers. Use it instead of BarChart: ColumnChart(mix.labels, [{name: "New", values: mix.newCustomers}, {name: "Returning", values: mix.returningCustomers}], "number", true, "Customers").',
+  props: z.object({
+    labels: z.array(z.string()).default([]),
+    series: z.array(seriesSchema).default([]),
+    format: formatSchema.optional(),
+    stacked: z.boolean().optional(),
+    yLabel: z.string().optional(),
+  }),
+  component: ({ props }) => {
+    const labels = props.labels ?? [];
+    const series = props.series ?? [];
+    if (labels.length === 0 || series.length === 0) return <Pending kind="columns" />;
+    return (
+      <ColumnChartView
+        labels={labels}
+        series={series}
+        stacked={props.stacked}
+        yLabel={props.yLabel}
+        fill
+      />
+    );
+  },
+});
