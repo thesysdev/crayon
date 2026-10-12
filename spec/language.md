@@ -196,14 +196,14 @@ Fixtures: `evaluation/*-kind-*`
 
 The entry is the statement named `root`. Its value must evaluate to a component: a component call, a reference to a statement whose value is one, or any expression that gives one. For example, `root = $t ? A : B` is a valid entry when `A` and `B` are component statements. When the value is not a component, the client reports a fatal `no-root` at stream end, with no fallback.
 
-With no `root` statement, the first statement that calls the library's root component (the LibrarySpec `root` field, [prompt.md](./prompt.md), section 2.2) is the entry, wherever it is. It renders with a non-fatal `no-root`.
+With no `root` statement, the first value statement whose value is a call to the library's root component (the LibrarySpec `root` field, [prompt.md](./prompt.md), section 2.2) is the entry, wherever it is in the program. It renders with a non-fatal `no-root`.
 
 ```openui-lang
 title = Header("Orders")
 page = Card([title])
 ```
 
-If the library's root is `Card`, this renders `page` with a non-fatal `no-root`. If no statement called `Card`, nothing would render.
+If the library's root is `Card`, this renders `page` with a non-fatal `no-root`. If no statement's value were a `Card` call, nothing would render. State declarations are never the entry, so `$tab = Card([])` does not count.
 
 In every other case, at stream end the client reports a fatal `no-root` and nothing renders. If the library has no `root` field, only a `root` statement is an entry. While streaming, a missing entry is not an error.
 
@@ -219,7 +219,7 @@ A bare name refers to the statement with that name, wherever it is in the progra
 - A statement referenced from two places is evaluated separately at each. Only the tree is copied: the state store is shared, and a query referenced twice fetches once, with both places reading the same result.
 - References to query or mutation statements resolve to their results (section 6).
 
-Value statements the entry cannot reach are **orphans**. When there is no entry, every value statement is an orphan. They go into the parse metadata and are not rendered. State, query, and mutation statements are never orphans, and a query runs whether or not the entry reaches it.
+Value statements the entry cannot reach are **orphans**. When there is no entry, there are no orphans, and `no-root` reports the problem. Orphans go into the parse metadata and are not rendered. State, query, and mutation statements are never orphans, and a query runs whether or not the entry reaches it.
 
 Fixtures: `evaluation/*-ref-*`, including `evaluation/*-ref-array-*`
 
