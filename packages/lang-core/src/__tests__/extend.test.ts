@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import { z } from "zod/v4";
 import { createLibrary, defineAction, defineComponent, defineFunction } from "../library";
 import { createParser } from "../parser";
@@ -52,14 +52,56 @@ describe("library.extend", () => {
     expect(lib.toJSONSchema()).toEqual(merged.toJSONSchema());
   });
 
-  it("removes from unions and groups, and warns once on names still in notes", () => {
-    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+  it("removes from unions and groups", () => {
     const lib = base.extend({ components: { remove: ["Frame", "Text"] } });
     expect(sig(lib, "Stack")).toContain("children: (Image)[]");
     expect(lib.componentGroups).toEqual([{ ...parts.componentGroups[0], components: ["Image"] }]);
-    expect(warn).toHaveBeenCalledOnce();
-    expect(warn.mock.calls[0]![0]).toContain("Removed Frame still named");
-    warn.mockRestore();
+  });
+
+  it("slots a component that nests its new parent: Card(body: Stack) into Stack", () => {
+    const Card = comp("Card", z.object({ body: Stack.ref }));
+    const lib = base.extend({ components: { add: [{ component: Card, slots: ["Stack"] }] } });
+    const schema = lib.toJSONSchema();
+    const parsed = createParser(schema, "Stack").parse('root = Stack([Card(Stack([Text("x")]))])');
+    expect(parsed.meta.errors).toEqual([]);
+    expect(Object.keys(schema.$defs!).sort()).toEqual(["Card", "Frame", "Image", "Stack", "Text"]);
+    expect(schema.$defs!.Card).toMatchObject({ properties: { body: { $ref: "#/$defs/Stack" } } });
+  });
+
+  it("rebinds a self-recursive component to itself", () => {
+    const Tree: any = comp(
+      "Tree",
+      z.object({
+        get children(): z.ZodArray {
+          return z.array(z.union([Tree.ref, Text.ref]));
+        },
+      }),
+    );
+    const lib = createLibrary({ components: [Tree, Text], root: "Tree" }).extend({
+      components: { override: [comp("Text", z.object({ value: z.string() }))] },
+    });
+    const schema = lib.toJSONSchema();
+    expect(Object.keys(schema.$defs!).sort()).toEqual(["Text", "Tree"]);
+    const items = { anyOf: [{ $ref: "#/$defs/Tree" }, { $ref: "#/$defs/Text" }] };
+    expect(schema.$defs!.Tree).toMatchObject({ properties: { children: { items } } });
+    expect(schema.$defs!.Text).toMatchObject({ properties: { value: { type: "string" } } });
+  });
+
+  it("replaces every member of a slot in one call", () => {
+    const lib = base.extend({
+      components: {
+        remove: ["Text", "Image", "Frame"],
+        add: [{ component: comp("Card"), slots: ["Stack"] }],
+      },
+    });
+    expect(sig(lib, "Stack")).toContain("children: (Card)[]");
+  });
+
+  it("adds once when two slots name the same prop", () => {
+    const lib = base.extend({
+      components: { add: [{ component: comp("Card"), slots: ["Stack.children", "Stack"] }] },
+    });
+    expect(sig(lib, "Stack")).toContain("children: (Text | Image | Card)[]");
   });
 
   it("fails fast on bad slots and names", () => {

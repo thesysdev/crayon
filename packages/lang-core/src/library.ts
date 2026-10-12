@@ -1,6 +1,6 @@
 import { object as zObject } from "zod/v4";
 import * as z from "zod/v4/core";
-import { extendDefinition, warnOnStaleNames } from "./extend";
+import { extendDefinition } from "./extend";
 import type { DefinedAction, DefinedFunction } from "./functions";
 import { ACTION_DEFS, isBuiltin, isReservedCall } from "./parser/builtins";
 import type { ComponentPromptSpec, LibrarySpec, PromptSpec, ToolSpec } from "./parser/prompt";
@@ -186,7 +186,11 @@ export interface LibraryExtension<C = unknown, A extends AnyAction = AnyAction> 
     add?: (DefinedComponent<any, C> | { component: DefinedComponent<any, C>; slots: string[] })[];
     /** Replacements (schema and renderer) by name. Every parent points at the new one. */
     override?: DefinedComponent<any, C>[];
-    /** Names to drop from the library, every parent union and componentGroups. */
+    /**
+     * Names to drop from the library, every parent union and componentGroups.
+     * Throws when a prop would be left with no type, even an optional one
+     * (`image?: Image` with Image removed): override that parent instead.
+     */
     remove?: string[];
   };
   functions?: ExtensionVerbs<DefinedFunction<any, any>>;
@@ -326,9 +330,7 @@ export function createLibrary<C = unknown, A extends AnyAction = never>(
 
     // lib.extend({ components: { add: [ProductCard] }, functions: { add: [percent] } })
     extend<A2 extends AnyAction = never>(extension: LibraryExtension<C, A2>) {
-      const { definition, removed } = extendDefinition<C>(input, extension);
-      const derived = createLibrary(definition) as Required<Library<C, A | A2>>;
-      return warnOnStaleNames(library, derived, removed);
+      return createLibrary(extendDefinition<C>(input, extension)) as Required<Library<C, A | A2>>;
     },
   };
 

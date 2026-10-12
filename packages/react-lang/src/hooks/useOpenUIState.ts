@@ -127,7 +127,7 @@ export function useOpenUIState(
       : null;
     if (!bundle.program) return null;
     try {
-      return sp.set(bundle.program);
+      return sp.set(bundle.program, !isStreaming);
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
       parseExceptionRef.current = {
@@ -138,7 +138,7 @@ export function useOpenUIState(
       };
       return null;
     }
-  }, [sp, bundle.program, bundle.error]);
+  }, [sp, bundle.program, bundle.error, isStreaming]);
 
   // ─── Store (holds everything: $bindings + form fields) ───
   const store = useMemo<Store>(() => createStore(), []);
@@ -155,6 +155,9 @@ export function useOpenUIState(
   }, [queryManager]);
 
   // ─── Initialize Store ───
+  // Declared defaults are not a user change, so they do not fire onStateUpdate: a saved
+  // default read from a half-streamed statement would come back as initialState and stick.
+  const initializingRef = useRef(false);
   const storeInitKeyRef = useRef<unknown>(Symbol());
   useEffect(() => {
     if (!result?.stateDeclarations && !initialState) return;
@@ -174,7 +177,9 @@ export function useOpenUIState(
         }
       }
     }
+    initializingRef.current = true;
     store.initialize(result?.stateDeclarations ?? {}, bindingDefaults);
+    initializingRef.current = false;
   }, [result?.stateDeclarations, store, initialState]);
 
   // ─── Subscribe to Store and QueryManager for re-renders ───
@@ -266,7 +271,7 @@ export function useOpenUIState(
     lastInitSnapshotRef.current = store.getSnapshot();
     const unsub = store.subscribe(() => {
       const currentSnapshot = store.getSnapshot();
-      if (currentSnapshot === lastInitSnapshotRef.current) return;
+      if (initializingRef.current || currentSnapshot === lastInitSnapshotRef.current) return;
       lastInitSnapshotRef.current = null;
       propsRef.current.onStateUpdate?.(currentSnapshot);
     });
@@ -416,7 +421,7 @@ export function useOpenUIState(
             case ACTION_STEPS.Reset: {
               const decls = resultRef.current?.stateDeclarations ?? {};
               for (const target of step.targets) {
-                store.set(target, decls[target] ?? null);
+                store.set(target, decls[target] ?? null, { pristine: true });
               }
               break;
             }

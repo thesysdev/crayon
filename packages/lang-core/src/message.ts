@@ -3,6 +3,11 @@
 
 const PREFIX = "]]>openui:";
 const MARKER = /^\]\]>openui:([a-z]+)(?:\?(.*))?$/;
+// A regenerated response writes its content line right after the cut-off text, with no newline
+// before it. Start it on its own line so the last content wins.
+const RETRY = /([^\n])(?=\]\]>openui:content(?:\?|\r?\n|$))/g;
+// While streaming, hold back a mid-line `]]>openui:con` that may become a content line.
+const RETRY_CUT = /[^\n](\]\]>[a-z:]*)$/;
 
 export interface ParsedMessage {
   /** Body of the last `content` section, or the whole text when there is none. */
@@ -11,7 +16,7 @@ export interface ParsedMessage {
   context: unknown;
   /** String attributes of the winning `content` marker. */
   attributes: Record<string, string>;
-  /** An `end` line is present. */
+  /** An `end` line follows the winning `content` section. */
   end: boolean;
 }
 
@@ -60,7 +65,10 @@ function readAttributes(query = ""): Record<string, string> {
 
 /** Splits a stored message into its content, context, attributes and end flag. */
 export function parseMessage(raw: string, { streaming }: ParseMessageOptions = {}): ParsedMessage {
-  const lines = raw.split("\n");
+  let text = raw.replace(RETRY, "$1\n");
+  const cut = streaming ? RETRY_CUT.exec(text) : null;
+  if (cut && `${PREFIX}content`.startsWith(cut[1])) text = text.slice(0, cut.index + 1);
+  const lines = text.split("\n");
   const last = lines[lines.length - 1];
   const held = streaming && last !== "" && (last.startsWith(PREFIX) || PREFIX.startsWith(last));
   if (held) lines.pop();
@@ -71,7 +79,7 @@ export function parseMessage(raw: string, { streaming }: ParseMessageOptions = {
     const body = sections[sections.length - 1].lines;
     if (body.length) body[body.length - 1] = body[body.length - 1].replace(/\r$/, "");
   };
-  let end = false;
+  let endAt = -1;
   for (const [i, line] of lines.entries()) {
     const match = MARKER.exec(line.replace(/\r$/, ""));
     if (!match) {
@@ -80,7 +88,7 @@ export function parseMessage(raw: string, { streaming }: ParseMessageOptions = {
     }
     close();
     if (match[1] === "end") {
-      end = true;
+      endAt = sections.length - 1;
       if (i === lines.length - 2 && lines[i + 1] === "") break;
       continue;
     }
@@ -99,6 +107,8 @@ export function parseMessage(raw: string, { streaming }: ParseMessageOptions = {
     // Not JSON (yet): keep the raw text.
   }
   const winner = sections[win];
+  // Like context, an `end` before the winning content belongs to an earlier attempt.
+  const end = endAt >= win;
   return { content: winner.lines.join("\n"), context, attributes: winner.attributes, end };
 }
 

@@ -9,10 +9,9 @@ export interface ResponseMetadata {
 // `[{"name":"sales_total","code":"async ({ tools }) => …"}]`. This file cuts that section out;
 // parseMessage reads the rest (content, attributes, end).
 const SCRIPTS = "]]>openui:scripts";
-const CONTENT_LINE = /^\]\]>openui:content(?:\?.*)?\r?$/;
-// OpenUI Cloud's sanitizer retry writes its content line right after the failed attempt's
-// last character, with no newline. Start it on its own line so the retry wins.
-const RETRY_HEADER = /(?<=[^\n])(?=\]\]>openui:content(?:\?|\r?\n|$))/g;
+const CONTENT_LINE = /^\]\]>openui:content(?:\?.*)?\r?$(\n?)/m;
+// A scripts line without its JSON would read as a message marker; keep it in the content.
+const BARE_SCRIPTS = /^\]\]>openui:scripts(?=\?|\r?$)/gm;
 
 interface Scripts {
   names: Set<string>;
@@ -20,7 +19,7 @@ interface Scripts {
 }
 
 // Markers inside DSL/JSON strings are ordinary content.
-function markerIndex(text: string, partial = false): number {
+function markerIndex(text: string): number {
   let quote = "";
   let escaped = false;
   for (let i = 0; i < text.length; i++) {
@@ -34,25 +33,9 @@ function markerIndex(text: string, partial = false): number {
       if (newline < 0) return -1;
       i = newline;
     } else if (c === '"' || c === "'") quote = c;
-    else if (text.startsWith("]]>", i) || (partial && "]]>".startsWith(text.slice(i)))) return i;
+    else if (text.startsWith("]]>", i)) return i;
   }
   return -1;
-}
-
-// Where the winning content begins: after the last content line. A line still streaming does not count yet.
-function contentStart(text: string, streaming: boolean): number {
-  let start = -1;
-  for (let i = 0; i < text.length;) {
-    const newline = text.indexOf("\n", i);
-    const lineEnd = newline < 0 ? text.length : newline;
-    if (text.startsWith("]]>openui:content", i) && CONTENT_LINE.test(text.slice(i, lineEnd))) {
-      if (newline >= 0) start = newline + 1;
-      else if (!streaming) start = text.length;
-    }
-    if (newline < 0) break;
-    i = newline + 1;
-  }
-  return start;
 }
 
 function readScripts(header: string, payload: string): Scripts | null {
@@ -86,43 +69,41 @@ function readScripts(header: string, payload: string): Scripts | null {
 
 /** Reads an OpenUI Cloud response: a stored message (see parseMessage) plus its scripts section. */
 export function parseResponseBundle(response: string | null, streaming: boolean) {
-  let text = (response ?? "").replace(RETRY_HEADER, "\n");
-  const start = contentStart(text, streaming);
-  const framed = start >= 0;
-  const body = Math.max(start, 0);
-  // The scripts section is the first marker after the winning content, as Cloud writes it.
+  const text = response ?? "";
+  // Framed once a content line is in. A line still streaming does not count yet.
+  const line = CONTENT_LINE.exec(text);
+  const framed = !!line && (!streaming || line[1] === "\n");
+  const { content, attributes, end } = parseMessage(text.replace(BARE_SCRIPTS, "$& "), {
+    streaming,
+  });
+  let program = content;
+  // The scripts section is the first marker in the winning content, as Cloud writes it.
   let section = false;
   let scripts: Scripts | null = null;
-  const at = markerIndex(text.slice(body), framed && streaming);
-  if (at >= 0) {
-    const from = body + at;
-    const tail = text.slice(from);
-    if (tail.startsWith(SCRIPTS) || (framed && streaming && SCRIPTS.startsWith(tail))) {
-      section = true;
-      const newline = text.indexOf("\n", from);
-      let to = text.length;
-      if (newline >= 0) {
-        const next = markerIndex(text.slice(newline + 1));
-        if (next >= 0) to = newline + 1 + next;
-        scripts = readScripts(
-          text.slice(from + SCRIPTS.length, newline),
-          text.slice(newline + 1, to),
-        );
-      }
-      // The newline before the section belongs to its marker (spec 7.2), unless the program is empty.
-      let before = text.slice(0, from);
-      if (from > body) before = before.replace(/\r?\n$/, "");
-      const after = text.slice(to);
-      text = after ? `${before}\n${after}` : before;
+  const at = markerIndex(program);
+  if (at >= 0 && program.startsWith(SCRIPTS, at)) {
+    section = true;
+    const newline = program.indexOf("\n", at);
+    let to = program.length;
+    if (newline >= 0) {
+      const next = markerIndex(program.slice(newline + 1));
+      if (next >= 0) to = newline + 1 + next;
+      scripts = readScripts(
+        program.slice(at + SCRIPTS.length, newline),
+        program.slice(newline + 1, to),
+      );
     }
+    // The newline before the section belongs to its marker (spec 7.2), unless the program is empty.
+    const before = at > 0 ? program.slice(0, at).replace(/\r?\n$/, "") : "";
+    const after = program.slice(to);
+    program = after ? `${before}\n${after}` : before;
   }
 
-  const { content, attributes, end } = parseMessage(text, { streaming });
   const metadata: ResponseMetadata = {};
   if (!framed && !section && !end) {
     const error: string | undefined = undefined;
     return {
-      program: content,
+      program,
       metadata,
       scripts: new Set<string>(),
       complete: true,
@@ -133,7 +114,7 @@ export function parseResponseBundle(response: string | null, streaming: boolean)
   if (framed && attributes.name !== undefined) metadata.name = attributes.name;
   const error = section && !scripts ? "Invalid scripts bundle" : undefined;
   return {
-    program: content,
+    program,
     metadata,
     scripts: scripts?.names ?? new Set<string>(),
     // The end line only says the response is finished, so a stored message renders without one.

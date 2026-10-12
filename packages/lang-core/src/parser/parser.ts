@@ -96,9 +96,16 @@ function classifyStatement(raw: RawStmt, expr: ASTNode): Statement {
  * Extract typed statements from the symbol table.
  * State defaults are materialized to plain values (no raw AST in output).
  */
+/** A `$name` at the very end of streamed text, which may still be growing (`$d` of `$dishes`). */
+interface PartialRef {
+  name: string;
+  stmts: ReadonlySet<Statement>;
+}
+
 function extractStatements(
   stmts: Statement[],
   ctx: MaterializeCtx,
+  partialRef?: PartialRef,
 ): {
   stateDeclarations: Record<string, unknown>;
   queryStatements: QueryStatementInfo[];
@@ -114,7 +121,7 @@ function extractStatements(
         stateDeclarations[stmt.id] = materializeValue(stmt.init, ctx);
         break;
       case "query":
-        nameRawCallArgs(stmt.call.args, ctx);
+        nameRawCallArgs(stmt.call.args, ctx, stmt.id);
         queryStatements.push({
           statementId: stmt.id,
           toolAST: stmt.call.args[0] ?? null,
@@ -126,7 +133,7 @@ function extractStatements(
         });
         break;
       case "mutation":
-        nameRawCallArgs(stmt.call.args, ctx);
+        nameRawCallArgs(stmt.call.args, ctx, stmt.id);
         mutationStatements.push({
           statementId: stmt.id,
           toolAST: stmt.call.args[0] ?? null,
@@ -149,6 +156,7 @@ function extractStatements(
             : [];
     for (const node of nodes) {
       for (const dep of collectQueryDeps(node)) {
+        if (dep === partialRef?.name && partialRef.stmts.has(stmt)) continue;
         if (!(dep in stateDeclarations)) {
           stateDeclarations[dep] = null;
         }
@@ -166,7 +174,7 @@ function isComponentCall(node: ASTNode | undefined): node is Extract<ASTNode, { 
   return node?.k === "Comp" && !node.fn && !isBuiltin(node.name) && !isReservedCall(node.name);
 }
 
-/** Entry: `root`, else the first non-declaration statement if it calls the root component. */
+/** Entry: `root`, else the first statement that calls the root component. */
 function pickEntry(
   stmtMap: Map<string, Statement>,
   rootName?: string,
@@ -174,9 +182,8 @@ function pickEntry(
   if (stmtMap.has(DEFAULT_ROOT_STATEMENT_ID))
     return { id: DEFAULT_ROOT_STATEMENT_ID, fallback: false };
   for (const stmt of stmtMap.values()) {
-    if (stmt.kind !== "value") continue;
-    const callsRoot = !!rootName && isComponentCall(stmt.expr) && stmt.expr.name === rootName;
-    return callsRoot ? { id: stmt.id, fallback: true } : null;
+    if (stmt.kind === "value" && isComponentCall(stmt.expr) && stmt.expr.name === rootName)
+      return { id: stmt.id, fallback: true };
   }
   return null;
 }
@@ -207,6 +214,7 @@ function buildResult(
   stmtCount: number,
   cat: ParamMap | undefined,
   rootName?: string,
+  partialRef?: PartialRef,
 ): ParseResult {
   const entry = pickEntry(stmtMap, rootName);
 
@@ -250,6 +258,7 @@ function buildResult(
   const { stateDeclarations, queryStatements, mutationStatements } = extractStatements(
     typedStmts,
     ctx,
+    partialRef,
   );
 
   // Streaming consumers drop parser errors until the stream ends, so this reads as a stream-end check.
@@ -467,13 +476,15 @@ export function parse(input: string, cat: ParamMap, rootName?: string): ParseRes
 }
 
 export interface StreamParser {
-  /** Feed the next SSE/stream chunk and get the latest ParseResult. */
-  push(chunk: string): ParseResult;
+  /** Feed the next SSE/stream chunk and get the latest ParseResult.
+   *  Pass `complete` once the stream has ended. */
+  push(chunk: string, complete?: boolean): ParseResult;
   /** Set the full text — diffs against internal buffer, pushes only the delta.
-   *  Resets automatically if the text was replaced (not appended). */
-  set(fullText: string): ParseResult;
+   *  Resets automatically if the text was replaced (not appended).
+   *  Pass `complete` once the stream has ended. */
+  set(fullText: string, complete?: boolean): ParseResult;
   /** Get the latest ParseResult without consuming new data. */
-  getResult(): ParseResult;
+  getResult(complete?: boolean): ParseResult;
 }
 
 export function createStreamParser(cat: ParamMap, rootName?: string): StreamParser {
@@ -575,7 +586,7 @@ export function createStreamParser(cat: ParamMap, rootName?: string): StreamPars
     return stmtStart; // start of the current pending (incomplete) statement
   }
 
-  function currentResult(): ParseResult {
+  function currentResult(complete = false): ParseResult {
     refreshCleaned();
     const pendingStart = scanNewCompleted();
     const pendingText = cleaned.slice(pendingStart).trim();
@@ -613,12 +624,23 @@ export function createStreamParser(cat: ParamMap, rootName?: string): StreamPars
     // New IDs can render progressively; existing IDs are replaced only when
     // the pending expression no longer needs automatic closing.
     const allStmtMap = new Map(completedStmtMap);
+    const pendingStmts = new Set<Statement>();
     for (const s of stmts) {
       if (completedStmtMap.has(s.id) && wasIncomplete) continue;
       const expr = parseExpression(s.tokens);
       const stmt = classifyStatement(s, expr);
       allStmtMap.set(s.id, stmt);
+      pendingStmts.add(stmt);
     }
+    // A `$name` ending the raw text may still be growing (`$d` of `$dishes`): skip it unless
+    // the stream is complete or the same name already appears in full in the pending text.
+    const tail = complete ? undefined : /\$\w+$/.exec(buf)?.[0];
+    const tailName =
+      tail &&
+      pendingText.endsWith(tail) &&
+      !new RegExp(`\\${tail}(?!\\w)`).test(pendingText.slice(0, -tail.length))
+        ? tail
+        : undefined;
     // Derive from map to deduplicate
     const allTypedStmts = [...allStmtMap.values()];
 
@@ -629,6 +651,7 @@ export function createStreamParser(cat: ParamMap, rootName?: string): StreamPars
       completedCount + stmts.length,
       cat,
       rootName,
+      tailName ? { name: tailName, stmts: pendingStmts } : undefined,
     );
   }
 
@@ -641,17 +664,17 @@ export function createStreamParser(cat: ParamMap, rootName?: string): StreamPars
   }
 
   return {
-    push(chunk) {
+    push(chunk, complete) {
       buf += chunk;
-      return currentResult();
+      return currentResult(complete);
     },
-    set(fullText) {
+    set(fullText, complete) {
       if (fullText.length < buf.length || !fullText.startsWith(buf)) {
         reset();
       }
       const delta = fullText.slice(buf.length);
       if (delta) buf += delta;
-      return currentResult();
+      return currentResult(complete);
     },
     getResult: currentResult,
   };

@@ -159,10 +159,10 @@ function validationMessage(component: string, path: string, issue: ValidationIss
     case "no-root":
       if (issue.reason === "not-component") return "root does not evaluate to a component";
       if (issue.reason === "fallback") {
-        return `No root statement. Rendering the first statement, which calls the root component ${component}`;
+        return `No root statement. Rendering the first statement that calls the root component ${component}`;
       }
       return component
-        ? `No root statement, and the first statement does not call the root component ${component}`
+        ? `No root statement, and no statement calls the root component ${component}`
         : "No root statement";
   }
 }
