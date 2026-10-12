@@ -1,6 +1,6 @@
 "use client";
 
-import { useLocalHistory } from "@/lib/local-history";
+import { useLocalStorage } from "@/lib/local-storage";
 import { starters } from "@/lib/starters";
 import { library } from "@/library";
 import {
@@ -13,7 +13,7 @@ import {
 
 export default function Page() {
   const mode = useSystemThemeMode();
-  const { llm, storage } = useLocalHistory(
+  const { llm, storage } = useLocalStorage(
     fetchLLM({
       url: "/api/chat",
       streamAdapter: openAIAdapter(),

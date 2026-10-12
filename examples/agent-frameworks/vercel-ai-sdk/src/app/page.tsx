@@ -1,6 +1,6 @@
 "use client";
 
-import { useLocalHistory } from "@/lib/local-history";
+import { useLocalStorage } from "@/lib/local-storage";
 import {
   AgentInterface,
   fetchLLM,
@@ -15,7 +15,7 @@ export default function Page() {
 
   // The route returns the AI SDK's native UIMessage stream, so the browser
   // decodes it with the SDK's own adapter and message format.
-  const { llm, storage } = useLocalHistory(
+  const { llm, storage } = useLocalStorage(
     fetchLLM({
       url: "/api/chat",
       streamAdapter: vercelAIAdapter(),

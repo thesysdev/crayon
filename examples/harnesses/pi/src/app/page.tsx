@@ -2,7 +2,7 @@
 
 import "@openuidev/react-ui/styles/index.css";
 
-import { useLocalHistory } from "@/lib/local-history";
+import { useLocalStorage } from "@/lib/local-storage";
 import {
   AgentInterface,
   fetchLLM,
@@ -17,7 +17,7 @@ export default function Home() {
   // AgentInterface uses its built-in in-memory storage default (wiped on reload).
   // fetchLLM POSTs { threadId, messages }; the route keys a persistent pi
   // AgentSession on that threadId. The Cloud system prompt is attached server-side.
-  const { llm, storage } = useLocalHistory(
+  const { llm, storage } = useLocalStorage(
     fetchLLM({
       url: "/api/chat",
       streamAdapter: openAIReadableStreamAdapter(),

@@ -8,13 +8,13 @@ import Tooltip from "@mui/material/Tooltip";
 import { AgentInterface, fetchLLM, openAIAdapter, openAIMessageFormat } from "@openuidev/react-ui";
 
 import { useColorMode } from "@/hooks/use-system-theme";
-import { useLocalHistory } from "@/lib/local-history";
+import { useLocalStorage } from "@/lib/local-storage";
 import { muiChatLibrary } from "@/lib/mui-genui";
 
 export default function Page() {
   const { mode, toggle } = useColorMode();
 
-  const { llm, storage } = useLocalHistory(
+  const { llm, storage } = useLocalStorage(
     fetchLLM({
       url: "/api/chat",
       streamAdapter: openAIAdapter(),

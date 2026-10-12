@@ -1,6 +1,6 @@
 "use client";
 
-import { useLocalHistory } from "@/lib/local-history";
+import { useLocalStorage } from "@/lib/local-storage";
 import { library } from "@/library";
 import {
   AgentInterface,
@@ -12,7 +12,7 @@ import {
 export default function Page() {
   const mode = useSystemThemeMode();
 
-  const { llm, storage } = useLocalHistory(
+  const { llm, storage } = useLocalStorage(
     {
       send: ({ messages, signal }) =>
         fetch("/api/chat", {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useLocalHistory } from "@/lib/local-history";
+import { useLocalStorage } from "@/lib/local-storage";
 import { shadcnChatLibrary } from "@/lib/shadcn-genui";
 import {
   AgentInterface,
@@ -17,7 +17,7 @@ export default function Page() {
     document.body.setAttribute("data-theme", mode);
   }, [mode]);
 
-  const { llm, storage } = useLocalHistory(
+  const { llm, storage } = useLocalStorage(
     fetchLLM({
       url: "/api/chat",
       streamAdapter: openAIAdapter(),
