@@ -8,13 +8,13 @@ import { TripBridge } from "../itinerary-spread";
 import { HotelsContext, readReply } from "../library";
 import { readTraveller, travellerLine } from "../money";
 import { chatLibrary, ChatTurn } from "./chat-library";
-import { ChatStreaming } from "./chat-stream";
+import { wholeBlocks } from "./chat-stream";
 import "./chat.css";
 
 // The Chat tab: the trip as a conversation with a travel agent, in one centred column on the
 // white page. Your messages are written in pencil, letter by letter, like the journal's; while
 // the agent works a pencil line keeps drawing under them, and the reply then writes in block by
-// block as it streams (chat-stream.tsx). Replies are OpenUI programs in the chat library (chat-library.tsx). The chat
+// block as it streams (chat-stream.ts). Replies are OpenUI programs in the chat library (chat-library.tsx). The chat
 // belongs to the trip, so it shares Explore's journal and the Itinerary board.
 
 export type ChatTurnData = { prompt: string; code: string };
@@ -125,17 +125,15 @@ export function ChatView({ turns, onTurn }: { turns: ChatTurnData[]; onTurn: (tu
             return (
               <article className="pl-chat-turn" key={i}>
                 <ChatSaid text={turn.prompt} writing={writing} />
-                {writing ? (
-                  <ChatStreaming code={turn.code} turn={String(i)} programs={programs.slice(0, i)} />
-                ) : (
-                  <ChatAnswer
-                    code={turn.code}
-                    turn={String(i)}
-                    send={!pending && i === turns.length - 1 ? send : undefined}
-                    answer={all[i + 1]?.prompt}
-                    programs={programs.slice(0, i)}
-                  />
-                )}
+                {/* One ChatAnswer from first chunk to last, so its Renderer sees the stream settle. */}
+                <ChatAnswer
+                  code={turn.code}
+                  turn={String(i)}
+                  streaming={writing}
+                  send={!pending && i === turns.length - 1 ? send : undefined}
+                  answer={all[i + 1]?.prompt}
+                  programs={programs.slice(0, i)}
+                />
               </article>
             );
           })}
@@ -183,11 +181,13 @@ export function ChatThinking() {
   );
 }
 
-/** One reply, rendered whole. A fresh one waits (at most 2.5s) for its photos, then rises in. */
+/** One reply. While it streams it writes in block by block (chat-stream.ts); once whole, a fresh
+ *  one waits (at most 2.5s) for its photos, then rises in. */
 export function ChatAnswer({
   code,
   turn,
   fresh,
+  streaming = false,
   send,
   answer,
   programs,
@@ -195,12 +195,15 @@ export function ChatAnswer({
   code: string;
   turn: string;
   fresh?: boolean;
+  /** The reply is still arriving: show its whole blocks so far. */
+  streaming?: boolean;
   send?: (text: string) => void;
   /** The message that followed this reply. */
   answer?: string;
   programs?: string[];
 }) {
-  const reply = readReply(code);
+  const reply = readReply(code, streaming);
+  const program = streaming ? wholeBlocks(reply.program).program : reply.program;
   const box = useRef<HTMLDivElement>(null);
   const [shown, setShown] = useState(!fresh);
   useEffect(() => {
@@ -220,15 +223,18 @@ export function ChatAnswer({
     return () => window.clearTimeout(timer);
   }, [shown]);
   return (
-    <div className={`pl-chat-reply${shown ? (fresh ? " is-arriving" : "") : " is-holding"}`} ref={box}>
-      {shown ? null : <ChatThinking />}
-      <div className="pl-chat-reply__body">
-        <HotelsContext.Provider value={reply.hotels}>
-          <ChatTurn.Provider value={{ send, turn, programs, answer }}>
-            <Renderer response={reply.program} library={chatLibrary} isStreaming={false} />
-          </ChatTurn.Provider>
-        </HotelsContext.Provider>
-      </div>
+    <div className={`pl-chat-reply${streaming ? " is-streaming" : shown ? (fresh ? " is-arriving" : "") : " is-holding"}`} ref={box}>
+      {/* The pencil line until the first block is in, or while a fresh reply waits for photos. */}
+      {(streaming ? program : shown) ? null : <ChatThinking />}
+      {program || !streaming ? (
+        <div className="pl-chat-reply__body">
+          <HotelsContext.Provider value={reply.hotels}>
+            <ChatTurn.Provider value={{ send, turn, programs, answer }}>
+              <Renderer response={program} library={chatLibrary} isStreaming={streaming} />
+            </ChatTurn.Provider>
+          </HotelsContext.Provider>
+        </div>
+      ) : null}
     </div>
   );
 }

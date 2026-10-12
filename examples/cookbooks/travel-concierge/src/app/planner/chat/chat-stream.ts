@@ -1,16 +1,10 @@
-"use client";
-
-import { Renderer } from "@openuidev/react-lang";
-import { HotelsContext, readReply } from "../library";
-import { ChatThinking } from "./chat";
-import { chatLibrary, ChatTurn } from "./chat-library";
-
-// A chat reply while it streams. The program arrives one statement per line, the root first
-// (root = Chat([h, p, places, f], "Kyoto"), then h = Headline(…) …). Blocks are shown in order as
-// soon as they're whole: their line has ended and every name they use is defined by a finished
-// line. Type writes in as it arrives: a Headline, Pull, Heading or Text still being written is
-// shown with what it has so far. Pieces with photos hold their space with the usual shimmer until
-// the photos load, so nothing jumps. Nothing can be tapped until the reply is finished.
+// What a chat reply shows while it streams (ChatAnswer in chat.tsx). The program arrives one
+// statement per line, the root first (root = Chat([h, p, places, f], "Kyoto"), then
+// h = Headline(…) …). Blocks are shown in order as soon as they're whole: their line has ended and
+// every name they use is defined by a finished line. Type writes in as it arrives: a Headline,
+// Pull, Heading or Text still being written is shown with what it has so far. Pieces with photos
+// hold their space with the usual shimmer until the photos load, so nothing jumps. Nothing can be
+// tapped until the reply is finished.
 
 const WORDS = /\b[a-z_][\w]*\b/g;
 const KEYWORDS = new Set(["true", "false", "null", "root"]);
@@ -62,22 +56,4 @@ export function wholeBlocks(program: string): { program: string; shown: number }
   }
   if (!ready.length) return { program: "", shown: 0 };
   return { program: [`root = Chat([${ready.join(", ")}]${place ? `, ${place}` : ""})`, ...body].join("\n"), shown: ready.length };
-}
-
-/** The reply so far: the pencil line until its first block is in, then the blocks as they come. */
-export function ChatStreaming({ code, turn, programs }: { code: string; turn: string; programs?: string[] }) {
-  const reply = readReply(code, true);
-  const { program } = wholeBlocks(reply.program);
-  if (!program) return <ChatThinking />;
-  return (
-    <div className="pl-chat-reply is-streaming">
-      <div className="pl-chat-reply__body">
-        <HotelsContext.Provider value={reply.hotels}>
-          <ChatTurn.Provider value={{ turn, programs }}>
-            <Renderer response={program} library={chatLibrary} isStreaming={false} />
-          </ChatTurn.Provider>
-        </HotelsContext.Provider>
-      </div>
-    </div>
-  );
 }

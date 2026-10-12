@@ -422,7 +422,7 @@ export default function HorizontalJournal() {
               <HotelsContext.Provider value={reply.hotels}>
                 {/* Only the newest finished entry's steps can be tapped; older ones show what was chosen. */}
                 <Reply.Provider value={{ send: !pending && i === turns.length - 1 ? send : undefined, answer: turns[i + 1]?.prompt }}>
-                  <Renderer response={slides.program} library={journalLibrary} isStreaming={false} />
+                  <Renderer response={slides.program} library={journalLibrary} isStreaming={turn === pending} />
                 </Reply.Provider>
               </HotelsContext.Provider>
               {/* The next spread being written: one quiet placeholder rather than half a slide. */}

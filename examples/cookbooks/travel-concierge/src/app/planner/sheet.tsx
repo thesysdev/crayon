@@ -305,11 +305,12 @@ function SheetPanel({ open, context, onClose, onOpen }: { open: Opened; context:
         <HotelSheet hotel={open.hotel} />
       ) : (
         <section className="hj-sheet-stage">
-          {done ? (
+          {/* Mounted (hidden) from the first whole root line, so the Renderer sees the stream. */}
+          {ready ? (
             <div ref={content} className={`hj-sheet-content${shown ? " is-shown" : ""}`} aria-hidden={!shown}>
               <StackOpener.Provider value={onOpen}>
                 <HotelsContext.Provider value={reply.hotels}>
-                  <Renderer response={reply.program} library={sheetLibrary} isStreaming={false} />
+                  <Renderer response={reply.program} library={sheetLibrary} isStreaming={streaming} />
                 </HotelsContext.Provider>
               </StackOpener.Provider>
             </div>
