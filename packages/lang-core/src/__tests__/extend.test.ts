@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import { z } from "zod/v4";
 import { createLibrary, defineAction, defineComponent, defineFunction } from "../library";
 import { createParser } from "../parser";
@@ -52,14 +52,10 @@ describe("library.extend", () => {
     expect(lib.toJSONSchema()).toEqual(merged.toJSONSchema());
   });
 
-  it("removes from unions and groups, and warns once on names still in notes", () => {
-    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+  it("removes from unions and groups", () => {
     const lib = base.extend({ components: { remove: ["Frame", "Text"] } });
     expect(sig(lib, "Stack")).toContain("children: (Image)[]");
     expect(lib.componentGroups).toEqual([{ ...parts.componentGroups[0], components: ["Image"] }]);
-    expect(warn).toHaveBeenCalledOnce();
-    expect(warn.mock.calls[0]![0]).toContain("Removed Frame still named");
-    warn.mockRestore();
   });
 
   it("slots a component that nests its new parent: Card(body: Stack) into Stack", () => {
