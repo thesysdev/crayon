@@ -1,3 +1,4 @@
+import { parseMessage } from "@openuidev/lang-core";
 import type { Thread } from "../store/types";
 import type { Message, UserMessage } from "../types/message";
 import type { ChatStorage } from "./types";
@@ -22,7 +23,7 @@ export function createDefaultInMemoryStorage(): ChatStorage {
           id: crypto.randomUUID(),
           title:
             typeof firstMessage.content === "string"
-              ? firstMessage.content.slice(0, 40) || "New thread"
+              ? parseMessage(firstMessage.content).content.slice(0, 40) || "New thread"
               : "New thread",
           createdAt: new Date().toISOString(),
         };
