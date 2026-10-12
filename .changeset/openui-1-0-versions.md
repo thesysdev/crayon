@@ -1,9 +1,6 @@
 ---
 "@openuidev/lang-core": major
 "@openuidev/react-lang": major
-"@openuidev/vue-lang": minor
-"@openuidev/svelte-lang": minor
-"@openuidev/angular-lang": minor
 "@openuidev/a2ui": minor
 "@openuidev/react-ui": minor
 "@openuidev/devtools": minor
