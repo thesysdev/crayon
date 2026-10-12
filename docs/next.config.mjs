@@ -140,7 +140,7 @@ const config = {
       },
       {
         source: "/docs/openui-lang/entry",
-        destination: "/docs/openui-lang/specification-v10#entry-statement",
+        destination: "/docs/openui-lang/versions/specification-v10#entry-statement",
         permanent: true,
       },
       {
