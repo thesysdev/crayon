@@ -55,6 +55,7 @@ function LaurelBranch({ mirrored }: { mirrored?: boolean }) {
   const [x1, y1] = point(232);
   return (
     <svg
+      aria-hidden="true"
       className={styles.laurel}
       width="36"
       height="64"
@@ -183,12 +184,9 @@ export default function OuiOnePage() {
           </div>
         </section>
         <div className={`${styles.statementBand} ${styles.closingBand}`}>
-          <div className={styles.openBadge} aria-hidden="true">
+          <div className={styles.openBadge}>
             <LaurelBranch />
-            {/* Open Source Initiative keyhole mark */}
-            <svg className={styles.openMark} width="28" height="28" viewBox="0 0 24 24">
-              <path d="M15.75 20.27A10 10 0 1 0 8.25 20.27L9.85 13.76A3.5 3.5 0 1 1 14.15 13.76Z" />
-            </svg>
+            <span className={styles.openLabel}>Open-Source</span>
             <LaurelBranch mirrored />
           </div>
           <h2 className={`${styles.statement} ${styles.statementLarge}`}>
