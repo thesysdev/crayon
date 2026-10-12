@@ -1,5 +1,5 @@
 // OpenUI mascot outline, from templates/openui-cloud/public/brand-logo.svg.
-// The eyes are kept separate so loaders can animate them.
+// The eyes are kept separate so the loader and welcome mascot can animate them.
 export const MASCOT_VIEWBOX = "0 0 201 161";
 export const MASCOT_BODY_PATHS: { d: string; fill: "white" | "black" }[] = [
   {

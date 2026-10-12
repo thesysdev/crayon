@@ -6,15 +6,7 @@ import { useLayoutContext } from "../../context/LayoutContext";
 import { IconButton } from "../IconButton";
 import { SidebarResizeEdge } from "./SidebarResizeEdge";
 import { AgentInterfaceTooltip } from "./_shared/AgentInterfaceTooltip";
-import { SIDEBAR_OPEN_STORAGE_KEY, useAgentInterfaceStore } from "./_shared/store";
-
-const readSavedSidebarOpen = () => {
-  try {
-    return window.localStorage.getItem(SIDEBAR_OPEN_STORAGE_KEY) === "1";
-  } catch {
-    return false;
-  }
-};
+import { useAgentInterfaceStore } from "./_shared/store";
 
 const SIDEBAR_FADE_DURATION_MS = 90;
 const SIDEBAR_RESIZE_DURATION_MS = 160;
@@ -35,10 +27,13 @@ export const SidebarContainer = ({
   children?: React.ReactNode;
   className?: string;
 }) => {
-  const { isSidebarOpen, setIsSidebarOpen } = useAgentInterfaceStore((state) => ({
-    isSidebarOpen: state.isSidebarOpen,
-    setIsSidebarOpen: state.setIsSidebarOpen,
-  }));
+  const { isSidebarOpen, setIsSidebarOpen, desktopSidebarOpen, setDesktopSidebarOpen } =
+    useAgentInterfaceStore((state) => ({
+      isSidebarOpen: state.isSidebarOpen,
+      setIsSidebarOpen: state.setIsSidebarOpen,
+      desktopSidebarOpen: state.desktopSidebarOpen,
+      setDesktopSidebarOpen: state.setDesktopSidebarOpen,
+    }));
   const { isDetailedViewActive } = useActiveDetailedView();
   const { layout } = useLayoutContext() || {};
   const isMobile = layout === "mobile";
@@ -71,20 +66,14 @@ export const SidebarContainer = ({
     // saved choice, so the first run keeps it; coming back from mobile
     // restores it.
     if (justSwitchedLayout) {
-      const targetOpen = isMobile ? false : isFirstRun ? isSidebarOpen : readSavedSidebarOpen();
+      const targetOpen = isMobile ? false : isFirstRun ? isSidebarOpen : desktopSidebarOpen;
       if (isSidebarOpen !== targetOpen) {
         setIsSidebarOpen(targetOpen);
         return;
       }
     }
 
-    if (!isMobile) {
-      try {
-        window.localStorage.setItem(SIDEBAR_OPEN_STORAGE_KEY, isSidebarOpen ? "1" : "0");
-      } catch {
-        // Storage can be unavailable (private mode, blocked site data).
-      }
-    }
+    if (!isMobile) setDesktopSidebarOpen(isSidebarOpen);
 
     if (isMobile) {
       setIsCollapsedLayout(!isSidebarOpen);

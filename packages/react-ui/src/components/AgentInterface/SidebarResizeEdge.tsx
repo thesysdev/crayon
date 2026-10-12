@@ -1,18 +1,20 @@
 import { useLayoutEffect, useRef, type PointerEvent } from "react";
+import {
+  SIDEBAR_MAX_WIDTH as MAX_WIDTH,
+  SIDEBAR_MIN_WIDTH as MIN_WIDTH,
+  SIDEBAR_WIDTH_STORAGE_KEY as STORAGE_KEY,
+  SIDEBAR_WIDTH_VAR as WIDTH_VAR,
+} from "./_shared/storageKeys";
 import { useAgentInterfaceStore } from "./_shared/store";
 
 /* Keep DEFAULT in step with $sidebar-width in sidebar.scss. */
 const DEFAULT_WIDTH = 272;
-const MIN_WIDTH = 220;
-const MAX_WIDTH = 420;
 /* Dragged narrower than this, the sidebar snaps shut; dragged wider from the
    rail, it snaps open at MIN_WIDTH or wider. */
 const COLLAPSE_AT = 150;
 /* Lands on the default width when released within this many px of it. */
 const SNAP_DISTANCE = 14;
-const STORAGE_KEY = "openui-agent-sidebar-width";
 const SAVE_DELAY_MS = 300;
-const WIDTH_VAR = "--openui-agent-sidebar-width";
 
 const readStoredWidth = () => {
   try {

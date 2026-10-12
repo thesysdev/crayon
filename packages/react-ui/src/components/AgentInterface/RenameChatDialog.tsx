@@ -14,7 +14,7 @@ export interface RenameChatDialogProps {
 /**
  * Small dialog for renaming a chat: a title field prefilled with the current
  * name, Save / Cancel. Enter saves, Escape closes. Shared by the sidebar thread
- * menu and the ChatHeader actions menu.
+ * menu and the ThreadHeader actions menu.
  */
 export const RenameChatDialog = ({ threadId, open, onOpenChange }: RenameChatDialogProps) => {
   const thread = useThreadList((s) => s.threads.find((t) => t.id === threadId));

@@ -30,7 +30,7 @@ export default function CloudChat() {
   const storage = useOpenuiCloudStorage({
     token: "/api/frontend-token",
     apiBaseUrl: "https://api.thesys.dev",
-    features: { artifact: false }
+    features: { artifact: false },
   });
 
   const logoPath = mode === "dark" ? OPENUI_LOGOS.DARK : OPENUI_LOGOS.LIGHT;
@@ -55,13 +55,16 @@ export default function CloudChat() {
             />
           }
         />
-        <AgentInterface.ThreadHeader className="openui-cloud-thread-header">
-          <ModelSwitcher
-            models={MODEL_OPTIONS}
-            value={selectedModel}
-            onValueChange={setSelectedModel}
-          />
-        </AgentInterface.ThreadHeader>
+        <AgentInterface.ThreadHeader
+          showChatTitle={false}
+          start={
+            <ModelSwitcher
+              models={MODEL_OPTIONS}
+              value={selectedModel}
+              onValueChange={setSelectedModel}
+            />
+          }
+        />
         <AgentInterface.Welcome
           title="Good to see you"
           description="What's on your mind today?"

@@ -1,21 +1,14 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { THEME_MODE_ATTRIBUTE, THEME_MODE_STORAGE_KEY } from "./themeModeStorage";
 import type { ThemeMode } from "./types";
 import { useSystemThemeMode } from "./useSystemThemeMode";
 
+export { THEME_MODE_ATTRIBUTE, THEME_MODE_STORAGE_KEY };
+
 /** A user's theme choice: a fixed mode, or follow the OS. */
 export type ThemeModePreference = ThemeMode | "system";
-
-/** localStorage key the preference is saved under (absent means "system"). */
-export const THEME_MODE_STORAGE_KEY = "openui-theme-mode";
-
-/**
- * Attribute set on <html> while a mode is pinned. The default token sheet
- * (openui-defaults) reads it, so an app can set it before paint from the saved
- * preference and render its first frame in the chosen mode.
- */
-export const THEME_MODE_ATTRIBUTE = "data-openui-theme";
 
 const isPreference = (value: unknown): value is ThemeModePreference =>
   value === "light" || value === "dark" || value === "system";

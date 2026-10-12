@@ -1,19 +1,19 @@
 "use client";
 
-import { BrandLogo, BrandWordmark } from "@/components/brand-logo";
-import { WelcomeMascot } from "@/components/welcome-mascot";
+import { BrandWordmark } from "@/components/brand-logo";
 import { usePersistedModel } from "@/hooks/use-persisted-model";
 import { MODEL_OPTIONS } from "@/lib/models";
 import { OPENUI_LOGOS, PROMPT_TEMPLATES, STARTERS } from "@/lib/starters";
 import {
   AgentInterface,
-  ModelSwitcher,
   fetchLLM,
-  openuiLibrary,
+  ModelSwitcher,
   openAIConversationMessageFormat,
   openAIResponsesAdapter,
+  openuiLibrary,
   useOpenuiCloudStorage,
   useThemeModePreference,
+  WelcomeMascot,
 } from "@openuidev/react-ui";
 
 export default function CloudChat() {
@@ -31,7 +31,7 @@ export default function CloudChat() {
   const storage = useOpenuiCloudStorage({
     token: "/api/frontend-token",
     apiBaseUrl: "https://api.thesys.dev",
-    features: { artifact: false }
+    features: { artifact: false },
   });
 
   const logoPath = mode === "dark" ? OPENUI_LOGOS.DARK : OPENUI_LOGOS.LIGHT;
@@ -46,10 +46,7 @@ export default function CloudChat() {
         theme={{ mode }}
         starters={STARTERS}
       >
-        <AgentInterface.SidebarHeader
-          logo={<BrandLogo />}
-          agentName={<BrandWordmark mode={mode} />}
-        />
+        <AgentInterface.SidebarHeader agentName={<BrandWordmark mode={mode} />} />
         <AgentInterface.SidebarFooter>
           <AgentInterface.ThemeModeToggle mode={mode} onModeChange={setPreference} />
         </AgentInterface.SidebarFooter>
@@ -63,7 +60,7 @@ export default function CloudChat() {
             />
           }
         />
-        <AgentInterface.ChatHeader
+        <AgentInterface.ThreadHeader
           showChatTitle={false}
           start={
             <ModelSwitcher
@@ -74,7 +71,7 @@ export default function CloudChat() {
           }
         />
         <AgentInterface.Welcome
-          image={<WelcomeMascot className="brand-welcome-mark" />}
+          image={<WelcomeMascot />}
           title="What's on your mind today?"
           promptTemplates={PROMPT_TEMPLATES}
           starterVariant="card"

@@ -1,32 +1,22 @@
 import { createContext, useContext, useEffect, useMemo } from "react";
 import { create } from "zustand";
+import { createJSONStorage, persist } from "zustand/middleware";
 import { useShallow } from "zustand/react/shallow";
+import { SIDEBAR_OPEN_STORAGE_KEY } from "../storageKeys";
 
 interface AgentInterfaceState {
   isSidebarOpen: boolean;
+  /** The desktop open/closed choice; the only field saved to storage. */
+  desktopSidebarOpen: boolean;
   isWorkspaceOpen: boolean;
   agentName: string;
   logoUrl: string;
   setIsSidebarOpen: (isOpen: boolean) => void;
+  setDesktopSidebarOpen: (isOpen: boolean) => void;
   setIsWorkspaceOpen: (isOpen: boolean) => void;
   setAgentName: (name: string) => void;
   setLogoUrl: (url: string) => void;
 }
-
-// Whether the desktop sidebar was left open, written by SidebarContainer.
-// Collapsed unless the user left it open; also collapsed on the server, where
-// storage can't be read.
-export const SIDEBAR_OPEN_STORAGE_KEY = "openui-agent-sidebar-open";
-
-const readSidebarOpen = () => {
-  try {
-    return (
-      typeof window !== "undefined" && window.localStorage.getItem(SIDEBAR_OPEN_STORAGE_KEY) === "1"
-    );
-  } catch {
-    return false;
-  }
-};
 
 export const createAgentInterfaceStore = ({
   logoUrl,
@@ -35,16 +25,36 @@ export const createAgentInterfaceStore = ({
   logoUrl: string;
   agentName: string;
 }) =>
-  create<AgentInterfaceState>((set) => ({
-    isSidebarOpen: readSidebarOpen(),
-    isWorkspaceOpen: false,
-    agentName: agentName,
-    logoUrl: logoUrl,
-    setIsSidebarOpen: (isOpen: boolean) => set({ isSidebarOpen: isOpen }),
-    setIsWorkspaceOpen: (isOpen: boolean) => set({ isWorkspaceOpen: isOpen }),
-    setAgentName: (name: string) => set({ agentName: name }),
-    setLogoUrl: (url: string) => set({ logoUrl: url }),
-  }));
+  create<AgentInterfaceState>()(
+    persist(
+      (set) => ({
+        // Collapsed until storage hydrates (synchronously, on the client) and
+        // on the server, where storage can't be read.
+        isSidebarOpen: false,
+        desktopSidebarOpen: false,
+        isWorkspaceOpen: false,
+        agentName: agentName,
+        logoUrl: logoUrl,
+        setIsSidebarOpen: (isOpen: boolean) => set({ isSidebarOpen: isOpen }),
+        setDesktopSidebarOpen: (isOpen: boolean) => set({ desktopSidebarOpen: isOpen }),
+        setIsWorkspaceOpen: (isOpen: boolean) => set({ isWorkspaceOpen: isOpen }),
+        setAgentName: (name: string) => set({ agentName: name }),
+        setLogoUrl: (url: string) => set({ logoUrl: url }),
+      }),
+      {
+        name: SIDEBAR_OPEN_STORAGE_KEY,
+        storage: createJSONStorage(() => localStorage),
+        // PrePaintScript reads this shape.
+        partialize: (state) => ({ desktopSidebarOpen: state.desktopSidebarOpen }),
+        // Open the sidebar the way the user last left it on desktop.
+        merge: (persisted, current) => {
+          const open =
+            (persisted as Partial<AgentInterfaceState> | undefined)?.desktopSidebarOpen === true;
+          return { ...current, desktopSidebarOpen: open, isSidebarOpen: open };
+        },
+      },
+    ),
+  );
 
 export const AgentInterfaceStoreContext = createContext<ReturnType<
   typeof createAgentInterfaceStore

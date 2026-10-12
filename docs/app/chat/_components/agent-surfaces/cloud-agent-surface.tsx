@@ -168,9 +168,16 @@ export function CloudAgentSurface() {
             />
           }
         />
-        <AgentInterface.ThreadHeader className={styles.cloudThreadHeader}>
-          <DemoAwareModelSwitcher selectedModel={selectedModel} onModelChange={handleModelChange} />
-        </AgentInterface.ThreadHeader>
+        <AgentInterface.ThreadHeader
+          className={styles.cloudThreadHeader}
+          showChatTitle={false}
+          start={
+            <DemoAwareModelSwitcher
+              selectedModel={selectedModel}
+              onModelChange={handleModelChange}
+            />
+          }
+        />
         <AgentInterface.Welcome
           title="Good to see you"
           description="What's on your mind today?"

@@ -1,5 +1,5 @@
-import { requiredEnv } from "@/lib/env";
 import librarySpec from "@/generated/spec.json";
+import { requiredEnv } from "@/lib/env";
 import { resolveRequestedModel } from "@/lib/models";
 import { runFunctionToolLoop } from "@/lib/tool-loop";
 import { executeGetWeather, getWeatherTool } from "@/lib/tools/get-weather";
