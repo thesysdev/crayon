@@ -86,26 +86,6 @@
   color: var(--oui-muted);
 }
 
-/* ---------- shared illustration parts ---------- */
-.panel {
-  box-sizing: border-box;
-  border: 1px solid var(--oui-line);
-  border-radius: 12px;
-  background: var(--oui-panel);
-}
-.stack {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 16px;
-}
-.caption {
-  font-family: var(--home-font-mono);
-  font-size: 12px;
-  line-height: 1;
-  color: var(--oui-muted);
-}
-
 /* ---------- stream ---------- */
 /* Bezel and screen match the hero device (public/oui-1/hero.html). */
 .streamScene {
@@ -546,6 +526,41 @@
 }
 .chartHeroHalo {
   fill: color-mix(in srgb, var(--oui-ink) 10%, transparent);
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: ouiHalo 2.4s ease-in-out infinite;
+}
+/* One shared beat for the three single-figure cards. */
+@keyframes ouiHalo {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.6);
+    opacity: 0.4;
+  }
+}
+@keyframes ouiRing {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--oui-ink) 28%, transparent);
+  }
+  70%,
+  100% {
+    box-shadow: 0 0 0 10px transparent;
+  }
+}
+@keyframes ouiCore {
+  0%,
+  100% {
+    fill: var(--oui-fill);
+    transform: scale(1);
+  }
+  50% {
+    fill: color-mix(in srgb, var(--oui-ink) 14%, transparent);
+    transform: scale(1.04);
+  }
 }
 .chartHero {
   fill: var(--oui-ink);
@@ -582,6 +597,7 @@
   background: var(--oui-ink);
   color: var(--oui-panel);
   font-weight: 500;
+  animation: ouiRing 2.4s ease-out infinite;
 }
 
 /* ---------- hardware ---------- */
@@ -607,6 +623,9 @@
 .chipCore {
   fill: var(--oui-fill);
   stroke: var(--oui-line);
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: ouiCore 2.4s ease-in-out infinite;
 }
 .chipText {
   fill: var(--oui-ink);
@@ -616,6 +635,15 @@
 .chipSub {
   fill: var(--oui-muted);
   font-family: var(--home-font-mono);
+}
+
+/* after the rules that start the pulses, so it wins */
+@media (prefers-reduced-motion: reduce) {
+  .chartHeroHalo,
+  .paramsActive,
+  .chipCore {
+    animation: none;
+  }
 }
 
 @media (min-width: 768px) and (max-width: 899.98px) {

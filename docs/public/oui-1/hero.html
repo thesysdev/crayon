@@ -658,8 +658,11 @@
   .device { position: absolute; width: 784px; height: 1000px; margin-top: 0; transform: none; }
   .device.back  { top: 168px; left: 100px; z-index: 1; }
   .device.front { top: 56px; left: 660px; z-index: 2; }
-  .device.front::before {   /* the front device's shadow on the one behind */
-    content: ""; position: absolute; inset: 0 auto 0 -48px; width: 48px;
+  /* the front device's shadow, drawn inside the back device so it only falls
+     on that device: a 48px strip ending where the front device's edge crosses it
+     (front left 660 - back left 100 = 560) */
+  .device.back::after {
+    content: ""; position: absolute; top: 0; bottom: 0; left: 512px; width: 48px;
     background: linear-gradient(to left, rgb(0 0 0 / .16), transparent); pointer-events: none;
   }
   .notch { left: 50%; }

@@ -94,15 +94,10 @@ function ParamsIllustration() {
   const OUTER = 144;
   const inner = Math.round(OUTER * Math.sqrt(ACTIVE / TOTAL));
   return (
-    <div className={styles.stack} aria-hidden="true">
-      <div className={styles.params} style={{ width: OUTER, height: OUTER }}>
-        <span className={styles.paramsTotal}>{TOTAL}B</span>
-        <span className={styles.paramsActive} style={{ width: inner, height: inner }}>
-          {ACTIVE}B
-        </span>
-      </div>
-      <span className={styles.caption}>
-        {ACTIVE}B active · {TOTAL}B total
+    <div className={styles.params} style={{ width: OUTER, height: OUTER }} aria-hidden="true">
+      <span className={styles.paramsTotal}>{TOTAL}B</span>
+      <span className={styles.paramsActive} style={{ width: inner, height: inner }}>
+        {ACTIVE}B
       </span>
     </div>
   );
