@@ -17,4 +17,4 @@ OpenUI Lang 1.0.
 - browser-bundle 0.2 bundles react-lang 1.0 and react-ui 0.18.
 - server 0.3 uses lang-core 1.0 for autofix (parser and system prompt); stay on server 0.2 with a 0.x client.
 - A program whose `root` statement is written last shows nothing while it streams, until the `root` line arrives. Write `root` first, as the system prompt asks.
-- A cut-off output that never reached its `root` statement now renders blank instead of a partial tree.
+- A cut-off output that never reached its `root` statement, or any statement calling the root component, now renders blank instead of a partial tree.
