@@ -1,14 +1,25 @@
+import { parseMessage } from "@openuidev/lang-core";
+
 /** Metadata emitted by OpenUI Cloud. */
 export interface ResponseMetadata {
   name?: string;
 }
 
-const CONTENT = "]]>openui:content";
+// OpenUI Cloud writes its scripts after the program: `]]>openui:scripts {"count":1}`, then
+// `[{"name":"sales_total","code":"async ({ tools }) => …"}]`. This file cuts that section out;
+// parseMessage reads the rest (content, attributes, end).
 const SCRIPTS = "]]>openui:scripts";
-const END = "]]>openui:end";
+const CONTENT_LINE = /^\]\]>openui:content(?:\?.*)?\r?$(\n?)/m;
+// A scripts line without its JSON would read as a message marker; keep it in the content.
+const BARE_SCRIPTS = /^\]\]>openui:scripts(?=\?|\r?$)/gm;
+
+interface Scripts {
+  names: Set<string>;
+  revision: string;
+}
 
 // Markers inside DSL/JSON strings are ordinary content.
-function markerIndex(text: string, partial = false): number {
+function markerIndex(text: string): number {
   let quote = "";
   let escaped = false;
   for (let i = 0; i < text.length; i++) {
@@ -22,104 +33,95 @@ function markerIndex(text: string, partial = false): number {
       if (newline < 0) return -1;
       i = newline;
     } else if (c === '"' || c === "'") quote = c;
-    else if (text.startsWith("]]>", i) || (partial && "]]>".startsWith(text.slice(i)))) return i;
+    else if (text.startsWith("]]>", i)) return i;
   }
   return -1;
 }
 
-export function parseResponseBundle(response: string | null, streaming: boolean) {
-  let program = response ?? "";
-  const metadata: ResponseMetadata = {};
-  const scripts = new Set<string>();
-  let scriptRevision: string | undefined;
-  let error: string | undefined;
-  let complete = true;
-  let framed = false;
-  let body = program.trimStart();
-  if (body && (body.startsWith(CONTENT) || CONTENT.startsWith(body))) {
-    framed = true;
-    // A new content section replaces a progressive preview or failed retry.
-    const sections = [...body.matchAll(/^\]\]>openui:content(?:\?[^\r\n]*)?\r?$/gm)];
-    const last = sections[sections.length - 1];
-    if (last) body = body.slice(last.index);
-    const newline = body.indexOf("\n");
-    if (newline < 0)
-      return {
-        isBundle: true,
-        program: "",
-        metadata,
-        scripts,
-        complete: false,
-        error: streaming ? undefined : "Incomplete response header",
-      };
-    const header = body.slice(0, newline).trimEnd();
-    const name = new URLSearchParams(header.slice(CONTENT.length).replace(/^\?/, "")).get("name");
-    if (name !== null) metadata.name = name;
-    body = body.slice(newline + 1);
-  }
-  program = body;
-  const marker = markerIndex(body, framed && streaming);
-  const isBundle = framed || marker >= 0;
-  if (!isBundle) {
-    return { program: response ?? "", metadata, scripts, complete, isBundle, error };
-  }
-  if (marker >= 0) {
-    program = body.slice(0, marker);
-    let tail = body.slice(marker).trimEnd();
-    if (tail.startsWith(SCRIPTS)) {
-      complete = false;
-      const newline = tail.indexOf("\n");
-      if (newline >= 0) {
-        try {
-          const header = JSON.parse(tail.slice(SCRIPTS.length, newline));
-          let payload = tail.slice(newline + 1);
-          const end = markerIndex(payload);
-          if (end >= 0) {
-            tail = payload.slice(end).trim();
-            payload = payload.slice(0, end);
-          } else tail = "";
-          const values: unknown = JSON.parse(payload);
-          if (
-            !Array.isArray(values) ||
-            !Number.isSafeInteger(header.count) ||
-            header.count !== values.length
-          )
-            throw new Error("Invalid script count");
-          for (const script of values) {
-            if (
-              !script ||
-              typeof script.name !== "string" ||
-              !script.name ||
-              typeof script.code !== "string" ||
-              scripts.has(script.name)
-            )
-              throw new Error("Invalid or duplicate script definition");
-            scripts.add(script.name);
-          }
-          scriptRevision = JSON.stringify(
-            values
-              .map((script) => ({ name: script.name as string, code: script.code as string }))
-              .sort((a, b) => a.name.localeCompare(b.name)),
-          );
-          complete = framed ? tail === END : tail === "" || tail === END;
-          if (!complete) error = "Incomplete response bundle";
-        } catch {
-          error = "Invalid scripts bundle";
-        }
-      }
-    } else {
-      complete = tail === END;
-      if (!complete) error = "Incomplete response bundle";
+function readScripts(header: string, payload: string): Scripts | null {
+  try {
+    const { count } = JSON.parse(header);
+    const values: unknown = JSON.parse(payload);
+    if (!Array.isArray(values) || !Number.isSafeInteger(count) || count !== values.length)
+      return null;
+    const names = new Set<string>();
+    for (const script of values) {
+      if (
+        !script ||
+        typeof script.name !== "string" ||
+        !script.name ||
+        typeof script.code !== "string" ||
+        names.has(script.name)
+      )
+        return null;
+      names.add(script.name);
     }
-  } else if (framed) complete = false;
-  if (!complete && !streaming) error ??= "Incomplete response bundle";
+    const revision = JSON.stringify(
+      values
+        .map((script) => ({ name: script.name as string, code: script.code as string }))
+        .sort((a, b) => a.name.localeCompare(b.name)),
+    );
+    return { names, revision };
+  } catch {
+    return null;
+  }
+}
+
+/** Reads an OpenUI Cloud response: a stored message (see parseMessage) plus its scripts section. */
+export function parseResponseBundle(response: string | null, streaming: boolean) {
+  const text = response ?? "";
+  // Framed once a content line is in. A line still streaming does not count yet.
+  const line = CONTENT_LINE.exec(text);
+  const framed = !!line && (!streaming || line[1] === "\n");
+  const { content, attributes, end } = parseMessage(text.replace(BARE_SCRIPTS, "$& "), {
+    streaming,
+  });
+  let program = content;
+  // The scripts section is the first marker in the winning content, as Cloud writes it.
+  let section = false;
+  let scripts: Scripts | null = null;
+  const at = markerIndex(program);
+  if (at >= 0 && program.startsWith(SCRIPTS, at)) {
+    section = true;
+    const newline = program.indexOf("\n", at);
+    let to = program.length;
+    if (newline >= 0) {
+      const next = markerIndex(program.slice(newline + 1));
+      if (next >= 0) to = newline + 1 + next;
+      scripts = readScripts(
+        program.slice(at + SCRIPTS.length, newline),
+        program.slice(newline + 1, to),
+      );
+    }
+    // The newline before the section belongs to its marker (spec 7.2), unless the program is empty.
+    const before = at > 0 ? program.slice(0, at).replace(/\r?\n$/, "") : "";
+    const after = program.slice(to);
+    program = after ? `${before}\n${after}` : before;
+  }
+
+  const metadata: ResponseMetadata = {};
+  if (!framed && !section && !end) {
+    const error: string | undefined = undefined;
+    return {
+      program,
+      metadata,
+      scripts: new Set<string>(),
+      complete: true,
+      isBundle: false,
+      error,
+    };
+  }
+  if (framed && attributes.name !== undefined) metadata.name = attributes.name;
+  const error = section && !scripts ? "Invalid scripts bundle" : undefined;
   return {
     program,
     metadata,
-    scripts,
-    complete,
-    isBundle,
+    scripts: scripts?.names ?? new Set<string>(),
+    // The end line only says the response is finished, so a stored message renders without one.
+    // While streaming, a framed response is complete at its end line.
+    complete: !error && (end || !streaming || !framed),
+    isBundle: true,
     error: streaming ? undefined : error,
-    ...(scripts.size ? { scriptRevision } : {}),
+    ...(scripts?.names.size ? { scriptRevision: scripts.revision } : {}),
   };
 }
