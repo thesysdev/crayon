@@ -16,13 +16,15 @@ const response = await gateway.chat.completions.create({
 
 ## Availability and capabilities
 
-Input and output modalities, context length, tool support, and supported parameters vary by model. For models served via OpenRouter, please check the pricing and context windows [below](#other-models).
+Input and output modalities, context length, tool support, and supported parameters vary by model. For models served via OpenRouter, please check the pricing and context windows on the [models page](/cloud/gateway/models).
 
 For Generative UI, choose a model that produces text and follows structured output instructions reliably. Use the [OpenUI model benchmarks](/benchmarks/language) as a guide when comparing models, alongside the latency, cost, context length, and capabilities required by your application. Gateway can validate and correct eligible OpenUI Lang errors, but the selected model still determines the quality and latency of the generated interface. See [Reliability](/docs/gateway/reliability) for details.
 
 Add your own provider credentials with [BYOK](/docs/gateway/byok). For managed model usage and Gateway credits, see [Pricing](/docs/gateway/pricing-credits).
 
 ## Supported models
+
+See the [Gateway models page](/cloud/gateway/models) for every supported model, including free models, with context windows and pricing. OpenUI Gateway uses [OpenRouter](https://openrouter.ai/) to serve third-party models from providers other than OpenAI, Anthropic, and Google Gemini. To require [Zero Data Retention (ZDR)](https://openrouter.ai/docs/guides/features/zdr) endpoints, select or exclude providers, or set other routing preferences, use the [`provider` object](#provider-routing).
 
 Model IDs normally follow an `{author}/{model-slug}` format, such as `openai/gpt-5.6-sol`.
 
@@ -32,35 +34,6 @@ Use the complete ID. Do not pass only the model name:
 model: "openai/gpt-5.6-sol" // Correct
 model: "gpt-5.6-sol"        // Missing the author
 ```
-
-### OpenAI
-
-<ModelList group="openai" />
-
-### Anthropic
-
-<ModelList group="anthropic" />
-
-### Gemini
-
-<ModelList group="gemini" />
-
-### Free models
-
-These models are promotionally free. Gateway does not charge for their tokens, but each request still uses an API call from your plan. Free models are rate limited, and each organization has a limited usage quota for them. Request data for free models may be used for training.
-
-| Model ID                            | Base model                      |
-| ----------------------------------- | ------------------------------- |
-| `google/gemini-3.6-flash-free`      | `google/gemini-3.6-flash`       |
-| `google/gemini-3.5-flash-free`      | `google/gemini-3.5-flash`       |
-| `google/gemini-3.1-pro-free`        | `google/gemini-3.1-pro-preview` |
-| `google/gemini-3.1-flash-lite-free` | `google/gemini-3.1-flash-lite`  |
-
-### Other models
-
-OpenUI Gateway uses [OpenRouter](https://openrouter.ai/) to serve third-party models from providers other than OpenAI, Anthropic, and Google Gemini. To require [Zero Data Retention (ZDR)](https://openrouter.ai/docs/guides/features/zdr) endpoints, select or exclude providers, or set other routing preferences, use the [`provider` object](#provider-routing).
-
-<ModelList group="other" preview={10} pageSize={20} />
 
 ## Provider routing
 
