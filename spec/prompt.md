@@ -24,7 +24,7 @@ A LibrarySpec is one JSON document.
 | `id` | Optional. The library name, for example `support`. `toSpec()` emits it when the library has one. A library made with `extend` does not inherit it. |
 | `version` | Optional. The library version, for example `1.2.0`. `toSpec()` does not emit it. A host that versions its library adds it. |
 | `root` | Optional. The root component name, for example `Card`. |
-| `schema` | The validation schema (JSON Schema). Top-level `properties` names the components, `$defs` has one entry per component and per action shape, and `functions` and `actions` hold the params of the custom functions and actions (section 2.3). |
+| `schema` | The validation schema (JSON Schema). Top-level `properties` names the components, `$defs` has one entry per component and per action a prop refers to, and `functions` and `actions` hold the params of the custom functions and actions (section 2.3). |
 | `components` | Per component: `signature` and `description`, derived from `schema`. |
 | `componentGroups` | Optional. Named groups that split the component list into titled parts. |
 | `functions` | Custom functions: `signature` and `description`. |
@@ -349,7 +349,7 @@ The kind ends at the first `?` or line end. Example:
 
 The attributes are a query string in `application/x-www-form-urlencoded` form, as produced by `URLSearchParams`. Pairs are `key=value`, joined by `&`. `%40` is the encoded `@`, and a space is written `+`. Readers decode the string the same way and accept an unencoded `@`.
 
-A marker counts only at the very start of a line. `]]>openui:` in the middle of a line is ordinary text.
+A marker counts only at the very start of a line. `]]>openui:` in the middle of a line is ordinary text, with one exception: a `content` marker (`]]>openui:content` followed by `?`, a line end, or the end of the message) in the middle of a line starts a new line there. A regenerated response is written right after the cut-off text of the failed one, and this keeps the last content winning.
 
 Fixtures: none in `spec/fixtures/`.
 
@@ -383,14 +383,14 @@ Fixtures: none in `spec/fixtures/`.
 
 ### 7.3 Reading messages
 
-1. **Last `content` wins.** With more than one `content` section, the reader uses the last one. A `context` section that comes before it is dropped.
+1. **Last `content` wins.** With more than one `content` section, the reader uses the last one. A `context` section or `end` line that comes before it belongs to an earlier attempt and is ignored.
 2. **Text before the first marker.** It is the content when the message has no `content` marker. Otherwise the reader ignores it.
 3. **Unknown attributes** are ignored.
 4. **Unknown kinds.** The reader strips the marker line and its text up to the next marker line.
 5. **Text after `end`.** Hosts never write it. A reader keeps it with the section the `end` line interrupted.
 6. **Display.** The reader never shows marker lines, and never shows the `context` section as content.
 
-While a response streams, the last line may be incomplete. If that line starts with `]]>openui:`, or is a prefix of it, the reader holds it back until its newline arrives or the stream ends.
+While a response streams, the last line may be incomplete. If that line starts with `]]>openui:`, or is a prefix of it, the reader holds it back until its newline arrives or the stream ends. A partial `content` marker at the end of a line is held back the same way.
 
 Fixtures: none in `spec/fixtures/`.
 
