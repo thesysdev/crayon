@@ -193,8 +193,7 @@ export const PRIMARY_SITE_NAV_ITEMS: NavItem[] = [
           {
             title: "AppLess",
             description: "An open-source concept for an OS without any apps",
-            href: "https://github.com/thesysdev/appless",
-            newTab: true,
+            href: "/appless",
             icon: DeviceMobileCamera,
             tag: "New",
           },
