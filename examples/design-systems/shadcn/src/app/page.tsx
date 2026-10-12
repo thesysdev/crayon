@@ -1,6 +1,6 @@
 "use client";
 
-import { withLocalHistory } from "@/lib/local-history";
+import { useLocalHistory } from "@/lib/local-history";
 import { shadcnChatLibrary } from "@/lib/shadcn-genui";
 import {
   AgentInterface,
@@ -9,7 +9,7 @@ import {
   openAIMessageFormat,
   useSystemThemeMode,
 } from "@openuidev/react-ui";
-import { useEffect, useMemo } from "react";
+import { useEffect } from "react";
 
 export default function Page() {
   const mode = useSystemThemeMode();
@@ -17,17 +17,13 @@ export default function Page() {
     document.body.setAttribute("data-theme", mode);
   }, [mode]);
 
-  const { llm, storage } = useMemo(
-    () =>
-      withLocalHistory(
-        fetchLLM({
-          url: "/api/chat",
-          streamAdapter: openAIAdapter(),
-          messageFormat: openAIMessageFormat,
-        }),
-        "openui-shadcn",
-      ),
-    [],
+  const { llm, storage } = useLocalHistory(
+    fetchLLM({
+      url: "/api/chat",
+      streamAdapter: openAIAdapter(),
+      messageFormat: openAIMessageFormat,
+    }),
+    "openui-shadcn",
   );
 
   return (

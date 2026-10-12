@@ -6,11 +6,9 @@ import {
   type Thread,
   type UserMessage,
 } from "@openuidev/react-headless";
+import { useState } from "react";
 
-export function withLocalHistory(
-  llm: ChatLLM,
-  key: string,
-): { llm: ChatLLM; storage: ChatStorage } {
+function withLocalHistory(llm: ChatLLM, key: string): { llm: ChatLLM; storage: ChatStorage } {
   const threadsKey = `${key}:threads`;
   const messagesKey = (threadId: string) => `${key}:messages:${threadId}`;
 
@@ -88,4 +86,9 @@ export function withLocalHistory(
       },
     },
   };
+}
+
+export function useLocalHistory(llm: ChatLLM, key: string) {
+  const [chat] = useState(() => withLocalHistory(llm, key));
+  return chat;
 }

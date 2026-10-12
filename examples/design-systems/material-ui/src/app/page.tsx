@@ -6,26 +6,21 @@ import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
 import { AgentInterface, fetchLLM, openAIAdapter, openAIMessageFormat } from "@openuidev/react-ui";
-import { useMemo } from "react";
 
 import { useColorMode } from "@/hooks/use-system-theme";
-import { withLocalHistory } from "@/lib/local-history";
+import { useLocalHistory } from "@/lib/local-history";
 import { muiChatLibrary } from "@/lib/mui-genui";
 
 export default function Page() {
   const { mode, toggle } = useColorMode();
 
-  const { llm, storage } = useMemo(
-    () =>
-      withLocalHistory(
-        fetchLLM({
-          url: "/api/chat",
-          streamAdapter: openAIAdapter(),
-          messageFormat: openAIMessageFormat,
-        }),
-        "openui-material-ui",
-      ),
-    [],
+  const { llm, storage } = useLocalHistory(
+    fetchLLM({
+      url: "/api/chat",
+      streamAdapter: openAIAdapter(),
+      messageFormat: openAIMessageFormat,
+    }),
+    "openui-material-ui",
   );
 
   return (

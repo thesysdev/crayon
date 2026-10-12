@@ -1,9 +1,8 @@
 "use client";
 
-import { withLocalHistory } from "@/lib/local-history";
+import { useLocalHistory } from "@/lib/local-history";
 import { AgentInterface, agUIAdapter, fetchLLM, useSystemThemeMode } from "@openuidev/react-ui";
 import { openuiLibrary } from "@openuidev/react-ui/genui-lib";
-import { useMemo } from "react";
 
 export default function Page() {
   const mode = useSystemThemeMode();
@@ -11,16 +10,12 @@ export default function Page() {
   // fetchLLM's default message format POSTs { messages, threadId, ... } —
   // exactly what the Mastra route expects. Storage is omitted, so
   // AgentInterface uses its built-in in-memory default (wiped on reload).
-  const { llm, storage } = useMemo(
-    () =>
-      withLocalHistory(
-        fetchLLM({
-          url: "/api/chat",
-          streamAdapter: agUIAdapter(),
-        }),
-        "openui-mastra",
-      ),
-    [],
+  const { llm, storage } = useLocalHistory(
+    fetchLLM({
+      url: "/api/chat",
+      streamAdapter: agUIAdapter(),
+    }),
+    "openui-mastra",
   );
 
   return (

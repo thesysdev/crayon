@@ -7,22 +7,17 @@ import {
   openAIReadableStreamAdapter,
 } from "@openuidev/react-ui";
 import { openuiLibrary } from "@openuidev/react-ui/genui-lib";
-import { useMemo } from "react";
-import { withLocalHistory } from "./lib/local-history";
+import { useLocalHistory } from "./lib/local-history";
 
 export default function App() {
   // The Cloud system prompt is attached on the FastAPI side as a system message.
-  const { llm, storage } = useMemo(
-    () =>
-      withLocalHistory(
-        fetchLLM({
-          url: "/api/chat",
-          streamAdapter: openAIReadableStreamAdapter(),
-          messageFormat: openAIMessageFormat,
-        }),
-        "openui-fastapi",
-      ),
-    [],
+  const { llm, storage } = useLocalHistory(
+    fetchLLM({
+      url: "/api/chat",
+      streamAdapter: openAIReadableStreamAdapter(),
+      messageFormat: openAIMessageFormat,
+    }),
+    "openui-fastapi",
   );
 
   return (

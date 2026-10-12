@@ -1,6 +1,6 @@
 "use client";
 
-import { withLocalHistory } from "@/lib/local-history";
+import { useLocalHistory } from "@/lib/local-history";
 import { starters } from "@/lib/starters";
 import { library } from "@/library";
 import {
@@ -10,21 +10,16 @@ import {
   openAIMessageFormat,
   useSystemThemeMode,
 } from "@openuidev/react-ui";
-import { useMemo } from "react";
 
 export default function Page() {
   const mode = useSystemThemeMode();
-  const { llm, storage } = useMemo(
-    () =>
-      withLocalHistory(
-        fetchLLM({
-          url: "/api/chat",
-          streamAdapter: openAIAdapter(),
-          messageFormat: openAIMessageFormat,
-        }),
-        "openui-autofix",
-      ),
-    [],
+  const { llm, storage } = useLocalHistory(
+    fetchLLM({
+      url: "/api/chat",
+      streamAdapter: openAIAdapter(),
+      messageFormat: openAIMessageFormat,
+    }),
+    "openui-autofix",
   );
 
   return (
