@@ -34,7 +34,7 @@ export const GATEWAY_PLANS = [
       "Email support",
     ],
     cta: "Start building",
-    href: "https://console.thesys.dev/keys",
+    href: "https://console.thesys.dev/pricing",
   },
   {
     name: "Grow",
@@ -53,7 +53,7 @@ export const GATEWAY_PLANS = [
       "SSO/SAML",
     ],
     cta: "Start scaling",
-    href: "https://console.thesys.dev/keys",
+    href: "https://console.thesys.dev/pricing",
   },
   {
     name: "Scale",
