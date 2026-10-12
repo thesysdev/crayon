@@ -7,14 +7,14 @@ import { useIsomorphicLayoutEffect } from "../../../Charts/hooks/core/useIsomorp
 interface AgentInterfaceState {
   isSidebarOpen: boolean;
   /** The desktop open/closed choice; the only field saved to storage. */
-  desktopSidebarOpen: boolean;
+  savedDesktopSidebarOpen: boolean;
   /** True once the saved desktop choice has been read from storage. */
   hasRestoredSidebar: boolean;
   isWorkspaceOpen: boolean;
   agentName: string;
   logoUrl: string;
   setIsSidebarOpen: (isOpen: boolean) => void;
-  setDesktopSidebarOpen: (isOpen: boolean) => void;
+  setSavedDesktopSidebarOpen: (isOpen: boolean) => void;
   setIsWorkspaceOpen: (isOpen: boolean) => void;
   setAgentName: (name: string) => void;
   setLogoUrl: (url: string) => void;
@@ -24,7 +24,7 @@ interface AgentInterfaceState {
  * Storage key for the persisted desktop sidebar choice. Kept separate from
  * `isSidebarOpen` so opening the drawer on mobile isn't remembered on desktop.
  */
-export const SIDEBAR_OPEN_STORAGE_KEY = "openui-agent-sidebar-open";
+const SIDEBAR_OPEN_STORAGE_KEY = "openui-agent-sidebar-open";
 
 export const createAgentInterfaceStore = ({
   logoUrl,
@@ -39,13 +39,13 @@ export const createAgentInterfaceStore = ({
         // Collapsed until the saved choice is restored after mount, so the
         // server and the client's first render produce the same markup.
         isSidebarOpen: false,
-        desktopSidebarOpen: false,
+        savedDesktopSidebarOpen: false,
         hasRestoredSidebar: false,
         isWorkspaceOpen: false,
         agentName: agentName,
         logoUrl: logoUrl,
         setIsSidebarOpen: (isOpen: boolean) => set({ isSidebarOpen: isOpen }),
-        setDesktopSidebarOpen: (isOpen: boolean) => set({ desktopSidebarOpen: isOpen }),
+        setSavedDesktopSidebarOpen: (isOpen: boolean) => set({ savedDesktopSidebarOpen: isOpen }),
         setIsWorkspaceOpen: (isOpen: boolean) => set({ isWorkspaceOpen: isOpen }),
         setAgentName: (name: string) => set({ agentName: name }),
         setLogoUrl: (url: string) => set({ logoUrl: url }),
@@ -57,11 +57,12 @@ export const createAgentInterfaceStore = ({
         // paint; SidebarContainer applies it (desktop only, without animating)
         // and Container stays hidden until then.
         skipHydration: true,
-        partialize: (state) => ({ desktopSidebarOpen: state.desktopSidebarOpen }),
+        partialize: (state) => ({ savedDesktopSidebarOpen: state.savedDesktopSidebarOpen }),
         merge: (persisted, current) => ({
           ...current,
-          desktopSidebarOpen:
-            (persisted as Partial<AgentInterfaceState> | undefined)?.desktopSidebarOpen === true,
+          savedDesktopSidebarOpen:
+            (persisted as Partial<AgentInterfaceState> | undefined)?.savedDesktopSidebarOpen ===
+            true,
           hasRestoredSidebar: true,
         }),
       },

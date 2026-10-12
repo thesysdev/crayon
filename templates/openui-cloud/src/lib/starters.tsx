@@ -13,10 +13,8 @@ import {
   Zap,
 } from "lucide-react";
 
-export const OPENUI_LOGOS = {
-  LIGHT: "/brand-logo.svg",
-  DARK: "/brand-logo.svg",
-};
+// One mark for both themes: the mascot reads on light and dark surfaces.
+export const OPENUI_LOGO = "/brand-logo.svg";
 
 export const PROMPT_TEMPLATES: PromptTemplate[] = [
   {

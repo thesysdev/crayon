@@ -31,14 +31,14 @@ export const SidebarContainer = ({
   const {
     isSidebarOpen,
     setIsSidebarOpen,
-    desktopSidebarOpen,
-    setDesktopSidebarOpen,
+    savedDesktopSidebarOpen,
+    setSavedDesktopSidebarOpen,
     hasRestoredSidebar,
   } = useAgentInterfaceStore((state) => ({
     isSidebarOpen: state.isSidebarOpen,
     setIsSidebarOpen: state.setIsSidebarOpen,
-    desktopSidebarOpen: state.desktopSidebarOpen,
-    setDesktopSidebarOpen: state.setDesktopSidebarOpen,
+    savedDesktopSidebarOpen: state.savedDesktopSidebarOpen,
+    setSavedDesktopSidebarOpen: state.setSavedDesktopSidebarOpen,
     hasRestoredSidebar: state.hasRestoredSidebar,
   }));
   const { isDetailedViewActive } = useActiveDetailedView();
@@ -69,10 +69,10 @@ export const SidebarContainer = ({
   useIsomorphicLayoutEffect(() => {
     if (!hasRestoredSidebar || appliedRestoreRef.current) return;
     appliedRestoreRef.current = true;
-    if (isMobile || isSidebarOpen === desktopSidebarOpen) return;
-    setIsSidebarOpen(desktopSidebarOpen);
-    setIsCollapsedLayout(!desktopSidebarOpen);
-    setVisualState(desktopSidebarOpen ? "expanded" : "collapsed");
+    if (isMobile || isSidebarOpen === savedDesktopSidebarOpen) return;
+    setIsSidebarOpen(savedDesktopSidebarOpen);
+    setIsCollapsedLayout(!savedDesktopSidebarOpen);
+    setVisualState(savedDesktopSidebarOpen ? "expanded" : "collapsed");
   }, [hasRestoredSidebar, isMobile]);
 
   useEffect(() => {
@@ -85,7 +85,7 @@ export const SidebarContainer = ({
     // Mobile always starts closed; coming back from mobile restores the
     // desktop choice.
     if (justSwitchedLayout) {
-      const targetOpen = isMobile ? false : isFirstRun ? isSidebarOpen : desktopSidebarOpen;
+      const targetOpen = isMobile ? false : isFirstRun ? isSidebarOpen : savedDesktopSidebarOpen;
       if (isSidebarOpen !== targetOpen) {
         setIsSidebarOpen(targetOpen);
         return;
@@ -94,7 +94,7 @@ export const SidebarContainer = ({
 
     // Only after the restore (as rendered), so the collapsed default never
     // overwrites the saved choice.
-    if (!isMobile && hasRestoredSidebar) setDesktopSidebarOpen(isSidebarOpen);
+    if (!isMobile && hasRestoredSidebar) setSavedDesktopSidebarOpen(isSidebarOpen);
 
     if (isMobile) {
       setIsCollapsedLayout(!isSidebarOpen);

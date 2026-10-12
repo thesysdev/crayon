@@ -2,7 +2,7 @@
 
 import { usePersistedModel } from "@/hooks/use-persisted-model";
 import { MODEL_OPTIONS } from "@/lib/models";
-import { OPENUI_LOGOS, PROMPT_TEMPLATES, STARTERS } from "@/lib/starters";
+import { OPENUI_LOGO, PROMPT_TEMPLATES, STARTERS } from "@/lib/starters";
 import {
   AgentInterface,
   ModelSwitcher,
@@ -33,14 +33,12 @@ export default function CloudChat() {
     features: { artifact: false },
   });
 
-  const logoPath = mode === "dark" ? OPENUI_LOGOS.DARK : OPENUI_LOGOS.LIGHT;
-
   return (
     <AgentInterface
       storage={storage}
       llm={llm}
       componentLibrary={openuiLibrary}
-      logoUrl={logoPath}
+      logoUrl={OPENUI_LOGO}
       theme={{ mode }}
       starters={STARTERS}
     >
