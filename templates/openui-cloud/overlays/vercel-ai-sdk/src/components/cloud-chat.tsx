@@ -35,41 +35,39 @@ export default function CloudChat() {
   const logoPath = mode === "dark" ? OPENUI_LOGOS.DARK : OPENUI_LOGOS.LIGHT;
 
   return (
-    <div className="openui-cloud-page">
-      <AgentInterface
-        storage={storage}
-        llm={llm}
-        componentLibrary={openuiLibrary}
-        logoUrl={logoPath}
-        theme={{ mode }}
-        starters={STARTERS}
-      >
-        <AgentInterface.MobileHeader
-          agentName=""
-          actions={
-            <ModelSwitcher
-              models={MODEL_OPTIONS}
-              value={selectedModel}
-              onValueChange={setSelectedModel}
-            />
-          }
-        />
-        <AgentInterface.ThreadHeader
-          showChatTitle={false}
-          start={
-            <ModelSwitcher
-              models={MODEL_OPTIONS}
-              value={selectedModel}
-              onValueChange={setSelectedModel}
-            />
-          }
-        />
-        <AgentInterface.Welcome
-          title="Good to see you"
-          description="What's on your mind today?"
-          glowAnimation
-        />
-      </AgentInterface>
-    </div>
+    <AgentInterface
+      storage={storage}
+      llm={llm}
+      componentLibrary={openuiLibrary}
+      logoUrl={logoPath}
+      theme={{ mode }}
+      starters={STARTERS}
+    >
+      <AgentInterface.MobileHeader
+        agentName=""
+        actions={
+          <ModelSwitcher
+            models={MODEL_OPTIONS}
+            value={selectedModel}
+            onValueChange={setSelectedModel}
+          />
+        }
+      />
+      <AgentInterface.ThreadHeader
+        showChatTitle={false}
+        start={
+          <ModelSwitcher
+            models={MODEL_OPTIONS}
+            value={selectedModel}
+            onValueChange={setSelectedModel}
+          />
+        }
+      />
+      <AgentInterface.Welcome
+        title="Good to see you"
+        description="What's on your mind today?"
+        glowAnimation
+      />
+    </AgentInterface>
   );
 }

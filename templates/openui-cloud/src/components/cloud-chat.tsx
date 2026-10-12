@@ -37,47 +37,45 @@ export default function CloudChat() {
   const logoPath = mode === "dark" ? OPENUI_LOGOS.DARK : OPENUI_LOGOS.LIGHT;
 
   return (
-    <div className="openui-cloud-page">
-      <AgentInterface
-        storage={storage}
-        llm={llm}
-        componentLibrary={openuiLibrary}
-        logoUrl={logoPath}
-        theme={{ mode }}
-        starters={STARTERS}
-      >
-        <AgentInterface.SidebarHeader agentName={<BrandWordmark mode={mode} />} />
-        <AgentInterface.SidebarFooter>
-          <AgentInterface.ThemeModeToggle mode={mode} onModeChange={setPreference} />
-        </AgentInterface.SidebarFooter>
-        <AgentInterface.MobileHeader
-          agentName=""
-          logo={
-            <ModelSwitcher
-              models={MODEL_OPTIONS}
-              value={selectedModel}
-              onValueChange={setSelectedModel}
-            />
-          }
-        />
-        <AgentInterface.ThreadHeader
-          showChatTitle={false}
-          start={
-            <ModelSwitcher
-              models={MODEL_OPTIONS}
-              value={selectedModel}
-              onValueChange={setSelectedModel}
-            />
-          }
-        />
-        <AgentInterface.Welcome
-          image={<WelcomeMascot />}
-          title="What's on your mind today?"
-          promptTemplates={PROMPT_TEMPLATES}
-          starterVariant="card"
-          glowAnimation
-        />
-      </AgentInterface>
-    </div>
+    <AgentInterface
+      storage={storage}
+      llm={llm}
+      componentLibrary={openuiLibrary}
+      logoUrl={logoPath}
+      theme={{ mode }}
+      starters={STARTERS}
+    >
+      <AgentInterface.SidebarHeader agentName={<BrandWordmark mode={mode} />} />
+      <AgentInterface.SidebarFooter>
+        <AgentInterface.ThemeModeToggle mode={mode} onModeChange={setPreference} />
+      </AgentInterface.SidebarFooter>
+      <AgentInterface.MobileHeader
+        agentName=""
+        logo={
+          <ModelSwitcher
+            models={MODEL_OPTIONS}
+            value={selectedModel}
+            onValueChange={setSelectedModel}
+          />
+        }
+      />
+      <AgentInterface.ThreadHeader
+        showChatTitle={false}
+        start={
+          <ModelSwitcher
+            models={MODEL_OPTIONS}
+            value={selectedModel}
+            onValueChange={setSelectedModel}
+          />
+        }
+      />
+      <AgentInterface.Welcome
+        image={<WelcomeMascot />}
+        title="What's on your mind today?"
+        promptTemplates={PROMPT_TEMPLATES}
+        starterVariant="card"
+        glowAnimation
+      />
+    </AgentInterface>
   );
 }
