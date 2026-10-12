@@ -22,8 +22,9 @@ export interface ThreadHeaderProps {
    */
   showChatTitle?: boolean;
   /**
-   * Show a trailing "…" menu with chat actions (Rename, Delete) for the
-   * selected chat.
+   * Show a trailing "…" menu with chat actions for the selected chat: Delete,
+   * plus Rename while the chat title is shown (`showChatTitle` and no
+   * `center`).
    * @default true
    */
   showChatActions?: boolean;
@@ -43,7 +44,7 @@ const ChatTitle = ({ title }: { title: string }) => (
   </div>
 );
 
-const ChatActions = ({ threadId }: { threadId: string }) => {
+const ChatActions = ({ threadId, canRename }: { threadId: string; canRename: boolean }) => {
   const deleteThread = useThreadList((s) => s.deleteThread);
   const [isRenameOpen, setIsRenameOpen] = useState(false);
 
@@ -70,13 +71,15 @@ const ChatActions = ({ threadId }: { threadId: string }) => {
               if (isRenameOpen) e.preventDefault();
             }}
           >
-            <DropdownMenu.Item
-              className="openui-agent-thread-header__actions-item"
-              onSelect={() => setIsRenameOpen(true)}
-            >
-              <PencilIcon size={14} aria-hidden />
-              Rename
-            </DropdownMenu.Item>
+            {canRename && (
+              <DropdownMenu.Item
+                className="openui-agent-thread-header__actions-item"
+                onSelect={() => setIsRenameOpen(true)}
+              >
+                <PencilIcon size={14} aria-hidden />
+                Rename
+              </DropdownMenu.Item>
+            )}
             <DropdownMenu.Item
               className="openui-agent-thread-header__actions-item openui-agent-thread-header__actions-item--destructive"
               onSelect={() => deleteThread(threadId)}
@@ -87,7 +90,9 @@ const ChatActions = ({ threadId }: { threadId: string }) => {
           </DropdownMenu.Content>
         </DropdownMenu.Portal>
       </DropdownMenu.Root>
-      <RenameChatDialog threadId={threadId} open={isRenameOpen} onOpenChange={setIsRenameOpen} />
+      {canRename && (
+        <RenameChatDialog threadId={threadId} open={isRenameOpen} onOpenChange={setIsRenameOpen} />
+      )}
     </>
   );
 };
@@ -110,17 +115,19 @@ export const ThreadHeader = ({
   className,
 }: ThreadHeaderProps) => {
   const thread = useSelectedThread();
+  // Rename only edits what the header shows, so it goes when the title does.
+  const isTitleShown = center === undefined && showChatTitle;
 
   return (
     <header className={clsx("openui-agent-thread-header", className)}>
       <div className="openui-agent-thread-header__start">{start}</div>
       <div className="openui-agent-thread-header__center">
-        {center ?? (showChatTitle && thread?.title && <ChatTitle title={thread.title} />)}
+        {center ?? (isTitleShown && thread?.title && <ChatTitle title={thread.title} />)}
       </div>
       <div className="openui-agent-thread-header__end">
         {end ?? children}
         <WorkspaceToggleButton />
-        {showChatActions && thread && <ChatActions threadId={thread.id} />}
+        {showChatActions && thread && <ChatActions threadId={thread.id} canRename={isTitleShown} />}
       </div>
     </header>
   );
