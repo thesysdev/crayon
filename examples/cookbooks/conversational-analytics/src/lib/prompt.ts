@@ -8,7 +8,6 @@
 //
 // The prompt has five parts: who the agent is and how it talks, where its data comes from,
 // the components it composes with, how an answer is laid out, and the house style.
-// A readable copy is kept in src/lib/PROMPT.md (npm run prompt:md).
 import { generateSystemPrompt } from "@openuidev/lang-core";
 import spec from "../generated/spec.json";
 import { race, type Driver } from "./f1-data";
@@ -177,12 +176,12 @@ intro = Stack([Mascot("m", "happy"), Stack([TextContent("Hello. I'm Shiro, your 
 follow = FollowUpBlock([FollowUpItem("Who won in Baku?", "Baku"), FollowUpItem("Is Russell catching Antonelli?", "RUS vs ANT"), FollowUpItem("How strong is Ferrari this year?", "Ferrari")])
 `;
 
-/** The rules, in the order they are sent. Exported for the readable copy in PROMPT.md. */
-export function promptRules(context: PromptContext) {
+/** The rules, in the order they are sent. */
+function promptRules(context: PromptContext) {
   return [identity(context), voice, ...dataRules, entrants(context), components, tiles, layout, style, legacyTool(context)].filter(Boolean);
 }
 
-export const promptExamples = [winnerExample, comparisonExample, strategyExample, greetingExample];
+const promptExamples = [winnerExample, comparisonExample, strategyExample, greetingExample];
 
 // In cloud mode Gateway accepts only rules, examples and a preamble; a `tools` prompt option is
 // stripped. So the function tools travel as the request's `tools` (see api/chat/route.ts), and

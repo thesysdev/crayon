@@ -1,4 +1,4 @@
-// Reference values taken from formula1.com's live CSS. See f1-reference.md at the app root.
+// Reference values taken from formula1.com's live CSS.
 // These are plain values to look at and pick from, not tokens.
 
 type Swatch = { name: string; hex: string; note?: string };
