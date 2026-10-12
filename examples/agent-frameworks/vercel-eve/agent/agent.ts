@@ -9,7 +9,9 @@ const openai = createOpenAI({
   baseURL: "https://api.thesys.dev/v1/embed",
 });
 
-const model = openai.chat("google/gemini-3.6-flash-free");
+const model = openai.chat(
+  process.env.OPENUI_MODEL ?? "google/gemini-3.6-flash-free",
+);
 
 export default defineAgent({
   model,

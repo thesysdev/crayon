@@ -23,6 +23,7 @@ export const MODEL_OPTIONS: readonly ModelOption[] = [
 const MODEL_IDS = new Set(MODEL_OPTIONS.map((model) => model.id));
 
 export function resolveRequestedModel(requestedModel: unknown): string | null {
-  const model = requestedModel === undefined ? DEFAULT_MODEL : requestedModel;
+  const fallback = process.env.OPENUI_MODEL?.trim() || DEFAULT_MODEL;
+  const model = requestedModel === undefined ? fallback : requestedModel;
   return typeof model === "string" && MODEL_IDS.has(model) ? model : null;
 }

@@ -16,7 +16,7 @@ client = AsyncOpenAI(
     api_key=os.environ.get("THESYS_API_KEY"),
     base_url="https://api.thesys.dev/v1/embed",
 )
-MODEL = "google/gemini-3.6-flash-free"
+MODEL = os.environ.get("OPENUI_MODEL", "google/gemini-3.6-flash-free")
 
 SPEC_PATH = Path(__file__).resolve().parents[2] / "frontend" / "src" / "generated" / "spec.json"
 

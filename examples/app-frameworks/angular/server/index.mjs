@@ -125,6 +125,7 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
     createHandler({
       apiKey: process.env["THESYS_API_KEY"],
       frontendPort: Number(process.env["PORT"] || 4200),
+      model: process.env["OPENUI_MODEL"] || undefined,
     }),
   );
   const port = Number(process.env["API_PORT"] || 4300);
