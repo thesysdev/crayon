@@ -43,7 +43,7 @@ export const GenUIAssistantMessage = ({
     return undefined;
   }, [context]);
 
-  // Persist form state, keeping the content attributes, e.g. ?libraryVersion=0.5&thesys=true
+  // Persist form state, keeping the content attributes, e.g. ?libraryVersion=0.5&v=2
   const handleStateUpdate = useCallback(
     (state: Record<string, any>) => {
       const hasState = Object.keys(state).length > 0;

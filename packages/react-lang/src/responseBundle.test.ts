@@ -31,7 +31,7 @@ describe("parseResponseBundle", () => {
 
   describe("content and metadata", () => {
     it("decodes the optional name and separates the program from its envelope", () => {
-      const response = ` \n]]>openui:content?thesys=true&name=Sales+%26+Growth+%E2%82%AC\n${program}]]>openui:end\n`;
+      const response = ` \n]]>openui:content?v=2&name=Sales+%26+Growth+%E2%82%AC\n${program}]]>openui:end\n`;
 
       expect(parseResponseBundle(response, false)).toEqual({
         program: body,
@@ -261,8 +261,8 @@ describe("parseResponseBundle", () => {
     });
   });
 
-  it("reads the sanitizer retry when its content line follows the failed attempt mid-line", () => {
-    const header = "]]>openui:content?thesys=true";
+  it("reads a content line that starts mid-line after a cut-off attempt", () => {
+    const header = "]]>openui:content?v=2";
     const response = `${header}\nroot = Text("Broken${header}\n${program}${scriptsSection([script])}]]>openui:end`;
     expect(parseResponseBundle(response, false)).toMatchObject({
       program: body,
