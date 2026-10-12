@@ -2,14 +2,12 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 
-// Variable Inter (no fixed weights), so the theme's in-between Medium (560)
-// renders as set.
 const inter = Inter({
-  subsets: ["latin"],
+  weight: ["400", "500", "600"],
 });
 
 export const metadata: Metadata = {
-  title: "OpenUI",
+  title: "OpenUI Cloud",
   description: "Managed OpenUI Cloud Chat with web and image search tools",
 };
 

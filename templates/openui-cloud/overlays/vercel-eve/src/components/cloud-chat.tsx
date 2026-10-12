@@ -17,25 +17,27 @@ export default function CloudChat() {
   const storage = useOpenuiCloudStorage({
     token: "/api/frontend-token",
     apiBaseUrl: "https://api.thesys.dev",
-    features: { artifact: false },
+    features: { artifact: false }
   });
 
   const logoPath = mode === "dark" ? OPENUI_LOGOS.DARK : OPENUI_LOGOS.LIGHT;
 
   return (
-    <AgentInterface
-      storage={storage}
-      llm={llm}
-      componentLibrary={openuiLibrary}
-      logoUrl={logoPath}
-      theme={{ mode }}
-      starters={STARTERS}
-    >
-      <AgentInterface.Welcome
-        title="Good to see you"
-        description="What's on your mind today?"
-        glowAnimation
-      />
-    </AgentInterface>
+    <div className="openui-cloud-page">
+      <AgentInterface
+        storage={storage}
+        llm={llm}
+        componentLibrary={openuiLibrary}
+        logoUrl={logoPath}
+        theme={{ mode }}
+        starters={STARTERS}
+      >
+        <AgentInterface.Welcome
+          title="Good to see you"
+          description="What's on your mind today?"
+          glowAnimation
+        />
+      </AgentInterface>
+    </div>
   );
 }

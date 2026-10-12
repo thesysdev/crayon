@@ -1,63 +1,53 @@
 import { PromptTemplate } from "@openuidev/react-ui";
-import {
-  Car,
-  Code,
-  Coffee,
-  Flag,
-  Plane,
-  Rocket,
-  Scale,
-  Search,
-  TreePalm,
-  Trophy,
-  Zap,
-} from "lucide-react";
+import { GitCompareArrows, Search } from "lucide-react";
 
-// One mark for both themes: the mascot reads on light and dark surfaces.
-export const OPENUI_LOGO = "/brand-logo.svg";
+export const OPENUI_LOGOS = {
+  LIGHT: "/openui-cloud-logo-light.svg",
+  DARK: "/openui-cloud-logo-dark.svg",
+};
 
 export const PROMPT_TEMPLATES: PromptTemplate[] = [
   {
-    displayText: "Research",
+    displayText: "Research a topic",
     prompt: "Research ",
     icon: <Search size={16} />,
     completions: [
       {
         displayText: "The rise of reusable rockets and commercial spaceflight",
         prompt: "the rise of reusable rockets and commercial spaceflight",
-        icon: <Rocket size={16} />,
+        icon: <></>,
       },
       {
         displayText: "How Formula 1 became a global business",
         prompt: "how Formula 1 became a global business",
-        icon: <Flag size={16} />,
+        icon: <></>,
       },
       {
         displayText: "Why electric vehicles are changing transportation",
         prompt: "why electric vehicles are changing transportation",
-        icon: <Zap size={16} />,
+        icon: <></>,
       },
     ],
   },
   {
-    displayText: "Compare",
+    displayText: "Compare options",
     prompt: "Compare ",
-    icon: <Scale size={16} />,
+    icon: <GitCompareArrows size={16} />,
     completions: [
       {
         displayText: "Leading electric vehicles for long road trips",
         prompt: "leading electric vehicles for long road trips",
-        icon: <Car size={16} />,
+        icon: <></>,
       },
       {
         displayText: "Popular frontend frameworks for a new web app",
         prompt: "popular frontend frameworks for a new web app",
-        icon: <Code size={16} />,
+        icon: <></>,
       },
       {
         displayText: "Top destinations for a summer vacation",
         prompt: "top destinations for a summer vacation",
-        icon: <TreePalm size={16} />,
+        icon: <></>,
       },
     ],
   },
@@ -67,16 +57,16 @@ export const STARTERS = [
   {
     displayText: "Relive the FIFA World Cup 2026",
     prompt: "Relive the FIFA World Cup 2026.",
-    icon: <Trophy size={16} />,
+    icon: <></>,
   },
   {
     displayText: "Explore global coffee trends",
     prompt: "Explore global coffee trends.",
-    icon: <Coffee size={16} />,
+    icon: <></>,
   },
   {
     displayText: "Help me plan my next vacation",
     prompt: "Help me plan my next vacation.",
-    icon: <Plane size={16} />,
+    icon: <></>,
   },
 ];
