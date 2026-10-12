@@ -22,8 +22,6 @@ import { iconFor } from "./model-icons";
 import styles from "./page.module.css";
 
 const MODELS_URL = "https://openrouter.ai/api/v1/models";
-// Lists every OpenRouter endpoint with a Zero Data Retention policy.
-const ZDR_URL = "https://openrouter.ai/api/v1/endpoints/zdr";
 
 // Must match the free-model allowlist in the Billing promotion config.
 const FREE_MODELS = [
@@ -59,6 +57,9 @@ const groupOf = (m: Model): ModelGroup =>
 // Drops batch variants, OpenAI/Anthropic/Gemini "-latest" aliases, OpenAI pro/chat/codex/oss variants,
 // and models that can output images or audio.
 // OpenRouter has no field that marks these variants, so the ID is the only signal.
+// OpenAI, Anthropic, and Gemini models use Zero Data Retention, except Claude Fable.
+const isZdr = (m: Model) => !m.id.includes("claude-fable");
+
 const isListed = (m: Model) =>
   !m.id.endsWith(":batch") &&
   !/^~?(openai\/|anthropic\/|google\/gemini).*-latest$/.test(m.id) &&
@@ -83,12 +84,6 @@ async function getJson<T>(url: string) {
 
 const getModels = sharedRequest(() =>
   getJson<{ data: Model[] }>(MODELS_URL).then(({ data }) => data),
-);
-
-const getZdrModelIds = sharedRequest(() =>
-  getJson<{ data: { model_id: string }[] }>(ZDR_URL).then(
-    ({ data }) => new Set(data.map((endpoint) => endpoint.model_id)),
-  ),
 );
 
 function useRequest<T>(get: () => Promise<T>) {
@@ -155,11 +150,7 @@ const priceValue = (perToken?: string) => {
   return perToken === undefined || value < 0 ? undefined : value;
 };
 
-function sortValue(
-  m: Model,
-  key: SortKey,
-  zdrIds: Set<string> | null,
-): string | number | undefined {
+function sortValue(m: Model, key: SortKey): string | number | undefined {
   switch (key) {
     case "name":
       return m.name.toLowerCase();
@@ -170,16 +161,16 @@ function sortValue(
     case "output":
       return priceValue(m.pricing.completion);
     case "zdr":
-      return zdrIds ? Number(zdrIds.has(m.id)) : undefined;
+      return Number(isZdr(m));
     case "released":
       return m.created;
   }
 }
 
 // Missing values and variable pricing sort last in both directions.
-function compareModels(a: Model, b: Model, sort: Sort, zdrIds: Set<string> | null) {
-  const x = sortValue(a, sort.key, zdrIds);
-  const y = sortValue(b, sort.key, zdrIds);
+function compareModels(a: Model, b: Model, sort: Sort) {
+  const x = sortValue(a, sort.key);
+  const y = sortValue(b, sort.key);
   if (x === undefined || y === undefined) return x === y ? 0 : x === undefined ? 1 : -1;
   const order = x < y ? -1 : x > y ? 1 : 0;
   return sort.dir === "asc" ? order : -order;
@@ -248,7 +239,6 @@ export function ModelsTable({
   pageSize?: number;
 }) {
   const { data: allModels, failed } = useRequest(getModels);
-  const { data: zdrIds } = useRequest(getZdrModelIds);
   const [query, setQuery] = useState("");
   const [sort, setSort] = useState<Sort>({ key: "released", dir: "desc" });
   const [expanded, setExpanded] = useState(false);
@@ -275,8 +265,8 @@ export function ModelsTable({
         const text = `${m.id} ${m.name}`.toLowerCase();
         return terms.every((term) => text.includes(term));
       })
-      .sort((a, b) => compareModels(a, b, sort, zdrIds));
-  }, [models, query, sort, zdrIds]);
+      .sort((a, b) => compareModels(a, b, sort));
+  }, [models, query, sort]);
 
   const limit = preview ?? rows.length;
   const perPage = expanded && pageSize ? pageSize : rows.length;
@@ -286,7 +276,7 @@ export function ModelsTable({
   const visibleRows = expanded ? rows.slice(start, start + perPage) : rows.slice(0, limit);
   const canToggle = expanded || rows.length > limit;
   const label = PROVIDERS.find((p) => p.group === group)?.label ?? "other";
-  // OpenRouter's ZDR list is shown for the first-party providers only.
+  // Only the OpenAI, Anthropic, and Gemini tables have a ZDR column.
   const showZdr = group !== "other";
   const columns = showZdr ? COLUMNS : COLUMNS.filter((c) => c.key !== "zdr");
 
@@ -354,11 +344,7 @@ export function ModelsTable({
               <StatusRow span={columns.length}>No models match your search.</StatusRow>
             ) : (
               visibleRows.map((m) => (
-                <ModelRow
-                  key={m.id}
-                  model={m}
-                  zdr={showZdr ? (zdrIds ? zdrIds.has(m.id) : null) : undefined}
-                />
+                <ModelRow key={m.id} model={m} zdr={showZdr ? isZdr(m) : undefined} />
               ))
             )}
             {models && canToggle ? (
@@ -421,8 +407,8 @@ export function ModelsTable({
   );
 }
 
-/** `zdr` is undefined when the table has no ZDR column, and null while the list is unavailable. */
-function ModelRow({ model, zdr }: { model: Model; zdr?: boolean | null }) {
+/** `zdr` is undefined when the table has no ZDR column. */
+function ModelRow({ model, zdr }: { model: Model; zdr?: boolean }) {
   const input = formatPrice(model.pricing.prompt);
   const output = formatPrice(model.pricing.completion);
 
@@ -496,8 +482,7 @@ function ModelId({ id }: { id: string }) {
   );
 }
 
-function ZdrMark({ zdr }: { zdr: boolean | null }) {
-  if (zdr === null) return <>-</>;
+function ZdrMark({ zdr }: { zdr: boolean }) {
   return zdr ? (
     <>
       <Check aria-hidden="true" size={16} className={styles.zdrYes} />
