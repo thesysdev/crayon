@@ -17,7 +17,7 @@ const day = (date: string) =>
 function examples(today: string) {
   const friday = addDays(today, (5 - new Date(today).getUTCDay() + 7) % 7);
   const sunday = addDays(friday, 2);
-  const tripForm = `root = Stack([intro, trip], "column", "m")
+  const tripForm = `root = Card([intro, trip])
 intro = TextContent("Here's what I understood. Fill in anything missing, then find stays.")
 trip = Form("trip", tripButtons, [destination, checkIn, checkOut, adults, budget, stars, rating, musts])
 tripButtons = Buttons([Button("Find stays", Action([@ToAssistant("Find stays")]), "primary")])
@@ -30,13 +30,13 @@ stars = FormControl("Hotel stars", Chips("stars", "multiple", [ChipItem("3", "3�
 rating = FormControl("Guest rating", Chips("min_guest_rating", "single", [ChipItem("any", "Any"), ChipItem("8.0", "8.0+"), ChipItem("8.5", "8.5+")], null, "any"))
 musts = FormControl("Must-haves", Chips("amenities", "multiple", [ChipItem("freeWiFi", "Free WiFi"), ChipItem("breakfastIncluded", "Breakfast included"), ChipItem("freeCancellation", "Free cancellation"), ChipItem("pool", "Pool")]))
 `;
-  const chooseStay = `root = Stack([header, choose], "column", "m")
+  const chooseStay = `root = Card([header, choose])
 header = CardHeader("Stays in Lisbon for your dates", "${day(friday)} – ${day(sunday)} · 2 nights · 2 adults · 4★")
 choose = Form("choose", chooseButtons, [pick])
 chooseButtons = Buttons([Button("Review stay", Action([@ToAssistant("Review stay")]), "primary"), Button("Change search", Action([@ToAssistant("Change search")]), "secondary")])
 pick = FormControl("Choose a stay", OptionCards("stay", "single", [OptionCard("https://www.trivago.com/example-riverside-deal", "Riverside Hotel", "€215 a night · €429 total · 4★ · 8.3 (7,960 reviews) · 0.2 km to Praça do Comércio · via Hotel Site", Image("Riverside Hotel", "https://example.com/riverside.jpg")), OptionCard("https://www.trivago.com/example-castle-deal", "Castle View Suites", "€176 a night · €353 total · 4★ · 8.4 (623 reviews) · 0.4 km to the castle · via Booking.com", Image("Castle View Suites", "https://example.com/castle.jpg"))], {required: true}))
 `;
-  const review = `root = Stack([header, details, handoff, actions], "column", "m")
+  const review = `root = Card([header, details, handoff, actions])
 header = CardHeader("Review your stay", "Riverside Hotel · Lisbon")
 details = Table([Col("Detail", ["Check-in", "Check-out", "Guests", "Hotel", "Price per night", "Total", "Book on"]), Col("Value", ["${day(friday)}", "${day(sunday)} · 2 nights", "2 adults · 1 room", "4★ · 8.3 guest rating", "€215", "€429", "Hotel Site"])])
 handoff = Callout("info", "You'll finish booking on Hotel Site", "trivago found this price. It can change until you book, and the booking site collects your details and payment.")
@@ -55,7 +55,7 @@ export function bookingPrompt(today: string) {
     library: spec,
     promptOptions: {
       additionalRules: [
-        `You help people find and book a stay anywhere, with live prices from trivago. Today is ${weekday}, ${today}. search_stays is a Responses function tool executed by the application server, not an OpenUI Query or Mutation expression.`,
+        `You help people find and book a stay anywhere, with live prices from trivago. Today is ${weekday}, ${today}. search_stays is a function tool executed by the application server, not an OpenUI Query or Mutation expression.`,
         `A trip has these details: destination, check-in, check-out, adults, children with their ages, rooms, currency, max price per night, hotel stars, minimum guest rating, and must-have amenities. Destination, dates, and adults are required; the rest are optional. Guest ratings: ${guestRatings.join(", ")} or any. Amenities: ${JSON.stringify(amenities)}.`,
         "When someone asks for a new stay, reply with one short sentence and a Form named 'trip' before searching, even if they gave every detail. Prefill every field they mentioned with a literal value, never a $variable. Resolve relative dates against today: 'this weekend' is Friday to Sunday, and 'a week' is seven nights. Leave details they did not mention empty or at 'any'. Add a FormControl hint only to a value you inferred, such as dates worked out from 'this weekend'.",
         "Use a text Input for the destination, a DatePicker for each date, and number Inputs for adults and the budget. Add a text Input for children's ages, such as '6, 9', only when the user mentions children, and a number Input for rooms only when there are three or more adults or the user mentions rooms. Use Chips with type 'multiple' for stars and amenities, and Chips with type 'single' for the guest rating. Mark destination, dates, and adults {required: true}. Give the form a primary 'Find stays' button.",

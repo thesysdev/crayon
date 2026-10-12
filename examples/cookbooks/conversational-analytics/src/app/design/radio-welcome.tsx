@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useThreadList } from "@openuidev/react-headless";
+import { useEffect, useMemo, useState } from "react";
 import { ChatStarters, ChatWelcome, type ChatStarter } from "../../components/chat";
-import { recentQuestions } from "./thread-storage";
+import { messageText } from "./messages";
 
 /*
  * RadioWelcome: the empty state for a new chat. The welcome and the starting grid,
@@ -25,10 +26,15 @@ const toStarters = (questions: string[]): ChatStarter[] => questions.map((q) => 
 // against those questions so a new chat only asks again once there's something new.
 function useSuggestedQuestions() {
   const [questions, setQuestions] = useState(DEFAULT_QUESTIONS);
+  // Each thread's title is its first question, so the newest threads give the latest ones.
+  const threads = useThreadList((s) => s.threads);
+  const recent = useMemo(
+    () => [...new Set(threads.map((t) => messageText(t.title).trim().slice(0, 600)).filter(Boolean))].slice(0, 8),
+    [threads],
+  );
+  const key = recent.join("\n");
   useEffect(() => {
-    const recent = recentQuestions();
     if (!recent.length) return;
-    const key = recent.join("\n");
     try {
       const cached = JSON.parse(sessionStorage.getItem(CACHE_KEY) ?? "null");
       if (cached?.key === key) return setQuestions(cached.questions);
@@ -50,7 +56,9 @@ function useSuggestedQuestions() {
       })
       .catch(() => {});
     return () => controller.abort();
-  }, []);
+    // recent changes only when key does.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [key]);
   return questions;
 }
 

@@ -2,9 +2,10 @@
 
 import {
   AgentInterface,
-  agUIAdapter,
   fetchLLM,
   openAIMessageFormat,
+  openAIReadableStreamAdapter,
+  useOpenuiCloudStorage,
   useSystemThemeMode,
 } from "@openuidev/react-ui";
 import { ChartLine, ChartPie, FileText, ShieldAlert, TrendingUp } from "lucide-react";
@@ -13,10 +14,10 @@ import { darkTheme, lightTheme } from "../lib/theme";
 import { library } from "../library";
 import { DocumentLibrary } from "./document-library";
 
-// Send the thread's messages in Chat Completions format and read the route's AG-UI events.
+// Send the thread's messages in Chat Completions format and read the runner's stream from the route.
 const llm = fetchLLM({
   url: "/api/chat",
-  streamAdapter: agUIAdapter(),
+  streamAdapter: openAIReadableStreamAdapter(),
   messageFormat: openAIMessageFormat,
 });
 
@@ -49,10 +50,18 @@ const starters = [
 export default function ComparisonChat() {
   const mode = useSystemThemeMode();
   const theme = useMemo(() => ({ mode, lightTheme, darkTheme }), [mode]);
+  // Store threads as Gateway conversations, which the browser reaches with a short-lived token
+  // from /api/frontend-token. The chat route appends each turn to the thread's conversation, so
+  // a thread opened again loads its messages.
+  const storage = useOpenuiCloudStorage({
+    token: "/api/frontend-token",
+    features: { artifact: false },
+  });
   return (
     <div className="comparison-app">
       <AgentInterface
         llm={llm}
+        storage={storage}
         componentLibrary={library}
         agentName="Filing analyst"
         logoUrl="/logo.svg"

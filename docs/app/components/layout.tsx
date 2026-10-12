@@ -1,14 +1,15 @@
+import { createLayoutMetadata } from "@/lib/page-metadata";
 import AppThemeProvider from "@components/components/AppThemeProvider/AppThemeProvider";
 import ThemeToggle from "@components/components/ThemeToggle";
 import TopBarDocsButton from "@components/components/TopBarDocsButton/TopBarDocsButton";
 import TopNav from "@components/components/TopNav";
 import { TOP_NAV_ITEMS } from "@components/config/navigation";
-import type { Metadata } from "next";
 import { Geist, Geist_Mono, Inter } from "next/font/google";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import "./globals.css";
 import styles from "./layout.module.css";
+import page from "./metadata";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -25,10 +26,7 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: "OpenUI Design System",
-  description: "Foundation, Blocks, and Compose documentation",
-};
+export const metadata = createLayoutMetadata(page);
 
 interface RootLayoutProps {
   children: ReactNode;

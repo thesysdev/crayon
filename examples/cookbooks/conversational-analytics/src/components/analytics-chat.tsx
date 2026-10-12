@@ -5,6 +5,7 @@ import {
   agUIAdapter,
   fetchLLM,
   openAIMessageFormat,
+  useOpenuiCloudStorage,
   type ThemeProps,
 } from "@openuidev/react-ui";
 import { f1Theme } from "../f1-typography";
@@ -37,10 +38,18 @@ const starters = [
 ];
 
 export default function AnalyticsChat() {
+  // Store threads as Gateway conversations, which the browser reaches with a short-lived token
+  // from /api/frontend-token. The chat route appends each turn to the thread's conversation, so
+  // a thread opened again loads its messages.
+  const storage = useOpenuiCloudStorage({
+    token: "/api/frontend-token",
+    features: { artifact: false },
+  });
   return (
     <div className="analytics-app">
       <AgentInterface
         llm={llm}
+        storage={storage}
         componentLibrary={library}
         agentName="OpenUI x F1"
         theme={theme}

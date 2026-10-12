@@ -38,26 +38,26 @@ Try:
 1. Agent Interface sends the thread's messages to `/api/chat`, which calls OpenUI Gateway's Chat Completions API.
 2. The model calls `search_documents` once per criterion, with a short description of the information to find.
 3. The server embeds the description, ranks each document's passages by similarity, and returns the closest ones with page numbers, links to those pages, and a `found` flag.
-4. The tool loop returns the passages to the model and streams tool events and generated OpenUI Lang to the browser as AG-UI events.
+4. `runTools()` returns the passages to the model, and the route streams the tool calls and generated OpenUI Lang to the browser.
 5. Agent Interface displays tool activity and progressively renders the comparison: a page-cited table, charts, callouts for gaps and conflicts, and a card for each quoted page.
 
 ## Files
 
-| File                                  | Purpose                                                                        |
-| ------------------------------------- | ------------------------------------------------------------------------------ |
-| `scripts/prepare-documents.ts`        | Download the PDFs, extract pages, split passages, embed, and store             |
-| `src/lib/documents.ts`                | Sample document sources, database schema, and document list                    |
-| `src/lib/embeddings.ts`               | OpenAI embeddings and similarity                                               |
-| `src/lib/tools/search-documents.ts`   | Function schema, argument validation, and passage search                       |
-| `src/library.ts`                      | Shared components for the prompt and renderer                                  |
-| `src/components/sources.tsx`          | The Sources component, built on React UI's source strip                        |
-| `src/lib/prompt.ts`                   | Comparison rules and example answers for Gateway                               |
-| `src/app/api/chat/route.ts`           | Request validation, Chat Completions generation, and SSE response              |
-| `src/app/api/documents/route.ts`      | Document list for the Documents page                                           |
-| `src/lib/tool-loop.ts`                | Chat Completions function-tool loop that streams AG-UI events                  |
-| `src/lib/theme.ts`                    | Light and dark theme overrides                                                 |
-| `src/components/comparison-chat.tsx`  | Agent Interface, chat transport, custom sidebar, Documents route, and starters |
-| `src/components/document-library.tsx` | The Documents page                                                             |
+| File                                  | Purpose                                                                       |
+| ------------------------------------- | ----------------------------------------------------------------------------- |
+| `scripts/prepare-documents.ts`        | Download the PDFs, extract pages, split passages, embed, and store            |
+| `src/lib/documents.ts`                | Sample document sources, database schema, and document list                   |
+| `src/lib/embeddings.ts`               | OpenAI embeddings and similarity                                              |
+| `src/lib/tools/search-documents.ts`   | Function schema, argument validation, and passage search                      |
+| `src/library.ts`                      | The chat library, shared by the prompt and renderer                           |
+| `src/lib/prompt.ts`                   | Comparison rules and example answers for Gateway                              |
+| `src/lib/gateway-history.ts`          | Loads a thread's stored turns from Gateway as chat messages                   |
+| `src/app/api/chat/route.ts`           | `runTools()` generation, streaming, and turn storage                          |
+| `src/app/api/documents/route.ts`      | Document list for the Documents page                                          |
+| `src/app/api/frontend-token/route.ts` | Frontend token for Gateway thread storage                                     |
+| `src/lib/theme.ts`                    | Light and dark theme overrides                                                |
+| `src/components/comparison-chat.tsx`  | Agent Interface, chat transport, thread storage, sidebar, and Documents route |
+| `src/components/document-library.tsx` | The Documents page                                                            |
 
 `npm run generate` creates the ignored component specification before dev/build/verify. The server passes that specification to `generateSystemPrompt({ cloud: true, library: spec, promptOptions })`, and Agent Interface renders responses with the same component library.
 
@@ -71,11 +71,13 @@ The downloaded reports and the database are ignored by Git and are not redistrib
 
 ## Conversations
 
-The OpenAI SDK sends requests to `https://api.thesys.dev/v1/embed/chat/completions` using `THESYS_API_KEY`. Chat Completions does not store conversations, so Agent Interface keeps each thread in memory and `fetchLLM` sends its messages with every question. Follow-up suggestions are sent the same way, so they build on the earlier answers. Threads reset when the page reloads; pass a `storage` adapter to Agent Interface to persist them.
+The OpenAI SDK sends requests to `https://api.thesys.dev/v1/embed/chat/completions` using `THESYS_API_KEY`. Chat Completions does not store conversations, so the chat route stores each turn in the thread's Gateway conversation and loads the earlier turns from there for every question. Follow-up suggestions are sent the same way, so they build on the earlier answers.
 
-The chat route forwards only user questions and assistant answers from the browser. It drops browser-supplied tool calls and results, so the model sees only passages the server found for the current question. The tool loop streams AG-UI events, which `agUIAdapter()` reads, because Chat Completions has no chunk for a tool result. It is the same loop as in the [conversational analytics](../conversational-analytics) cookbook.
+Agent Interface stores the thread list with Gateway's [Conversations API](https://www.openui.com/docs/gateway/api/conversations) through `useOpenuiCloudStorage()`. The browser calls Gateway directly with a short-lived [frontend token](https://www.openui.com/docs/gateway/authentication#frontend-tokens) from `/api/frontend-token`, which mints it with `THESYS_API_KEY` for one local user (`DEMO_USER_ID`, default `demo-user`) and app (`APP_ID`, default `document-comparison-cookbook`), so the key stays on the server and the browser reaches only those threads. Chat Completions doesn't write turns to a conversation, so the chat route appends each turn, including the tool calls and their results, with `storeChatCompletionHistory()` from [`@openuidev/server`](https://www.openui.com/docs/api-reference/server#conversation-history). A stopped or failed answer still keeps the user's message. Threads stay listed after a reload, and a thread you open again loads its messages. To keep threads in your own database instead, use `restStorage`.
 
-The app binds to loopback, and the chat route accepts browser requests only from its own local page. For deployment, add authentication and rate limits to the chat route.
+The chat route uses only the new question from the browser. `loadChatCompletionHistory()` in `src/lib/gateway-history.ts` loads the earlier turns from the thread's Gateway conversation, including their searches and passages, so the model sees where each earlier quote came from, and every passage it sees came from this server. The response ends once the turn is stored, so a follow-up finds it. The route runs the tool with the OpenAI SDK's [`runTools()`](https://github.com/openai/openai-node#automated-function-calls) and returns the runner's `toReadableStream()`, one JSON chunk per line, which `openAIReadableStreamAdapter()` reads. Chat Completions has no chunk for a tool result, so in a live answer **Behind the scenes** shows each call's arguments but not its result.
+
+The app binds to loopback, and every browser shares one local user's threads. For deployment, add [authentication](https://www.openui.com/docs/gateway/authentication), mint each frontend token for the signed-in user, check that each `threadId` belongs to that user before storing a turn in it, and add request-size and rate limits to both routes.
 
 ## Verify
 

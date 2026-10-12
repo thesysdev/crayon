@@ -43,13 +43,19 @@ export interface RunChatToolLoopOptions {
   signal?: AbortSignal;
   /** Cap on model requests per question (default 5). */
   maxRounds?: number;
+  /** Receives each message the run adds: tool calls, their results, and the answer. */
+  onMessage?: (message: ChatCompletionMessageParam) => void;
 }
 
 type ToolCall = { id: string; name: string; arguments: string };
 
 export async function runChatToolLoop(options: RunChatToolLoopOptions): Promise<void> {
-  const { client, tools, emit, signal, maxRounds = 5 } = options;
+  const { client, tools, emit, signal, maxRounds = 5, onMessage } = options;
   const messages: ChatCompletionMessageParam[] = [...options.params.messages];
+  const add = (message: ChatCompletionMessageParam) => {
+    messages.push(message);
+    onMessage?.(message);
+  };
 
   for (let round = 0; round < maxRounds; round++) {
     const lastRound = round === maxRounds - 1;
@@ -101,10 +107,11 @@ export async function runChatToolLoop(options: RunChatToolLoopOptions): Promise<
     const requested = calls.filter(Boolean);
     if (requested.length === 0) {
       if (!text) throw new Error("The model returned no answer. Please retry.");
+      onMessage?.({ role: "assistant", content: text });
       return;
     }
 
-    messages.push({
+    add({
       role: "assistant",
       content: text || null,
       tool_calls: requested.map((call) => ({
@@ -124,7 +131,7 @@ export async function runChatToolLoop(options: RunChatToolLoopOptions): Promise<
       } catch (error) {
         content = JSON.stringify({ error: error instanceof Error ? error.message : String(error) });
       }
-      messages.push({ role: "tool", tool_call_id: call.id, content });
+      add({ role: "tool", tool_call_id: call.id, content });
       emit({
         type: "TOOL_CALL_RESULT",
         messageId: randomUUID(),

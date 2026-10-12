@@ -1,10 +1,11 @@
-import { createPageMetadata } from "@/lib/page-metadata";
+import { pageOgImage, withOgImage } from "@/lib/page-metadata";
 import { redirect } from "next/navigation";
 import {
   DEMO_CONVERSATIONS,
   getDemoConversationBySlug,
   getDemoConversationPath,
 } from "../../_components/demo-conversations";
+import chat from "../../metadata";
 
 interface DemoChatPageProps {
   params: Promise<{ demoSlug: string }>;
@@ -19,13 +20,16 @@ export async function generateMetadata({ params }: DemoChatPageProps) {
   const conversation = getDemoConversationBySlug(demoSlug);
   if (!conversation) return {};
 
-  return createPageMetadata({
-    pathname: getDemoConversationPath(conversation),
-    title: `${conversation.title} | OpenUI Cloud Chat`,
-    description: conversation.description,
-    image: "/nav/chat-light.webp",
-    imageAlt: `${conversation.title} demo preview`,
-  });
+  // Link previews reuse the /chat card.
+  return withOgImage(
+    {
+      title: `${conversation.title} | OpenUI Cloud Chat`,
+      description: conversation.description,
+      alternates: { canonical: getDemoConversationPath(conversation) },
+    },
+    pageOgImage(chat),
+    { title: chat.title, description: chat.description },
+  );
 }
 
 export default async function DemoChatPage({ params }: DemoChatPageProps) {

@@ -5,28 +5,20 @@ import {
   modelBoardRows,
 } from "@/lib/benchmark-agent-data";
 import { BRIEFS, MODEL_BOARD_SIZE } from "@/lib/benchmark-data";
-import type { Metadata } from "next";
+import { createPageMetadata } from "@/lib/page-metadata";
 import { BenchmarkDetailPage } from "../BenchmarkDetailPage";
+import page from "./metadata";
 
-export const metadata: Metadata = {
-  title: "OpenUI language and model benchmark | OpenUI",
-  description: `Compare structural validity and measured cost across ${MODEL_BOARD_SIZE} models generating OpenUI, with exact server-rendered data and machine-readable downloads.`,
+export const metadata = createPageMetadata(page, {
   alternates: {
-    canonical: "/benchmarks/language",
     types: {
       "application/json": "/benchmarks/language/data.json",
       "text/csv": "/benchmarks/language/data.csv",
       "text/markdown": "/benchmarks/language/agent.md",
     },
   },
-  openGraph: {
-    type: "article",
-    url: "/benchmarks/language",
-    title: "OpenUI language and model benchmark",
-    description: `Structural validity and cost across ${MODEL_BOARD_SIZE} models generating OpenUI.`,
-    modifiedTime: MODEL_BOARD_UPDATED_ISO,
-  },
-};
+  openGraph: { type: "article", modifiedTime: MODEL_BOARD_UPDATED_ISO },
+});
 
 const structuredData = {
   "@context": "https://schema.org",

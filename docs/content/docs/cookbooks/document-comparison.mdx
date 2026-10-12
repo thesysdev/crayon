@@ -116,7 +116,7 @@ Each step covers one part of the example, in the order a request flows through i
 `npm run prepare:documents` downloads each report listed in [documents.ts](https://github.com/thesysdev/openui/blob/main/examples/cookbooks/document-comparison/src/lib/documents.ts) and extracts its text page by page. It then splits each page into overlapping passages, so every passage keeps the page it came from:
 
 ```ts title="scripts/prepare-documents.ts"
-// Split each page into overlapping passages so every passage keeps its page number.
+// Split each page into overlapping passages that keep their page number.
 function passages(text: string, size = 1200, overlap = 200) {
   const clean = text.replace(/\s+/g, " ").trim();
   const result: string[] = [];
@@ -150,7 +150,10 @@ const results = selected.map((document) => {
   const url = sources.find((source) => source.id === document.id)?.url;
   const matches = passages
     .filter((passage) => passage.documentId === document.id)
-    .map((passage) => ({ ...passage, score: similarity(queryEmbedding, passage.embedding) }))
+    .map((passage) => ({
+      ...passage,
+      score: similarity(queryEmbedding, passage.embedding),
+    }))
     .sort((a, b) => b.score - a.score)
     .slice(0, args.passages_per_document);
   const bestScore = matches[0]?.score ?? 0;
@@ -166,77 +169,53 @@ const results = selected.map((document) => {
 });
 ```
 
-Results are grouped by document, so every document is represented even when one report discusses the criterion at greater length than the others. `found` is false when a document's best match falls below a similarity of 0.3, which usually means the report does not discuss the criterion. Each passage's `url` adds `#page=` to the PDF's address, which opens most PDF viewers at that page, so the answer can link to its evidence. Agent Interface shows each call and its passages in the **Behind the scenes** timeline.
+Results are grouped by document, so every document is represented even when one report discusses the criterion at greater length than the others. `found` is false when a document's best match falls below a similarity of 0.3, which usually means the report does not discuss the criterion. Each passage's `url` adds `#page=` to the PDF's address, which opens most PDF viewers at that page, so the answer can link to its evidence. Agent Interface shows each search and its arguments in the **Behind the scenes** timeline.
 
 The example keeps all 1,564 embeddings in memory and compares them in JavaScript, which takes a few milliseconds. For thousands of documents, store the embeddings in a vector database instead; the tool's arguments and result stay the same.
 
 ### 3. Choose the components
 
-Use a selection from the built-in library that covers every part of a comparison, the chat library's follow-up suggestions, and one component of your own:
+Use the chat library, React UI's built-in library for Agent Interface answers. It already has every part of a comparison, so the example uses it as is:
 
 ```ts title="src/library.ts"
-import { createLibrary } from "@openuidev/react-lang";
-import { openuiChatLibrary, openuiLibrary } from "@openuidev/react-ui/genui-lib";
-import { Sources } from "./components/sources";
-
-export const library = createLibrary({
-  root: "Stack",
-  components: [
-    ...[
-      "Stack",
-      "CardHeader",
-      "TextContent",
-      "Table",
-      "Col",
-      "BarChart",
-      "HorizontalBarChart",
-      "LineChart",
-      "Series",
-      "Callout",
-      "TagBlock",
-    ].map((name) => openuiLibrary.components[name]),
-    Sources,
-    openuiChatLibrary.components.FollowUpBlock,
-    openuiChatLibrary.components.FollowUpItem,
-  ],
-});
+export { openuiChatLibrary as library } from "@openuidev/react-ui/genui-lib";
 ```
 
-`Table` holds the page-cited values, the three chart types cover single values, trends, and breakdowns, and `Callout` flags gaps and conflicts.
+Every answer is one `Card`. `Table` holds the page-cited values, `BarChart`, `LineChart`, and `HorizontalBarChart` cover single values, trends, and breakdowns, `Callout` flags gaps and conflicts, and `FollowUpBlock` suggests criteria to add. The `Card`'s second argument lists the sources, and the `Card` renders them as a strip of source cards below the answer:
 
-`Sources` wraps the source strip that React UI already provides. `defineComponent` gives it a name, a schema the model fills in, and a description for the prompt:
-
-```tsx title="src/components/sources.tsx"
-export const Sources = defineComponent({
-  name: "Sources",
-  props: z.object({ items: z.array(CardSourceSchema) }),
-  description:
-    "A strip of source cards. Each item is { title, sourceName, url }: title is the quote, sourceName names the document and page, and url opens the page.",
-  component: ({ props }) => (
-    <CardSourceProvider sources={onePerPage(props.items ?? [])}>
-      <SourceStrip />
-    </CardSourceProvider>
-  ),
-});
+```text
+root = Card([header, table, chart, gap, followUps], sources)
+sources = [{title: "“Revenue for the fiscal year was $10.0 billion, up 5% from a year ago.”", sourceName: "Company A · Page 12", url: "https://example.com/company-a.pdf#page=12"}]
 ```
 
-Each card shows the site's icon, the company and page, and the quote. `onePerPage` merges two quotes from the same page into one card. Generate the server specification from the same library with `npm run generate`, which also runs before development and builds.
+Each card shows the site's icon, the company and page, and the quote, and opens the report at that page. The prompt names the components an answer uses and rules out form controls. Generate the server specification from the same library with `npm run generate`, which also runs before development and builds.
 
 ### 4. Customize Agent Interface
 
-Connect generation to the local chat route with `fetchLLM`. It sends the thread's messages in Chat Completions format and reads the route's stream with `agUIAdapter()`:
+Connect generation to the local chat route with `fetchLLM`. It sends the thread's messages in Chat Completions format and reads the route's stream with `openAIReadableStreamAdapter()`:
 
 ```tsx title="src/components/comparison-chat.tsx"
 const llm = fetchLLM({
   url: "/api/chat",
-  streamAdapter: agUIAdapter(),
+  streamAdapter: openAIReadableStreamAdapter(),
   messageFormat: openAIMessageFormat,
+});
+
+const storage = useOpenuiCloudStorage({
+  token: "/api/frontend-token",
+  features: { artifact: false },
 });
 ```
 
-Chat Completions does not store conversations, so Agent Interface keeps each thread in the browser and sends its messages with every question. That is what lets a follow-up add a criterion to the comparison. Threads last until the page reloads. To keep them, pass a `storage` adapter to Agent Interface; see [Connect a backend](/docs/agent/reference/self-hosting#3-persist-conversations).
+Chat Completions does not store conversations, so the chat route loads each thread's earlier turns from Gateway, with their searches and passages, and sends them with every question. That is what lets a follow-up add a criterion to the comparison.
 
-The example also customizes Agent Interface through its public props and slots:
+<Callout type="info" title="Thread storage">
+
+`useOpenuiCloudStorage()` keeps the thread list in Gateway, and the chat route saves each turn, tool calls included, with [`storeChatCompletionHistory()`](/docs/api-reference/server#conversation-history), so threads and their messages stay after a reload.
+
+</Callout>
+
+The example also customizes Agent Interface through its public props and slots. The props set the theme, brand, and starters:
 
 ```tsx title="src/components/comparison-chat.tsx"
 const mode = useSystemThemeMode();
@@ -244,6 +223,7 @@ const theme = useMemo(() => ({ mode, lightTheme, darkTheme }), [mode]);
 
 <AgentInterface
   llm={llm}
+  storage={storage}
   componentLibrary={library}
   agentName="Filing analyst"
   logoUrl="/logo.svg"
@@ -251,31 +231,42 @@ const theme = useMemo(() => ({ mode, lightTheme, darkTheme }), [mode]);
   starters={starters}
   starterVariant="long"
 >
-  <AgentInterface.Sidebar>
-    <AgentInterface.SidebarHeader />
-    <AgentInterface.SidebarContent>
-      <AgentInterface.NewChatButton />
-      <AgentInterface.SidebarItem path="documents" icon={<FileText size={16} />}>
-        Documents
-      </AgentInterface.SidebarItem>
-      <AgentInterface.SidebarSeparator />
-      <AgentInterface.ThreadList />
-    </AgentInterface.SidebarContent>
-  </AgentInterface.Sidebar>
-  <AgentInterface.Route path="documents">
-    <DocumentLibrary />
-  </AgentInterface.Route>
-  <AgentInterface.ThreadHeader>
-    <span className="thread-context">Comparing NVIDIA · AMD · Intel annual reports</span>
-  </AgentInterface.ThreadHeader>
+  {/* The slots below */}
 </AgentInterface>;
 ```
 
 - **Theme.** [theme.ts](https://github.com/thesysdev/openui/blob/main/examples/cookbooks/document-comparison/src/lib/theme.ts) uses `createTheme` to set the accent and user-message colors for light and dark mode, and `useSystemThemeMode` follows the operating system's setting.
 - **Brand.** `agentName` and `logoUrl` fill the default sidebar header, which keeps the logo in the collapsed sidebar. [logo.svg](https://github.com/thesysdev/openui/blob/main/examples/cookbooks/document-comparison/public/logo.svg) switches colors for dark mode with a `prefers-color-scheme` media query.
+- **Starters.** `starterVariant="long"` shows starters as a list with icons. See [Welcome and starters](/docs/agent/customize/welcome-and-starters).
+
+Its children replace the sidebar, add the Documents page, and fill the thread header:
+
+```tsx title="src/components/comparison-chat.tsx"
+<AgentInterface.Sidebar>
+  <AgentInterface.SidebarHeader />
+  <AgentInterface.SidebarContent>
+    <AgentInterface.NewChatButton />
+    <AgentInterface.SidebarItem path="documents" icon={<FileText size={16} />}>
+      Documents
+    </AgentInterface.SidebarItem>
+    <AgentInterface.SidebarSeparator />
+    <AgentInterface.ThreadList />
+  </AgentInterface.SidebarContent>
+</AgentInterface.Sidebar>
+
+<AgentInterface.Route path="documents">
+  <DocumentLibrary />
+</AgentInterface.Route>
+
+<AgentInterface.ThreadHeader>
+  <span className="thread-context">
+    Comparing NVIDIA · AMD · Intel annual reports
+  </span>
+</AgentInterface.ThreadHeader>
+```
+
 - **Sidebar.** Supplying `AgentInterface.Sidebar` replaces the default sidebar, so the example composes its own header, New chat button, Documents item, and thread list. See [Sidebar](/docs/agent/customize/sidebar).
 - **Pages.** A `SidebarItem` with a `path` opens the matching `AgentInterface.Route` in place of the chat. The Documents page lists each report with its page count and a link to the source PDF, and returns to the chat with `useNav`.
-- **Starters.** `starterVariant="long"` shows starters as a list with icons. See [Welcome and starters](/docs/agent/customize/welcome-and-starters).
 
 ### 5. Stream the answer
 
@@ -283,34 +274,36 @@ The chat route passes the search tool and the [prompt](https://github.com/thesys
 
 ```ts title="src/app/api/chat/route.ts"
 const searchTool = searchDocumentsTool(documents);
-const params = {
-  model: process.env.OPENUI_MODEL || "openai/gpt-5.5",
-  messages: [
-    { role: "system" as const, content: comparisonPrompt(documents) },
-    ...conversation(body.messages),
-  ],
-  tools: [searchTool],
-  max_completion_tokens: 6000,
-};
-const firstStream = await gateway.chat.completions.create(
-  { ...params, stream: true },
-  { signal: request.signal },
+const runner = gateway.chat.completions.runTools(
+  {
+    model: process.env.OPENUI_MODEL || "openai/gpt-5.5",
+    messages: [
+      { role: "system", content: comparisonPrompt(documents) },
+      ...thread,
+    ],
+    tools: [
+      {
+        type: "function",
+        function: {
+          ...searchTool.function,
+          function: (args: string) =>
+            executeSearchDocuments(args, { signal: request.signal }).catch(
+              (error: unknown) =>
+                JSON.stringify({
+                  error: error instanceof Error ? error.message : String(error),
+                }),
+            ),
+        },
+      },
+    ],
+    max_completion_tokens: 6000,
+    stream: true,
+  },
+  { signal: request.signal, maxChatCompletions: 4 },
 );
-
-await runChatToolLoop({
-  client: gateway,
-  params,
-  firstStream,
-  tools: { [searchTool.function.name]: executeSearchDocuments },
-  emit,
-  signal: request.signal,
-  maxRounds: 4,
-});
 ```
 
-The route runs the same [function-tool loop](https://github.com/thesysdev/openui/blob/main/examples/cookbooks/document-comparison/src/lib/tool-loop.ts) as the [conversational analytics cookbook](/cookbooks/conversational-analytics#5-stream-the-answer), with `maxRounds: 4`. It runs each requested search, appends the results, and requests the next completion until the model answers, streaming AG-UI events so Agent Interface shows each search and its passages. The extra rounds let the model search again with different wording when a document returns `found: false`. `conversation()` drops the tool calls and results the browser sends back, so every quote comes from a search your server ran for the current question.
-
-This example calls Gateway directly from a Next.js route, but the tool and prompt can also run on an agent framework such as LangGraph, the Vercel AI SDK, Mastra, or Google ADK. Agent Interface stays the same and reads the framework's stream with the matching adapter. See our [LangGraph Platform](/docs/agent/agent-runtimes/langgraph-platform), [Vercel AI SDK](/docs/agent/agent-runtimes/vercel-ai-sdk), and [Vercel Eve](/docs/agent/agent-runtimes/vercel-eve) integrations, or the [Mastra](https://github.com/thesysdev/openui/tree/main/examples/agent-frameworks/mastra) and [Google ADK](https://github.com/thesysdev/openui/tree/main/examples/agent-frameworks/google-adk) examples.
+When the model asks for a search, the route runs search_documents and sends the passages back to the model. This repeats until the model stops searching and writes its answer. maxChatCompletions: 4 caps the number of rounds, so a question can't turn into an endless string of searches. If a report comes back with found: false, the model can use one of those rounds to search that report again with different wording.
 
 The prompt turns the evidence into a consistent answer:
 
@@ -319,7 +312,7 @@ The prompt turns the evidence into a consistent answer:
 - **A table** with one short, page-cited value per cell, such as “$215.9 billion (p. 37)”: one row per criterion and one column per document, or one row per part when a criterion has several, such as each company's segments.
 - **Charts chosen from the data**, each at full width: a line chart when a report gives several years of figures, one horizontal bar chart with a bar per company and segment for a breakdown, and a bar chart for one value per document. A document without a value is left out of the chart rather than plotted as zero.
 - **Callouts** for information that conflicts or is not directly comparable, such as different fiscal year ends, and for criteria a document does not disclose.
-- **Sources**, one card per quoted page with the company, page, and a quote of at most 20 words, linked to that page of the PDF.
+- **Sources** in the `Card`'s second argument, one per quoted page with the company, page, and a quote of at most 20 words, linked to that page of the PDF.
 
 ## Verify it works
 
@@ -330,7 +323,8 @@ In the browser:
 3. Ask **“How has R&D spending changed over three years?”** and **“Break down revenue by segment.”** Confirm the first uses a line chart, and the second a single bar chart with a table row per segment.
 4. Ask **“Compare each CEO's total compensation.”** Annual reports refer readers to the proxy statement for executive pay, so the table should say “Not found” with a callout explaining why, and no chart.
 5. Open **Documents** in the sidebar and confirm it lists the three reports with their page counts.
-6. Switch your operating system between light and dark mode, and confirm the theme follows.
+6. Reload the page and open an earlier thread. Confirm its messages load.
+7. Switch your operating system between light and dark mode, and confirm the theme follows.
 
 Generated layouts can vary. Values should always match a quoted passage.
 
@@ -340,11 +334,22 @@ Add your own PDFs to the example's `documents/` folder and run `npm run prepare:
 
 The importer reads a PDF's text layer, so run OCR on scanned documents first. For large collections, store the embeddings in a vector database and keep the `search_documents` tool's contract.
 
-This example runs locally without authentication, and its chat route accepts browser requests only from its own page. Before deploying it, add authentication and rate limits. See the [example README](https://github.com/thesysdev/openui/tree/main/examples/cookbooks/document-comparison) for the implementation notes.
+This example calls Gateway directly from a Next.js route, but the tool and prompt can also run on an agent framework such as LangGraph, the Vercel AI SDK, Mastra, or Google ADK. Agent Interface stays the same and reads the framework's stream with the matching adapter. See our [LangGraph Platform](/docs/build-agents/frameworks/langgraph), [Vercel AI SDK](/docs/build-agents/frameworks/vercel-ai-sdk), and [Vercel Eve](/docs/build-agents/frameworks/vercel-eve) integrations, or the [Mastra](https://github.com/thesysdev/openui/tree/main/examples/agent-frameworks/mastra) and [Google ADK](https://github.com/thesysdev/openui/tree/main/examples/agent-frameworks/google-adk) examples.
 
-- [Agent Interface quickstart](/docs/agent/getting-started/quickstart)
-- [Agent tools](/docs/agent/core-concepts/tools)
-- [Gateway Chat Completions API](/docs/gateway/api/chat-completions)
-- [Connect a backend](/docs/agent/reference/self-hosting)
+This example runs locally without authentication. Before deploying it, add [authentication](/docs/gateway/authentication), limits on request size, and rate limits. See the [example README](https://github.com/thesysdev/openui/tree/main/examples/cookbooks/document-comparison) for the implementation notes.
+
+## References
+
+- [`@openuidev/react-ui`](/docs/api-reference/react-ui): `AgentInterface` and the chat library.
+- [`@openuidev/react-headless`](/docs/api-reference/react-headless): `fetchLLM()`, `openAIReadableStreamAdapter()`, and `useOpenuiCloudStorage()`, which the example imports through `@openuidev/react-ui`.
+- [`@openuidev/lang-core`](/docs/openui-lang/system-prompts): `generateSystemPrompt()`.
+- [`@openuidev/server`](/docs/api-reference/server#conversation-history): `storeChatCompletionHistory()`.
+- [`@openuidev/cli`](/docs/api-reference/cli): `openui generate`.
+- [OpenAI SDK](https://github.com/openai/openai-node): `runTools()`, `toReadableStream()`, and embeddings.
+- [`unpdf`](https://github.com/unjs/unpdf): PDF text extraction.
+- [Gateway Chat Completions API](/docs/gateway/api/chat-completions).
+- [Agent Interface quickstart](/docs/agent/getting-started/quickstart).
+- [Agent tools](/docs/build-agents/tools).
+- [Connect a backend](/docs/agent/reference/self-hosting).
 
 Documents: the Form 10-K annual reports of NVIDIA, AMD, and Intel, downloaded from each company's investor relations site during setup. They are not included in this repository.

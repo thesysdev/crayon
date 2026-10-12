@@ -5,20 +5,21 @@ import {
   ChatProvider,
   fetchLLM,
   openAIMessageFormat,
+  useOpenuiCloudStorage,
   useThread,
   useThreadList,
   type Thread,
 } from "@openuidev/react-headless";
 import { ThemeProvider } from "@openuidev/react-ui";
 import { useParams, usePathname, useRouter } from "next/navigation";
-import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { ChatShell } from "../../components/chat-shell";
 import { AskProvider, DriversPage, HomeDashboard, StandingsPage, TeamsPage } from "../../components/dashboards";
 import { Sidebar, type SidebarThread } from "../../components/sidebar";
 import { f1Theme } from "../../f1-typography";
+import { messageText } from "./messages";
 import { RadioThread } from "./radio-thread";
 import { RadioWelcome } from "./radio-welcome";
-import { hasThread, localThreadStorage, saveMessages } from "./thread-storage";
 
 /*
  * The Radio chat. /design/new opens a new conversation, /design/[threadId] an
@@ -27,8 +28,8 @@ import { hasThread, localThreadStorage, saveMessages } from "./thread-storage";
  * the URL moves to the new thread's address mid-answer.
  */
 
-// /api/chat is stateless, so openAIMessageFormat sends the whole thread on every
-// turn; agUIAdapter reads the AG-UI events the route streams back.
+// The route loads the thread's earlier turns from its Gateway conversation and uses only
+// the new question; agUIAdapter reads the AG-UI events it streams back.
 const llm = fetchLLM({
   url: "/api/chat",
   streamAdapter: agUIAdapter(),
@@ -57,24 +58,6 @@ function when(createdAt: Thread["createdAt"]) {
   return date.toLocaleDateString(undefined, { day: "numeric", month: "short" });
 }
 
-// Keeps each thread's messages in local storage: right away when a run ends, and
-// at most once a second while one streams.
-function PersistThread() {
-  const threadId = useThreadList((s) => s.selectedThreadId);
-  const messages = useThread((s) => s.messages);
-  const isRunning = useThread((s) => s.isRunning);
-  const isLoading = useThread((s) => s.isLoadingMessages);
-  const lastSave = useRef(0);
-  useEffect(() => {
-    if (!threadId || isLoading || !messages.length) return;
-    const now = Date.now();
-    if (isRunning && now - lastSave.current < 1000) return;
-    lastSave.current = now;
-    saveMessages(threadId, messages);
-  }, [threadId, messages, isRunning, isLoading]);
-  return null;
-}
-
 function RadioChat() {
   const router = useRouter();
   const params = useParams<{ threadId?: string }>();
@@ -93,15 +76,20 @@ function RadioChat() {
   const messages = useThread((s) => s.messages);
   const isRunning = useThread((s) => s.isRunning);
   const processMessage = useThread((s) => s.processMessage);
+  const threadError = useThread((s) => s.threadError);
 
   useEffect(loadThreads, [loadThreads]);
 
-  // The URL picks the conversation. An unknown thread falls back to Home.
+  // The URL picks the conversation.
   useEffect(() => {
     if (!routeThread) return switchToNewThread();
-    if (hasThread(routeThread)) selectThread(routeThread);
-    else router.replace("/design");
-  }, [routeThread, selectThread, switchToNewThread, router]);
+    selectThread(routeThread);
+  }, [routeThread, selectThread, switchToNewThread]);
+
+  // A thread Gateway can't load (deleted, or another user's) falls back to Home.
+  useEffect(() => {
+    if (routeThread && threadError) router.replace("/design");
+  }, [routeThread, threadError, router]);
 
   // The first question creates the thread; move the URL onto it without remounting anything.
   useEffect(() => {
@@ -111,7 +99,7 @@ function RadioChat() {
   }, [selectedThreadId]);
 
   const sidebarThreads = useMemo<SidebarThread[]>(
-    () => threads.map((t) => ({ id: t.id, title: t.title, meta: when(t.createdAt) })),
+    () => threads.map((t) => ({ id: t.id, title: messageText(t.title), meta: when(t.createdAt) })),
     [threads],
   );
 
@@ -150,10 +138,12 @@ function RadioChat() {
 }
 
 export default function DesignLayout({ children }: { children: ReactNode }) {
+  // Threads are Gateway conversations, which the browser reaches with a short-lived token from
+  // /api/frontend-token. The chat route appends each turn, so a reopened thread loads it.
+  const storage = useOpenuiCloudStorage({ token: "/api/frontend-token", features: { artifact: false } });
   return (
     <ThemeProvider mode="light" lightTheme={f1Theme}>
-      <ChatProvider llm={llm} storage={localThreadStorage}>
-        <PersistThread />
+      <ChatProvider llm={llm} storage={storage}>
         <RadioChat />
         {children}
       </ChatProvider>

@@ -1,6 +1,8 @@
 import { LLMCopyButton, ViewOptions } from "@/components/ai/page-actions";
 import { gitConfig } from "@/lib/layout.shared";
-import { getPageImage, source } from "@/lib/source";
+import { docsOgImage } from "@/lib/og/content";
+import { withOgImage } from "@/lib/page-metadata";
+import { source } from "@/lib/source";
 import { getMDXComponents } from "@/mdx-components";
 import { DocsBody, DocsDescription, DocsPage, DocsTitle } from "fumadocs-ui/layouts/docs/page";
 import { createRelativeLink } from "fumadocs-ui/mdx";
@@ -13,18 +15,28 @@ export function DocsPageView({ page }: { page: DocsSourcePage }) {
   const MDX = page.data.body;
 
   return (
-    <DocsPage toc={page.data.toc} full={page.data.full}>
+    <DocsPage
+      toc={page.data.toc}
+      full={page.data.full}
+      footer={{ enabled: !page.data.hideFooter }}
+      tableOfContent={{ style: "clerk" }}
+      tableOfContentPopover={{ style: "clerk" }}
+      // Without a sidebar there is room for the `full` page width next to the TOC (see global.css).
+      data-no-sidebar={!page.data.sidebar || undefined}
+    >
       {!page.data.customHeader && (
         <>
           <DocsTitle>{page.data.title}</DocsTitle>
           <DocsDescription className="mb-0">{page.data.description}</DocsDescription>
-          <div className="flex flex-row gap-2 items-center border-b pb-6">
-            <LLMCopyButton markdownUrl={`${page.url}.mdx`} />
-            <ViewOptions
-              markdownUrl={page.url}
-              githubUrl={`https://github.com/${gitConfig.user}/${gitConfig.repo}/blob/${gitConfig.branch}/docs/content/docs/${page.path}`}
-            />
-          </div>
+          {page.data.pageActions && (
+            <div className="flex flex-row gap-2 items-center border-b pb-6">
+              <LLMCopyButton markdownUrl={`${page.url}.mdx`} />
+              <ViewOptions
+                markdownUrl={page.url}
+                githubUrl={`https://github.com/${gitConfig.user}/${gitConfig.repo}/blob/${gitConfig.branch}/docs/content/docs/${page.path}`}
+              />
+            </div>
+          )}
         </>
       )}
       <DocsBody>
@@ -40,14 +52,17 @@ export function DocsPageView({ page }: { page: DocsSourcePage }) {
 }
 
 export function getDocsPageMetadata(page: DocsSourcePage): Metadata {
+  const image = docsOgImage(page);
+  const description = image.card.template === "card" ? image.card.description : undefined;
+  return withOgImage({ ...docsMetadata(page), description }, image, { description });
+}
+
+function docsMetadata(page: DocsSourcePage): Metadata {
   return {
     title: page.data.title,
     description: page.data.description,
     alternates: {
       canonical: page.url,
-    },
-    openGraph: {
-      images: getPageImage(page).url,
     },
   };
 }
