@@ -1,0 +1,622 @@
+/* The steps that steer the conversation (steps.tsx). Same language as the spreads: Timeless
+   type on the panel, photos as prints, pen notes in hand; nothing sits on a pill or a chip. */
+
+.hj-question,
+.hj-picks,
+.hj-dates {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4.5cqh;
+  padding: 7cqh 6cqw 7cqh var(--pad-left);
+}
+/* Scoped one deeper than the planner's panel tuning of spread headlines. */
+:is(.planner-page, .pl-scroll-sample, .pl-steps-sample) .hj-spread:is(.hj-question, .hj-picks, .hj-dates) h2 {
+  max-width: 14em;
+  font-size: min(7cqw, 9.5cqh);
+  line-height: 1.02;
+  text-wrap: balance;
+}
+/* A bare reset for the step buttons, at zero specificity so each one's own size wins. */
+:where(.hj-spread) :where(.hj-skip, .hj-pick, .hj-month, .hj-step, .hj-go) {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-variation-settings: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+:where(.hj-spread) :where(.hj-skip, .hj-pick, .hj-month, .hj-step, .hj-go):disabled {
+  cursor: default;
+}
+
+/* ---------- Chips: answers and follow-ups ---------- */
+
+/* White, borderless, a soft spread shadow, like the home page's place cards. Used inside a
+   Question panel (sized to it) and on the "Where next?" page (sized to the page). */
+.hj-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.hj-spread .hj-chips {
+  gap: 1.6cqmin;
+  font-size: min(3cqw, 4.2cqh);
+}
+.hj-chip {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.5em;
+  margin: 0;
+  padding: 0.62em 1.15em 0.68em;
+  border: 0;
+  border-radius: 999px;
+  background: #fff;
+  color: #000;
+  font: inherit;
+  font-variation-settings: inherit;
+  letter-spacing: -0.01em;
+  line-height: 1.1;
+  text-align: left;
+  cursor: pointer;
+  box-shadow:
+    0 0 0 1px rgb(0 0 0 / 0.02),
+    0 4px 12px -2px rgb(0 0 0 / 0.04),
+    0 12px 32px -4px rgb(0 0 0 / 0.06);
+  transition:
+    box-shadow 200ms,
+    background 160ms,
+    color 160ms,
+    opacity 200ms;
+}
+/* Reenie Beanie reads small, so the note is set larger than the label. */
+.hj-chip__note {
+  color: var(--pen);
+  font-size: 1.25em;
+  line-height: 0.8;
+}
+.hj-chip:not(:disabled):is(:hover, :focus-visible) {
+  outline: none;
+  box-shadow:
+    0 0 0 1px rgb(0 0 0 / 0.03),
+    0 8px 20px -2px rgb(0 0 0 / 0.08),
+    0 24px 56px -6px rgb(0 0 0 / 0.16);
+}
+.hj-chip:disabled {
+  cursor: default;
+}
+.hj-chip.is-chosen {
+  background: var(--pen);
+  color: #fff;
+}
+.hj-chip.is-chosen .hj-chip__note {
+  color: #fff;
+}
+.hj-chip.is-faded {
+  opacity: 0.35;
+  box-shadow: none;
+}
+
+.hj-skip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  align-self: flex-start;
+  font-size: 5.6cqmin;
+  transition: translate 200ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.hj-skip:not(:disabled):hover {
+  translate: 0.2em 0;
+}
+.hj-skip:disabled:not(.is-chosen) {
+  opacity: 0.3;
+}
+
+/* ---------- Picks: prints you pick up ---------- */
+
+.hj-picks header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1cqh 4cqw;
+}
+.hj-picks__hint {
+  font-size: 5.4cqmin;
+}
+.hj-picks__row {
+  display: grid;
+  grid-template-columns: repeat(var(--n), minmax(0, 1fr));
+  gap: 3cqw;
+  align-items: start;
+}
+.hj-pick {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6cqh;
+  min-width: 0;
+  text-align: left;
+}
+.hj-pick__print {
+  position: relative;
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  aspect-ratio: 3 / 4.1;
+  padding: 1.4cqmin 1.4cqmin 5cqmin;
+  border-radius: 6px;
+  background: #fff;
+  box-shadow:
+    0 1px 2px rgb(0 0 0 / 0.08),
+    0 12px 24px -10px rgb(0 0 0 / 0.3);
+  rotate: -1.5deg;
+  transition:
+    rotate 300ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    translate 300ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    box-shadow 300ms;
+}
+.hj-pick:nth-child(even) .hj-pick__print {
+  rotate: 1.5deg;
+}
+.hj-pick__print img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 3px;
+  object-fit: cover;
+  animation: hj-fade 600ms ease both;
+}
+.hj-pick__print.is-loading::before {
+  content: "";
+  position: absolute;
+  inset: 1.4cqmin 1.4cqmin 5cqmin;
+  border-radius: 3px;
+  background: #dcdfe2;
+  animation: hj-pulse 1.4s ease-in-out infinite;
+}
+.hj-pick:not(:disabled):is(:hover, :focus-visible) .hj-pick__print,
+.hj-pick.is-picked .hj-pick__print {
+  rotate: 0deg;
+  translate: 0 -1.2cqh;
+  box-shadow:
+    0 1px 2px rgb(0 0 0 / 0.08),
+    0 26px 44px -16px rgb(0 0 0 / 0.4);
+  outline: none;
+}
+/* The tick: a small red disc that drops onto a picked print's corner. */
+.hj-pick__check {
+  position: absolute;
+  top: -1.4cqmin;
+  right: -1.4cqmin;
+  display: grid;
+  place-items: center;
+  width: max(26px, 5cqmin);
+  height: max(26px, 5cqmin);
+  border-radius: 50%;
+  background: #ff5364;
+  color: #fff;
+  opacity: 0;
+  scale: 0.4;
+  transition:
+    opacity 160ms,
+    scale 260ms cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+.hj-pick__check svg {
+  width: 58%;
+  height: 58%;
+}
+.hj-pick.is-picked .hj-pick__check {
+  opacity: 1;
+  scale: 1;
+}
+.hj-pick__name {
+  margin-top: 1cqh;
+  font-size: min(3.2cqw, 4.6cqh);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+}
+.hj-pick .hj-pick__note {
+  max-width: 100%;
+  white-space: normal;
+  font-size: 4.2cqmin;
+  line-height: 0.95;
+  rotate: -2deg;
+}
+.hj-picks:has(.is-picked) .hj-pick:disabled:not(.is-picked) {
+  opacity: 0.35;
+}
+
+/* ---------- Go: a red disc that sends ---------- */
+
+.hj-go {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6em;
+  align-self: flex-start;
+  font-size: min(3.4cqw, 4.8cqh);
+  letter-spacing: -0.01em;
+}
+.hj-go__disc {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 1.9em;
+  height: 1.9em;
+  border-radius: 50%;
+  background: #ff5364;
+  color: #fff;
+  transition: transform 160ms cubic-bezier(0.3, 1.5, 0.5, 1);
+}
+.hj-go__disc svg {
+  width: 55%;
+  height: 55%;
+}
+.hj-go:not(:disabled):hover .hj-go__disc {
+  transform: scale(1.1);
+}
+.hj-go:not(:disabled):active .hj-go__disc {
+  transform: scale(0.94);
+}
+.hj-go:disabled {
+  color: #81858b;
+}
+/* The disc keeps its space but stays out of sight until a pick makes it useful. */
+.hj-go__disc {
+  transition:
+    transform 160ms cubic-bezier(0.3, 1.5, 0.5, 1),
+    opacity 200ms,
+    scale 320ms cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+.hj-go:disabled .hj-go__disc {
+  opacity: 0;
+  scale: 0.5;
+}
+
+/* ---------- Dates: month cards, a stepper and a button, booking-site style ---------- */
+
+/* Plain UI type here, not headline type: Timeless at body sizes, cool greys from the tokens,
+   the accent only on the button. */
+.hj-dates {
+  gap: 3.6cqh;
+  font-size: max(15px, min(2.3cqw, 3.2cqh));
+  color: var(--ds-color-ink, #000);
+}
+.hj-dates__group {
+  display: flex;
+  flex-direction: column;
+  gap: 1.4cqh;
+}
+.hj-dates__label {
+  display: block;
+  font-size: 1.05em;
+  line-height: 1.25;
+}
+.hj-dates__sub {
+  display: block;
+  font-size: 0.85em;
+  color: var(--ds-color-ink-tertiary, #5f6369);
+}
+/* Pills that size to their month and wrap. */
+.hj-dates__months {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.hj-month {
+  display: inline-flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.35em;
+  padding: 0.7em 1em;
+  border: 1px solid var(--ds-color-line, #dcdfe2);
+  border-radius: 999px;
+  background: var(--ds-color-surface-raised, #fff);
+  color: var(--ds-color-ink, #000);
+  font-size: 0.95em;
+  line-height: 1.2;
+  white-space: nowrap;
+  transition:
+    border-color 160ms,
+    box-shadow 160ms,
+    background 160ms;
+}
+.hj-month__year {
+  font-size: 0.82em;
+  color: var(--ds-color-ink-tertiary, #5f6369);
+}
+.hj-month:not(:disabled):hover {
+  border-color: var(--ds-color-ink, #000);
+}
+.hj-month.is-picked {
+  border-color: var(--ds-color-ink, #000);
+  box-shadow: inset 0 0 0 1px var(--ds-color-ink, #000);
+  background: var(--ds-color-surface, #f8f9fa);
+}
+.hj-month.is-picked .hj-month:disabled:not(.is-picked) {
+  opacity: 0.45;
+}
+.hj-dates__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 0.6cqh 0;
+}
+/* The stepper: two black pills with the count between them. */
+.hj-stepper {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+}
+.hj-step {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 32px;
+  border-radius: 999px;
+  background: var(--ds-color-ink, #000);
+  color: var(--ds-color-ink-inverse, #fff);
+  transition:
+    transform 120ms,
+    opacity 160ms;
+}
+.hj-step svg {
+  width: 16px;
+  height: 16px;
+}
+.hj-step:not(:disabled):hover {
+  transform: scale(1.06);
+}
+.hj-step:not(:disabled):active {
+  transform: scale(0.95);
+}
+.hj-step:disabled {
+  opacity: 0.18;
+}
+.hj-stepper__count {
+  min-width: 1.6em;
+  font-size: 1.15em;
+  text-align: center;
+}
+/* The primary button: a full-width pill in the accent red, the same red as the send button. */
+.hj-dates .hj-button {
+  width: 100%;
+  margin: 0;
+  padding: 0.95em 1.2em;
+  border: 0;
+  border-radius: 999px;
+  background: #ff5364;
+  color: var(--ds-color-on-accent, #fff);
+  font: inherit;
+  font-size: 1.05em;
+  font-variation-settings: inherit;
+  cursor: pointer;
+  transition:
+    background 160ms,
+    transform 120ms;
+}
+.hj-dates .hj-button:hover {
+  background: #f23d50;
+}
+.hj-dates .hj-button:active {
+  transform: scale(0.99);
+}
+.hj-dates__said {
+  margin: 0;
+  color: var(--ds-color-ink-tertiary, #5f6369);
+}
+
+/* ---------- Dates: the month calendar ---------- */
+
+/* Seven columns, always six rows, so the panel never changes height. Timeless numerals, no
+   dividers; the arrival and departure days are black discs, the nights between a light well. */
+.hj-cal {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  row-gap: max(6px, 0.9cqh);
+  font-size: 0.95em;
+}
+.hj-cal__weekday {
+  padding-bottom: 4px;
+  font-size: 0.8em;
+  text-align: center;
+  color: var(--ds-color-ink-tertiary, #5f6369);
+}
+/* Each day is a cell the width of its column; the numeral sits in a pill inside it. The range
+   is a band the pills' height behind them, running into the arrival and departure pills and
+   rounded at the ends of each week row, so a stay reads as one capsule a row. */
+.hj-spread .hj-cal__day {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  place-items: center;
+  height: max(34px, min(42px, 5.2cqh));
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #000;
+  font: inherit;
+  font-variation-settings: inherit;
+  text-align: center;
+  cursor: pointer;
+}
+.hj-cal__day > span {
+  display: grid;
+  place-items: center;
+  box-sizing: border-box;
+  min-width: min(100%, 2.7em);
+  height: 100%;
+  padding: 0 0.7em;
+  border-radius: 999px;
+  transition: background 120ms;
+}
+.hj-spread .hj-cal__day::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  display: none;
+  background: var(--ds-color-surface-sunken, #eceef0);
+}
+.hj-spread .hj-cal__day:is(.is-range, .is-start, .is-end)::before {
+  display: block;
+}
+.hj-spread .hj-cal__day.is-start::before {
+  left: 50%;
+}
+.hj-spread .hj-cal__day.is-end::before {
+  right: 50%;
+}
+.hj-spread .hj-cal__day.is-start.is-row-end::before,
+.hj-spread .hj-cal__day.is-end.is-row-start::before {
+  display: none;
+}
+.hj-spread .hj-cal__day.is-range.is-row-start::before {
+  border-radius: 999px 0 0 999px;
+}
+.hj-spread .hj-cal__day.is-range.is-row-end::before {
+  border-radius: 0 999px 999px 0;
+}
+.hj-spread .hj-cal__day.is-range.is-row-start.is-row-end::before {
+  border-radius: 999px;
+}
+/* Hover is a faint wash, lighter than the range, so it never reads as a choice. */
+.hj-spread .hj-cal__day:hover:not(:disabled, .is-picked, .is-range) > span {
+  background: rgb(0 0 0 / 0.04);
+}
+.hj-spread .hj-cal__day:disabled {
+  cursor: default;
+  color: var(--ds-color-ink-disabled, #afb3b8);
+}
+.hj-spread .hj-cal__day.is-out {
+  visibility: hidden;
+}
+.hj-spread .hj-cal__day.is-picked > span {
+  background: #000;
+  color: #fff;
+}
+/* "Back to suggestions": a quiet white pill beside the button. */
+.hj-dates__actions {
+  display: flex;
+  gap: 10px;
+}
+.hj-dates__actions .hj-button {
+  flex: 1;
+  width: auto;
+}
+.hj-dates .hj-button:disabled {
+  background: var(--ds-color-surface-sunken, #e7e9eb);
+  color: var(--ds-color-ink-tertiary, #5f6369);
+  cursor: default;
+}
+.hj-spread .hj-flex {
+  flex: none;
+  margin: 0;
+  padding: 0.95em 1.3em;
+  border: 0;
+  border-radius: 999px;
+  background: #fff;
+  color: #000;
+  font: inherit;
+  font-size: 1.05em;
+  font-variation-settings: inherit;
+  white-space: nowrap;
+  cursor: pointer;
+  box-shadow:
+    0 0 0 1px rgb(0 0 0 / 0.04),
+    0 4px 12px -2px rgb(0 0 0 / 0.05);
+}
+
+/* ---------- Dates: the agent's suggested windows ---------- */
+
+/* Cards read label, dates, why, down one left edge; the calendar pill closes the row. */
+.hj-when {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.8cqmin;
+}
+.hj-spread .hj-when__card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.3em;
+  margin: 0;
+  padding: 1em 1.2em 1.1em;
+  border: 0;
+  border-radius: 22px;
+  corner-shape: squircle;
+  background: #fff;
+  color: #000;
+  font: inherit;
+  font-variation-settings: inherit;
+  text-align: left;
+  cursor: pointer;
+  box-shadow:
+    0 0 0 1px rgb(0 0 0 / 0.02),
+    0 4px 12px -2px rgb(0 0 0 / 0.04),
+    0 12px 32px -4px rgb(0 0 0 / 0.06);
+  transition:
+    box-shadow 200ms,
+    background 160ms,
+    color 160ms;
+}
+.hj-spread .hj-when__card:not(:disabled):hover {
+  box-shadow:
+    0 0 0 1px rgb(0 0 0 / 0.03),
+    0 6px 16px -2px rgb(0 0 0 / 0.07),
+    0 18px 44px -6px rgb(0 0 0 / 0.12);
+}
+.hj-spread .hj-when__card:disabled {
+  cursor: default;
+}
+.hj-when__label {
+  font-size: 1.1em;
+  line-height: 1.15;
+}
+.hj-when__dates {
+  font-size: 0.95em;
+  white-space: nowrap;
+}
+.hj-when__why {
+  color: var(--ds-color-ink-tertiary, #5f6369);
+}
+.hj-when__why {
+  font-size: 0.88em;
+}
+.hj-spread .hj-when__card.is-picked {
+  background: #ff5364;
+  color: #fff;
+}
+.hj-when__card.is-picked .hj-when__why {
+  color: rgb(255 255 255 / 0.85);
+}
+.hj-spread .hj-when__custom {
+  grid-column: 1 / -1;
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  margin: 0.4em 0 0;
+  padding: 0.75em 1.2em;
+  border: 0;
+  border-radius: 999px;
+  background: #fff;
+  color: #000;
+  font: inherit;
+  font-variation-settings: inherit;
+  cursor: pointer;
+  box-shadow:
+    0 0 0 1px rgb(0 0 0 / 0.04),
+    0 4px 12px -2px rgb(0 0 0 / 0.05);
+}
+.hj-when__custom svg {
+  width: 1.1em;
+  height: 1.1em;
+}

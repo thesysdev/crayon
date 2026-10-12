@@ -1,0 +1,420 @@
+/* Explore's other spreads in the Chat tab's column (chat-pieces.tsx). Portrait prints with white
+   edges and a slight tilt, Timeless Serif for what you read, pencil for asides, and Timeless Sans
+   only on the one button. */
+
+.pl-chat-route,
+.pl-chat-picks,
+.pl-chat-dishes,
+.pl-chat-versus,
+.pl-chat-check {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+:is(.pl-chat-route, .pl-chat-picks, .pl-chat-dishes, .pl-chat-check) .pl-chat-heading {
+  margin: 0;
+}
+
+/* A print in these pieces: the chat's print frame. */
+:is(.pl-chat-route__stop, .pl-chat-dish, .pl-chat-versus__side, .pl-chat-price__print) .pl-chat-photo,
+.pl-chat-pick__photo {
+  aspect-ratio: 3 / 4;
+  border: 5px solid #fff;
+  border-radius: 14px;
+  box-shadow: 0 8px 22px -10px rgb(0 0 0 / 0.35);
+  rotate: var(--tilt, 0deg);
+  transition:
+    rotate 420ms cubic-bezier(0.34, 1.56, 0.64, 1),
+    translate 420ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+:is(.pl-chat-route__stop, .pl-chat-dish, .pl-chat-versus__side, .pl-chat-price__print):hover .pl-chat-photo,
+.pl-chat-pick:not(:disabled):hover .pl-chat-pick__photo {
+  rotate: 0deg;
+  translate: 0 -4px;
+}
+:is(.pl-chat-route__stop, .pl-chat-dish, .pl-chat-versus__side, .pl-chat-price__print) {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  margin: 0;
+  cursor: pointer;
+}
+:is(.pl-chat-route__stop, .pl-chat-versus__side) figcaption {
+  font-size: 18px;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+/* ---------- Question ---------- */
+
+.pl-chat-question {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+}
+.pl-chat-question .pl-chat-heading {
+  margin: 0;
+}
+.pl-chat-question.is-answered .pl-chip {
+  pointer-events: none;
+}
+.pl-chat-question__said {
+  margin: 0;
+  color: #ff5364;
+  font-size: 26px;
+  line-height: 1;
+}
+.pl-chat-question__skip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #ff5364;
+  font: inherit;
+  cursor: pointer;
+}
+.pl-chat-question__skip .hj-pen__text {
+  font-size: 26px;
+  line-height: 1;
+}
+.pl-chat-question__skip > :last-child {
+  width: 44px;
+  transition: translate 200ms;
+}
+.pl-chat-question__skip:hover > :last-child {
+  translate: 4px 0;
+}
+
+/* ---------- Route ---------- */
+
+/* Stops and legs alternate in one row: a print, the way to the next, a print. */
+.pl-chat-route__row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) repeat(calc(var(--n) - 1), minmax(104px, 0.62fr) minmax(0, 1fr));
+  align-items: center;
+}
+.pl-chat-route__leg {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 0 6px 28px;
+  color: #ff5364;
+  text-align: center;
+}
+.pl-chat-route__leg > svg {
+  width: 20px;
+  height: 20px;
+  color: #000;
+}
+.pl-chat-route__leg .hj-pen__text {
+  max-width: 100%;
+  font-size: 21px;
+  line-height: 0.95;
+  white-space: normal;
+  text-wrap: balance;
+}
+.pl-chat-route__arrow {
+  display: block;
+  width: 100%;
+  max-width: 80px;
+}
+
+/* ---------- Picks ---------- */
+
+.pl-chat-picks__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 14px;
+}
+.pl-chat-picks__hint {
+  color: #ff5364;
+  font-size: 24px;
+  rotate: -2deg;
+}
+.pl-chat-picks__row {
+  display: grid;
+  grid-template-columns: repeat(var(--n), minmax(0, 1fr));
+  gap: 22px 18px;
+}
+.pl-chat-pick {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #000;
+  font: inherit;
+  font-variation-settings: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.pl-chat-pick:disabled {
+  cursor: default;
+}
+.pl-chat-pick__photo {
+  margin-bottom: 4px;
+}
+.pl-chat-pick.is-picked .pl-chat-pick__photo {
+  border-color: #ff5364;
+}
+/* The tick in the corner: a white disc that fills red when picked. */
+.pl-chat-pick__check {
+  position: absolute;
+  z-index: 2;
+  top: 10px;
+  left: 10px;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.9);
+  color: transparent;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 0.18);
+  transition:
+    background 160ms,
+    color 160ms;
+}
+.pl-chat-pick__check svg {
+  width: 16px;
+  height: 16px;
+}
+.pl-chat-pick.is-picked .pl-chat-pick__check {
+  background: #ff5364;
+  color: #fff;
+}
+.pl-chat-pick:disabled:not(.is-picked) .pl-chat-pick__check {
+  display: none;
+}
+.pl-chat-pick__name {
+  font-size: 21px;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+.pl-chat-pick__note {
+  color: #ff5364;
+  font-size: 22px;
+  line-height: 0.95;
+}
+.pl-chat-picks__go {
+  display: inline-flex;
+  align-self: flex-start;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 12px 22px;
+  border: 0;
+  border-radius: 999px;
+  background: #ff5364;
+  color: #fff;
+  font-family: var(--font-ui), system-ui, sans-serif;
+  font-variation-settings: normal;
+  font-weight: 420;
+  font-size: 15px;
+  letter-spacing: -0.005em;
+  cursor: pointer;
+  transition: background 160ms;
+}
+.pl-chat-picks__go:not(:disabled):hover {
+  background: #f23d50;
+}
+.pl-chat-picks__go:disabled {
+  background: var(--ds-color-surface-sunken, #eceef0);
+  color: var(--ds-color-ink-tertiary, #5f6369);
+  cursor: default;
+}
+.pl-chat-picks__go svg {
+  width: 17px;
+  height: 17px;
+}
+
+/* ---------- Dishes ---------- */
+
+.pl-chat-dishes__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 14px;
+}
+.pl-chat-dishes__note {
+  color: #ff5364;
+  font-size: 24px;
+  rotate: -2deg;
+}
+.pl-chat-dishes__row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+.pl-chat-dish figcaption {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 2px 10px;
+  font-size: 18px;
+  line-height: 1.2;
+}
+.pl-chat-dish__price {
+  white-space: nowrap;
+  color: #5f6369;
+}
+
+/* ---------- Versus ---------- */
+
+.pl-chat-versus__pair {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 18px;
+  max-width: 640px;
+}
+.pl-chat-versus__side figcaption {
+  text-align: center;
+}
+.pl-chat-versus__word {
+  font-size: clamp(36px, 5vw, 52px);
+  line-height: 1;
+  letter-spacing: -0.03em;
+  font-style: italic;
+  padding-bottom: 28px;
+}
+.pl-chat-versus__verdict {
+  margin: 0;
+  color: #ff5364;
+  font-size: 28px;
+  line-height: 1;
+  rotate: -1.5deg;
+}
+
+/* ---------- Price ---------- */
+
+.pl-chat-price {
+  display: grid;
+  grid-template-columns: minmax(0, 220px) minmax(0, 1fr);
+  align-items: center;
+  gap: 32px;
+}
+.pl-chat-price__print {
+  --tilt: -1.4deg;
+}
+.pl-chat-price__words {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+}
+.pl-chat-price__amount {
+  display: inline-block;
+  padding: 0.05em 0.15em;
+  font-size: clamp(56px, 8vw, 88px);
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+.pl-chat-price__item {
+  margin: 0;
+  font-size: clamp(22px, 2.8vw, 28px);
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+.pl-chat-price__note {
+  color: #ff5364;
+  font-size: 28px;
+  line-height: 1;
+  rotate: -2deg;
+}
+
+/* ---------- Checklist ---------- */
+
+.pl-chat-check__list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.pl-chat-check__row {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 18px;
+  cursor: pointer;
+}
+.pl-chat-check__thumb.pl-chat-photo {
+  aspect-ratio: 4 / 5;
+  border: 3px solid #fff;
+  border-radius: 10px;
+  box-shadow: 0 6px 16px -8px rgb(0 0 0 / 0.35);
+}
+/* The heart is too big for a thumbnail; the row opens the place's sheet instead. */
+.pl-chat-check__thumb .pl-heart {
+  display: none;
+}
+.pl-chat-check__text {
+  font-size: 21px;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
+.pl-chat-check__aside {
+  color: #ff5364;
+  font-size: 22px;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+@media (max-width: 760px) {
+  /* The route reads down the column: a print, the way on, the next print. */
+  .pl-chat-route__row {
+    grid-template-columns: minmax(0, 220px);
+    justify-content: center;
+  }
+  .pl-chat-route__leg {
+    flex-direction: row;
+    justify-content: center;
+    padding: 14px 0;
+  }
+  .pl-chat-route__arrow {
+    width: 40px;
+    rotate: 90deg;
+  }
+  .pl-chat-picks__row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .pl-chat-dishes__row {
+    gap: 10px;
+  }
+  .pl-chat-dish figcaption {
+    flex-direction: column;
+    gap: 2px;
+    font-size: 16px;
+  }
+  .pl-chat-price {
+    grid-template-columns: minmax(0, 140px) minmax(0, 1fr);
+    gap: 20px;
+  }
+  .pl-chat-check__row {
+    grid-template-columns: 52px minmax(0, 1fr);
+  }
+  .pl-chat-check__aside {
+    grid-column: 2;
+    margin-top: -10px;
+  }
+}
+
+/* Pencil notes here wrap within their column (the journal's pen notes never wrap). */
+:is(.pl-chat-pick__note, .pl-chat-versus__verdict, .pl-chat-price__note, .pl-chat-dishes__note, .pl-chat-picks__hint, .pl-chat-question__said) {
+  max-width: 100%;
+  white-space: normal;
+}

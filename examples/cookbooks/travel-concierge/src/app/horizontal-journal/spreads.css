@@ -1,0 +1,732 @@
+/* The journal's spreads, after /design/pairings. Each spread is a size container, so every
+   measure below is in cqw / cqh / cqmin of the page and a spread scales to any box: a full
+   screen in the journal, a stage in /components. Timeless Serif Regular is inherited from the
+   page; Drawably Pen (--font-hand) is only for the handwritten notes. The spread's own padding
+   reads the box it sits in, so its parent is a size container too (.hj-strip, .hj-frame). */
+
+.hj-frame {
+  container-type: size;
+}
+
+.hj-spread {
+  --pad-left: max(104px, 7cqw);
+  --gap: 8px;
+  container-type: size;
+  position: relative;
+  box-sizing: border-box;
+  overflow: hidden;
+  background: #f1f2f3;
+  color: #000;
+}
+.hj-spread :where(h2, p, ul, li, figure, figcaption) {
+  margin: 0;
+  padding: 0;
+  font-weight: inherit;
+}
+.hj-spread h2 {
+  font-size: min(8cqw, 13cqh);
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+}
+/* drawably's hosts default to Inter; marks keep the type they sit in, and a circle measures
+   the whole word it loops around. */
+.hj-spread .drawably-host {
+  font-family: inherit;
+}
+.hj-spread .drawably-circle {
+  display: inline-block;
+}
+/* Bold over muted: the highlighter goes on thick. */
+.hj-spread .drawably-svg .drawably-wash,
+.hj-sheet .drawably-svg .drawably-wash {
+  stroke-opacity: 0.75;
+}
+
+/* ---------- Photos ---------- */
+
+.hj-img {
+  position: relative;
+  overflow: hidden;
+  min-height: 0;
+  background: #dcdfe2;
+}
+.hj-img img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  animation: hj-fade 600ms ease both;
+}
+.hj-img.is-loading,
+.hj-inline.is-loading {
+  animation: hj-pulse 1.4s ease-in-out infinite;
+}
+@keyframes hj-fade {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes hj-pulse {
+  50% {
+    background: #e8eaec;
+  }
+}
+
+/* ---------- Pen and arrows ---------- */
+
+.hj-pen {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3em;
+  font-size: 4.6cqmin;
+}
+.hj-pen.is-stacked {
+  flex-direction: column;
+  gap: 0.25em;
+}
+.hj-pen.is-stacked.hj-pen--start {
+  align-items: flex-start;
+}
+.hj-pen.is-stacked.hj-pen--end {
+  align-items: flex-end;
+}
+.hj-pen__text {
+  display: inline-block;
+  font-family: var(--font-hand), cursive;
+  white-space: nowrap;
+  font-weight: 400;
+  font-variation-settings: normal;
+  line-height: 1.05;
+  letter-spacing: 0;
+  rotate: -3deg;
+}
+.hj-arrow {
+  position: relative;
+  display: inline-block;
+  flex: none;
+}
+.hj-arrow svg {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  overflow: visible;
+}
+.hj-arrow-draw {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: hj-arrow-draw 900ms cubic-bezier(0.2, 0, 0, 1) 300ms forwards;
+}
+@keyframes hj-arrow-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hj-arrow-draw {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
+}
+
+/* ---------- Bleed: full photo, huge title ---------- */
+
+.hj-bleed > .hj-img {
+  position: absolute;
+  inset: 0;
+}
+.hj-bleed::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgb(0 0 0 / 0.12), rgb(0 0 0 / 0) 30%, rgb(0 0 0 / 0) 50%, rgb(0 0 0 / 0.5));
+  pointer-events: none;
+}
+.hj-bleed h2 {
+  position: absolute;
+  z-index: 1;
+  left: var(--pad-left);
+  right: 4cqw;
+  bottom: 3cqh;
+  color: #fff;
+  font-size: min(19cqw, 32cqh);
+  line-height: 0.88;
+  letter-spacing: -0.04em;
+}
+.hj-bleed__pen {
+  position: absolute;
+  z-index: 1;
+  right: 7cqw;
+  top: 8cqh;
+  font-size: 5.2cqmin;
+  text-shadow: 0 2px 12px rgb(0 0 0 / 0.3);
+}
+
+/* ---------- Split: colour block beside a photo ---------- */
+
+.hj-split {
+  display: grid;
+  grid-template-columns: 1fr 1.15fr;
+  gap: var(--gap);
+}
+.hj-split__block {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 4cqh;
+  padding: 7cqh 4cqw 7cqh var(--pad-left);
+}
+.hj-split h2 {
+  font-size: min(7.4cqw, 12.5cqh);
+}
+.hj-split p {
+  max-width: 22em;
+  font-size: max(17px, 2.7cqmin);
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+.hj-split__pen {
+  align-self: flex-end;
+}
+.hj-split.is-flipped {
+  grid-template-columns: 1.15fr 1fr;
+}
+.hj-split.is-flipped > .hj-img {
+  order: -1;
+}
+.hj-split.is-flipped .hj-split__block {
+  padding-left: 4cqw;
+}
+.hj-split.is-flipped .hj-split__pen {
+  align-self: flex-start;
+}
+
+/* ---------- Trio: three food photos under a headline ---------- */
+
+.hj-trio {
+  display: flex;
+  flex-direction: column;
+  gap: 3cqh;
+  padding: 6cqh 4cqw 5cqh var(--pad-left);
+}
+.hj-trio header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 4cqw;
+}
+.hj-trio header .hj-pen {
+  flex: none;
+  margin-right: 2cqw;
+}
+.hj-trio__row {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--gap);
+}
+.hj-trio figure {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.hj-trio figure > .hj-img {
+  flex: 1;
+}
+.hj-trio figcaption {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1em;
+  padding: 1.8cqh 0.6em 0 2px;
+  font-size: 4.4cqmin;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+.hj-trio__price {
+  display: inline-block;
+  font-size: 2.6cqmin;
+  letter-spacing: 0;
+}
+
+/* ---------- Sentence: photos set into the line ---------- */
+
+.hj-sentence {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5cqh;
+  padding: 6cqh 6cqw 6cqh var(--pad-left);
+}
+.hj-sentence h2 {
+  max-width: 15em;
+  font-size: min(7.2cqw, 11.5cqh);
+  line-height: 1.08;
+}
+.hj-inline {
+  display: inline-block;
+  width: 1.6em;
+  height: 0.82em;
+  margin: 0 0.02em;
+  overflow: hidden;
+  vertical-align: -0.08em;
+  border-radius: 999px;
+  background: #dcdfe2;
+}
+.hj-inline.is-wide {
+  width: 2.3em;
+}
+.hj-inline img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  animation: hj-fade 600ms ease both;
+}
+.hj-sentence__pen {
+  align-self: flex-end;
+  margin-right: 10cqw;
+  font-size: 5cqmin;
+}
+
+/* ---------- Route: photo to photo with arrows ---------- */
+
+.hj-route {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5cqh;
+  padding: 6cqh 4cqw 6cqh var(--pad-left);
+}
+.hj-route.is-dark {
+  background: #000;
+  color: #fff;
+}
+.hj-route h2 {
+  font-size: min(7cqw, 12cqh);
+}
+.hj-route__row {
+  display: flex;
+  align-items: center;
+}
+.hj-route figure {
+  flex: 1;
+  min-width: 0;
+}
+.hj-route figure > .hj-img {
+  height: 46cqh;
+}
+.hj-route figure.is-tall > .hj-img {
+  height: 54cqh;
+}
+.hj-route figcaption {
+  margin-top: 1.6cqh;
+  font-size: 4.6cqmin;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+.hj-route__leg {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2em;
+  width: 12cqw;
+  padding: 0 0.6cqw;
+  font-size: 3.6cqmin;
+  text-align: center;
+}
+.hj-route__leg .hj-pen__text {
+  max-width: 100%;
+  white-space: normal;
+  rotate: -4deg;
+}
+
+/* ---------- Quote: a big line beside a photo ---------- */
+
+.hj-quote {
+  display: grid;
+  grid-template-columns: 1.25fr 1fr;
+  gap: 5cqw;
+  padding: 7cqh 4cqw 7cqh var(--pad-left);
+}
+.hj-quote__words {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 5cqh;
+}
+.hj-quote p {
+  font-size: min(5.8cqw, 9.5cqh);
+  line-height: 1.02;
+  letter-spacing: -0.03em;
+}
+.hj-quote.is-flipped {
+  grid-template-columns: 1fr 1.25fr;
+}
+.hj-quote.is-flipped > .hj-img {
+  order: -1;
+}
+
+/* ---------- Versus: two photos head to head ---------- */
+
+.hj-versus {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2.5cqh;
+  padding: 4cqh 4cqw 4cqh var(--pad-left);
+}
+.hj-versus__pair {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  align-self: stretch;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--gap);
+}
+.hj-versus__label {
+  position: absolute;
+  left: 3cqw;
+  top: 3cqh;
+  color: #fff;
+  font-size: 6cqmin;
+  text-shadow: 0 1px 3px rgb(0 0 0 / 0.5), 0 2px 18px rgb(0 0 0 / 0.55);
+}
+.hj-versus h2 {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  translate: -50% -50%;
+  padding: 0.02em 0.25em 0.14em;
+  color: #fff;
+  font-size: min(10cqw, 17cqh);
+  white-space: nowrap;
+}
+.hj-versus__pen {
+  font-size: 5cqmin;
+}
+
+/* ---------- Price: a huge circled price ---------- */
+
+.hj-price {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+}
+.hj-price__words {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 4cqh;
+  padding: 12cqh 5cqw 8cqh 5cqw;
+}
+.hj-price__amount {
+  display: inline-block;
+  padding: 0 0.08em;
+  font-size: min(11cqw, 19cqh);
+  line-height: 1;
+  letter-spacing: -0.04em;
+  white-space: nowrap;
+}
+.hj-price p {
+  margin-top: 7cqh;
+  font-size: min(4.6cqw, 7cqh);
+  line-height: 1;
+  letter-spacing: -0.025em;
+}
+
+/* ---------- Checklist ---------- */
+
+.hj-checklist {
+  display: grid;
+  grid-template-columns: 1fr 1.7fr;
+  align-items: center;
+  gap: 5cqw;
+  padding: 6cqh 4cqw 6cqh var(--pad-left);
+}
+.hj-checklist ul {
+  list-style: none;
+}
+.hj-checklist li {
+  display: grid;
+  grid-template-columns: min(12cqw, 15cqh) 1fr auto;
+  align-items: center;
+  gap: 2cqw;
+  padding: 1.6cqh 0;
+  border-top: 1px solid #000;
+}
+.hj-checklist li > .hj-img {
+  aspect-ratio: 4 / 3;
+}
+.hj-checklist__text {
+  font-size: min(3.4cqw, 5.2cqh);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+}
+.hj-checklist li .hj-pen__text {
+  font-size: 3.4cqmin;
+  white-space: nowrap;
+}
+
+/* ---------- Mosaic ---------- */
+
+.hj-mosaic__grid {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  grid-template-areas: "a b c" "a d e";
+  gap: var(--gap);
+}
+.hj-mosaic__grid > :nth-child(1) {
+  grid-area: a;
+}
+.hj-mosaic__grid > :nth-child(2) {
+  grid-area: b;
+}
+.hj-mosaic__grid > :nth-child(3) {
+  grid-area: c;
+}
+.hj-mosaic__grid > :nth-child(4) {
+  grid-area: d;
+}
+.hj-mosaic__grid > :nth-child(5) {
+  grid-area: e;
+}
+.hj-mosaic__note {
+  position: absolute;
+  left: 2cqw;
+  bottom: 2.4cqh;
+  color: #fff;
+  font-size: 4.6cqmin;
+  text-shadow: 0 1px 3px rgb(0 0 0 / 0.45), 0 2px 16px rgb(0 0 0 / 0.5);
+}
+.hj-mosaic h2 {
+  position: absolute;
+  z-index: 1;
+  left: var(--pad-left);
+  bottom: 6cqh;
+  max-width: 34cqw;
+  padding: 0.1em 0.3em 0.22em 0.32em;
+  font-size: min(6.4cqw, 10cqh);
+}
+
+/* ---------- Stays: trivago hotels ---------- */
+
+.hj-stays {
+  display: flex;
+  flex-direction: column;
+  gap: 3.5cqh;
+  padding: 6cqh 4cqw 6cqh var(--pad-left);
+}
+.hj-stays header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 4cqw;
+}
+.hj-stays header .hj-pen {
+  flex: none;
+  margin-right: 2cqw;
+}
+.hj-stays__row {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: repeat(var(--n), minmax(0, 1fr));
+  gap: 2cqw;
+}
+.hj-hotel {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2cqh;
+  min-height: 0;
+  color: inherit;
+  text-decoration: none;
+}
+.hj-hotel__photo {
+  display: block;
+  flex: 1;
+}
+.hj-hotel__name {
+  min-height: 2.04em;
+  font-size: min(2.6cqw, 4.2cqh);
+  line-height: 1.02;
+  letter-spacing: -0.02em;
+}
+.hj-hotel__line {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1em;
+  font-size: min(2.2cqw, 3.6cqh);
+}
+.hj-hotel__price {
+  display: inline-block;
+  padding: 0 0.1em;
+}
+.hj-hotel__where {
+  overflow: hidden;
+  font-size: min(1.3cqw, 2.2cqh);
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  opacity: 0.6;
+}
+
+/* ---------- Interactive cards ---------- */
+
+/* Every photo that opens the detail sheet lifts toward you and turns a little, alternating the
+   turn so a row of them fans. Photos that fill a page or a column zoom inside their frame instead. */
+.hj-card,
+.hj-hotel {
+  cursor: pointer;
+  outline: none;
+}
+.hj-card,
+.hj-hotel__photo {
+  transition:
+    transform 450ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    box-shadow 450ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.hj-card img,
+.hj-hotel__photo img {
+  transition: transform 700ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.hj-card:is(:hover, :focus-visible),
+.hj-hotel:is(:hover, :focus-visible) .hj-hotel__photo {
+  z-index: 2;
+  transform: translateY(-1.2cqh) scale(1.035) rotate(-1.2deg);
+  box-shadow: 0 30px 60px -20px rgb(0 0 0 / 0.45);
+}
+:is(.hj-trio figure, .hj-route figure, .hj-versus__pair > *, .hj-checklist li, .hj-mosaic__grid > *, .hj-hotel):nth-child(even) .hj-card:is(:hover, :focus-visible),
+.hj-versus__pair > .hj-card:nth-child(even):is(:hover, :focus-visible),
+.hj-mosaic__grid > .hj-card:nth-child(even):is(:hover, :focus-visible),
+.hj-hotel:nth-child(even):is(:hover, :focus-visible) .hj-hotel__photo {
+  transform: translateY(-1.2cqh) scale(1.035) rotate(1.2deg);
+}
+.hj-card:is(:hover, :focus-visible) img,
+.hj-hotel:is(:hover, :focus-visible) .hj-hotel__photo img {
+  transform: scale(1.06);
+}
+/* Full-page and full-column photos stay put and zoom inside. */
+:is(.hj-bleed, .hj-split, .hj-price, .hj-quote) > .hj-card:is(:hover, :focus-visible) {
+  transform: none;
+  box-shadow: none;
+}
+.hj-checklist li .hj-card:is(:hover, :focus-visible) {
+  transform: scale(1.12) rotate(-3deg);
+}
+.hj-inline.hj-card:is(:hover, :focus-visible) {
+  position: relative;
+  transform: scale(1.25) rotate(-6deg);
+}
+.hj-card:active {
+  transition-duration: 120ms;
+  transform: scale(0.98);
+}
+@media (prefers-reduced-motion: reduce) {
+  .hj-card,
+  .hj-card img,
+  .hj-hotel__photo,
+  .hj-hotel__photo img {
+    transition: none;
+  }
+}
+
+/* ---------- Narrow screens ---------- */
+
+@media (max-width: 760px) {
+  .hj-spread {
+    --pad-left: 6cqw;
+  }
+  .hj-split,
+  .hj-split.is-flipped,
+  .hj-quote,
+  .hj-quote.is-flipped,
+  .hj-price,
+  .hj-checklist {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+  .hj-quote,
+  .hj-checklist {
+    padding-top: 12cqh;
+  }
+  .hj-trio__row {
+    grid-template-columns: 1fr;
+  }
+  .hj-route__row {
+    flex-direction: column;
+  }
+  .hj-route figure > .hj-img,
+  .hj-route figure.is-tall > .hj-img {
+    height: 18cqh;
+  }
+  .hj-versus__pair {
+    grid-template-columns: 1fr;
+  }
+  .hj-stays__row {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* ---------- Samples in /components ---------- */
+
+.hj-samples {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+.hj-samples .hj-frame {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  border-radius: 20px;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.04), 0 24px 48px -16px rgb(0 0 0 / 0.18);
+}
+.hj-frame div:not(.hj-spread div) {
+  display: contents;
+}
+.hj-frame .hj-spread {
+  width: 100%;
+  height: 100%;
+  --pad-left: 5cqw;
+}
+.hj-sheet {
+  display: flex;
+  flex-direction: column;
+  gap: 56px;
+  padding: 56px 48px;
+  border-radius: 20px;
+  background: #f1f2f3;
+  color: #000;
+}
+.hj-sheet__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 40px 32px;
+  font-size: 40px;
+}
+.hj-sheet__grid .hj-pen,
+.hj-sheet__row .hj-pen {
+  font-size: 40px;
+}
+.hj-sheet__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 40px 48px;
+}
+.hj-sheet--type p {
+  margin: 0;
+  font-size: clamp(48px, 6vw, 96px);
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+}
+.hj-sheet--type .drawably-host {
+  font-family: inherit;
+}

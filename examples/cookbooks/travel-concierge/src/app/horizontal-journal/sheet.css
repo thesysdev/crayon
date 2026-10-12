@@ -1,0 +1,321 @@
+/* The detail sheet, after an Airbnb listing: title, a five-photo grid, then the story on the
+   left and a sticky booking card on the right. Timeless Serif throughout, sized for hierarchy;
+   Drawably Pen only for the aside. */
+
+.hj-sheet-backdrop {
+  position: fixed;
+  z-index: 40;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 3vh 3vw;
+  background: rgb(0 0 0 / 0.45);
+  backdrop-filter: blur(6px);
+  animation: hj-sheet-fade 220ms ease both;
+}
+.hj-sheet-panel {
+  position: relative;
+  box-sizing: border-box;
+  width: min(1120px, 100%);
+  max-height: 94vh;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: none;
+  border-radius: 24px;
+  background: #fff;
+  color: #000;
+  outline: none;
+  box-shadow: 0 40px 120px -20px rgb(0 0 0 / 0.5);
+  animation: hj-sheet-rise 380ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+@keyframes hj-sheet-fade {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes hj-sheet-rise {
+  from {
+    opacity: 0;
+    transform: translateY(32px) scale(0.97);
+  }
+}
+/* In /components the sheet sits on the stage instead of floating over the journal. */
+.hj-sheet-panel--inline {
+  max-height: none;
+  overflow: visible;
+  animation: none;
+}
+.hj-sheet-panel > div {
+  display: contents;
+}
+.hj-sheet-close {
+  position: absolute;
+  z-index: 2;
+  top: 20px;
+  right: 22px;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #000;
+  cursor: pointer;
+  transition: transform 150ms;
+}
+.hj-sheet-close:hover {
+  transform: rotate(90deg);
+}
+
+.hj-doc {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  padding: 40px 48px 56px;
+}
+/* journal.css resets these later in the cascade, so the sheet's own spacing below is scoped one deeper. */
+.hj-doc :where(h1, h3, p, ul, li) {
+  margin: 0;
+  padding: 0;
+  font-weight: inherit;
+}
+.hj-doc header {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-right: 48px;
+}
+.hj-doc h1 {
+  font-size: 56px;
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+.hj-doc__muted {
+  color: rgb(0 0 0 / 0.55);
+}
+.hj-doc header p {
+  font-size: 20px;
+}
+.hj-doc__strong {
+  font-size: 20px;
+  line-height: 1.2;
+}
+
+/* One tall photo and four small, rounded as a group. */
+.hj-doc__photos {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  grid-template-rows: 200px 200px;
+  gap: 8px;
+  overflow: hidden;
+  border-radius: 18px;
+}
+.hj-doc__photos > :first-child {
+  grid-row: span 2;
+}
+.hj-doc__photos .hj-img {
+  height: 100%;
+}
+
+.hj-doc__body {
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(300px, 1fr);
+  gap: 64px;
+  align-items: start;
+}
+.hj-doc__main {
+  display: flex;
+  flex-direction: column;
+}
+.hj-doc .hj-doc__main > * + * {
+  padding-top: 28px;
+  margin-top: 28px;
+  border-top: 1px solid rgb(0 0 0 / 0.12);
+}
+.hj-doc__highlights {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  list-style: none;
+}
+.hj-doc__highlights li {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 17px;
+  line-height: 1.35;
+}
+.hj-doc__about {
+  font-size: 20px;
+  line-height: 1.45;
+}
+.hj-doc__section h3 {
+  margin-bottom: 18px;
+  font-size: 30px;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+}
+.hj-doc__things {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px 16px;
+}
+.hj-doc__thing {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 15px;
+  line-height: 1.3;
+}
+.hj-doc__thing .hj-img {
+  aspect-ratio: 1;
+  margin-bottom: 6px;
+  border-radius: 14px;
+}
+.hj-doc__thing .hj-doc__strong {
+  font-size: 18px;
+}
+.hj-doc__tips {
+  display: flex;
+  flex-direction: column;
+  list-style: none;
+  font-size: 17px;
+  line-height: 1.35;
+}
+.hj-doc__tips li {
+  padding: 12px 0;
+  border-top: 1px solid rgb(0 0 0 / 0.1);
+}
+.hj-doc__tips li:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+/* The sticky card on the right. */
+.hj-doc aside {
+  position: sticky;
+  top: 24px;
+  min-width: 0;
+}
+.hj-doc__card {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 24px;
+  border: 1px solid rgb(0 0 0 / 0.1);
+  border-radius: 18px;
+  box-shadow: 0 8px 28px rgb(0 0 0 / 0.12);
+}
+.hj-doc__pen {
+  align-self: flex-start;
+  max-width: 100%;
+  font-size: 30px;
+}
+.hj-doc__booking {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.hj-doc__from {
+  font-size: 40px;
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+.hj-doc__booking ul {
+  display: flex;
+  flex-direction: column;
+  list-style: none;
+}
+.hj-doc__booking li + li {
+  border-top: 1px solid rgb(0 0 0 / 0.08);
+}
+.hj-doc__booking li a {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  color: inherit;
+  text-decoration: none;
+}
+.hj-doc__booking li .hj-img {
+  display: block;
+  width: 56px;
+  height: 56px;
+  border-radius: 10px;
+}
+.hj-doc__hotel {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  font-size: 16px;
+  line-height: 1.25;
+}
+.hj-doc__hotel > * {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.hj-doc__hotel .hj-doc__muted {
+  font-size: 14px;
+}
+.hj-doc__price {
+  font-size: 18px;
+}
+.hj-doc__booking li a:hover .hj-doc__hotel > :first-child {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.hj-doc__book {
+  display: block;
+  padding: 16px;
+  border-radius: 12px;
+  background: #ff5364;
+  color: #fff;
+  font-size: 18px;
+  text-align: center;
+  text-decoration: none;
+  transition: transform 150ms, background 150ms;
+}
+.hj-doc__book:hover {
+  background: #f03a4c;
+  transform: translateY(-1px);
+}
+
+.hj-doc.is-waiting h1 {
+  animation: hj-pulse-text 1.6s ease-in-out infinite;
+}
+
+@media (max-width: 860px) {
+  .hj-doc {
+    padding: 28px 20px 40px;
+  }
+  .hj-doc h1 {
+    font-size: 40px;
+  }
+  .hj-doc__photos {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 220px 120px 120px;
+  }
+  .hj-doc__photos > :first-child {
+    grid-row: auto;
+    grid-column: span 2;
+  }
+  .hj-doc__body {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+  .hj-doc aside {
+    position: static;
+  }
+  .hj-doc__things {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+.hj-doc__pen .hj-pen__text {
+  max-width: 100%;
+  white-space: normal;
+}

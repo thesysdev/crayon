@@ -1,0 +1,124 @@
+/* Hand-drawn stickers: a black pencil line that draws itself in, a touch wobbly at the joins. */
+.pl-doodle {
+  overflow: visible;
+  flex: none;
+}
+.pl-doodle path {
+  fill: none;
+  stroke: #000;
+  stroke-width: 4.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: pl-doodle-draw 700ms cubic-bezier(0.3, 0, 0.2, 1) 120ms forwards;
+}
+@keyframes pl-doodle-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pl-doodle path {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
+}
+
+/* On a card: a corner sticker tucks over the photo's top-right corner; one beside sits half out
+   on the right edge, level with the photo; above and below take their own row, so they push the
+   card's neighbours aside rather than covering anything. */
+.pl-card-wrap {
+  position: relative;
+}
+.pl-sticker--corner {
+  position: absolute;
+  z-index: 2;
+  top: -14px;
+  right: -12px;
+}
+.pl-sticker--beside {
+  position: absolute;
+  z-index: 2;
+  top: 38%;
+  right: -26px;
+}
+.pl-stickers {
+  display: flex;
+  gap: 10px;
+  padding: 0 14px;
+}
+.pl-stickers--above {
+  margin-bottom: 8px;
+}
+.pl-stickers--below {
+  margin-top: 8px;
+  justify-content: flex-end;
+}
+
+/* The doodle set in /components. */
+.pl-doodle-sheet {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 24px;
+}
+.pl-doodle-sheet figure {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  font-size: 14px;
+  color: #5f6369;
+}
+
+/* ---------- Die-cut stickers ---------- */
+
+.pl-sticker-art {
+  overflow: visible;
+  flex: none;
+  filter: drop-shadow(0 2px 2px rgb(0 0 0 / 0.12)) drop-shadow(0 6px 10px rgb(0 0 0 / 0.14));
+  animation: pl-sticker-press 460ms cubic-bezier(0.3, 1.6, 0.5, 1) 80ms both;
+}
+.pl-sticker-art__die path {
+  fill: #fff;
+  stroke: #fff;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.pl-sticker-art__fill {
+  fill: currentColor;
+  stroke: currentColor;
+  stroke-width: 3;
+  stroke-linejoin: round;
+}
+.pl-sticker-art__line {
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.pl-sticker-art__face {
+  fill: none;
+  stroke: rgb(0 0 0 / 0.78);
+  stroke-width: 4.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+/* Pressed onto the board: it lands a little big and settles. */
+@keyframes pl-sticker-press {
+  from {
+    opacity: 0;
+    transform: scale(1.35);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pl-sticker-art {
+    animation: none;
+  }
+}
+.pl-doodle-sheet--big {
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 36px 24px;
+  padding: 40px;
+}

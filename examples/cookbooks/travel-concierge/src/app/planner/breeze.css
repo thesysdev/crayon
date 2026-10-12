@@ -1,0 +1,114 @@
+/* The loading sketches (breeze.tsx): black pencil, drawn in stroke by stroke, carried sideways
+   on a breeze with a little sway, then gone. */
+.pl-breeze {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.pl-breeze__sketch {
+  position: absolute;
+  width: clamp(72px, 8vw, 120px);
+  height: auto;
+  overflow: visible;
+  animation: pl-breeze-drift 5.6s ease-in-out forwards;
+}
+/* Outlines in a soft cool grey, lighter than the notes: ambient, not busy. */
+.pl-breeze__line {
+  fill: none;
+  stroke: #b9bfc7;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.pl-breeze__still .pl-breeze__line {
+  stroke-width: 2;
+}
+.pl-breeze__sketch .pl-breeze__line {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: pl-breeze-draw 2.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+/* The pale tints wash in once the outline is mostly drawn. */
+.pl-breeze__sketch .pl-breeze__fill {
+  opacity: 0;
+  animation: pl-breeze-dot 900ms ease-out 1.4s forwards;
+}
+/* The trail's dots appear one after another behind the plane, once its outline is drawn. */
+.pl-breeze__sketch circle {
+  fill: #afb3b8;
+}
+.pl-breeze__still circle {
+  fill: #b9bfc7;
+}
+.pl-breeze__dot {
+  opacity: 0;
+  animation: pl-breeze-dot 260ms ease-out forwards;
+  animation-delay: calc(1.6s + var(--d) * 140ms);
+}
+@keyframes pl-breeze-dot {
+  to {
+    opacity: 1;
+  }
+}
+@keyframes pl-breeze-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes pl-breeze-drift {
+  0% {
+    opacity: 0;
+    translate: -10px 0;
+    rotate: -3deg;
+  }
+  15% {
+    opacity: 0.7;
+  }
+  45% {
+    rotate: 3deg;
+  }
+  70% {
+    opacity: 0.7;
+    rotate: -2deg;
+  }
+  100% {
+    opacity: 0;
+    translate: 50px -6px;
+    rotate: 4deg;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pl-breeze__dot {
+    animation: none;
+    opacity: 1;
+  }
+  .pl-breeze__sketch,
+  .pl-breeze__sketch .pl-breeze__line,
+  .pl-breeze__sketch .pl-breeze__fill {
+    animation: none;
+    stroke-dashoffset: 0;
+    opacity: 0.8;
+  }
+}
+
+/* The sheet in /components. */
+.pl-breeze-sheet {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 24px;
+}
+.pl-breeze-sheet figure {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: 14px;
+  color: #5f6369;
+}
+.pl-breeze__still {
+  width: 110px;
+  height: auto;
+}

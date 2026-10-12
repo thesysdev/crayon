@@ -1,0 +1,316 @@
+/* Dates in the Chat tab (chat-dates.tsx): the guided flow's windows and calendar, sized for the
+   centred column. The windows read like the chat's other cards, in Timeless Serif on white with
+   a soft shadow; what you press (the pills, the days, the button) is set in Timeless Sans. */
+
+.pl-chat-dates {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 18px;
+}
+.pl-chat-dates > .pl-chat-heading {
+  margin: 0;
+}
+
+/* ---------- The suggested windows ---------- */
+
+.pl-chat-when {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.pl-chat-when__card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 18px 20px 20px;
+  border: 0;
+  border-radius: 22px;
+  corner-shape: squircle;
+  background: #fff;
+  color: #000;
+  font: inherit;
+  font-variation-settings: inherit;
+  text-align: left;
+  cursor: pointer;
+  box-shadow:
+    0 0 0 1px rgb(0 0 0 / 0.03),
+    0 4px 12px -2px rgb(0 0 0 / 0.05),
+    0 12px 32px -4px rgb(0 0 0 / 0.07);
+  transition:
+    box-shadow 200ms,
+    background 160ms,
+    color 160ms,
+    opacity 160ms;
+}
+.pl-chat-when__card:not(:disabled):hover {
+  box-shadow:
+    0 0 0 1px rgb(0 0 0 / 0.04),
+    0 6px 16px -2px rgb(0 0 0 / 0.08),
+    0 18px 44px -6px rgb(0 0 0 / 0.13);
+}
+.pl-chat-when__card:not(:disabled):active {
+  transform: scale(0.99);
+}
+.pl-chat-when__card:disabled {
+  cursor: default;
+}
+.pl-chat-when__label {
+  font-size: 22px;
+  line-height: 1.15;
+  letter-spacing: -0.015em;
+}
+.pl-chat-when__dates {
+  font-size: 17px;
+  line-height: 1.3;
+}
+.pl-chat-when__why {
+  font-size: 15px;
+  line-height: 1.35;
+  color: var(--ds-color-ink-tertiary, #5f6369);
+  text-wrap: pretty;
+}
+/* The window that was picked turns the accent red; the others step back. */
+.pl-chat-when__card.is-picked {
+  background: #ff5364;
+  color: #fff;
+}
+.pl-chat-when__card.is-picked .pl-chat-when__why {
+  color: rgb(255 255 255 / 0.85);
+}
+.pl-chat-when__card.is-faded {
+  opacity: 0.45;
+}
+
+/* ---------- Pills and the button ---------- */
+
+.pl-chat-dates__pill,
+.pl-chat-dates__go,
+.pl-chat-cal__month,
+.pl-chat-cal__day,
+.pl-chat-cal__weekday {
+  font-family: var(--font-ui), system-ui, sans-serif;
+  font-variation-settings: normal;
+  font-weight: 420;
+  letter-spacing: -0.005em;
+}
+.pl-chat-dates__pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 11px 18px;
+  border: 0;
+  border-radius: 999px;
+  background: #fff;
+  color: #000;
+  font-size: 15px;
+  white-space: nowrap;
+  cursor: pointer;
+  box-shadow:
+    0 0 0 1px rgb(0 0 0 / 0.06),
+    0 4px 12px -2px rgb(0 0 0 / 0.06);
+  transition: box-shadow 160ms;
+}
+.pl-chat-dates__pill:hover {
+  box-shadow:
+    0 0 0 1px rgb(0 0 0 / 0.1),
+    0 6px 16px -2px rgb(0 0 0 / 0.09);
+}
+.pl-chat-dates__pill svg {
+  width: 17px;
+  height: 17px;
+}
+/* The primary button, in the send button's red. */
+.pl-chat-dates__go {
+  display: inline-flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 0;
+  padding: 12px 20px;
+  border: 0;
+  border-radius: 999px;
+  background: #ff5364;
+  color: #fff;
+  font-size: 15px;
+  cursor: pointer;
+  transition:
+    background 160ms,
+    transform 120ms;
+}
+.pl-chat-dates__go:not(:disabled):hover {
+  background: #f23d50;
+}
+.pl-chat-dates__go:not(:disabled):active {
+  transform: scale(0.99);
+}
+.pl-chat-dates__go:disabled {
+  background: var(--ds-color-surface-sunken, #eceef0);
+  color: var(--ds-color-ink-tertiary, #5f6369);
+  cursor: default;
+}
+.pl-chat-dates__go svg {
+  width: 17px;
+  height: 17px;
+}
+
+/* ---------- The calendar ---------- */
+
+.pl-chat-cal {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  width: min(100%, 520px);
+}
+.pl-chat-cal__months {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.pl-chat-cal__month {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 5px;
+  margin: 0;
+  padding: 8px 15px;
+  border: 1px solid var(--ds-color-line, #dcdfe2);
+  border-radius: 999px;
+  background: #fff;
+  color: #000;
+  font-size: 15px;
+  line-height: 1.2;
+  cursor: pointer;
+  transition:
+    border-color 160ms,
+    box-shadow 160ms;
+}
+.pl-chat-cal__month:not(:disabled):hover {
+  border-color: #000;
+}
+.pl-chat-cal__month.is-picked {
+  border-color: #000;
+  box-shadow: inset 0 0 0 1px #000;
+}
+.pl-chat-cal__month:disabled {
+  cursor: default;
+}
+.pl-chat-cal__year {
+  font-size: 13px;
+  color: var(--ds-color-ink-tertiary, #5f6369);
+}
+/* Seven columns, always six rows. The arrival and departure days are black discs, the nights
+   between them a light band that rounds at the ends of each week. */
+.pl-chat-cal__grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  row-gap: 6px;
+}
+.pl-chat-cal__weekday {
+  padding-bottom: 4px;
+  font-size: 13px;
+  text-align: center;
+  color: var(--ds-color-ink-tertiary, #5f6369);
+}
+.pl-chat-cal__day {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  place-items: center;
+  height: 42px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #000;
+  font-size: 15px;
+  cursor: pointer;
+}
+.pl-chat-cal__day > span {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  max-width: 100%;
+  height: 100%;
+  border-radius: 999px;
+  transition: background 120ms;
+}
+.pl-chat-cal__day::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  display: none;
+  background: var(--ds-color-surface-sunken, #eceef0);
+}
+.pl-chat-cal__day:is(.is-range, .is-start, .is-end)::before {
+  display: block;
+}
+.pl-chat-cal__day.is-start::before {
+  left: 50%;
+}
+.pl-chat-cal__day.is-end::before {
+  right: 50%;
+}
+.pl-chat-cal__day.is-start.is-row-end::before,
+.pl-chat-cal__day.is-end.is-row-start::before {
+  display: none;
+}
+.pl-chat-cal__day.is-range.is-row-start::before {
+  border-radius: 999px 0 0 999px;
+}
+.pl-chat-cal__day.is-range.is-row-end::before {
+  border-radius: 0 999px 999px 0;
+}
+.pl-chat-cal__day.is-range.is-row-start.is-row-end::before {
+  border-radius: 999px;
+}
+.pl-chat-cal__day:hover:not(:disabled, .is-picked, .is-range) > span {
+  background: rgb(0 0 0 / 0.05);
+}
+.pl-chat-cal__day:disabled {
+  cursor: default;
+  color: var(--ds-color-ink-disabled, #afb3b8);
+}
+.pl-chat-cal__day.is-out {
+  visibility: hidden;
+}
+.pl-chat-cal__day.is-picked > span {
+  background: #000;
+  color: #fff;
+}
+/* A past answer keeps its range in full ink, though the days can't be tapped. */
+.pl-chat-cal__day:disabled:is(.is-picked, .is-range) {
+  color: #000;
+}
+.pl-chat-cal__day.is-picked:disabled > span {
+  color: #fff;
+}
+.pl-chat-cal__actions {
+  display: flex;
+  gap: 10px;
+}
+
+@media (max-width: 760px) {
+  .pl-chat-when {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .pl-chat-cal__day {
+    height: 38px;
+  }
+  .pl-chat-cal__actions {
+    flex-direction: column-reverse;
+  }
+  .pl-chat-cal__actions .pl-chat-dates__pill {
+    justify-content: center;
+  }
+}

@@ -1,0 +1,188 @@
+/* The heart that saves a photo to the itinerary, and the sheet's "Add to itinerary" button. */
+
+/* A small white disc in the photo's top-right corner. It shows when the photo is hovered (or
+   the heart is focused) and stays, filled red, once the photo is saved. */
+.pl-heart {
+  position: absolute;
+  z-index: 4;
+  top: 8px;
+  right: 8px;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: rgb(255 255 255 / 0.94);
+  color: #000;
+  cursor: pointer;
+  box-shadow:
+    0 1px 2px rgb(0 0 0 / 0.12),
+    0 6px 16px -6px rgb(0 0 0 / 0.35);
+  opacity: 0;
+  transition:
+    opacity 160ms,
+    color 160ms;
+}
+.pl-heart svg {
+  width: 15px;
+  height: 15px;
+  transition: fill 160ms;
+}
+:hover > .pl-heart,
+.pl-heart:focus-visible,
+.pl-heart.is-saved {
+  opacity: 1;
+}
+/* The heart never grows or moves: hovering it only darkens its disc, so it stays under the
+   pointer. */
+.pl-heart:hover {
+  background: #fff;
+}
+.pl-heart.is-saved {
+  color: #ff5364;
+}
+.pl-heart.is-saved svg {
+  fill: #ff5364;
+}
+.pl-heart:focus-visible {
+  outline: 2px solid #000;
+  outline-offset: 2px;
+}
+
+/* The sheet's labelled heart, beside its close button. */
+.pl-save {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 16px 0 13px;
+  border: 1px solid var(--ds-color-line, #dcdfe2);
+  border-radius: 999px;
+  background: #fff;
+  color: #000;
+  font: inherit;
+  font-size: 15px;
+  cursor: pointer;
+  transition:
+    border-color 160ms,
+    background 160ms;
+}
+.pl-save svg {
+  width: 17px;
+  height: 17px;
+}
+.pl-save:hover {
+  border-color: #000;
+}
+.pl-save.is-saved {
+  border-color: #ff5364;
+  color: #ff5364;
+}
+.pl-save.is-saved svg {
+  fill: #ff5364;
+}
+.hj-doc header .pl-save {
+  align-self: flex-start;
+  margin-top: 12px;
+}
+
+/* Photos that touch a panel's edge zoom inside their frame on hover instead of lifting, so the
+   heart in their corner is never pushed past the edge and clipped. */
+:is(.planner-page, .pl-scroll-sample) .hj-spread :is(.hj-mosaic__grid, .hj-versus__pair) > .hj-card:is(:hover, :focus-visible),
+:is(.planner-page, .pl-scroll-sample) .hj-spread .hj-mosaic__grid > * .hj-card:is(:hover, :focus-visible) {
+  transform: none;
+  box-shadow: none;
+}
+
+/* ---------- Saving: the fly-in and the Dynamic Island ---------- */
+
+.pl-flight {
+  position: fixed;
+  z-index: 1000;
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  object-fit: cover;
+  box-shadow: 0 10px 24px -8px rgb(0 0 0 / 0.4);
+  pointer-events: none;
+}
+/* The tabs' black alter ego: it grows out from the control's spot and springs back. */
+.pl-island {
+  position: fixed;
+  z-index: 60;
+  top: 14px;
+  left: 50%;
+  translate: -50% 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 220px;
+  max-width: min(420px, calc(100vw - 32px));
+  height: 44px;
+  box-sizing: border-box;
+  padding: 0 18px 0 6px;
+  border-radius: 999px;
+  background: #000;
+  color: #fff;
+  font-family: var(--ds-font-serif);
+  font-variation-settings: var(--ds-font-variation);
+  box-shadow: 0 10px 30px -10px rgb(0 0 0 / 0.5);
+  pointer-events: none;
+  transform-origin: center;
+  animation:
+    pl-island-in 520ms var(--spring) both,
+    pl-island-out 260ms ease-in 1440ms forwards;
+}
+.pl-island__thumb {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.pl-island__heart {
+  width: 18px;
+  height: 18px;
+  margin-left: 8px;
+  color: #ff5364;
+  fill: #ff5364;
+}
+.pl-island__text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.15;
+}
+.pl-island__name {
+  overflow: hidden;
+  font-size: 14px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.pl-island__line {
+  font-size: 12px;
+  color: rgb(255 255 255 / 0.65);
+}
+@keyframes pl-island-in {
+  from {
+    opacity: 0;
+    transform: scaleX(0.55) scaleY(0.8);
+  }
+}
+@keyframes pl-island-out {
+  to {
+    opacity: 0;
+    transform: scaleX(0.6) scaleY(0.85);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pl-island {
+    animation:
+      pl-fade-in 200ms ease-out both,
+      pl-island-out 200ms ease-in 1440ms forwards;
+  }
+}
+@keyframes pl-fade-in {
+  from {
+    opacity: 0;
+  }
+}

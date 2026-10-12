@@ -1,0 +1,144 @@
+/* The /components sample of the planner's scroll: a 16:10 window onto the white board. Spreads
+   sit straight on it with wide whitespace between them, each drawn at its own scale and height
+   (scroll-sample.tsx), as in the planner. */
+
+.pl-scroll-sample {
+  overflow: hidden;
+  aspect-ratio: 16 / 10;
+  border-radius: 20px;
+  background: #fff;
+  box-shadow:
+    0 1px 2px rgb(0 0 0 / 0.04),
+    0 24px 48px -16px rgb(0 0 0 / 0.18);
+  font-family: var(--ds-font-serif);
+  font-weight: 380;
+  font-variation-settings: var(--ds-font-variation);
+}
+.pl-scroll-sample__strip {
+  display: flex;
+  align-items: flex-start;
+  box-sizing: border-box;
+  gap: 40px;
+  height: 100%;
+  padding: 24px 6% 24px 6%;
+  overflow-x: auto;
+  scrollbar-width: none;
+  container-type: size;
+}
+.pl-scroll-sample__said {
+  flex: 0 0 52%;
+  align-self: center;
+  margin: 0;
+  font-family: var(--font-hand), cursive;
+  font-size: clamp(28px, 4vw, 56px);
+  line-height: 1.1;
+}
+.pl-scroll-sample__panel {
+  flex: 0 0 72%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 20px;
+}
+@supports (corner-shape: squircle) {
+  .pl-scroll-sample__panel {
+    border-radius: 36px;
+    corner-shape: squircle;
+  }
+}
+
+/* The guided-flow samples (steps-sample.tsx). */
+.pl-steps-sample {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.pl-steps-sample__sent {
+  margin: 0;
+  font-family: var(--ds-font-serif);
+  font-size: 15px;
+  color: var(--ds-color-ink-tertiary);
+}
+.pl-followup-sample {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 40px;
+  padding: 56px 64px;
+}
+.pl-followup-sample__ask {
+  margin: 0;
+  font-size: 88px;
+  line-height: 1;
+  letter-spacing: -0.035em;
+  color: var(--ds-color-ink-disabled);
+}
+
+/* The itinerary samples (itinerary-sample.tsx). */
+.pl-sample-box {
+  position: relative;
+  padding: 32px;
+  border-radius: 20px;
+  background: #f8f9fa;
+  font-family: var(--ds-font-serif);
+  font-variation-settings: var(--ds-font-variation);
+}
+.pl-sample-box--tabs {
+  height: 80px;
+}
+.pl-sample-box--tabs .pl-tabs {
+  position: absolute;
+}
+.pl-sample-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 24px;
+}
+.pl-sample-print {
+  width: 200px;
+  aspect-ratio: 4 / 5;
+  border-radius: 12px;
+}
+.pl-sample-board {
+  position: relative;
+  height: 640px;
+  overflow: hidden;
+  border-radius: 20px;
+}
+.pl-sample-board .pl-board__canvas {
+  position: absolute;
+  inset: 0;
+}
+
+/* The loading sample (itinerary-sample.tsx), with the planner's letter animation. */
+.pl-loading-sample {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 420px;
+  overflow: hidden;
+}
+.pl-loading-sample__text {
+  position: relative;
+  margin: 0 0 0 8%;
+  max-width: 70%;
+  font-family: var(--font-hand), cursive;
+  font-size: 64px;
+  line-height: 0.85;
+}
+.pl-loading-sample__letter {
+  white-space: pre-wrap;
+  animation: pl-sample-letter 320ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  animation-delay: calc(var(--i) * 32ms);
+}
+@keyframes pl-sample-letter {
+  from {
+    opacity: 0;
+    filter: blur(3px);
+  }
+}
+
+/* No panel behind a spread on the board. */
+.pl-scroll-sample .hj-spread:not(.is-dark) {
+  background: transparent;
+}

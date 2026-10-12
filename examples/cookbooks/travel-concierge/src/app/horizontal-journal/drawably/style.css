@@ -1,0 +1,420 @@
+.drawably-host {
+  --drawably-ease: cubic-bezier(0.2, 0, 0, 1);
+  position: relative;
+  isolation: isolate;
+  font-family: Inter, system-ui, sans-serif;
+}
+
+.drawably-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.drawably-svg path {
+  fill: none;
+  stroke: var(--drawably-ink, var(--drawably-stroke, #2724d1));
+  stroke-width: var(--drawably-width, 2);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* one animation on the svg steps a frame counter; every path derives its
+   opacity from the inherited value in the same style pass, so frames can never
+   sample out of step with each other (three per-path animations flashed blank
+   on tab refocus when their clocks re-aligned separately) */
+@property --drawably-frame {
+  syntax: "<integer>";
+  inherits: true;
+  initial-value: 0;
+}
+
+.drawably-svg {
+  --drawably-frame: 0;
+  animation: drawably-boil 1200ms step-end infinite;
+}
+
+@keyframes drawably-boil {
+  0% { --drawably-frame: 0; }
+  33.33% { --drawably-frame: 1; }
+  66.67% { --drawably-frame: 2; }
+}
+
+/* 1 when the counter equals this frame's index, 0 for the other two */
+.drawably-boil {
+  --drawably-i: 0;
+  opacity: clamp(0, 1 - (var(--drawably-frame) - var(--drawably-i)) * (var(--drawably-frame) - var(--drawably-i)), 1);
+}
+
+.drawably-boil[data-i="1"] {
+  --drawably-i: 1;
+}
+
+.drawably-boil[data-i="2"] {
+  --drawably-i: 2;
+}
+
+.drawably-svg .drawably-blob {
+  fill: var(--drawably-ink, var(--drawably-fill, #2724d1));
+  stroke: var(--drawably-ink, var(--drawably-fill, #2724d1));
+  stroke-width: 4;
+}
+
+.drawably-svg .drawably-scribble {
+  stroke-width: 1.5;
+}
+
+.drawably-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 14px;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-family: Inter, system-ui, sans-serif;
+  color: var(--drawably-ink, var(--drawably-stroke, #2724d1));
+  cursor: pointer;
+  outline: none;
+  transition: transform 120ms ease;
+}
+
+/* press: the pen pushes into the paper — the sketch sinks and the outline
+   thickens; hover lifts it and tints the inside with the stroke at 10%, the
+   same wash the picker uses for its hovered option */
+.drawably-button:active {
+  transform: translateY(1px) scale(0.98);
+}
+
+.drawably-button .drawably-outline {
+  transition: stroke-width 120ms ease, fill 120ms ease;
+}
+
+.drawably-button:active .drawably-outline {
+  stroke-width: calc(var(--drawably-width, 2) * 1.4);
+}
+
+@media (hover: hover) {
+  .drawably-button:hover:not(:disabled, [data-state="loading"]) {
+    transform: translateY(-1px);
+  }
+
+  .drawably-button:not(.drawably-button--solid):hover:not(:disabled) .drawably-outline {
+    fill: color-mix(in srgb, var(--drawably-ink, var(--drawably-stroke, #2724d1)) 10%, transparent);
+  }
+
+  .drawably-button:hover:active {
+    transform: translateY(1px) scale(0.98);
+  }
+}
+
+.drawably-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+  transform: none;
+}
+
+.drawably-button--neutral {
+  --drawably-stroke: #6e675f;
+  --drawably-fill: #6e675f;
+}
+
+.drawably-button--danger {
+  --drawably-stroke: var(--drawably-error, #d12724);
+  --drawably-fill: var(--drawably-error, #d12724);
+}
+
+.drawably-button[data-state="error"] {
+  --drawably-ink: var(--drawably-error, #d12724);
+}
+
+.drawably-button[data-state="success"] {
+  --drawably-ink: var(--drawably-success, #188a42);
+}
+
+.drawably-button[data-state="loading"] {
+  cursor: progress;
+  opacity: 0.6;
+}
+
+.drawably-button[data-state="loading"] .drawably-svg {
+  animation-duration: 450ms;
+}
+
+.drawably-button--solid {
+  color: var(--drawably-paper, #fff);
+}
+
+.drawably-svg .drawably-focus {
+  visibility: hidden;
+  stroke-width: 1.5;
+}
+
+.drawably-host:is(:focus-visible, :has(:focus-visible)) .drawably-focus {
+  visibility: visible;
+}
+
+.drawably-checkbox,
+.drawably-radio {
+  display: inline-block;
+  width: 22px;
+  height: 22px;
+}
+
+.drawably-toggle {
+  display: inline-block;
+  width: 44px;
+  height: 24px;
+}
+
+:is(.drawably-checkbox, .drawably-radio, .drawably-toggle) input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.drawably-svg .drawably-dot {
+  fill: var(--drawably-ink, var(--drawably-fill, #2724d1));
+  stroke: var(--drawably-ink, var(--drawably-fill, #2724d1));
+  visibility: hidden;
+  transform: scale(0.5);
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: transform 160ms var(--drawably-ease);
+}
+
+.drawably-radio[data-checked] .drawably-dot {
+  visibility: visible;
+  transform: scale(1);
+}
+
+.drawably-svg .drawably-knob {
+  transition: transform 160ms var(--drawably-ease);
+}
+
+/* travel = toggle width 44px minus height 24px; resizing the toggle in CSS
+   means overriding this too */
+.drawably-toggle[data-checked] .drawably-knob {
+  transform: translateX(20px);
+}
+
+.drawably-divider {
+  display: block;
+  height: 10px;
+  border: 0;
+}
+
+.drawably-svg .drawably-check {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset 240ms var(--drawably-ease);
+}
+
+.drawably-checkbox[data-checked] .drawably-check {
+  stroke-dashoffset: 0;
+}
+
+.drawably-inputbox,
+.drawably-textarea,
+.drawably-select {
+  display: inline-block;
+}
+
+:is(.drawably-inputbox, .drawably-textarea, .drawably-select) :is(input, textarea, select) {
+  border: 0;
+  background: none;
+  font: inherit;
+  color: inherit;
+  padding: 8px 12px;
+  width: 100%;
+  box-sizing: border-box;
+  outline: none;
+}
+
+.drawably-textarea textarea {
+  display: block;
+  resize: vertical;
+}
+
+/* right padding reserves the gutter the sketched chevron sits in */
+.drawably-select select {
+  appearance: none;
+  padding-right: 34px;
+  cursor: pointer;
+}
+
+/* Chromium's customisable select lets the options list be styled and renders
+   the select's children inside it, which is where the .drawably-picker frame
+   lives; elsewhere the OS draws the popup and this block is ignored */
+@supports (appearance: base-select) {
+  .drawably-select select,
+  .drawably-select select::picker(select) {
+    appearance: base-select;
+  }
+
+  .drawably-select select::picker-icon {
+    display: none;
+  }
+
+  /* the picker is a fixed-position popover, so the absolute frame fills it.
+     ponytail: it scrolls with a long option list; clip the frame if that shows */
+  .drawably-select select::picker(select) {
+    margin-top: 4px;
+    padding: 6px;
+    border: 0;
+    background: var(--drawably-paper, #fff);
+    color: inherit;
+    font: inherit;
+  }
+
+  .drawably-select option {
+    padding: 4px 8px;
+    border-radius: 3px;
+  }
+
+  .drawably-select option:is(:hover, :focus-visible) {
+    background: color-mix(in srgb, var(--drawably-stroke, #2724d1) 10%, transparent);
+  }
+
+  /* every option gets the same empty box so text lines up whether or not it
+     is chosen; the chosen one paints the attacher's sketched check through it.
+     Chromium lays the option out as flex with a 0.5em gap, so no margin here */
+  .drawably-select option::checkmark {
+    content: "";
+    display: inline-block;
+    width: 0.875em;
+    height: 0.875em;
+  }
+
+  .drawably-select option:checked::checkmark {
+    background: var(--drawably-ink, var(--drawably-stroke, #2724d1));
+    mask: var(--drawably-check) center / contain no-repeat;
+  }
+}
+
+.drawably-badge {
+  display: inline-block;
+  padding: 1px 7px;
+  font:
+    500 12px/1.4 Geist Mono,
+    ui-monospace,
+    monospace;
+  color: var(--drawably-ink, var(--drawably-stroke, #2724d1));
+}
+
+/* padding is the gutter the marker is drawn into (see MARKER_LEFT) */
+.drawably-list {
+  list-style: none;
+  padding-left: 24px;
+}
+
+.drawably-card {
+  padding: 16px;
+}
+
+/* marker wash: stroke as wide as the scribble gap so the hatching reads as
+   one swipe, multiplied so the text stays legible over it. stroke-opacity,
+   not opacity — the boil keyframes animate opacity and would override it */
+.drawably-svg .drawably-wash {
+  stroke: var(--drawably-ink, var(--drawably-fill, #2724d1));
+  stroke-width: 6;
+  stroke-opacity: 0.3;
+  mix-blend-mode: multiply;
+}
+
+/* text decorations sit on body copy, where the 2px control stroke reads heavy */
+:is(.drawably-underline, .drawably-circle) .drawably-svg path {
+  stroke-width: var(--drawably-width, 1.5);
+}
+
+/* body-level overlay positioned in document coordinates by the attacher;
+   sits above content since it annotates it */
+.drawably-arrow {
+  inset: auto;
+  z-index: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .drawably-svg {
+    animation: none;
+  }
+  .drawably-svg .drawably-check,
+  .drawably-svg .drawably-dot,
+  .drawably-svg .drawably-knob {
+    transition: none;
+  }
+}
+
+/* composites */
+.drawably-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 3px 10px 3px 6px;
+  cursor: pointer;
+}
+
+.drawably-chip .drawably-checkbox {
+  scale: 0.8;
+}
+
+.drawably-tabs {
+  display: flex;
+  gap: 18px;
+}
+
+.drawably-tabs > * {
+  cursor: pointer;
+}
+
+.drawably-tooltip {
+  display: inline-block;
+  padding: 2px 10px;
+}
+
+.drawably-alert {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: max-content;
+  max-width: 100%;
+  padding: 8px 12px;
+}
+
+.drawably-alert [data-tag] {
+  padding: 1px 6px;
+}
+
+.drawably-kbd {
+  padding: 2px 8px;
+  font:
+    500 13px/1.4 Geist Mono,
+    ui-monospace,
+    monospace;
+}
+
+.drawably-quote {
+  margin: 0;
+}
+
+.drawably-quote footer {
+  margin-top: 10px;
+  padding-top: 8px;
+}
+
+.drawably-pager {
+  display: flex;
+  gap: 6px;
+}
+
+.drawably-pager > button {
+  min-width: 34px;
+}

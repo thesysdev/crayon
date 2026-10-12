@@ -1,0 +1,789 @@
+/* An editorial canvas: type and tight photo grids set straight on the page, no cards.
+   Airbnb's pink and soft shadows only where they help: the composer and the save heart. */
+.mb-studio {
+  --mb-ink: #1d1d1b;
+  --mb-grey: #6f6b66;
+  --mb-line: #e7e4df;
+  --mb-rausch: #ff385c;
+  /* Shared type tokens: display is Timeless Serif; body stays Inter for now. */
+  --font-body: var(--mb-font), -apple-system, system-ui, sans-serif;
+  --mb-serif: var(--font-display), Georgia, serif;
+  --mb-sans: var(--mb-font), -apple-system, system-ui, sans-serif;
+  position: fixed;
+  inset: 0;
+  font-family: var(--mb-sans);
+  color: var(--mb-ink);
+  /* Timeless Serif ships real weights and italics; never fake them. */
+  font-synthesis: none;
+}
+.mb-studio .tl-container {
+  --color-background: #f6f4f0;
+}
+/* Plain warm paper; nothing on it changes with zoom. */
+.mb-paper {
+  position: absolute;
+  inset: 0;
+  background: #f6f4f0;
+}
+
+.mb-smallcaps {
+  font-family: var(--mb-sans);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--mb-grey);
+}
+
+/* ── Composer, docked bottom center ─────────────────────────── */
+.mb-dock {
+  position: absolute;
+  left: 50%;
+  bottom: 24px;
+  z-index: 400;
+  width: min(640px, calc(100vw - 32px));
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+.mb-composer {
+  box-sizing: border-box;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 8px 8px 10px;
+  border: 1px solid var(--mb-line);
+  border-radius: 999px;
+  background: #fff;
+  box-shadow:
+    0 2px 4px rgb(0 0 0 / 0.04),
+    0 10px 30px rgb(0 0 0 / 0.12);
+  transition: box-shadow 0.2s;
+}
+.mb-composer:focus-within {
+  box-shadow:
+    0 2px 4px rgb(0 0 0 / 0.06),
+    0 14px 40px rgb(0 0 0 / 0.18);
+}
+.mb-composer.is-busy {
+  background: linear-gradient(90deg, #fff, #fff1f3, #fff);
+  background-size: 200% 100%;
+  animation: mb-shimmer 1.4s linear infinite;
+}
+.mb-composer__logo {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  color: #fff;
+  background: var(--mb-rausch);
+}
+.mb-composer textarea {
+  flex: 1;
+  overflow: hidden;
+  white-space: nowrap;
+  min-width: 0;
+  min-height: 0 !important;
+  height: 24px;
+  padding: 2px 4px !important;
+  border: 0 !important;
+  outline: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  resize: none;
+  font-family: var(--mb-sans);
+  font-size: 15px;
+  line-height: 20px;
+  color: var(--mb-ink);
+}
+.mb-composer__tools {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 0;
+  color: var(--mb-grey);
+}
+.mb-composer__count {
+  min-width: 18px;
+  padding: 0 6px;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+.mb-composer > button:last-child {
+  flex: none;
+}
+.mb-categories {
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px !important;
+}
+.mb-categories .openui-chip-item {
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 0.06);
+  font-size: 13px;
+}
+.mb-categories .openui-chip-item--selected {
+  border-color: var(--mb-ink) !important;
+  background: var(--mb-ink) !important;
+  color: #fff !important;
+}
+.mb-dock .openui-callout {
+  width: 100%;
+  box-sizing: border-box;
+}
+.mb-credit {
+  position: absolute;
+  left: 56px;
+  bottom: 10px;
+  z-index: 400;
+  font-size: 11px;
+  color: #9a958e;
+  text-decoration: none;
+}
+
+/* ── Pieces: no card, just type and photos on the paper ───── */
+.mb-piece-container {
+  overflow: visible;
+}
+.mb-piece {
+  position: relative;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 0;
+  font-family: var(--mb-sans);
+  transition:
+    transform 0.2s,
+    opacity 0.2s,
+    filter 0.2s;
+}
+.mb-piece.is-lifted {
+  transform: scale(1.015) rotate(-0.4deg);
+  filter: drop-shadow(0 18px 30px rgb(0 0 0 / 0.18));
+  cursor: grabbing;
+}
+.mb-piece.is-interactive {
+  outline: 1px dashed var(--mb-grey);
+  outline-offset: 8px;
+}
+.mb-piece.is-arriving {
+  animation: mb-arrive 0.55s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+@keyframes mb-arrive {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+}
+/* Section headings: one plain label, one style. */
+.mb-piece__label {
+  margin: 0;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--mb-ink);
+  font-family: var(--mb-sans);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0;
+  color: var(--mb-ink);
+}
+.mb-piece__live {
+  position: absolute;
+  top: -14px;
+  right: 0;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--mb-rausch);
+  animation: mb-pulse 1s ease-in-out infinite;
+}
+@keyframes mb-pulse {
+  50% {
+    opacity: 0.25;
+  }
+}
+@keyframes mb-shimmer {
+  to {
+    background-position: -200% 0;
+  }
+}
+
+/* OpenUI components inside pieces, flattened to type. */
+.mb-piece .openui-card {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.mb-piece .openui-tag {
+  padding: 4px 10px;
+  border: 1px solid var(--mb-ink);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--mb-ink);
+  font-weight: 500;
+}
+.mb-piece .openui-callout {
+  border: 0;
+  border-left: 2px solid var(--mb-ink);
+  border-radius: 0;
+  background: transparent;
+}
+
+/* ── Typography ─────────────────────────────────────────────── */
+.mb-display {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.mb-display h1 {
+  margin: 0;
+  font-family: var(--mb-serif);
+  font-size: 112px;
+  font-weight: 500;
+  line-height: 0.92;
+  letter-spacing: -0.035em;
+}
+.mb-display p {
+  max-width: 34em;
+  margin: 4px 0 0;
+  font-size: 18px;
+  line-height: 1.5;
+  color: var(--mb-grey);
+}
+.mb-quote {
+  margin: 0;
+  padding: 8px 0 8px 28px;
+  border-left: 3px solid var(--mb-rausch);
+}
+.mb-quote p {
+  margin: 0 0 12px;
+  font-family: var(--mb-serif);
+  font-size: 40px;
+  font-style: italic;
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: -0.015em;
+}
+.mb-itinerary {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.mb-itinerary li {
+  display: grid;
+  grid-template-columns: 72px 1fr;
+  gap: 16px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--mb-line);
+}
+.mb-itinerary__n {
+  font-family: var(--mb-serif);
+  font-size: 44px;
+  line-height: 0.9;
+  color: var(--mb-rausch);
+}
+.mb-itinerary strong {
+  display: block;
+  font-size: 17px;
+  font-weight: 600;
+}
+.mb-itinerary p {
+  margin: 4px 0 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--mb-grey);
+}
+.mb-note {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+.mb-note p {
+  margin: 0;
+  font-family: var(--mb-serif);
+  font-size: 19px;
+  line-height: 1.35;
+}
+.mb-words {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 0;
+  margin: 0;
+  font-family: var(--mb-serif);
+  font-size: 30px;
+  font-weight: 300;
+  line-height: 1.2;
+}
+.mb-words span + span::before {
+  content: "/";
+  margin: 0 12px;
+  color: var(--mb-rausch);
+}
+
+/* ── Color and type specimens ───────────────────────────────── */
+.mb-palette {
+  display: flex;
+  gap: 0;
+  min-height: 160px;
+  overflow: hidden;
+  border-radius: 10px;
+}
+.mb-palette > div {
+  display: flex;
+  min-width: 48px;
+}
+.mb-swatch {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 2px;
+  padding: 12px 10px;
+  font-size: 11px;
+  overflow: hidden;
+}
+.mb-swatch__role {
+  opacity: 0.75;
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.mb-swatch__name {
+  font-family: var(--mb-serif);
+  font-size: 14px;
+  line-height: 1.15;
+}
+.mb-swatch__hex {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  opacity: 0.8;
+}
+.mb-gradient {
+  display: flex;
+  align-items: flex-end;
+  height: 72px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #fff;
+}
+.mb-type {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.mb-type__headline {
+  font-size: 40px;
+  line-height: 1.05;
+}
+.mb-type__sample {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--mb-grey);
+}
+.mb-type__meta {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--mb-grey);
+}
+
+/* ── Photos ─────────────────────────────────────────────────── */
+.mb-photo {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.mb-photo__frame {
+  position: relative;
+  width: 100%;
+  min-height: 60px;
+  overflow: hidden;
+  border-radius: 10px;
+  background: #e9e5df;
+}
+.mb-photo__frame img {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+.mb-piece.is-hovered .mb-photo__frame img {
+  transform: scale(1.025);
+}
+.mb-photo__placeholder {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 12px;
+  font-size: 12px;
+  color: var(--mb-grey);
+  text-align: center;
+}
+.mb-photo__placeholder.is-loading {
+  background: linear-gradient(90deg, #e9e5df, #f3f0eb, #e9e5df);
+  background-size: 200% 100%;
+  animation: mb-shimmer 1.2s linear infinite;
+}
+.mb-photo__badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 1;
+  padding: 4px 9px;
+  border-radius: 999px;
+  background: #fff;
+  font-size: 11px;
+  font-weight: 700;
+}
+/* The save heart appears on hover, as on Pinterest. */
+.mb-photo__heart {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 1;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  line-height: 0;
+  opacity: 0;
+  transition: opacity 0.2s;
+  filter: drop-shadow(0 1px 2px rgb(0 0 0 / 0.3));
+}
+.mb-piece.is-hovered .mb-photo__heart,
+.mb-piece.is-interactive .mb-photo__heart {
+  opacity: 1;
+}
+.mb-photo__save {
+  display: none;
+}
+.mb-photo figcaption {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  font-size: 13px;
+  line-height: 1.35;
+}
+.mb-photo figcaption strong {
+  font-weight: 600;
+}
+.mb-photo figcaption span {
+  color: var(--mb-grey);
+}
+.mb-photo__credit {
+  font-size: 9px;
+  color: #a09a92;
+  text-decoration: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Photo grids: edge to edge, thin gutters, captions on the photo ── */
+.mb-collage {
+  overflow: hidden;
+  border-radius: 12px;
+}
+.mb-collage__cell {
+  display: flex;
+  min-width: 0;
+}
+.mb-collage .mb-photo {
+  height: 100%;
+  gap: 0;
+}
+.mb-collage .mb-photo__frame {
+  flex: 1;
+  border-radius: 0;
+}
+.mb-collage .mb-photo figcaption {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+  padding: 26px 10px 8px;
+  background: linear-gradient(transparent, rgb(0 0 0 / 0.55));
+  font-size: 12px;
+}
+.mb-collage .mb-photo figcaption strong {
+  color: #fff;
+}
+.mb-collage .mb-photo figcaption span,
+.mb-collage .mb-photo__credit {
+  display: none;
+}
+
+/* Bento: one large photo and four small. */
+.mb-collage--bento {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  grid-auto-rows: 170px;
+  gap: 3px;
+}
+.mb-collage--bento > .mb-collage__cell:first-child {
+  grid-row: span 2;
+}
+.mb-collage--bento .mb-photo__frame {
+  aspect-ratio: auto !important;
+}
+/* Even tiles. */
+.mb-collage--grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-auto-rows: 170px;
+  gap: 3px;
+}
+.mb-collage--grid .mb-photo__frame {
+  aspect-ratio: auto !important;
+}
+/* A contact-sheet strip: one row of equal frames. */
+.mb-collage--strip {
+  display: grid;
+  grid-auto-columns: 1fr;
+  grid-auto-flow: column;
+  grid-auto-rows: 220px;
+  gap: 3px;
+}
+.mb-collage--strip .mb-photo__frame {
+  aspect-ratio: auto !important;
+}
+/* Pinterest masonry: columns of varied heights. */
+.mb-collage--masonry {
+  columns: 3 150px;
+  column-gap: 3px;
+}
+.mb-collage--masonry .mb-collage__cell {
+  break-inside: avoid;
+  margin-bottom: 3px;
+}
+.mb-collage--masonry .mb-photo__frame {
+  aspect-ratio: 3 / 4 !important;
+}
+.mb-collage--masonry .mb-collage__cell:nth-child(4n + 2) .mb-photo__frame {
+  aspect-ratio: 1 / 1 !important;
+}
+.mb-collage--masonry .mb-collage__cell:nth-child(4n + 3) .mb-photo__frame {
+  aspect-ratio: 2 / 3 !important;
+}
+.mb-collage--masonry .mb-collage__cell:nth-child(4n + 4) .mb-photo__frame {
+  aspect-ratio: 4 / 5 !important;
+}
+
+/* ── Building blocks ────────────────────────────────────────────── */
+.mb-heading {
+  margin: 0;
+  font-family: var(--mb-serif);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: var(--mb-ink);
+}
+.mb-heading--xl {
+  font-size: 104px;
+  line-height: 0.92;
+  letter-spacing: -0.035em;
+}
+.mb-heading--l {
+  font-size: 48px;
+  line-height: 1;
+}
+.mb-heading--m {
+  font-size: 28px;
+  line-height: 1.1;
+}
+.mb-heading--s {
+  font-family: var(--mb-sans);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+.mb-paragraph {
+  margin: 0;
+  color: var(--mb-ink);
+}
+.mb-paragraph--l {
+  font-size: 20px;
+  line-height: 1.5;
+}
+.mb-paragraph--m {
+  font-size: 15px;
+  line-height: 1.55;
+}
+.mb-paragraph--s {
+  font-size: 13px;
+  line-height: 1.5;
+}
+.mb-paragraph.is-muted {
+  color: var(--mb-grey);
+}
+.mb-paragraph.is-serif {
+  font-family: var(--mb-serif);
+}
+.mb-numeral span {
+  display: block;
+  font-family: var(--mb-serif);
+  font-size: 64px;
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+  color: var(--mb-rausch);
+}
+.mb-numeral p {
+  margin: 6px 0 0;
+  font-size: 13px;
+  color: var(--mb-grey);
+}
+.mb-pwc {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  align-items: center;
+}
+.mb-pwc--right .mb-pwc__photo {
+  order: 2;
+}
+.mb-pwc--below {
+  grid-template-columns: 1fr;
+}
+.mb-pwc__photo .mb-photo__frame {
+  aspect-ratio: 4 / 5 !important;
+}
+.mb-pwc--below .mb-pwc__photo .mb-photo__frame {
+  aspect-ratio: 16 / 9 !important;
+}
+.mb-pwc__text h4 {
+  margin: 0 0 6px;
+  font-family: var(--mb-serif);
+  font-size: 26px;
+  font-weight: 500;
+  line-height: 1.1;
+}
+.mb-pwc__text p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--mb-grey);
+}
+.mb-bullets {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.mb-bullets li {
+  padding: 9px 0;
+  border-bottom: 1px solid var(--mb-line);
+  font-size: 15px;
+  line-height: 1.4;
+}
+.mb-bullets li::before {
+  content: "—";
+  margin-right: 10px;
+  color: var(--mb-rausch);
+}
+.mb-kv {
+  margin: 0;
+}
+.mb-kv div {
+  display: grid;
+  grid-template-columns: minmax(90px, 0.4fr) 1fr;
+  gap: 16px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--mb-line);
+}
+.mb-kv dt {
+  font-size: 13px;
+  font-weight: 600;
+}
+.mb-kv dd {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--mb-grey);
+}
+.mb-columns {
+  display: grid;
+  gap: 24px;
+  align-items: start;
+}
+.mb-columns > div {
+  min-width: 0;
+}
+.mb-spacer--s {
+  height: 8px;
+}
+.mb-spacer--m {
+  height: 20px;
+}
+.mb-spacer--l {
+  height: 44px;
+}
+.mb-rule {
+  width: 100%;
+  margin: 0;
+  border: 0;
+  border-top: 1px solid var(--mb-line);
+}
+
+/* Right-click menu: a small rounded popover. */
+.mb-menu {
+  position: fixed;
+  z-index: 600;
+  min-width: 200px;
+  padding: 6px;
+  border: 1px solid var(--mb-line);
+  border-radius: 14px;
+  background: #fff;
+  box-shadow:
+    0 2px 4px rgb(0 0 0 / 0.04),
+    0 12px 32px rgb(0 0 0 / 0.16);
+  font-family: var(--mb-sans);
+}
+.mb-menu button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  font: inherit;
+  font-size: 13px;
+  color: var(--mb-ink);
+  text-align: left;
+  cursor: pointer;
+}
+.mb-menu button:hover:not(:disabled) {
+  background: #f4f2ee;
+}
+.mb-menu button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.mb-menu button.is-danger {
+  color: #c13515;
+}
+.mb-menu hr {
+  margin: 4px 6px;
+  border: 0;
+  border-top: 1px solid var(--mb-line);
+}

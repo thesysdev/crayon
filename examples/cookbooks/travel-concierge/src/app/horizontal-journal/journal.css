@@ -1,0 +1,266 @@
+/* The horizontal journal. One strip of full pages that snaps page by page; every page is
+   either an entry page the agent wrote or the whole-page prompt at the end. */
+
+.journal-page :where(h1, h2, p, ul, figure) {
+  margin: 0;
+  padding: 0;
+  font-weight: inherit;
+}
+
+/* No rubber-band bounce around the journal or its sheet: the page itself never scrolls. */
+html:has(.journal-page),
+html:has(.journal-page) body {
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+.hj-strip {
+  display: flex;
+  height: 100dvh;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  overscroll-behavior: none;
+  scrollbar-width: none;
+  container-type: size;
+}
+.hj-strip::-webkit-scrollbar {
+  display: none;
+}
+
+/* An entry's pages sit directly in the strip, through the Renderer's wrapper divs. */
+.hj-entry,
+.hj-entry div:not(.hj-page div) {
+  display: contents;
+}
+
+.hj-page {
+  position: relative;
+  box-sizing: border-box;
+  flex: 0 0 100vw;
+  width: 100vw;
+  height: 100dvh;
+  overflow: hidden;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+
+/* ---------- The whole-page prompt ---------- */
+
+.hj-ask {
+  display: flex;
+  align-items: center;
+  padding: 64px 12vw 64px max(112px, 12vw);
+}
+.hj-ask__form {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  width: 100%;
+}
+.hj-ask__text {
+  box-sizing: border-box;
+  min-height: 3.06em;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  resize: none;
+  background: transparent;
+  font: inherit;
+  font-variation-settings: inherit;
+  font-size: clamp(56px, 8vw, 128px);
+  line-height: 1.02;
+  letter-spacing: -0.035em;
+  color: var(--ds-color-ink);
+  caret-color: var(--ds-color-accent);
+}
+.hj-ask textarea::placeholder {
+  color: var(--ds-color-ink-disabled);
+}
+/* A sent message keeps the prompt's place and size, in full ink. The foot line breathes
+   while the entry is being written. */
+.hj-said .hj-ask__text {
+  overflow-wrap: anywhere;
+}
+.hj-said .hj-ask__foot {
+  min-height: 56px;
+}
+/* While the entry is being written, the rule under your message breathes in the accent. */
+.hj-said .hj-ask__foot.is-writing {
+  border-top-color: #ff5364;
+  animation: hj-pulse-text 1.6s ease-in-out infinite;
+}
+@keyframes hj-pulse-text {
+  50% {
+    opacity: 0.45;
+  }
+}
+.hj-ask__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--ds-color-line);
+  font-size: var(--ds-type-body-l-size);
+  color: var(--ds-color-ink-tertiary);
+}
+/* The send arrow sits bare in the accent, with nothing behind it. */
+.hj-ask__send {
+  display: grid;
+  flex: none;
+  place-items: center;
+  margin-left: auto;
+  width: 56px;
+  height: 56px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #ff5364;
+  cursor: pointer;
+  transition:
+    transform 150ms,
+    opacity 150ms;
+}
+.hj-ask__send:hover:not(:disabled) {
+  transform: translateY(-2px);
+}
+.hj-ask__send:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+/* ---------- The floating pill and history, after the moodboard's Trips panel ---------- */
+
+.hj-pill {
+  position: fixed;
+  z-index: 20;
+  top: 50%;
+  left: 16px;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 6px;
+  border: 1px solid rgb(0 0 0 / 0.06);
+  border-radius: 999px;
+  background: var(--ds-color-surface-raised);
+  box-shadow:
+    0 2px 4px rgb(0 0 0 / 0.04),
+    0 10px 30px rgb(0 0 0 / 0.1);
+}
+.hj-pill button {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ds-color-ink);
+  cursor: pointer;
+  transition: background 150ms;
+}
+.hj-pill button:hover,
+.hj-pill button.is-on {
+  background: var(--ds-color-canvas);
+}
+
+.hj-history {
+  position: fixed;
+  z-index: 19;
+  top: 50%;
+  left: 84px;
+  transform: translateY(-50%);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 264px;
+  max-height: calc(100dvh - 72px);
+  padding: 16px 12px 12px;
+  border: 1px solid rgb(0 0 0 / 0.06);
+  border-radius: 24px;
+  background: var(--ds-color-surface-raised);
+  box-shadow:
+    0 2px 4px rgb(0 0 0 / 0.04),
+    0 10px 30px rgb(0 0 0 / 0.1);
+}
+.hj-history h2 {
+  padding: 0 8px;
+  font-size: var(--ds-type-heading-s-size);
+  line-height: var(--ds-type-heading-s-line-height);
+}
+.hj-history ul {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-height: 0;
+  overflow-y: auto;
+  list-style: none;
+}
+.hj-history p {
+  padding: 0 8px 4px;
+  font-size: var(--ds-type-body-s-size);
+  color: var(--ds-color-ink-tertiary);
+}
+.hj-history li button {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 8px;
+  border: 0;
+  border-radius: 14px;
+  background: transparent;
+  font: inherit;
+  font-variation-settings: inherit;
+  color: var(--ds-color-ink);
+  text-align: left;
+  cursor: pointer;
+}
+.hj-history li button:hover:not(:disabled) {
+  background: var(--ds-color-surface);
+}
+.hj-history li button.is-active {
+  background: var(--ds-color-canvas);
+}
+.hj-history__cover {
+  flex: none;
+  width: 48px;
+  height: 48px;
+  overflow: hidden;
+  border-radius: 10px;
+  background: var(--ds-color-surface-sunken);
+}
+.hj-history__cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.hj-history__name {
+  overflow: hidden;
+  font-size: var(--ds-type-body-size);
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ---------- Narrow screens ---------- */
+
+@media (max-width: 760px) {
+  .hj-ask {
+    padding: 88px 20px 32px;
+  }
+  .hj-pill {
+    top: 16px;
+    transform: none;
+    flex-direction: row;
+  }
+  .hj-history {
+    top: 76px;
+    left: 16px;
+    transform: none;
+  }
+}

@@ -1,0 +1,220 @@
+/* The Itinerary spread (itinerary-spread.tsx): the board's plan in brief. Day headings in
+   Timeless, small squircle prints, names in black and times in grey on one left edge; the card
+   button to open the board closes the reading path. */
+.hj-itin {
+  --span: min(12, calc(3 + 2 * var(--n, 3)));
+  display: flex;
+  flex-direction: column;
+  gap: 4.5cqh;
+  padding: 7cqh 5cqw 7cqh var(--pad-left);
+  color: #000;
+}
+:is(.planner-page, .pl-scroll-sample, .pl-steps-sample) .hj-spread.hj-itin h2 {
+  margin: 0;
+  font-size: min(6cqw, 8.5cqh);
+  line-height: 1.02;
+  text-wrap: balance;
+}
+.hj-itin__days {
+  display: grid;
+  flex: 1;
+  grid-template-columns: repeat(var(--n, 3), minmax(0, 1fr));
+  gap: 3cqw;
+  min-height: 0;
+}
+.hj-itin__day {
+  display: flex;
+  flex-direction: column;
+  gap: 2cqh;
+  min-width: 0;
+}
+:is(.planner-page, .pl-scroll-sample, .pl-steps-sample) .hj-itin__day h3 {
+  margin: 0;
+  font-size: max(16px, min(2.3cqw, 3.4cqh));
+  font-weight: 400;
+  line-height: 1.2;
+}
+.hj-itin__day ul {
+  display: flex;
+  flex-direction: column;
+  gap: 1.8cqh;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.hj-itin__day li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+.hj-itin__thumb {
+  flex: none;
+  width: max(44px, 6.5cqh);
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: 12px;
+  corner-shape: squircle;
+  background: #e7e9eb;
+}
+.hj-itin__thumb img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.hj-itin__words {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.hj-itin__name {
+  overflow: hidden;
+  font-size: max(15px, min(1.9cqw, 2.8cqh));
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.hj-itin__time,
+.hj-itin__more {
+  font-size: max(13px, min(1.6cqw, 2.3cqh));
+  color: #5f6369;
+}
+/* While the days are arranged: soft grey shapes where they'll be. */
+.hj-itin__day.is-waiting :is(h3, .hj-itin__thumb, .hj-itin__bar) {
+  background:
+    linear-gradient(100deg, transparent 30%, rgb(255 255 255 / 0.75) 50%, transparent 70%) 0 0 / 300% 100%,
+    #e7e9eb;
+  animation: pl-shimmer 1.6s linear infinite;
+}
+.hj-itin__day.is-waiting h3 {
+  width: 50%;
+  height: 1.2em;
+  border-radius: 999px;
+}
+.hj-itin__bar {
+  display: block;
+  width: 9em;
+  max-width: 100%;
+  height: 0.9em;
+  border-radius: 999px;
+}
+/* Open the board: a full-width card with the trip's prints in one tight fan behind its left end,
+   just above the icon and the place. */
+.hj-spread .hj-itin__stack {
+  position: relative;
+  align-self: stretch;
+  box-sizing: border-box;
+  max-width: 100%;
+  margin: max(40px, 5cqh) 0 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #000;
+  font: inherit;
+  font-variation-settings: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.hj-spread .hj-itin__stack:disabled {
+  cursor: default;
+}
+.hj-itin__fan {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.hj-itin__print {
+  --k: 0;
+  position: absolute;
+  top: -38px;
+  left: calc(10px + var(--k) * 30px);
+  width: 96px;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border: 4px solid #fff;
+  border-radius: 12px;
+  background: #e7e9eb;
+  box-shadow: 0 6px 16px -6px rgb(0 0 0 / 0.25);
+  rotate: calc(-7deg + var(--k) * 6deg);
+  transition:
+    translate 520ms cubic-bezier(0.34, 1.56, 0.64, 1),
+    rotate 520ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.hj-itin__print img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.hj-itin__stack:not(:disabled):is(:hover, :focus-visible) .hj-itin__print {
+  translate: calc((var(--k) - 1) * 12px) -12px;
+  rotate: calc(-12deg + var(--k) * 11deg);
+}
+.hj-itin__top {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  box-sizing: border-box;
+  width: 100%;
+  padding: 14px 14px 14px 16px;
+  border-radius: 22px;
+  corner-shape: squircle;
+  background: #fff;
+  box-shadow:
+    0 0 0 1px rgb(0 0 0 / 0.02),
+    0 4px 12px -2px rgb(0 0 0 / 0.05),
+    0 14px 34px -6px rgb(0 0 0 / 0.12);
+  transition:
+    translate 520ms cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 240ms;
+}
+.hj-itin__stack:not(:disabled):is(:hover, :focus-visible) .hj-itin__top {
+  translate: 0 -3px;
+  box-shadow:
+    0 0 0 1px rgb(0 0 0 / 0.03),
+    0 8px 18px -4px rgb(0 0 0 / 0.08),
+    0 22px 48px -10px rgb(0 0 0 / 0.18);
+}
+.hj-itin__icon {
+  flex: none;
+  width: 52px;
+  height: 52px;
+  object-fit: contain;
+}
+.hj-itin__label {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+}
+.hj-itin__place {
+  font-size: max(17px, min(2.2cqw, 3.2cqh));
+  line-height: 1.15;
+}
+.hj-itin__action {
+  font-size: max(14px, min(1.7cqw, 2.4cqh));
+  color: #5f6369;
+}
+.hj-itin__go {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  background: #000;
+  color: #fff;
+}
+.hj-itin__go svg {
+  width: 18px;
+  height: 18px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hj-itin__print,
+  .hj-itin__top {
+    transition: none;
+  }
+}
