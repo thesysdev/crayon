@@ -268,7 +268,7 @@ export function MapSpread({ title, places, near }: { title?: string; places: str
       <div className="hj-map__words">
         <header className="hj-map__head">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={`/icons-3d/${iconFor(near ?? title)}-pixar.png`} alt="" draggable={false} />
+          <img src={`/icons-3d/${iconFor(near ?? title)}-pixar.webp`} alt="" draggable={false} />
           <h2>{title}</h2>
         </header>
         <ol className="hj-map__stops">

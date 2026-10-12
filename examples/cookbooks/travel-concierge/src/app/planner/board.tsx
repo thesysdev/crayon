@@ -54,7 +54,7 @@ function Heading({ text, icon, title, x, y, w, h }: { text: string; icon?: strin
       <h2 className="pl-day__title">
         {icon ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img className="pl-day__icon" src={`/icons-3d/${icon}-pixar.png`} alt="" draggable={false} />
+          <img className="pl-day__icon" src={`/icons-3d/${icon}-pixar.webp`} alt="" draggable={false} />
         ) : null}
         {day}
       </h2>
@@ -78,7 +78,7 @@ function PlanTile() {
       }}
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src="/icons-3d/followup-schedule-pixar.png" alt="" draggable={false} />
+      <img src="/icons-3d/followup-schedule-pixar.webp" alt="" draggable={false} />
       <span className="pl-plan-tile__title">Make a plan</span>
       <span className="pl-plan-tile__line">Sort your favourites into days</span>
     </button>

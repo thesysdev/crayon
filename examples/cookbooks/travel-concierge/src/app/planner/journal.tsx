@@ -459,7 +459,7 @@ export default function HorizontalJournal() {
         {tripPlace ? (
           <span className="pl-pill-place" title={tripPlace} aria-label={`Trip: ${tripPlace}`} role="img">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={`/icons-3d/${iconFor(tripPlace)}-pixar.png`} alt="" draggable={false} />
+            <img src={`/icons-3d/${iconFor(tripPlace)}-pixar.webp`} alt="" draggable={false} />
           </span>
         ) : null}
         <button type="button" onClick={newJournal} title={mode === "chat" ? "New chat" : "New journal"} aria-label={mode === "chat" ? "New chat" : "New journal"}>
@@ -533,7 +533,7 @@ function HistoryCover({ journal }: { journal: Journal }) {
   return (
     <span className={`hj-history__cover${subject ? "" : " pl-history__icon"}`}>
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      {src ? <img src={src} alt="" /> : subject ? null : <img src={`/icons-3d/${iconFor(journal.title)}-pixar.png`} alt="" />}
+      {src ? <img src={src} alt="" /> : subject ? null : <img src={`/icons-3d/${iconFor(journal.title)}-pixar.webp`} alt="" />}
     </span>
   );
 }

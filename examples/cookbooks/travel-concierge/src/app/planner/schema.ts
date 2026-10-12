@@ -17,7 +17,7 @@ const subject = z
 export const icons = ["agra", "amsterdam", "angkor-wat", "athens", "bali", "bangkok", "barcelona", "beach", "beijing", "berlin", "cairo", "cape-town", "city", "countryside", "delhi", "desert", "dubai", "easter-island", "forest", "goa", "great-wall", "hawaii", "hills", "hong-kong", "iceland", "island", "istanbul", "jaipur", "kuala-lumpur", "kyoto", "lake", "las-vegas", "lisbon", "london", "machu-picchu", "maldives", "marrakech", "mexico-city", "moscow", "mount-fuji", "mountains", "mumbai", "new-york", "paris", "petra", "pisa", "prague", "rio", "rome", "san-francisco", "santorini", "seattle", "seoul", "singapore", "snow-peak", "sydney", "tokyo", "toronto", "varanasi", "venice", "village", "waterfall"] as const;
 
 /** What a follow-up is about: a place or a landscape (shown with its icon), or one of the
- *  concept kinds, each with its own 3D icon at public/icons-3d/followup-{kind}-pixar.png. */
+ *  concept kinds, each with its own 3D icon at public/icons-3d/followup-{kind}-pixar.webp. */
 export const followUpKinds = ["place", "landscape", "stay", "food", "museum", "schedule", "budget", "dates", "transport", "nightlife", "market", "work"] as const;
 
 export const colors = ["coral", "cobalt", "emerald", "magenta", "amber", "ink"] as const;

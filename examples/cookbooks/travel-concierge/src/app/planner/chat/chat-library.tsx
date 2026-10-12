@@ -329,7 +329,7 @@ export function ChatItineraryCard({
         </span>
         <span className="hj-itin__top">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img className="hj-itin__icon" src={`/icons-3d/${iconFor(place)}-pixar.png`} alt="" draggable={false} />
+          <img className="hj-itin__icon" src={`/icons-3d/${iconFor(place)}-pixar.webp`} alt="" draggable={false} />
           <span className="hj-itin__label">
             <span className="hj-itin__place">{place || "Your trip"}</span>
             <span className="hj-itin__action">{working ? "Arranging your days…" : "Open itinerary"}</span>

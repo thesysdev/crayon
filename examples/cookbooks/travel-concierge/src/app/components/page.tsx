@@ -279,8 +279,8 @@ function InlineIcon({ name, size = 1.5, width = 3.4 }: { name: string; size?: nu
  *  Pixar-style render ({slug}-pixar.png) is the default; the felt original stands in until one exists. */
 const src3d = (name: string) => {
   const slug = name.toLowerCase().replaceAll(" ", "-");
-  const pixar = path.join(process.cwd(), "public", "icons-3d", `${slug}-pixar.png`);
-  return existsSync(pixar) ? `/icons-3d/${slug}-pixar.png` : `/icons-3d/${slug}.png`;
+  const pixar = path.join(process.cwd(), "public", "icons-3d", `${slug}-pixar.webp`);
+  return existsSync(pixar) ? `/icons-3d/${slug}-pixar.webp` : `/icons-3d/${slug}.webp`;
 };
 
 function Img3D({ name, size }: { name: string; size: number | string }) {
@@ -460,7 +460,7 @@ function Weather3D() {
         {weather3d.map(([f, label]) => (
           <div key={f} className="ds-swatch">
             <div className="ds-icon-tile" style={{ background: color.surfaceRaised, padding: "12%" }}>
-              <img src={`/icons-3d/${f}.png`} alt="" style={{ width: "100%", height: "auto", display: "block" }} />
+              <img src={`/icons-3d/${f}.webp`} alt="" style={{ width: "100%", height: "auto", display: "block" }} />
             </div>
             <div className="ds-swatch__meta">
               <span>{label}</span>
@@ -472,7 +472,7 @@ function Weather3D() {
         {weather3d.map(([f, label], i) => (
           <p key={f} style={{ ...typeStyle(type.bodyL), margin: 0 }}>
             It&rsquo;s {[28, 24, 22, 19][i]}{" "}
-            <img src={`/icons-3d/${f}.png`} alt="" style={{ height: "1.5em", width: "auto", verticalAlign: "-0.42em" }} /> and {label} in
+            <img src={`/icons-3d/${f}.webp`} alt="" style={{ height: "1.5em", width: "auto", verticalAlign: "-0.42em" }} /> and {label} in
             Bengaluru
           </p>
         ))}
@@ -504,7 +504,7 @@ function FollowupIcons() {
           style={{ background: color.surfaceRaised, borderRadius: 28, padding: 16, display: "flex", flexDirection: "column", gap: 12, boxShadow: "0 1px 2px rgba(20, 22, 26, 0.06)" }}
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={`/icons-3d/followup-${kind}-pixar.png`} alt="" style={{ width: 120, height: 120, objectFit: "contain", display: "block" }} />
+          <img src={`/icons-3d/followup-${kind}-pixar.webp`} alt="" style={{ width: 120, height: 120, objectFit: "contain", display: "block" }} />
           <span style={{ ...typeStyle(type.bodyS), color: color.ink }}>{label}</span>
         </div>
       ))}
@@ -530,7 +530,7 @@ function Landmarks3D() {
           {["pisa", "cairo", "iceland", "santorini", "rio", "kyoto"].flatMap((n) => [n, `${n}-pixar`]).map((f) => (
             <div key={f} className="ds-icon-tile" style={{ background: color.surfaceRaised, padding: "6%" }}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={`/icons-3d/${f}.png`} alt="" style={{ width: "100%", height: "auto", display: "block" }} />
+              <img src={`/icons-3d/${f}.webp`} alt="" style={{ width: "100%", height: "auto", display: "block" }} />
             </div>
           ))}
         </div>

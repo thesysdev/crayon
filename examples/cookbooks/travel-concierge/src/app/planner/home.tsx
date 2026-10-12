@@ -164,7 +164,7 @@ export function WeatherLine({ weather: given }: { weather?: Weather }) {
   }
   const { words, sky } = condition(weather.code);
   // eslint-disable-next-line @next/next/no-img-element
-  const icon = <img className="pl-weather__icon" src={`/icons-3d/weather-${sky}.png`} alt="" />;
+  const icon = <img className="pl-weather__icon" src={`/icons-3d/weather-${sky}.webp`} alt="" />;
   const place = (
     <>
       <span className="pl-weather__flag" aria-hidden>
@@ -202,11 +202,11 @@ function Illustration({ icon, onMissing }: { icon: string; onMissing?: () => voi
     // eslint-disable-next-line @next/next/no-img-element
     <img
       ref={img}
-      src={`/icons-3d/${icon}-pixar.png`}
+      src={`/icons-3d/${icon}-pixar.webp`}
       alt=""
       onLoad={(e) => e.currentTarget.classList.add("is-loaded")}
       onError={(e) => {
-        const felt = `/icons-3d/${icon}.png`;
+        const felt = `/icons-3d/${icon}.webp`;
         if (!e.currentTarget.src.endsWith(felt)) e.currentTarget.src = felt;
         else onMissing?.();
       }}
