@@ -1,143 +1,104 @@
 import { storeChatCompletionHistory } from "@openuidev/server/openai";
 import OpenAI from "openai";
-import type {
-  ChatCompletionChunk,
-  ChatCompletionMessageParam,
-} from "openai/resources/chat/completions";
-import { z } from "zod/v4";
-import { listDrivers, openDatabase, type Driver } from "../../../lib/f1-data";
-import { f1PromptContext } from "../../../lib/f1/context";
-import { f1Executors, f1FunctionTools } from "../../../lib/f1/tools";
+import type { ChatCompletionMessageParam } from "openai/resources/chat/completions";
+import { listDrivers, openDatabase } from "../../../lib/f1-data";
 import { loadChatCompletionHistory } from "../../../lib/gateway-history";
 import { analyticsPrompt } from "../../../lib/prompt";
-import { runChatToolLoop, type FunctionToolExecutor } from "../../../lib/tool-loop";
 import { executeQueryLapTimes, queryLapTimesTool } from "../../../lib/tools/lap-times";
-import { isOwnOrigin } from "../../../lib/same-origin";
 
 export const runtime = "nodejs";
 
-// Agent Interface's storage creates the Gateway conversation first and sends its id as threadId.
-// The browser sends the whole thread; only its last message, the new question, is used.
-const chatRequestSchema = z.object({
-  threadId: z.string().min(1).max(200),
-  messages: z
-    .array(z.unknown())
-    .min(1)
-    .transform((messages) => messages.at(-1))
-    .pipe(z.object({ role: z.literal("user"), content: z.string().trim().min(1).max(600) })),
-});
-
 // The thread's earlier turns, loaded from its Gateway conversation with their tool calls and
-// results rather than taken from the browser, so every value the model sees came from a query
-// this server ran. To send less of a long thread, compact the messages here.
+// results rather than taken from the browser, so the model sees where each earlier answer came
+// from. To send less of a long thread, compact the messages here.
 function conversation(apiKey: string, threadId: string, signal: AbortSignal) {
   return loadChatCompletionHistory({ apiKey, conversationId: threadId, signal });
 }
 
-async function parseChatRequest(request: Request) {
-  if (request.headers.get("content-type")?.split(";")[0].trim() !== "application/json")
-    throw new Error("Send JSON.");
-  const reader = request.body?.getReader();
-  if (!reader) throw new Error("Send a question.");
-  const chunks: Uint8Array[] = [];
-  let size = 0;
-  try {
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      size += value.byteLength;
-      if (size > 1_000_000) {
-        await reader.cancel();
-        throw new Error("Request too large.");
-      }
-      chunks.push(value);
-    }
-  } finally {
-    reader.releaseLock();
-  }
-  return chatRequestSchema.parse(JSON.parse(Buffer.concat(chunks).toString("utf8")));
-}
-
 export async function POST(request: Request) {
-  // This example has no authentication, so it accepts browser requests only from its own
-  // local page. Add authentication and rate limits before deploying it.
-  if (!isOwnOrigin(request))
+  // Agent Interface's storage creates the Gateway conversation first and sends its id as threadId.
+  // The browser sends the whole thread; only its last message, the new question, is used.
+  const { threadId, messages: sent } = (await request.json()) as {
+    threadId?: string;
+    messages?: ChatCompletionMessageParam[];
+  };
+  const question = sent?.at(-1);
+  if (!threadId || question?.role !== "user")
     return Response.json(
-      { error: "This example only accepts requests from its local chat interface." },
-      { status: 403 },
-    );
-  let body;
-  try {
-    body = await parseChatRequest(request);
-  } catch {
-    return Response.json(
-      { error: "Send a threadId and the thread's messages, ending with a question of up to 600 characters." },
+      { error: "Send a threadId and the thread's messages, ending with the user's." },
       { status: 400 },
     );
-  }
-  const { threadId, messages: question } = body; // messages is narrowed to the last one
   const apiKey = process.env.THESYS_API_KEY;
-  if (!apiKey)
-    return Response.json(
-      {
-        error:
-          "Configure THESYS_API_KEY privately in .env.local and restart to use OpenUI Gateway.",
-      },
-      { status: 503 },
-    );
+  if (!apiKey) throw new Error("Set THESYS_API_KEY in .env.local, then restart.");
 
-  // The 2024 Miami dataset behind the legacy query_lap_times tool is optional; the OpenF1
-  // tools work from their own cache (npm run snapshot:f1) or the live API.
-  let miamiDrivers: Driver[] = [];
-  let db;
-  try {
-    db = openDatabase();
-    miamiDrivers = listDrivers(db);
-  } catch {
-    miamiDrivers = [];
-  } finally {
-    db?.close();
-  }
+  const db = openDatabase();
+  const drivers = listDrivers(db);
+  db.close();
 
   const gateway = new OpenAI({ apiKey, baseURL: "https://api.thesys.dev/v1/embed" });
-  // App-owned function tools, sent as the request's `tools` because the Gateway system prompt
-  // carries no tool definitions. The loop runs only the names registered here.
-  const tools = f1FunctionTools();
-  const functionTools: Record<string, FunctionToolExecutor> = f1Executors();
-  if (miamiDrivers.length) {
-    const lapTimesTool = queryLapTimesTool(miamiDrivers);
-    tools.push(lapTimesTool);
-    functionTools[lapTimesTool.function.name] = executeQueryLapTimes;
-  }
-  let history: ChatCompletionMessageParam[];
-  try {
-    history = await conversation(apiKey, threadId, request.signal);
-  } catch {
-    return Response.json({ error: "Could not load this thread from OpenUI Gateway." }, { status: 502 });
-  }
-  const context = await f1PromptContext(request.signal);
-  const params = {
-    model: process.env.OPENUI_MODEL || "openai/gpt-5.5",
-    messages: [
-      {
-        role: "system" as const,
-        content: analyticsPrompt({ today: new Date().toISOString().slice(0, 10), ...context, miamiDrivers }),
-      },
-      ...history,
-      question,
-    ],
-    tools,
-    max_completion_tokens: 6000,
-  };
+  const lapTimesTool = queryLapTimesTool(drivers);
 
-  // Open the first round before responding, so a rejected key, rate limit, or unknown model
-  // returns as an HTTP error with Gateway's status instead of an event mid-stream.
-  let firstStream: AsyncIterable<ChatCompletionChunk>;
-  try {
-    firstStream = await gateway.chat.completions.create(
-      { ...params, stream: true },
-      { signal: request.signal },
+  const thread = [...(await conversation(apiKey, threadId, request.signal)), question];
+  const messages: ChatCompletionMessageParam[] = [
+    { role: "system", content: analyticsPrompt(drivers) },
+    ...thread,
+  ];
+
+  // runTools requests a completion, runs the tools the model calls, sends their results back, and
+  // repeats until the model answers. It runs only the tools registered here.
+  const runner = gateway.chat.completions.runTools(
+    {
+      model: process.env.OPENUI_MODEL || "openai/gpt-5.5",
+      messages,
+      tools: [
+        {
+          type: "function",
+          function: {
+            ...lapTimesTool.function,
+            // runTools ends the run when a tool throws, so return the error as the tool's result.
+            function: (args: string) =>
+              executeQueryLapTimes(args, { signal: request.signal }).catch((error: unknown) =>
+                JSON.stringify({ error: error instanceof Error ? error.message : String(error) }),
+              ),
+          },
+        },
+      ],
+      max_completion_tokens: 6000,
+      stream: true,
+    },
+    { signal: request.signal, maxChatCompletions: 3 },
+  );
+
+  // Chat Completions doesn't write to the conversation, so store this turn when the run ends: the
+  // user's message, then each message the run adds, which are the tool calls, their results, and
+  // the answer. Agent Interface loads them when the thread is opened again. A stopped or failed
+  // run still stores the user's message and whatever finished before it ended.
+  const turn: ChatCompletionMessageParam[] = [question];
+  runner.on("message", (message) => turn.push(message));
+  const stored = runner
+    .done()
+    .catch(() => {})
+    .then(() => storeChatCompletionHistory({ apiKey, conversationId: threadId, messages: turn }))
+    .catch((error: unknown) =>
+      console.error("Could not store the turn in the Gateway conversation.", error),
     );
+
+  // The runner's stream carries every completion's chunks, one JSON object per line, and Agent
+  // Interface reads it with openAIReadableStreamAdapter(). It ends once the turn is stored, so a
+  // follow-up loads it. Creating it now means no chunk is missed while the route waits below.
+  const stream = runner.toReadableStream().pipeThrough(
+    new TransformStream({
+      async flush() {
+        await stored;
+      },
+    }),
+  );
+
+  // Wait for the first chunk, so a rejected key, rate limit, or unknown model returns as an HTTP
+  // error with Gateway's message instead of failing mid-stream. Gateway reports some errors, such
+  // as an unknown model, inside a successful response, so waiting for the response isn't enough.
+  try {
+    await Promise.race([runner.emitted("chunk"), runner.done()]);
   } catch (error) {
     const upstream = error as { status?: number; message?: string };
     return Response.json(
@@ -146,54 +107,7 @@ export async function POST(request: Request) {
     );
   }
 
-  // Chat Completions doesn't write to the conversation, so store this turn when the run ends: the
-  // user's message, then each message the run adds, which are the tool calls, their results, and
-  // the answer. A stopped or failed run still stores the question and whatever finished before.
-  const turn: ChatCompletionMessageParam[] = [question];
-
-  // Stream AG-UI events to the browser, running app-owned tools between model turns.
-  const encoder = new TextEncoder();
-  let open = true;
-  const stream = new ReadableStream<Uint8Array>({
-    async start(controller) {
-      // Stop sending once the browser disconnects.
-      const emit = (event: Record<string, unknown>) => {
-        if (open) controller.enqueue(encoder.encode(`data: ${JSON.stringify(event)}\n\n`));
-      };
-      try {
-        await runChatToolLoop({
-          client: gateway,
-          params,
-          firstStream,
-          tools: functionTools,
-          emit,
-          signal: request.signal,
-          maxRounds: 5,
-          onMessage: (message) => turn.push(message),
-        });
-      } catch (error) {
-        emit({
-          type: "RUN_ERROR",
-          message: error instanceof Error ? error.message : String(error),
-        });
-      } finally {
-        // The stream ends once the turn is stored, so a follow-up question loads it.
-        await storeChatCompletionHistory({ apiKey, conversationId: threadId, messages: turn }).catch(
-          (error: unknown) => console.error("Could not store the turn in the Gateway conversation.", error),
-        );
-        if (open) controller.close();
-      }
-    },
-    cancel() {
-      open = false;
-    },
-  });
-
   return new Response(stream, {
-    headers: {
-      "Content-Type": "text/event-stream",
-      "Cache-Control": "no-cache, no-transform",
-      Connection: "keep-alive",
-    },
+    headers: { "Content-Type": "application/x-ndjson", "Cache-Control": "no-cache, no-transform" },
   });
 }

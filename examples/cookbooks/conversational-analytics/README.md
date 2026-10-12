@@ -32,7 +32,7 @@ Try:
 1. Agent Interface sends the thread's messages to `/api/chat`.
 2. The server calls OpenUI Gateway's Chat Completions API, which requests `query_lap_times` with a view, driver numbers, and lap range.
 3. The server validates the arguments and queries the local SQLite snapshot.
-4. The tool loop in `src/lib/tool-loop.ts` returns the result to Gateway, and the route streams the tool calls, their results, and generated OpenUI Lang to the browser as AG-UI events.
+4. `runTools()` returns the result to Gateway, and the route streams the tool calls and generated OpenUI Lang to the browser.
 5. Agent Interface displays tool activity and progressively renders the visual answer.
 
 The tool supports `fastest_laps` (one best recorded lap per driver) and `lap_times` (one to four drivers on matching lap numbers). Rankings can include all drivers by passing an empty `driver_numbers` array. The final ten race laps are 48 through 57. Comparisons include absolute times and a per-lap difference from the first selected driver, so the UI can show small differences clearly.
@@ -47,8 +47,7 @@ The tool supports `fastest_laps` (one best recorded lap per driver) and `lap_tim
 | `src/library.ts`                      | The chat library, shared by the prompt and renderer           |
 | `src/lib/prompt.ts`                   | Gateway instructions and the supported data scope             |
 | `src/lib/gateway-history.ts`          | Loads a thread's stored turns from Gateway as chat messages   |
-| `src/lib/tool-loop.ts`                | Runs function tools between completions, emits AG-UI events   |
-| `src/app/api/chat/route.ts`           | Generation, streaming, and turn storage                       |
+| `src/app/api/chat/route.ts`           | `runTools()` generation, streaming, and turn storage          |
 | `src/app/api/frontend-token/route.ts` | Frontend token for Gateway thread storage                     |
 | `src/components/analytics-chat.tsx`   | Agent Interface, chat transport, thread storage, and starters |
 
@@ -60,7 +59,7 @@ The OpenAI SDK sends requests to `https://api.thesys.dev/v1/embed/chat/completio
 
 Agent Interface stores the thread list with Gateway's [Conversations API](https://www.openui.com/docs/gateway/api/conversations) through `useOpenuiCloudStorage()`. The browser calls Gateway directly with a short-lived [frontend token](https://www.openui.com/docs/gateway/authentication#frontend-tokens) from `/api/frontend-token`, which mints it with `THESYS_API_KEY` for one local user (`DEMO_USER_ID`, default `demo-user`) and app (`APP_ID`, default `conversational-analytics-cookbook`), so the key stays on the server and the browser reaches only those threads. Chat Completions doesn't write turns to a conversation, so the chat route appends each turn, including the tool calls and their results, with `storeChatCompletionHistory()` from [`@openuidev/server`](https://www.openui.com/docs/api-reference/server#conversation-history). A stopped or failed answer still keeps the user's message. Threads stay listed after a reload, and a thread you open again loads its messages. To keep threads in your own database instead, use `restStorage`.
 
-The chat route uses only the new question from the browser. `loadChatCompletionHistory()` in `src/lib/gateway-history.ts` loads the earlier turns from the thread's Gateway conversation, including their tool calls and results, so the model sees where each earlier answer came from, and every result it sees came from this server. The response ends once the turn is stored, so a follow-up finds it. Chat Completions has no chunk for a tool result, so the route runs tools with its own loop (`runChatToolLoop()`) and streams AG-UI events, which `agUIAdapter()` reads. A live answer shows each call's arguments and its result.
+The chat route uses only the new question from the browser. `loadChatCompletionHistory()` in `src/lib/gateway-history.ts` loads the earlier turns from the thread's Gateway conversation, including their tool calls and results, so the model sees where each earlier answer came from, and every result it sees came from this server. The response ends once the turn is stored, so a follow-up finds it. The route runs the tool with the OpenAI SDK's [`runTools()`](https://github.com/openai/openai-node#automated-function-calls) and returns the runner's `toReadableStream()`, one JSON chunk per line, which `openAIReadableStreamAdapter()` reads. Chat Completions has no chunk for a tool result, so in a live answer **Behind the scenes** shows each call's arguments but not its result.
 
 The app binds to loopback, and every browser shares one local user's threads. For deployment, add [authentication](https://www.openui.com/docs/gateway/authentication), mint each frontend token for the signed-in user, check that each `threadId` belongs to that user before storing a turn in it, add request-size and rate limits to both routes, and provide persistent SQLite storage or a hosted database for the race data. Gateway receives the conversation, component/tool instructions, driver catalog, and requested query results.
 

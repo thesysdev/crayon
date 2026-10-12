@@ -1,16 +1,9 @@
-import { isOwnOrigin } from "../../../lib/same-origin";
-
 export const runtime = "nodejs";
 
 // Mints the short-lived frontend token that useOpenuiCloudStorage() sends with its
 // Conversations API calls. Gateway scopes the token to one user and app, so the browser
 // reaches only those threads and never sees THESYS_API_KEY.
 export async function POST(request: Request) {
-  if (!isOwnOrigin(request))
-    return Response.json(
-      { error: "This example only accepts requests from its local chat interface." },
-      { status: 403 },
-    );
   const apiKey = process.env.THESYS_API_KEY;
   if (!apiKey) throw new Error("Set THESYS_API_KEY in .env.local, then restart.");
 

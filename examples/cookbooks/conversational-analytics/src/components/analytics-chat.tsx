@@ -2,23 +2,22 @@
 
 import {
   AgentInterface,
-  agUIAdapter,
   fetchLLM,
   openAIMessageFormat,
+  openAIReadableStreamAdapter,
   useOpenuiCloudStorage,
   type ThemeProps,
 } from "@openuidev/react-ui";
-import { f1Theme } from "../f1-typography";
 import { library } from "../library";
 
-// Send the thread's messages in Chat Completions format and read the route's AG-UI events.
+// Send the thread's messages in Chat Completions format and read the runner's stream from the route.
 const llm = fetchLLM({
   url: "/api/chat",
-  streamAdapter: agUIAdapter(),
+  streamAdapter: openAIReadableStreamAdapter(),
   messageFormat: openAIMessageFormat,
 });
 
-const theme: ThemeProps = { mode: "light", lightTheme: f1Theme };
+const theme: ThemeProps = { mode: "light" };
 const starters = [
   {
     displayText: "Which five drivers set the fastest laps in Miami?",
@@ -51,13 +50,13 @@ export default function AnalyticsChat() {
         llm={llm}
         storage={storage}
         componentLibrary={library}
-        agentName="OpenUI x F1"
+        agentName="Data analyst"
         theme={theme}
         starters={starters}
       >
-        <AgentInterface.MobileHeader agentName="OpenUI x F1" />
+        <AgentInterface.MobileHeader agentName="Data analyst" />
         <AgentInterface.Welcome
-          title="OpenUI x F1"
+          title="Explore your data through conversation"
           description="Ask about recorded lap times from the 2024 Miami Grand Prix, provided by OpenF1. Follow up to explore a different angle."
         />
         <AgentInterface.Composer placeholder="Ask a question about your data…" />
