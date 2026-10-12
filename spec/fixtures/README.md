@@ -51,6 +51,8 @@ A case is a folder with `input.oui` (or `chunks.json`) and `expected.json`, plus
 
 The canonical form holds only spec concepts: component types and props, resolved values, error codes, unresolved names, orphans, `incomplete`, state, and statements. It never holds parser internals or message text.
 
+The reference runners are `packages/lang-core/src/__tests__/conformance.test.ts` (program and validation cases) and `packages/react-lang/src/__tests__/conformance.steps.test.tsx` (`steps.json`). They run with each package's tests, and `OPENUI_FIXTURES` points them at another fixture folder.
+
 ## Editing cases
 
 Files: `input.oui` (the current program), `patch.oui` (the model's reply), and `expected.json`. The runner merges the patch into the program (language.md, section 7), then parses the result as a program case. `statements` is read from the merged text: each line that starts with `name =` at column 0 starts a statement.
