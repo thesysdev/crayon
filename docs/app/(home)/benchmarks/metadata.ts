@@ -1,12 +1,15 @@
-import { MODEL_BOARD_SIZE } from "@/lib/benchmark-data";
+import { blankScreens, COST_MODELS, costPerPass, RUNS_PER_FORMAT } from "@/lib/benchmark-data";
 import type { PageMetadataInput } from "@/lib/page-metadata";
+
+const costRatios = COST_MODELS.flatMap((model) =>
+  (["a2ui", "jsonRender"] as const).map(
+    (format) => costPerPass[model]![format] / costPerPass[model]!.openui,
+  ),
+);
 
 export default {
   pathname: "/benchmarks",
-  title: "Generative UI Benchmark: JSON vs OpenUI Lang token usage",
-  description: `We generated the same 46 interfaces with 6 models and 3 UI formats. OpenUI produced the fewest blank screens, used the fewest tokens, and cost the least on every priced model.`,
-  openGraph: {
-    title: "Generative UI Benchmark",
-    description: `OpenUI results across ${MODEL_BOARD_SIZE} models, plus a six-model comparison across OpenUI, A2UI and json-render.`,
-  },
+  title: { absolute: "Generative UI benchmark: OpenUI vs A2UI vs json-render | OpenUI" },
+  description: `We generated the same 46 interfaces with 6 models in 3 generative UI formats: OpenUI, A2UI and json-render. OpenUI had the fewest blank screens (${blankScreens.openui} in ${RUNS_PER_FORMAT.toLocaleString("en-US")} runs), used about half the tokens, and cost ${Math.min(...costRatios).toFixed(1)} to ${Math.max(...costRatios).toFixed(1)}× less on every priced model.`,
+  openGraph: { title: "Generative UI Benchmark" },
 } satisfies PageMetadataInput;
