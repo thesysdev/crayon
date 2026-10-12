@@ -1,6 +1,6 @@
 import { object as zObject } from "zod/v4";
 import * as z from "zod/v4/core";
-import { extendDefinition, warnOnStaleNames } from "./extend";
+import { extendDefinition } from "./extend";
 import type { DefinedAction, DefinedFunction } from "./functions";
 import { ACTION_DEFS, isBuiltin, isReservedCall } from "./parser/builtins";
 import type { ComponentPromptSpec, LibrarySpec, PromptSpec, ToolSpec } from "./parser/prompt";
@@ -330,9 +330,7 @@ export function createLibrary<C = unknown, A extends AnyAction = never>(
 
     // lib.extend({ components: { add: [ProductCard] }, functions: { add: [percent] } })
     extend<A2 extends AnyAction = never>(extension: LibraryExtension<C, A2>) {
-      const { definition, removed } = extendDefinition<C>(input, extension);
-      const derived = createLibrary(definition) as Required<Library<C, A | A2>>;
-      return warnOnStaleNames(library, derived, removed);
+      return createLibrary(extendDefinition<C>(input, extension)) as Required<Library<C, A | A2>>;
     },
   };
 

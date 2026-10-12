@@ -4,10 +4,8 @@ import type {
   AnyAction,
   ComponentGroup,
   DefinedComponent,
-  Library,
   LibraryDefinition,
   LibraryExtension,
-  PromptOptions,
 } from "./library";
 import { isReactiveSchema, markReactive } from "./reactive";
 import { copySchemaTags, getUnionOptions, getZodDef, unwrap } from "./signature";
@@ -24,20 +22,17 @@ const fail = (message: string): never => {
 export function extendDefinition<C>(
   base: LibraryDefinition<C, AnyAction>,
   ext: LibraryExtension<C, AnyAction>,
-): { definition: LibraryDefinition<C, AnyAction>; removed: string[] } {
+): LibraryDefinition<C, AnyAction> {
   const changes = applyComponentVerbs(base, ext.components);
   const slots = findContentSlots(changes);
   const placements = placeInSlots(changes, slots);
   return {
-    definition: {
-      ...base,
-      id: undefined, // a derived library does not inherit the base's public id
-      components: rebuildComponents(changes, placements),
-      componentGroups: withoutRemoved(base.componentGroups, changes.removed),
-      functions: [...(base.functions ?? []), ...(ext.functions?.add ?? [])],
-      actions: [...(base.actions ?? []), ...(ext.actions?.add ?? [])],
-    },
-    removed: [...changes.removed],
+    ...base,
+    id: undefined, // a derived library does not inherit the base's public id
+    components: rebuildComponents(changes, placements),
+    componentGroups: withoutRemoved(base.componentGroups, changes.removed),
+    functions: [...(base.functions ?? []), ...(ext.functions?.add ?? [])],
+    actions: [...(base.actions ?? []), ...(ext.actions?.add ?? [])],
   };
 }
 
@@ -297,40 +292,4 @@ function withoutRemoved(groups: ComponentGroup[] | undefined, removed: Set<strin
   return groups
     ?.map((g) => ({ ...g, components: g.components.filter((n) => !removed.has(n)) }))
     .filter((g) => g.components.length);
-}
-
-/** Removed component names a library's prompt notes, examples or rules may still name. */
-const staleNames = new WeakMap<object, string[]>();
-
-// remove: ["Frame"] while a group note says "Frame wraps one Image" -> one console.warn.
-// Notes are checked now, examples and rules on each prompt(); each name warns once,
-// and names removed earlier in a chain of extends carry over until re-added or warned.
-export function warnOnStaleNames<L extends Required<Library<any, any>>>(
-  base: object,
-  derived: L,
-  newlyRemoved: string[],
-): L {
-  let stale = [...new Set([...(staleNames.get(base) ?? []), ...newlyRemoved])].filter(
-    (n) => !(n in derived.components),
-  );
-  if (!stale.length) return derived;
-  const warnIfNamed = (texts: string[]) => {
-    const named = stale.filter((n) => texts.some((t) => new RegExp(`\\b${n}\\b`).test(t)));
-    if (!named.length) return;
-    stale = stale.filter((n) => !named.includes(n));
-    staleNames.set(derived, stale);
-    console.warn(
-      `[extend] Removed ${named.join(", ")} still named in prompt notes, examples or rules.`,
-    );
-  };
-  staleNames.set(derived, stale);
-  warnIfNamed(derived.componentGroups?.flatMap((g) => g.notes ?? []) ?? []);
-  const { prompt } = derived;
-  return Object.assign(derived, {
-    prompt(options?: PromptOptions) {
-      const { examples = [], toolExamples = [], additionalRules = [] } = options ?? {};
-      warnIfNamed([...examples, ...toolExamples, ...additionalRules]);
-      return prompt(options);
-    },
-  });
 }
