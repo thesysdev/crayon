@@ -1,5 +1,6 @@
 import clsx from "clsx";
-import { useState } from "react";
+import { useRef } from "react";
+import { useIsomorphicLayoutEffect } from "../../Charts/hooks/core/useIsomorphicLayoutEffect";
 import { MASCOT_BODY_PATHS, MASCOT_EYES, MASCOT_VIEWBOX } from "./mascotPaths";
 
 /** Keep in sync with the pulse duration in mascotLoader.scss. */
@@ -15,9 +16,11 @@ const PULSE_MS = 1600;
  * instead of restarting.
  */
 export const MascotLoader = ({ size = 28, className }: { size?: number; className?: string }) => {
-  const [delay] = useState(() =>
-    typeof performance === "undefined" ? 0 : -(performance.now() % PULSE_MS),
-  );
+  const bodyRef = useRef<SVGGElement>(null);
+  // Set on the node, not in render, so server-rendered markup hydrates cleanly.
+  useIsomorphicLayoutEffect(() => {
+    bodyRef.current?.style.setProperty("animation-delay", `${-(performance.now() % PULSE_MS)}ms`);
+  }, []);
   return (
     <svg
       viewBox={MASCOT_VIEWBOX}
@@ -27,7 +30,7 @@ export const MascotLoader = ({ size = 28, className }: { size?: number; classNam
       aria-hidden="true"
       className={clsx("openui-agent-mascot-loader", className)}
     >
-      <g className="openui-agent-mascot-loader__body" style={{ animationDelay: `${delay}ms` }}>
+      <g ref={bodyRef} className="openui-agent-mascot-loader__body">
         {MASCOT_BODY_PATHS.map((p, i) => (
           <path key={i} d={p.d} fill={p.fill} />
         ))}

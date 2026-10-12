@@ -1,4 +1,3 @@
-import { PrePaintScript } from "@openuidev/react-ui";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
@@ -21,11 +20,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head>
-        {/* Applies the saved theme and sidebar state before paint, for the
-            boot shell in cloud-chat-client.tsx. */}
-        <PrePaintScript />
-      </head>
       <body className={inter.className}>{children}</body>
     </html>
   );
