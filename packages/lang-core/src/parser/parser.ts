@@ -174,7 +174,7 @@ function isComponentCall(node: ASTNode | undefined): node is Extract<ASTNode, { 
   return node?.k === "Comp" && !node.fn && !isBuiltin(node.name) && !isReservedCall(node.name);
 }
 
-/** Entry: `root`, else the first non-declaration statement if it calls the root component. */
+/** Entry: `root`, else the first statement that calls the root component. */
 function pickEntry(
   stmtMap: Map<string, Statement>,
   rootName?: string,
@@ -182,9 +182,8 @@ function pickEntry(
   if (stmtMap.has(DEFAULT_ROOT_STATEMENT_ID))
     return { id: DEFAULT_ROOT_STATEMENT_ID, fallback: false };
   for (const stmt of stmtMap.values()) {
-    if (stmt.kind !== "value") continue;
-    const callsRoot = !!rootName && isComponentCall(stmt.expr) && stmt.expr.name === rootName;
-    return callsRoot ? { id: stmt.id, fallback: true } : null;
+    if (stmt.kind === "value" && isComponentCall(stmt.expr) && stmt.expr.name === rootName)
+      return { id: stmt.id, fallback: true };
   }
   return null;
 }

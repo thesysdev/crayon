@@ -17,8 +17,15 @@ describe("entry rule", () => {
     expect(result.meta.errors).toMatchObject([{ code: "no-root", severity: "warning" }]);
   });
 
-  it("renders nothing and reports no orphans when there is no entry", () => {
+  it("falls back to a later root-component statement when children come first", () => {
     const result = parse('t = Title("x")\npage = Card([t])', schema, "Card");
+    expect(result.root).toMatchObject({ typeName: "Card", statementId: "page" });
+    expect(result.meta.orphaned).toEqual([]);
+    expect(result.meta.errors).toMatchObject([{ code: "no-root", severity: "warning" }]);
+  });
+
+  it("renders nothing and reports no orphans when there is no entry", () => {
+    const result = parse('t = Title("x")', schema, "Card");
     expect(result.root).toBeNull();
     expect(result.meta.orphaned).toEqual([]);
     expect(result.meta.errors).toEqual([expect.objectContaining({ code: "no-root" })]);
