@@ -16,6 +16,12 @@ const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const examplesRoot = resolve(repoRoot, "examples");
 const templatesRoot = resolve(repoRoot, "templates");
 const dependencyFields = ["dependencies", "devDependencies"];
+// These renderers stay on lang-core 0.4, so their apps are not bumped to latest.
+const nonReactRenderers = [
+  "@openuidev/vue-lang",
+  "@openuidev/svelte-lang",
+  "@openuidev/angular-lang",
+];
 const [target, command] = process.argv.slice(2);
 
 const commandsByTarget = {
@@ -68,6 +74,10 @@ function openUIDependencyNames(manifest) {
   return dependencyFields.flatMap((field) =>
     Object.keys(manifest[field] ?? {}).filter((name) => name.startsWith("@openuidev/")),
   );
+}
+
+function usesNonReactRenderer(manifest) {
+  return openUIDependencyNames(manifest).some((name) => nonReactRenderers.includes(name));
 }
 
 function runCommand(command, args, options) {
@@ -240,7 +250,14 @@ function manageExamples() {
   const applications = findManifests(examplesRoot)
     .map(applicationFromManifest)
     .sort((left, right) => left.path.localeCompare(right.path));
-  const versions = command === "update" ? latestOpenUIVersions(applications.map(({ manifest }) => manifest)) : new Map();
+  const versions =
+    command === "update"
+      ? latestOpenUIVersions(
+          applications
+            .map(({ manifest }) => manifest)
+            .filter((manifest) => !usesNonReactRenderer(manifest)),
+        )
+      : new Map();
 
   for (const application of applications) {
     if (command === "install") {
@@ -250,6 +267,10 @@ function manageExamples() {
 
     if (command === "update") {
       const manifest = readJson(application.manifestPath);
+      if (usesNonReactRenderer(manifest)) {
+        console.log(`\n==> ${application.path} skipped (non-React renderer)`);
+        continue;
+      }
       if (openUIDependencyNames(manifest).length > 0) {
         if (pinOpenUIDependencyVersions(manifest, versions)) {
           writeJson(application.manifestPath, manifest);
