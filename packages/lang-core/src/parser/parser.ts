@@ -121,7 +121,7 @@ function extractStatements(
         stateDeclarations[stmt.id] = materializeValue(stmt.init, ctx);
         break;
       case "query":
-        nameRawCallArgs(stmt.call.args, ctx);
+        nameRawCallArgs(stmt.call.args, ctx, stmt.id);
         queryStatements.push({
           statementId: stmt.id,
           toolAST: stmt.call.args[0] ?? null,
@@ -133,7 +133,7 @@ function extractStatements(
         });
         break;
       case "mutation":
-        nameRawCallArgs(stmt.call.args, ctx);
+        nameRawCallArgs(stmt.call.args, ctx, stmt.id);
         mutationStatements.push({
           statementId: stmt.id,
           toolAST: stmt.call.args[0] ?? null,

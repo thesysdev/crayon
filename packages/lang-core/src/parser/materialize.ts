@@ -143,15 +143,21 @@ function materializeCall(
     : { k: "Null" };
 }
 
-// Query("s", {n: @Count(rows)}): names @Count's args in place
-export function nameRawCallArgs(args: ASTNode[], ctx: MaterializeCtx): void {
+// Query("s", {n: @Count(rows)}): names @Count's args in place.
+// Literal library args are checked like props; an invalid call keeps raw names and is null at runtime.
+export function nameRawCallArgs(args: ASTNode[], ctx: MaterializeCtx, statementId: string): void {
+  const prevStatementId = ctx.currentStatementId;
+  ctx.currentStatementId = statementId;
   for (const arg of args) {
     walkAST(arg, (node) => {
       if (node.k !== "Comp") return;
       const def = getCallDefs(ctx.cat).get(node.name);
-      if (def && !def.lazy) node.mappedProps = nameArgs(node.args, def.params);
+      if (!def || def.lazy) return;
+      const checked = def.builtin ? null : mapCallArgs(node.name, node.args, def, ctx);
+      node.mappedProps = checked ?? nameArgs(node.args, def.params);
     });
   }
+  ctx.currentStatementId = prevStatementId;
 }
 
 /**
