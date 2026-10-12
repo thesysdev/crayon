@@ -1,4 +1,5 @@
 import { Footer } from "@/app/(home)/sections/Footer/Footer";
+import { createPageMetadata } from "@/lib/page-metadata";
 import { ArrowLeft, ArrowRight, ArrowUpRight } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -6,6 +7,7 @@ import { notFound } from "next/navigation";
 import { CopyCommand } from "../copy-command";
 import {
   getIntegrationCategory,
+  getIntegrationPageMetadata,
   getRelatedIntegrations,
   integrationBySlug,
   integrations,
@@ -26,17 +28,9 @@ export async function generateMetadata(props: {
   const integration = integrationBySlug.get(slug);
   if (!integration) notFound();
 
-  return {
-    title: { absolute: `${integration.seoTitle} | OpenUI` },
-    description: integration.summary,
-    alternates: { canonical: `/integrations/${integration.slug}` },
-    openGraph: {
-      title: `${integration.name} × OpenUI`,
-      description: integration.summary,
-      url: `/integrations/${integration.slug}`,
-      type: "article",
-    },
-  };
+  return createPageMetadata(getIntegrationPageMetadata(integration), {
+    openGraph: { type: "article" },
+  });
 }
 
 export default async function IntegrationDetailPage(props: { params: Promise<{ slug: string }> }) {

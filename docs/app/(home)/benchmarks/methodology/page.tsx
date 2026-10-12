@@ -9,25 +9,16 @@ import {
   REPO_ROOT,
   RUNS_PER_FORMAT,
 } from "@/lib/benchmark-data";
+import { createPageMetadata } from "@/lib/page-metadata";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
-import type { Metadata } from "next";
 import { BevelButton } from "../../components/Button/BevelButton";
 import { PillLink } from "../../components/Button/Button";
 import benchmarkStyles from "../benchmarks.module.css";
+import page from "./metadata";
 
-export const metadata: Metadata = {
-  title: "Benchmark methodology | OpenUI",
-  description:
-    "How the OpenUI generative UI benchmark is run and scored: 46 briefs, 70 equivalent components, controlled generation settings, and SDK-native validation.",
-  alternates: { canonical: "/benchmarks/methodology" },
-  openGraph: {
-    type: "article",
-    url: "/benchmarks/methodology",
-    title: "Generative UI benchmark methodology | OpenUI",
-    description: "A concise explanation of how the benchmark is generated and scored.",
-    modifiedTime: "2026-08-26",
-  },
-};
+export const metadata = createPageMetadata(page, {
+  openGraph: { type: "article", modifiedTime: "2026-08-26" },
+});
 
 const SECTIONS = [
   { id: "setup", label: "Benchmark setup" },

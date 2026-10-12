@@ -1,3 +1,5 @@
+import type { PageMetadataInput } from "@/lib/page-metadata";
+
 export type IntegrationCategoryId = "ai-frameworks" | "design-systems" | "frontend-platforms";
 
 export interface IntegrationLink {
@@ -870,4 +872,15 @@ export function getRelatedIntegrations(integration: Integration, limit = 3): Int
   return getIntegrationsByCategory(integration.category)
     .filter((item) => item.slug !== integration.slug)
     .slice(0, limit);
+}
+
+export function getIntegrationPageMetadata(integration: Integration): PageMetadataInput {
+  return {
+    pathname: `/integrations/${integration.slug}`,
+    title: { absolute: `${integration.seoTitle} | OpenUI` },
+    description: integration.summary,
+    openGraph: { title: `${integration.name} × OpenUI` },
+    // Remote logos are skipped so the build never fetches from third-party hosts.
+    ogImage: { partnerLogo: integration.logo.startsWith("/") ? integration.logo : undefined },
+  };
 }

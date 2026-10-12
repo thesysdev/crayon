@@ -37,6 +37,8 @@ export const blogPosts = defineCollections({
     author: z.string(),
     date: z.string().date().or(z.date()),
     featured: z.boolean().optional(),
+    /** Social preview image in `public/`, used instead of the cropped cover. */
+    ogImage: z.string().optional(),
   }),
 });
 
