@@ -5,9 +5,9 @@ const PREFIX = "]]>openui:";
 const MARKER = /^\]\]>openui:([a-z]+)(?:\?(.*))?$/;
 // A regenerated response writes its content line right after the cut-off text, with no newline
 // before it. Start it on its own line so the last content wins.
-const RETRY = /(?<=[^\n])(?=\]\]>openui:content(?:\?|\r?\n|$))/g;
+const RETRY = /([^\n])(?=\]\]>openui:content(?:\?|\r?\n|$))/g;
 // While streaming, hold back a mid-line `]]>openui:con` that may become a content line.
-const RETRY_CUT = /(?<=[^\n])\]\]>[a-z:]*$/;
+const RETRY_CUT = /[^\n](\]\]>[a-z:]*)$/;
 
 export interface ParsedMessage {
   /** Body of the last `content` section, or the whole text when there is none. */
@@ -65,9 +65,9 @@ function readAttributes(query = ""): Record<string, string> {
 
 /** Splits a stored message into its content, context, attributes and end flag. */
 export function parseMessage(raw: string, { streaming }: ParseMessageOptions = {}): ParsedMessage {
-  let text = raw.replace(RETRY, "\n");
+  let text = raw.replace(RETRY, "$1\n");
   const cut = streaming ? RETRY_CUT.exec(text) : null;
-  if (cut && `${PREFIX}content`.startsWith(cut[0])) text = text.slice(0, cut.index);
+  if (cut && `${PREFIX}content`.startsWith(cut[1])) text = text.slice(0, cut.index + 1);
   const lines = text.split("\n");
   const last = lines[lines.length - 1];
   const held = streaming && last !== "" && (last.startsWith(PREFIX) || PREFIX.startsWith(last));
