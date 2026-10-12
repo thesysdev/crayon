@@ -459,7 +459,7 @@ Fixtures: `actions/*-tool-*`
 In edit mode, the model gets the current program and answers with only the changed statements. The client merges by name:
 
 - A patch statement whose name exists replaces the original. A new name is appended. Names absent from the patch are kept.
-- A top-level `name = null` in a patch deletes the statement. (Inside one program it is an ordinary binding.) A state declaration set to null gets the default null, and its store key is kept.
+- A top-level `name = null` in a patch deletes the statement, state declarations included. (Inside one program it is an ordinary binding.) Deleting a state declaration never deletes its store key (section 5.1).
 - After merging, statements `root` cannot reach are removed, unless there is no `root` statement. State declarations are always kept.
 
 The merge MUST read both texts with sections 1.2 and 1.4, including multi-line ternaries. The host decides when a text is a patch. While streaming, each patched statement is applied as it completes. If the reply is prose plus a fenced patch, only the fenced part is merged.
