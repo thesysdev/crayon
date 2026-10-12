@@ -4,5 +4,4 @@ export function requiredEnv(name: string): string {
   return value;
 }
 
-export const THESYS_API_URL = "https://api.thesys.dev";
 export const DEFAULT_MODEL = "google/gemini-3.6-flash-free";

@@ -1,5 +1,6 @@
 <script lang="ts">
   import { Chat } from "@ai-sdk/svelte";
+  import type { UIMessage } from "ai";
   import { BuiltinActionType, type ActionEvent } from "@openuidev/svelte-lang";
   import { library } from "$lib/library";
   import ChatHeader from "./ChatHeader.svelte";
@@ -10,7 +11,16 @@
   import ChatInput from "./ChatInput.svelte";
 
   let messagesEnd = $state<HTMLDivElement>();
-  const chat = new Chat({});
+  // Keep the conversation in localStorage so a reload brings it back.
+  const MESSAGES_KEY = "openui-svelte:messages";
+  function loadMessages(): UIMessage[] {
+    try {
+      return JSON.parse(localStorage.getItem(MESSAGES_KEY) ?? "[]");
+    } catch {
+      return [];
+    }
+  }
+  const chat = new Chat({ messages: loadMessages() });
 
   const isLoading = $derived(chat.status === "submitted" || chat.status === "streaming");
 
@@ -24,6 +34,15 @@
       handleSend(event.humanFriendlyMessage);
     }
   }
+
+  $effect(() => {
+    if (chat.status !== "ready" || chat.messages.length === 0) return;
+    try {
+      localStorage.setItem(MESSAGES_KEY, JSON.stringify(chat.messages));
+    } catch {
+      // Storage is full or blocked; the chat still works for this visit.
+    }
+  });
 
   $effect(() => {
     messagesEnd?.scrollIntoView({ behavior: "smooth" });

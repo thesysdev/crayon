@@ -5,16 +5,11 @@ import LightModeIcon from "@mui/icons-material/LightMode";
 import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
-import {
-  AgentInterface,
-  fetchLLM,
-  openAIAdapter,
-  openAIMessageFormat,
-  useOpenuiCloudStorage,
-} from "@openuidev/react-ui";
+import { AgentInterface, fetchLLM, openAIAdapter, openAIMessageFormat } from "@openuidev/react-ui";
 import { useMemo } from "react";
 
 import { useColorMode } from "@/hooks/use-system-theme";
+import { withLocalHistory } from "@/lib/local-history";
 import { muiChatLibrary } from "@/lib/mui-genui";
 
 export default function Page() {
@@ -30,12 +25,9 @@ export default function Page() {
     [],
   );
 
-  // Threads live in OpenUI Cloud: the chat route stores each turn, so switching
-  // chats or reloading brings the whole conversation back.
-  const storage = useOpenuiCloudStorage({
-    token: "/api/frontend-token",
-    features: { artifact: false },
-  });
+  // Threads live in this browser's localStorage, so switching chats or
+  // reloading brings the whole conversation back.
+  const chat = useMemo(() => withLocalHistory(llm, "openui-material-ui"), [llm]);
 
   return (
     <Box sx={{ height: "100vh", width: "100vw", overflow: "hidden", position: "relative" }}>
@@ -52,8 +44,8 @@ export default function Page() {
       </Box>
 
       <AgentInterface
-        llm={llm}
-        storage={storage}
+        llm={chat.llm}
+        storage={chat.storage}
         componentLibrary={muiChatLibrary}
         agentName="Material UI Chat"
         theme={{ mode }}

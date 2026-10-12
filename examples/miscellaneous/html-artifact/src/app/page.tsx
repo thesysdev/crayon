@@ -1,13 +1,13 @@
 "use client";
 
+import { withLocalHistory } from "@/lib/local-history";
 import { library } from "@/library";
 import {
   AgentInterface,
-  type ChatLLM,
   openAIAdapter,
   openAIMessageFormat,
-  useOpenuiCloudStorage,
   useSystemThemeMode,
+  type ChatLLM,
 } from "@openuidev/react-ui";
 import { useMemo } from "react";
 
@@ -16,11 +16,11 @@ export default function Page() {
 
   const llm = useMemo<ChatLLM>(
     () => ({
-      send: ({ threadId, messages, signal }) =>
+      send: ({ messages, signal }) =>
         fetch("/api/chat", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ threadId, messages: openAIMessageFormat.toApi(messages) }),
+          body: JSON.stringify({ messages: openAIMessageFormat.toApi(messages) }),
           signal,
         }),
       streamProtocol: openAIAdapter(),
@@ -28,18 +28,15 @@ export default function Page() {
     [],
   );
 
-  // Threads live in OpenUI Cloud: the chat route stores each turn, so switching
-  // chats or reloading brings the whole conversation back.
-  const storage = useOpenuiCloudStorage({
-    token: "/api/frontend-token",
-    features: { artifact: false },
-  });
+  // Threads live in this browser's localStorage, so switching chats or
+  // reloading brings the whole conversation back.
+  const chat = useMemo(() => withLocalHistory(llm, "openui-html-artifact"), [llm]);
 
   return (
     <div className="h-screen w-screen overflow-hidden relative">
       <AgentInterface
-        llm={llm}
-        storage={storage}
+        llm={chat.llm}
+        storage={chat.storage}
         componentLibrary={library}
         agentName="HTML Artifact"
         theme={{ mode }}

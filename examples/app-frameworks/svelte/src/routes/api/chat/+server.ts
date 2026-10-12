@@ -5,11 +5,9 @@ import { createOpenAI } from "@ai-sdk/openai";
 import { generateSystemPrompt } from "@openuidev/lang-core";
 import { convertToModelMessages, smoothStream, stepCountIs, streamText } from "ai";
 
-const THESYS_API_URL = "https://api.thesys.dev";
-
 const openai = createOpenAI({
   apiKey: env.THESYS_API_KEY ?? "",
-  baseURL: `${THESYS_API_URL}/v1/embed`,
+  baseURL: "https://api.thesys.dev/v1/embed",
   // AI SDK always sends stream_options.include_usage; Cloud Completions
   // then withholds tokens until the stream ends. Drop it so deltas flush.
   fetch: (input, init) => {

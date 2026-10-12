@@ -1,14 +1,12 @@
 import { createOpenAI } from "@ai-sdk/openai";
 import { defineAgent } from "eve";
 
-const THESYS_API_URL = "https://api.thesys.dev";
-
 const apiKey = process.env.THESYS_API_KEY;
 if (!apiKey) throw new Error("Missing required env var: THESYS_API_KEY");
 
 const openai = createOpenAI({
   apiKey,
-  baseURL: `${THESYS_API_URL}/v1/embed`,
+  baseURL: "https://api.thesys.dev/v1/embed",
 });
 
 const model = openai.chat("google/gemini-3.6-flash-free");

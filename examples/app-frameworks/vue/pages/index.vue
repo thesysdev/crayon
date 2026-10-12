@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, watch, nextTick } from "vue";
 import { Chat } from "@ai-sdk/vue";
+import type { UIMessage } from "ai";
 import { BuiltinActionType, type ActionEvent } from "@openuidev/vue-lang";
 import { library } from "~/lib/library";
 import ChatHeader from "~/components/ChatHeader.vue";
@@ -14,7 +15,16 @@ const messagesEnd = ref<HTMLDivElement>();
 
 // Chat class internally uses Vue refs for messages/status/error
 // We poll state via a shallow ref that re-triggers on changes
-const chat = new Chat({ api: "/api/chat" });
+// Keep the conversation in localStorage so a reload brings it back.
+const MESSAGES_KEY = "openui-vue:messages";
+function loadMessages(): UIMessage[] {
+  try {
+    return JSON.parse(localStorage.getItem(MESSAGES_KEY) ?? "[]");
+  } catch {
+    return [];
+  }
+}
+const chat = new Chat({ api: "/api/chat", messages: loadMessages() });
 
 // Reactive wrappers - Chat's VueChatState uses internal Vue refs
 // We need to access them through computed properties
@@ -42,6 +52,15 @@ watch(
   },
   { deep: true },
 );
+
+watch(status, (current) => {
+  if (current !== "ready" || chat.messages.length === 0) return;
+  try {
+    localStorage.setItem(MESSAGES_KEY, JSON.stringify(chat.messages));
+  } catch {
+    // Storage is full or blocked; the chat still works for this visit.
+  }
+});
 
 const starters = [
   "What is Vue 3.5?",

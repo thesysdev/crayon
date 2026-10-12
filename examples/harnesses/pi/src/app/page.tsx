@@ -2,12 +2,12 @@
 
 import "@openuidev/react-ui/styles/index.css";
 
+import { withLocalHistory } from "@/lib/local-history";
 import {
   AgentInterface,
   fetchLLM,
   openAIMessageFormat,
   openAIReadableStreamAdapter,
-  useOpenuiCloudStorage,
   useSystemThemeMode,
 } from "@openuidev/react-ui";
 import { openuiLibrary } from "@openuidev/react-ui/genui-lib";
@@ -28,18 +28,15 @@ export default function Home() {
     [],
   );
 
-  // Threads live in OpenUI Cloud: the chat route stores each turn, so switching
-  // chats or reloading brings the whole conversation back.
-  const storage = useOpenuiCloudStorage({
-    token: "/api/frontend-token",
-    features: { artifact: false },
-  });
+  // Threads live in this browser's localStorage, so switching chats or
+  // reloading brings the whole conversation back.
+  const chat = useMemo(() => withLocalHistory(llm, "openui-pi"), [llm]);
 
   return (
     <div className="h-screen w-screen overflow-hidden">
       <AgentInterface
-        llm={llm}
-        storage={storage}
+        llm={chat.llm}
+        storage={chat.storage}
         componentLibrary={openuiLibrary}
         agentName="OpenUI Agent Harness"
         theme={{ mode }}

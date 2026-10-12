@@ -5,10 +5,10 @@ import {
   fetchLLM,
   openAIMessageFormat,
   openAIReadableStreamAdapter,
-  useOpenuiCloudStorage,
 } from "@openuidev/react-ui";
 import { openuiLibrary } from "@openuidev/react-ui/genui-lib";
 import { useMemo } from "react";
+import { withLocalHistory } from "./lib/local-history";
 
 export default function App() {
   // The Cloud system prompt is attached on the FastAPI side as a system message.
@@ -22,18 +22,15 @@ export default function App() {
     [],
   );
 
-  // Threads live in OpenUI Cloud: the backend stores each turn, so switching
-  // chats or reloading brings the whole conversation back.
-  const storage = useOpenuiCloudStorage({
-    token: "/api/frontend-token",
-    features: { artifact: false },
-  });
+  // Threads live in this browser's localStorage, so switching chats or
+  // reloading brings the whole conversation back.
+  const chat = useMemo(() => withLocalHistory(llm, "openui-fastapi"), [llm]);
 
   return (
     <div className="h-screen w-screen overflow-hidden">
       <AgentInterface
-        llm={llm}
-        storage={storage}
+        llm={chat.llm}
+        storage={chat.storage}
         componentLibrary={openuiLibrary}
         agentName="OpenUI Chat"
       />

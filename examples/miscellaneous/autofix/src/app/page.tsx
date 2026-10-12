@@ -1,5 +1,6 @@
 "use client";
 
+import { withLocalHistory } from "@/lib/local-history";
 import { starters } from "@/lib/starters";
 import { library } from "@/library";
 import {
@@ -23,10 +24,15 @@ export default function Page() {
     [],
   );
 
+  // Threads live in this browser's localStorage, so switching chats or
+  // reloading brings the whole conversation back.
+  const chat = useMemo(() => withLocalHistory(llm, "openui-autofix"), [llm]);
+
   return (
     <main className="autofix-app">
       <AgentInterface
-        llm={llm}
+        llm={chat.llm}
+        storage={chat.storage}
         componentLibrary={library}
         agentName="OpenUI Autofix"
         theme={{ mode }}

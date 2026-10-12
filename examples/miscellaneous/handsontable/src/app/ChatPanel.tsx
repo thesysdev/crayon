@@ -36,9 +36,12 @@ const STARTERS = [
   },
   {
     displayText: "Compare Q1 vs Q4 growth",
-    prompt: "Show me a table comparing Q1 and Q4 revenue for each product with the percentage growth.",
+    prompt:
+      "Show me a table comparing Q1 and Q4 revenue for each product with the percentage growth.",
   },
 ];
+
+const MESSAGES_KEY = "openui-handsontable:messages";
 
 function messageText(message: Message): string {
   return typeof message.content === "string" ? message.content : "";
@@ -48,7 +51,26 @@ function ChatBody({ onClose }: { onClose: () => void }) {
   const messages = useThread((s) => s.messages);
   const isRunning = useThread((s) => s.isRunning);
   const processMessage = useThread((s) => s.processMessage);
+  const setMessages = useThread((s) => s.setMessages);
   const [input, setInput] = useState("");
+
+  // Keep the conversation in localStorage so a reload brings it back.
+  useEffect(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem(MESSAGES_KEY) ?? "[]");
+      if (Array.isArray(saved) && saved.length > 0) setMessages(saved as Message[]);
+    } catch {
+      // Unreadable or blocked storage: start a fresh conversation.
+    }
+  }, [setMessages]);
+  useEffect(() => {
+    if (isRunning || messages.length === 0) return;
+    try {
+      localStorage.setItem(MESSAGES_KEY, JSON.stringify(messages));
+    } catch {
+      // Storage is full or blocked; the chat still works for this visit.
+    }
+  }, [messages, isRunning]);
   const scrollerRef = useRef<HTMLDivElement>(null);
 
   const visibleMessages = useMemo(

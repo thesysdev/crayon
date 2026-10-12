@@ -1,9 +1,9 @@
 import { cloudInstructions } from "@/lib/cloud-prompt";
-import { DEFAULT_MODEL, requiredEnv, THESYS_API_URL } from "@/lib/env";
+import { DEFAULT_MODEL, requiredEnv } from "@/lib/env";
 import { NextRequest } from "next/server";
 import OpenAI from "openai";
 import type { ChatCompletionMessageParam } from "openai/resources/chat/completions.mjs";
-import { setCurrentThreadId, tools } from "./tools";
+import { tools, setCurrentThreadId } from "./tools";
 
 const SPREADSHEET_INSTRUCTIONS = `
 You are a helpful spreadsheet assistant. The user has a live Excel-like spreadsheet visible on the left panel at all times.
@@ -142,7 +142,9 @@ export async function POST(req: NextRequest) {
   setCurrentThreadId("default");
 
   /* eslint-disable @typescript-eslint/no-explicit-any */
-  const lastUserMsg = (messages as any[]).filter((m: any) => m.role === "user").pop();
+  const lastUserMsg = (messages as any[])
+    .filter((m: any) => m.role === "user")
+    .pop();
   if (lastUserMsg) extractText(lastUserMsg);
 
   const cleanMessages = (messages as any[])
@@ -164,7 +166,7 @@ export async function POST(req: NextRequest) {
   // Chat Completions → POST /v1/embed/chat/completions
   const client = new OpenAI({
     apiKey: requiredEnv("THESYS_API_KEY"),
-    baseURL: `${THESYS_API_URL}/v1/embed`,
+    baseURL: "https://api.thesys.dev/v1/embed",
   });
   const encoder = new TextEncoder();
   let controllerClosed = false;
@@ -208,7 +210,9 @@ export async function POST(req: NextRequest) {
       runner.on("functionToolCall", (fc: any) => {
         const id = `tc-${callIdx}`;
         pendingCalls.push({ id, name: fc.name, arguments: fc.arguments });
-        enqueue(sseToolCallStart(encoder, { id, function: { name: fc.name } }, callIdx));
+        enqueue(
+          sseToolCallStart(encoder, { id, function: { name: fc.name } }, callIdx),
+        );
         callIdx++;
       });
 

@@ -1,12 +1,7 @@
 "use client";
 
-import {
-  AgentInterface,
-  agUIAdapter,
-  fetchLLM,
-  useOpenuiCloudStorage,
-  useSystemThemeMode,
-} from "@openuidev/react-ui";
+import { withLocalHistory } from "@/lib/local-history";
+import { AgentInterface, agUIAdapter, fetchLLM, useSystemThemeMode } from "@openuidev/react-ui";
 import { openuiLibrary } from "@openuidev/react-ui/genui-lib";
 import { useMemo } from "react";
 
@@ -22,18 +17,15 @@ export default function Page() {
     [],
   );
 
-  // Threads live in OpenUI Cloud: the chat route stores each turn, so switching
-  // chats or reloading brings the whole conversation back.
-  const storage = useOpenuiCloudStorage({
-    token: "/api/frontend-token",
-    features: { artifact: false },
-  });
+  // Threads live in this browser's localStorage, so switching chats or
+  // reloading brings the whole conversation back.
+  const chat = useMemo(() => withLocalHistory(llm, "openui-langgraph"), [llm]);
 
   return (
     <div className="app-shell">
       <AgentInterface
-        llm={llm}
-        storage={storage}
+        llm={chat.llm}
+        storage={chat.storage}
         componentLibrary={openuiLibrary}
         agentName="OpenUI + DeepAgents Chat"
         theme={{ mode }}

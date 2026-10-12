@@ -7,12 +7,10 @@ import { fileURLToPath } from "node:url";
 import { library } from "./library.mjs";
 import { RequestError, streamCompletion, validateMessages } from "./transport.mjs";
 
-const THESYS_API_URL = "https://api.thesys.dev";
-
 export function createHandler({
   apiKey,
   model = "google/gemini-3.6-flash-free",
-  baseUrl = `${THESYS_API_URL}/v1/embed`,
+  baseUrl = "https://api.thesys.dev/v1/embed",
   fetchImpl = fetch,
   frontendPort = 4200,
 } = {}) {

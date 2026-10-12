@@ -4,11 +4,9 @@ import { convertToModelMessages, stepCountIs, streamText } from "ai";
 import { createOpenUILibrary, promptOptions } from "~/lib/define-library";
 import { tools } from "~/lib/tools";
 
-const THESYS_API_URL = "https://api.thesys.dev";
-
 const openai = createOpenAI({
   apiKey: process.env.THESYS_API_KEY ?? "",
-  baseURL: `${THESYS_API_URL}/v1/embed`,
+  baseURL: "https://api.thesys.dev/v1/embed",
 });
 
 const specLibrary = createOpenUILibrary();

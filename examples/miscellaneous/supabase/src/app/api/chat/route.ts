@@ -1,10 +1,8 @@
-import { cloudInstructions } from "@/lib/cloud-prompt";
 import { createSupabaseServer } from "@/lib/supabase/server";
+import { cloudInstructions } from "@/lib/cloud-prompt";
 import { NextRequest } from "next/server";
 import OpenAI from "openai";
 import type { ChatCompletionMessageParam } from "openai/resources/chat/completions.mjs";
-
-const THESYS_API_URL = "https://api.thesys.dev";
 
 const MODEL = "google/gemini-3.6-flash-free";
 
@@ -30,7 +28,7 @@ export async function POST(req: NextRequest) {
   // Matches openAIAdapter / openAIMessageFormat and the Postgres message rows.
   const client = new OpenAI({
     apiKey: process.env.THESYS_API_KEY,
-    baseURL: `${THESYS_API_URL}/v1/embed`,
+    baseURL: "https://api.thesys.dev/v1/embed",
   });
 
   const stream = await client.chat.completions.create({
@@ -83,7 +81,8 @@ export async function POST(req: NextRequest) {
             allMessages.map((m) => ({
               thread_id: threadId,
               role: m.role,
-              content: typeof m.content === "string" ? m.content : JSON.stringify(m.content),
+              content:
+                typeof m.content === "string" ? m.content : JSON.stringify(m.content),
             })),
           );
         } catch (err) {

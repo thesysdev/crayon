@@ -3,8 +3,6 @@ import { generateSystemPrompt } from "@openuidev/lang-core";
 import { NextRequest } from "next/server";
 import OpenAI from "openai";
 
-const THESYS_API_URL = "https://api.thesys.dev";
-
 const SYSTEM_PROMPT = generateSystemPrompt({
   cloud: true,
   library: library.toSpec(),
@@ -58,7 +56,7 @@ export async function POST(req: NextRequest) {
   // Chat Completions → POST /v1/embed/chat/completions (plain-text deltas for RN)
   const openai = new OpenAI({
     apiKey,
-    baseURL: `${THESYS_API_URL}/v1/embed`,
+    baseURL: "https://api.thesys.dev/v1/embed",
   });
   const { messages } = await req.json();
 

@@ -3,8 +3,6 @@ import { NextRequest } from "next/server";
 import OpenAI from "openai";
 import type { ChatCompletionMessageParam } from "openai/resources/chat/completions.mjs";
 
-const THESYS_API_URL = "https://api.thesys.dev";
-
 const systemPrompt = cloudInstructions();
 
 export async function POST(req: NextRequest) {
@@ -14,7 +12,7 @@ export async function POST(req: NextRequest) {
   // Matches the frontend's openAIAdapter + openAIMessageFormat.
   const client = new OpenAI({
     apiKey: process.env.THESYS_API_KEY,
-    baseURL: `${THESYS_API_URL}/v1/embed`,
+    baseURL: "https://api.thesys.dev/v1/embed",
   });
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

@@ -1,9 +1,9 @@
 "use client";
 
+import { withLocalHistory } from "@/lib/local-history";
 import {
   AgentInterface,
   fetchLLM,
-  useOpenuiCloudStorage,
   useSystemThemeMode,
   vercelAIAdapter,
   vercelAIMessageFormat,
@@ -26,18 +26,15 @@ export default function Page() {
     [],
   );
 
-  // Threads live in OpenUI Cloud: the chat route stores each turn, so switching
-  // chats or reloading brings the whole conversation back.
-  const storage = useOpenuiCloudStorage({
-    token: "/api/frontend-token",
-    features: { artifact: false },
-  });
+  // Threads live in this browser's localStorage, so switching chats or
+  // reloading brings the whole conversation back.
+  const chat = useMemo(() => withLocalHistory(llm, "openui-vercel-ai-sdk"), [llm]);
 
   return (
     <div className="app-shell">
       <AgentInterface
-        llm={llm}
-        storage={storage}
+        llm={chat.llm}
+        storage={chat.storage}
         componentLibrary={openuiLibrary}
         agentName="OpenUI + Vercel AI SDK"
         theme={{ mode }}
