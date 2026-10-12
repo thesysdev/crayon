@@ -7,9 +7,9 @@ import { OPENUI_LOGO, PROMPT_TEMPLATES, STARTERS } from "@/lib/starters";
 import {
   AgentInterface,
   fetchLLM,
+  langGraphAdapter,
+  langGraphMessageFormat,
   ModelSwitcher,
-  openAIConversationMessageFormat,
-  openAIResponsesAdapter,
   openuiLibrary,
   useOpenuiCloudStorage,
   useThemeModePreference,
@@ -21,10 +21,13 @@ export default function CloudChat() {
   // remembers the choice.
   const { setPreference, mode } = useThemeModePreference();
   const [selectedModel, setSelectedModel] = usePersistedModel();
+  // The /api/chat route runs the LangGraph agent in-process and streams its
+  // native `messages`-mode SSE. Outgoing messages are converted to LangChain
+  // shape here so the route can pass them to the graph as-is.
   const llm = fetchLLM({
     url: "/api/chat",
-    streamAdapter: openAIResponsesAdapter(),
-    messageFormat: openAIConversationMessageFormat,
+    streamAdapter: langGraphAdapter(),
+    messageFormat: langGraphMessageFormat,
     body: { model: selectedModel },
   });
 

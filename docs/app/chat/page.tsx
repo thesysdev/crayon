@@ -1,12 +1,7 @@
 import { createPageMetadata } from "@/lib/page-metadata";
+import page from "./metadata";
 
-export const metadata = createPageMetadata({
-  pathname: "/chat",
-  title: "OpenUI Cloud Chat",
-  description: "Explore OpenUI Cloud through live and curated generative UI conversations.",
-  image: "/nav/chat-light.webp",
-  imageAlt: "OpenUI Chat preview",
-});
+export const metadata = createPageMetadata(page);
 
 export default function ChatPage() {
   return null;
