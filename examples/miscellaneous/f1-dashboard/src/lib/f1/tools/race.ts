@@ -114,12 +114,6 @@ export const getLapTimes = defineF1Tool({
     ...lapRange,
     top: z.number().int().min(1).max(22).optional().describe("Rows in a ranking (default all)."),
   }),
-  output: {
-    session: "2026 Azerbaijan Grand Prix · Race",
-    rows: [{ lap: 10, LEC: 108.411, RUS: 108.2 }],
-    chart: { labels: ["10"], series: [{ name: "LEC", values: [108.411] }], xLabel: "Lap", yLabel: "Lap time (s)" },
-    deltas: { reference: "LEC", meaning: "Positive: LEC was faster on that lap.", chart: { labels: ["10"], series: [{ name: "RUS − LEC", values: [-0.211] }] } },
-  },
   async run({ session: ref, view, drivers: refs, lap_start, lap_end, top }, { signal }) {
     const { session, label, note } = await openSession(ref, signal, "Race");
     const [laps, drivers, pits] = await Promise.all([
@@ -281,12 +275,6 @@ export const getGaps = defineF1Tool({
     metric: z.enum(["gap", "interval"]).default("gap").describe('"gap" to the leader/reference, or "interval" to the car directly ahead.'),
     ...lapRange,
   }),
-  output: {
-    session: "2026 Azerbaijan Grand Prix · Race",
-    rows: [{ lap: 20, VER: 1.2, LEC: 3.4 }],
-    chart: { labels: ["20"], series: [{ name: "LEC", values: [2.2] }], xLabel: "Lap", yLabel: "Gap to VER (s)" },
-    meaning: "Positive: seconds behind VER at the end of the lap.",
-  },
   async run({ session: ref, drivers: refs, reference, metric, lap_start, lap_end }, { signal }) {
     const { session, label, note } = await openSession(ref, signal, "Race");
     requireRaceLike(session, "Gap data");
@@ -370,12 +358,6 @@ export const getPositions = defineF1Tool({
     drivers: driverList(22).optional().describe("Omit for the whole field."),
     ...lapRange,
   }),
-  output: {
-    session: "2026 Azerbaijan Grand Prix · Race",
-    rows: [{ lap: 0, RUS: 1, LEC: 2 }],
-    chart: { labels: ["0"], series: [{ name: "RUS", values: [1] }], xLabel: "Lap", yLabel: "Position" },
-    drivers: [{ code: "LEC", grid: 2, finish: 4, gained: -2, overtakes: 1, overtaken: 3 }],
-  },
   async run({ session: ref, drivers: refs, lap_start, lap_end }, { signal }) {
     const { session, label, note } = await openSession(ref, signal, "Race");
     requireRaceLike(session, "Position data");
@@ -467,12 +449,6 @@ export const getStints = defineF1Tool({
     session: sessionArg("session"),
     drivers: driverList(22).optional().describe("Omit for the whole field (ordered by finishing position)."),
   }),
-  output: {
-    session: "2026 Azerbaijan Grand Prix · Race",
-    rows: [{ code: "LEC", stint: 1, compound: "SOFT", lapStart: 1, lapEnd: 31, laps: 31, tyreAgeAtStart: 0, avgLap: 108.9 }],
-    pitStops: [{ code: "LEC", lap: 31, pitLane: 20.7, stationary: 2.4 }],
-    strategies: [{ code: "LEC", strategy: "SOFT 31 → MEDIUM 5 → MEDIUM 15", stops: 2 }],
-  },
   async run({ session: ref, drivers: refs }, { signal }) {
     const { session, label, note } = await openSession(ref, signal, "Race");
     const raceLike = session.name === "Race" || session.name === "Sprint";
@@ -565,11 +541,6 @@ export const getRaceControl = defineF1Tool({
     include_sector_clears: z.boolean().default(false).describe("Keep routine 'CLEAR IN TRACK SECTOR' messages."),
     limit: z.number().int().min(1).max(200).default(60),
   }),
-  output: {
-    session: "2026 Azerbaijan Grand Prix · Race",
-    rows: [{ lap: 12, time: "11:24:03", category: "SafetyCar", flag: null, driver: null, message: "SAFETY CAR DEPLOYED" }],
-    counts: { safetyCars: 1, virtualSafetyCars: 0, redFlags: 0, penalties: 2 },
-  },
   async run({ session: ref, category, driver, include_sector_clears, limit }, { signal }) {
     const { session, label, note } = await openSession(ref, signal, "Race");
     const [messages, drivers] = await Promise.all([getRaceControlRows(session, signal), sessionDrivers(session, signal)]);
@@ -614,11 +585,6 @@ export const getTimingTower = defineF1Tool({
     session: sessionArg(),
     lap: z.number().int().min(1).max(90).optional().describe("Lap number (default the final lap)."),
   }),
-  output: {
-    session: "2026 Azerbaijan Grand Prix · Race",
-    lap: 30,
-    rows: [{ position: 1, code: "RUS", name: "George Russell", teamColour: "#00D7B6", gap: null, interval: null, lastLap: "1:47.021", bestLap: "1:46.330", compound: "MEDIUM", tyreAge: 12, stops: 1, status: "running" }],
-  },
   async run({ session: ref, lap }, { signal }) {
     const { session, label, note } = await openSession(ref, signal, "Race");
     requireRaceLike(session, "The timing tower");

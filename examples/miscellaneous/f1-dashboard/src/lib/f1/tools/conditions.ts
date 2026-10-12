@@ -11,11 +11,6 @@ export const getWeather = defineF1Tool({
     session: sessionArg("session"),
     rows: z.number().int().min(5).max(120).default(40).describe("Maximum rows."),
   }),
-  output: {
-    session: "2026 Azerbaijan Grand Prix · Race",
-    rows: [{ time: "11:05", lap: 3, air: 26.1, track: 38.4, humidity: 41, windSpeed: 1.2, windDirection: 55, rain: false }],
-    summary: { airMin: 25.8, airMax: 26.6, trackMin: 37.9, trackMax: 40.1, rained: false },
-  },
   async run({ session: ref, rows: max }, { signal }) {
     const { session, label, note } = await openSession(ref, signal, "Race");
     const [weather, laps] = await Promise.all([getWeatherRows(session, signal), getLaps(session, signal)]);
@@ -65,10 +60,6 @@ export const getTeamRadio = defineF1Tool({
     driver: z.string().max(30).optional().describe("Only this driver's clips."),
     limit: z.number().int().min(1).max(100).default(30),
   }),
-  output: {
-    session: "2026 Azerbaijan Grand Prix · Race",
-    rows: [{ time: "12:45:31", lap: 48, code: "RUS", name: "George Russell", teamColour: "#00D7B6", url: "https://livetiming.formula1.com/static/.../RUS_63.mp3" }],
-  },
   async run({ session: ref, driver, limit }, { signal }) {
     const { session, label, note } = await openSession(ref, signal, "Race");
     const [radio, drivers, laps] = await Promise.all([

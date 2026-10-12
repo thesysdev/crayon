@@ -210,13 +210,6 @@ export const getTelemetry = defineF1Tool({
       .default(["speed", "throttle", "brake", "gear"])
       .describe("Channels in rows (speed is always charted)."),
   }),
-  output: {
-    session: "2026 Azerbaijan Grand Prix · Qualifying",
-    rows: [{ distance: 0, RUS_speed: 297, RUS_throttle: 100, RUS_brake: 0, RUS_gear: 7 }],
-    chart: { labels: ["0"], series: [{ name: "RUS", values: [297] }], xLabel: "Distance (m)", yLabel: "Speed (km/h)" },
-    delta: { meaning: "Positive: LEC is behind RUS at that point.", chart: { labels: ["0"], series: [{ name: "LEC − RUS", values: [0] }] } },
-    summary: [{ code: "RUS", lap: 25, lapTime: "1:42.526", topSpeed: 331, fullThrottlePct: 60.1 }],
-  },
   async run({ session: ref, driver, lap, compare, points, include_track, channels }, { signal }) {
     const { session, label, note } = await openSession(ref, signal, "Race");
     const [laps, drivers] = await Promise.all([getLaps(session, signal), sessionDrivers(session, signal)]);

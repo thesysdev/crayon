@@ -274,29 +274,3 @@ export function settleWhileStreaming(components: AnyComponent[]): AnyComponent[]
     return rule ? withSettle(def, rule.estimate, !!rule.chart) : withScope(def);
   });
 }
-
-/* ---------------------------------------------------------------- gallery preview */
-
-/** The block-by-block placeholder at the sizes an answer uses, for the /component gallery. */
-export function BlockLoadingPreview() {
-  const tile = (label: string, height: number) => (
-    <div style={{ display: "grid", gap: 6 }}>
-      <span style={{ color: "#606066", fontSize: 13, fontWeight: 700 }}>{label}</span>
-      <div className="f1-settle" style={{ height }} aria-hidden />
-    </div>
-  );
-  return (
-    <div style={{ display: "grid", gap: 20 }}>
-      {tile("Card with a top-ten table (682px)", 682)}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 12 }}>
-        {tile("Spotlight (191px)", 191)}
-        {tile("Follow-ups (257px)", 257)}
-      </div>
-      <p className="ref-note">
-        Shown in block-by-block streaming while a Table, Card, Spotlight or FollowUpBlock is still being written, at the
-        block&apos;s expected final height. The sweep runs only while loading and stops with reduced motion. Chart loading panels
-        draw the same board.
-      </p>
-    </div>
-  );
-}

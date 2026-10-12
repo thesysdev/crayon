@@ -60,13 +60,3 @@ export function f1Executors() {
     ]),
   );
 }
-
-/** Name, description, and input/output JSON schemas, e.g. for a prompt's tool list. */
-export function f1ToolSpecs() {
-  return tools.map((tool) => ({
-    name: tool.name,
-    description: tool.description,
-    inputSchema: z.toJSONSchema(tool.input, { io: "input" }),
-    outputExample: tool.output,
-  }));
-}

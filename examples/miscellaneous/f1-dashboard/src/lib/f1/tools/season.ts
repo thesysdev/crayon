@@ -28,11 +28,6 @@ export const getSchedule = defineF1Tool({
     filter: z.enum(["all", "completed", "upcoming", "next"]).default("all"),
     include_sessions: z.boolean().default(false).describe("Add each weekend's sessions with UTC start times."),
   }),
-  output: {
-    session: "2026 season",
-    rows: [{ round: 18, name: "Azerbaijan Grand Prix", location: "Baku", country: "Azerbaijan", countryCode: "AZE", circuit: "Baku", start: "2026-09-24", end: "2026-09-26", status: "completed", sprint: false }],
-    next: { round: 19, name: "Malaysia Grand Prix", raceStart: "2026-10-04T07:00:00Z" },
-  },
   async run({ year, filter, include_sessions }, { signal }) {
     const meetings = await season(year, signal);
     const now = Date.now();
@@ -90,7 +85,6 @@ export const getDrivers = defineF1Tool({
   name: "get_drivers",
   description: "The entry list for a session: number, three-letter code, name, team and team colour.",
   input: z.object({ session: sessionArg() }),
-  output: { session: "2026 Azerbaijan Grand Prix · Race", rows: [{ number: 16, code: "LEC", name: "Charles Leclerc", team: "Ferrari", teamColour: "#ED1131" }] },
   async run({ session: ref }, { signal }) {
     const { session, label, note } = await openSession(ref, signal);
     const drivers = await sessionDrivers(session, signal);
@@ -201,11 +195,6 @@ export const getStandings = defineF1Tool({
     drivers: driverList(8).optional().describe("For progression: driver codes, or team names when kind is teams. Omit for the top N."),
     top: z.number().int().min(1).max(22).optional().describe("Limit rows (table) or series (progression, default 5)."),
   }),
-  output: {
-    session: "2026 standings after Azerbaijan Grand Prix (round 18)",
-    rows: [{ position: 1, code: "ANT", name: "Andrea Kimi Antonelli", team: "Mercedes", teamColour: "#00D7B6", points: 302, gained: 10, positionChange: 0 }],
-    chart: { labels: ["AUS", "CHN"], series: [{ name: "ANT", values: [18, 43] }] },
-  },
   async run({ kind, after, view, drivers: wanted, top }, { signal }) {
     const { session: race, note } = await openSession(after, signal, "Race");
     if (race.name !== "Race") throw new RangeError("Standings are taken after a race; name a race, not another session.");

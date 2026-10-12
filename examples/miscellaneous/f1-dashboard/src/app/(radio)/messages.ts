@@ -89,13 +89,3 @@ export function groupIntoTurns(messages: Message[]): Turn[] {
   }
   return turns;
 }
-
-/** The assistant message that is streaming right now, if the thread ends in one. */
-export function lastAssistantId(messages: Message[]): string | null {
-  for (let i = messages.length - 1; i >= 0; i--) {
-    const role = messages[i]?.role;
-    if (role === "assistant") return messages[i].id;
-    if (role === "user") return null;
-  }
-  return null;
-}

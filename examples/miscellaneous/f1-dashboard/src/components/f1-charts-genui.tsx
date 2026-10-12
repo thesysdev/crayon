@@ -79,7 +79,7 @@ function useChartData<T>(key: string, load: () => Promise<T | null>, raw?: T | n
   return raw != null ? { state: "ready", value: raw } : result;
 }
 
-// Each chart's `height` below is its drawn height measured on /component with a title (20px line
+// Each chart's `height` below is its drawn height measured with a title (20px line
 // + 12px margin); without one the panel is that much shorter. Keep these in step with the charts
 // so nothing shifts on arrival.
 const TITLE_H = 32;

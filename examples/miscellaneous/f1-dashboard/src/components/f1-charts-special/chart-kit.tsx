@@ -12,7 +12,6 @@ import "../f1-charts.css";
 import "./f1-charts-special.css";
 
 export const CARBON = "#15151E";
-export const F1_RED = "#E10600";
 
 /** Mix toward white, so a second car from the same team reads as its teammate. */
 export function lighten(hex: string, amount: number) {

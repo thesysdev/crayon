@@ -30,7 +30,6 @@ Open http://127.0.0.1:3000.
 | `/`, `/standings`, `/drivers`, `/teams` | Dashboards; picking anything starts a chat |
 | `/new`                            | A new chat with suggested questions              |
 | `/[threadId]`                     | An earlier chat, loaded from Gateway             |
-| `/component`                      | Gallery of the F1 components and charts          |
 
 Every app URL is drawn by `src/app/(radio)/layout.tsx` over one empty catch-all page, so the chat stays mounted while the URL moves to a new thread mid-answer.
 

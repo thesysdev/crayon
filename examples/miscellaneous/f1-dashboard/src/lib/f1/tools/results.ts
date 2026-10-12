@@ -24,11 +24,6 @@ export const getResults = defineF1Tool({
     session: sessionArg("session"),
     top: z.number().int().min(1).max(22).optional().describe("Only the first N classified rows."),
   }),
-  output: {
-    session: "2026 Azerbaijan Grand Prix · Race",
-    rows: [{ position: 1, code: "RUS", name: "George Russell", team: "Mercedes", teamColour: "#00D7B6", grid: 1, gained: 0, laps: 51, time: "1:38:02.143", gap: null, points: 25, status: "Finished", fastestLap: "1:45.901", fastestLapSeconds: 105.901 }],
-    fastestLap: { code: "LEC", lap: 44, time: "1:45.101" },
-  },
   async run({ session: ref, top }, { signal }) {
     const { session, label, note } = await openSession(ref, signal, "Race");
     const [results, drivers, laps] = await Promise.all([
