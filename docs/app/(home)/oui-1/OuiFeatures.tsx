@@ -1,7 +1,7 @@
 import { SCATTER } from "@/lib/diffusion-blog-data";
 import type { ReactNode } from "react";
 import { FadedDither } from "../components/FadedDither/FadedDither";
-import { DeviceScene } from "./OuiDeviceScene";
+import { DeviceScene, RevenueCard } from "./OuiDeviceScene";
 import styles from "./OuiFeatures.module.css";
 
 /* ---------- Up to 500 tokens/sec ---------- */
@@ -15,19 +15,19 @@ const TOKEN_ROWS = (() => {
   };
   return Array.from({ length: 12 }, (_, row) => ({
     // seconds for one full pass; neighbouring rows never share a speed
-    duration: 5 + ((row * 5) % 7) * 0.6,
+    duration: 2.5 + ((row * 5) % 7) * 0.3,
     blocks: Array.from({ length: 30 }, () => ({
       width: 6 + Math.round(next() * 16),
       tone: next() > 0.9 ? "accent" : next() > 0.5 ? "strong" : "soft",
     })),
   }));
 })();
-const PIPE_BARS = [42, 58, 49, 74, 63, 88, 70, 55, 81, 96, 66, 78];
 
 function PipelineIllustration() {
   return (
     /* A fixed 588x360 composition that scales with the stage: tokens stream in
-       from the left and run under the interface they become. */
+       from the left and run under the response they become, the same card the
+       stream illustration ends on. */
     <div className={styles.pipeScene} aria-hidden="true">
       <div className={styles.pipeRows}>
         {TOKEN_ROWS.map((row, i) => (
@@ -41,22 +41,8 @@ function PipelineIllustration() {
           </div>
         ))}
       </div>
-      <div className={`${styles.panel} ${styles.pipePanel}`}>
-        <span className={styles.pipeTitle}>Monthly revenue</span>
-        <b className={styles.pipeTotal}>$194.9k</b>
-        <div className={styles.pipeBars}>
-          {PIPE_BARS.map((h, i) => (
-            <span key={i} style={{ height: `${h}%` }} />
-          ))}
-        </div>
-        <div className={styles.pipeList}>
-          {["Sep 22–28", "Sep 15–21"].map((week, i) => (
-            <div key={week}>
-              <span>{week}</span>
-              <span>{["$49.1k", "$47.8k"][i]}</span>
-            </div>
-          ))}
-        </div>
+      <div className={styles.pipeCard}>
+        <RevenueCard />
       </div>
     </div>
   );
