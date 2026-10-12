@@ -2,7 +2,13 @@ import { LLMCopyButton, ViewOptions } from "@/components/ai/page-actions";
 import { gitConfig } from "@/lib/layout.shared";
 import { docsOgImage } from "@/lib/og/content";
 import { withOgImage } from "@/lib/page-metadata";
-import { source } from "@/lib/source";
+import { BASE_URL, source } from "@/lib/source";
+import {
+  absoluteOgImageUrl,
+  breadcrumbList,
+  jsonLdHtml,
+  THESYS_ORGANIZATION,
+} from "@/lib/structured-data";
 import { getMDXComponents } from "@/mdx-components";
 import { DocsBody, DocsDescription, DocsPage, DocsTitle } from "fumadocs-ui/layouts/docs/page";
 import { createRelativeLink } from "fumadocs-ui/mdx";
@@ -13,6 +19,38 @@ type DocsSourcePage = NonNullable<ReturnType<typeof source.getPage>>;
 /** Renders a docs content page. Shared by `/docs` and the top-level sections like `/cookbooks`. */
 export function DocsPageView({ page }: { page: DocsSourcePage }) {
   const MDX = page.data.body;
+
+  const image = docsOgImage(page);
+  const description = image.card.template === "card" ? image.card.description : undefined;
+  const canonical = new URL(page.url, BASE_URL).toString();
+
+  const isCookbooks = page.url.startsWith("/cookbooks");
+  const section = isCookbooks ? { name: "Cookbooks", path: "/cookbooks" } : { name: "Docs", path: "/docs" };
+  const breadcrumbItems = [
+    { name: "Home", path: "/" },
+    section,
+    ...(page.url === section.path ? [] : [{ name: page.data.title, path: page.url }]),
+  ];
+
+  const jsonLdGraph = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "TechArticle",
+        headline: page.data.title,
+        ...(description && { description }),
+        image: [absoluteOgImageUrl(image)],
+        ...(page.data.lastModified && {
+          dateModified: new Date(page.data.lastModified).toISOString(),
+        }),
+        author: THESYS_ORGANIZATION,
+        publisher: THESYS_ORGANIZATION,
+        url: canonical,
+        mainEntityOfPage: { "@type": "WebPage", "@id": canonical },
+      },
+      breadcrumbList(breadcrumbItems),
+    ],
+  };
 
   return (
     <DocsPage
@@ -40,6 +78,10 @@ export function DocsPageView({ page }: { page: DocsSourcePage }) {
         </>
       )}
       <DocsBody>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: jsonLdHtml(jsonLdGraph) }}
+        />
         <MDX
           components={getMDXComponents({
             // this allows you to link to other pages with relative file paths

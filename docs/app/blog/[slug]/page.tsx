@@ -2,7 +2,14 @@ import { GitHubButton } from "@/app/(home)/components/GitHubButton/GitHubButton"
 import { Footer } from "@/app/(home)/sections/Footer/Footer";
 import { blogOgImage } from "@/lib/og/content";
 import { withOgImage } from "@/lib/page-metadata";
-import { blog } from "@/lib/source";
+import { BASE_URL, blog } from "@/lib/source";
+import {
+  absoluteOgImageUrl,
+  articleAuthor,
+  breadcrumbList,
+  jsonLdHtml,
+  THESYS_ORGANIZATION,
+} from "@/lib/structured-data";
 import { getMDXComponents } from "@/mdx-components";
 import { TOCProvider, TOCScrollArea } from "fumadocs-ui/components/toc";
 import { TOCItem, TOCItems } from "fumadocs-ui/components/toc/default";
@@ -16,7 +23,33 @@ export default async function BlogPostPage(props: { params: Promise<{ slug: stri
   if (!page) notFound();
   const Mdx = page.data.body;
 
+  const canonical = new URL(page.url, BASE_URL).toString();
+  const jsonLdGraph = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "BlogPosting",
+        headline: page.data.title,
+        description: page.data.description,
+        image: [absoluteOgImageUrl(blogOgImage(page))],
+        datePublished: new Date(page.data.date).toISOString(),
+        dateModified: new Date(page.data.lastModified ?? page.data.date).toISOString(),
+        author: [articleAuthor(page.data.author)],
+        publisher: THESYS_ORGANIZATION,
+        url: canonical,
+        mainEntityOfPage: { "@type": "WebPage", "@id": canonical },
+      },
+      breadcrumbList([
+        { name: "Home", path: "/" },
+        { name: "Blog", path: "/blog" },
+        { name: page.data.title, path: page.url },
+      ]),
+    ],
+  };
+
   return (
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdHtml(jsonLdGraph) }} />
     <TOCProvider toc={page.data.toc}>
       {/* Blend from the menu bar's surface color into a gray band, then back into the
           footer's surface — matching the home content band (light: foreground->background->foreground;
@@ -59,6 +92,7 @@ export default async function BlogPostPage(props: { params: Promise<{ slug: stri
       </div>
       <Footer />
     </TOCProvider>
+    </>
   );
 }
 
