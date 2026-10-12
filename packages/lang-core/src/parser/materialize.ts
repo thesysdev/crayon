@@ -148,9 +148,11 @@ function materializeCall(
 export function nameRawCallArgs(args: ASTNode[], ctx: MaterializeCtx, statementId: string): void {
   const prevStatementId = ctx.currentStatementId;
   ctx.currentStatementId = statementId;
+  const seen = new Set<ASTNode>(); // walkAST visits nested calls through args and mappedProps
   for (const arg of args) {
     walkAST(arg, (node) => {
-      if (node.k !== "Comp") return;
+      if (node.k !== "Comp" || seen.has(node)) return;
+      seen.add(node);
       const def = getCallDefs(ctx.cat).get(node.name);
       if (!def || def.lazy) return;
       const checked = def.builtin ? null : mapCallArgs(node.name, node.args, def, ctx);

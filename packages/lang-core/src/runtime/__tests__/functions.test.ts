@@ -79,7 +79,7 @@ describe("library functions", () => {
 
   it("validate literal args in Query and Mutation statements at parse time", () => {
     const errors = createParser(schema, "Text").parse(
-      `root = Text("a")\nq = Query("save", { p: @Percent("bad"), n: @Percent(3) })\nm = Mutation("save", { p: @Percent("bad") })`,
+      `root = Text("a")\nq = Query("save", { p: @Sum2([@Percent("bad")]), n: @Percent(3) })\nm = Mutation("save", { p: @Percent("bad") })`,
     ).meta.errors;
     expect(errors.map((e) => [e.code, e.statementId])).toEqual([
       ["type-mismatch", "q"],
