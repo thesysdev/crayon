@@ -1,7 +1,7 @@
-import { BASE_URL } from "./source";
 import { type OgImage, ogImageUrl } from "./og/images";
+import { BASE_URL } from "./source";
 
-const THE_SYS_LOGO_URL = "https://www.thesys.dev/thesys-logo-bw.png";
+const THESYS_LOGO_URL = "https://www.thesys.dev/thesys-logo-bw.png";
 
 export const THESYS_ORGANIZATION = {
   "@type": "Organization",
@@ -10,7 +10,7 @@ export const THESYS_ORGANIZATION = {
   url: "https://www.thesys.dev",
   logo: {
     "@type": "ImageObject",
-    url: THE_SYS_LOGO_URL,
+    url: THESYS_LOGO_URL,
     width: 360,
     height: 360,
   },

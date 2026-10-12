@@ -25,7 +25,9 @@ export function DocsPageView({ page }: { page: DocsSourcePage }) {
   const canonical = new URL(page.url, BASE_URL).toString();
 
   const isCookbooks = page.url.startsWith("/cookbooks");
-  const section = isCookbooks ? { name: "Cookbooks", path: "/cookbooks" } : { name: "Docs", path: "/docs" };
+  const section = isCookbooks
+    ? { name: "Cookbooks", path: "/cookbooks" }
+    : { name: "Docs", path: "/docs" };
   const breadcrumbItems = [
     { name: "Home", path: "/" },
     section,
