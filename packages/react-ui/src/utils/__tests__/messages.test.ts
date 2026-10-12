@@ -12,16 +12,16 @@ const stored: {
   { raw: "Hello", content: "Hello", context: null },
   { raw: "]]>openui:content\nroot = A()", content: "root = A()", context: null, write: {} },
   {
-    raw: "]]>openui:content?libraryVersion=0.5&thesys=true\nroot = A()\n]]>openui:end",
+    raw: "]]>openui:content?libraryVersion=0.5&v=2\nroot = A()\n]]>openui:end",
     content: "root = A()",
     context: null,
-    write: { attributes: { libraryVersion: "0.5", thesys: "true" }, end: true },
+    write: { attributes: { libraryVersion: "0.5", v: "2" }, end: true },
   },
   {
-    raw: ']]>openui:content?thesys=true\nroot = A()\n]]>openui:context\n[{"$a":{"value":1}}]',
+    raw: ']]>openui:content?v=2\nroot = A()\n]]>openui:context\n[{"$a":{"value":1}}]',
     content: "root = A()",
     context: [{ $a: { value: 1 } }],
-    write: { attributes: { thesys: "true" } },
+    write: { attributes: { v: "2" } },
   },
   {
     raw: ']]>openui:content\nSave\n]]>openui:context\n["User clicked: Save",{"$a":1}]',

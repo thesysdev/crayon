@@ -3,10 +3,10 @@
 
 const PREFIX = "]]>openui:";
 const MARKER = /^\]\]>openui:([a-z]+)(?:\?(.*))?$/;
-// A sanitizer retry writes its content line right after the failed attempt, with no newline
-// before it. Start it on its own line so the retry wins, like the old lastIndexOf reader.
+// A regenerated response writes its content line right after the cut-off text, with no newline
+// before it. Start it on its own line so the last content wins.
 const RETRY = /(?<=[^\n])(?=\]\]>openui:content(?:\?|\r?\n|$))/g;
-// While streaming, hold back a mid-line `]]>openui:con` that may become a retry line.
+// While streaming, hold back a mid-line `]]>openui:con` that may become a content line.
 const RETRY_CUT = /(?<=[^\n])\]\]>[a-z:]*$/;
 
 export interface ParsedMessage {

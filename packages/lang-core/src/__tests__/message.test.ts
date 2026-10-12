@@ -24,11 +24,11 @@ describe("message protocol", () => {
 
   it("uses the last content and keeps non-JSON context as text", () => {
     const raw =
-      ']]>openui:content\nold\n]]>openui:context\n{}\n]]>openui:content?thesys=true\nnew\r\n]]>openui:context\n{"a":';
+      ']]>openui:content\nold\n]]>openui:context\n{}\n]]>openui:content?v=2\nnew\r\n]]>openui:context\n{"a":';
     expect(parseMessage(raw)).toEqual({
       content: "new",
       context: '{"a":',
-      attributes: { thesys: "true" },
+      attributes: { v: "2" },
       end: false,
     });
   });
@@ -39,26 +39,26 @@ describe("message protocol", () => {
     expect(parseMessage(raw).content).toBe("root = A()\n]]>open");
   });
 
-  it("reads the sanitizer retry when its content line follows the failed attempt mid-line", () => {
-    const header = "]]>openui:content?thesys=true";
+  it("reads a content line that starts mid-line after a cut-off attempt", () => {
+    const header = "]]>openui:content?v=2";
     const raw = `${header}\nroot = A("Broken${header}\nroot = B()\n]]>openui:end`;
     expect(parseMessage(raw)).toMatchObject({
       content: "root = B()",
-      attributes: { thesys: "true" },
+      attributes: { v: "2" },
       end: true,
     });
   });
 
-  it("holds back a retry content line cut mid-stream", () => {
-    const raw = ']]>openui:content\nroot = A("Broken]]>openui:content?thesys=true\nroot = B()';
+  it("holds back a mid-line content line cut mid-stream", () => {
+    const raw = ']]>openui:content\nroot = A("Broken]]>openui:content?v=2\nroot = B()';
     const header = raw.indexOf("]]>", 3);
-    // Chunks end inside the retry line: `]]>`, `]]>openui:cont`, then the whole line.
+    // Chunks end inside the content line: `]]>`, `]]>openui:cont`, then the whole line.
     for (const end of [header + 3, header + 14, raw.indexOf("\nroot = B")]) {
       expect(parseMessage(raw.slice(0, end), { streaming: true }).content).toBe('root = A("Broken');
     }
     expect(parseMessage(raw, { streaming: true })).toMatchObject({
       content: "root = B()",
-      attributes: { thesys: "true" },
+      attributes: { v: "2" },
     });
   });
 
