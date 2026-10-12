@@ -3,6 +3,7 @@
 import {
   AgentInterface,
   fetchLLM,
+  useOpenuiCloudStorage,
   useSystemThemeMode,
   vercelAIAdapter,
   vercelAIMessageFormat,
@@ -25,10 +26,18 @@ export default function Page() {
     [],
   );
 
+  // Threads live in OpenUI Cloud: the chat route stores each turn, so switching
+  // chats or reloading brings the whole conversation back.
+  const storage = useOpenuiCloudStorage({
+    token: "/api/frontend-token",
+    features: { artifact: false },
+  });
+
   return (
     <div className="app-shell">
       <AgentInterface
         llm={llm}
+        storage={storage}
         componentLibrary={openuiLibrary}
         agentName="OpenUI + Vercel AI SDK"
         theme={{ mode }}

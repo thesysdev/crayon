@@ -7,10 +7,12 @@ import { fileURLToPath } from "node:url";
 import { library } from "./library.mjs";
 import { RequestError, streamCompletion, validateMessages } from "./transport.mjs";
 
+const THESYS_API_URL = "https://api.thesys.dev";
+
 export function createHandler({
   apiKey,
   model = "google/gemini-3.6-flash-free",
-  baseUrl = "https://api.thesys.dev/v1/embed",
+  baseUrl = `${THESYS_API_URL}/v1/embed`,
   fetchImpl = fetch,
   frontendPort = 4200,
 } = {}) {
@@ -125,7 +127,6 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
     createHandler({
       apiKey: process.env["THESYS_API_KEY"],
       frontendPort: Number(process.env["PORT"] || 4200),
-      model: process.env["OPENUI_MODEL"] || undefined,
     }),
   );
   const port = Number(process.env["API_PORT"] || 4300);

@@ -125,12 +125,9 @@ async function createSession(cwd: string): Promise<PiSessionEntry> {
   const authStorage = AuthStorage.inMemory();
   authStorage.setRuntimeApiKey("openui-cloud", apiKey);
   const modelRegistry = ModelRegistry.create(authStorage, MODELS_PATH);
-  const modelId = process.env.OPENUI_MODEL?.trim() || DEFAULT_MODEL;
-  const model = modelRegistry.find("openui-cloud", modelId);
+  const model = modelRegistry.find("openui-cloud", DEFAULT_MODEL);
   if (!model) {
-    throw new Error(
-      `OpenUI Cloud model "${modelId}" is not in src/lib/openui-cloud-models.json`,
-    );
+    throw new Error(`OpenUI Cloud model "${DEFAULT_MODEL}" is not in src/lib/openui-cloud-models.json`);
   }
 
   // Extra coding-agent rules are preserved as customer instructions after the

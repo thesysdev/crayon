@@ -12,7 +12,7 @@ Requirements: Node.js 22.13+ and npm. This is a standalone example outside the p
 npm ci
 ```
 
-Configure `THESYS_API_KEY` from the [Thesys Console](https://console.thesys.dev/keys) privately in `.env.local`. Optional `OPENUI_MODEL` selects a supported `provider/model` identifier; the default is `openai/gpt-5.5`.
+Configure `THESYS_API_KEY` from the [Thesys Console](https://console.thesys.dev/keys) privately in `.env.local`. The model is `google/gemini-3.6-flash-free`.
 
 ```bash
 npm run dev

@@ -1,3 +1,5 @@
+import { THESYS_API_URL } from "../../../lib/gateway-history";
+
 export const runtime = "nodejs";
 
 // Mints the short-lived frontend token that useOpenuiCloudStorage() sends with its
@@ -7,7 +9,7 @@ export async function POST(request: Request) {
   const apiKey = process.env.THESYS_API_KEY;
   if (!apiKey) throw new Error("Set THESYS_API_KEY in .env.local, then restart.");
 
-  const upstream = await fetch("https://api.thesys.dev/v1/frontend-tokens", {
+  const upstream = await fetch(`${THESYS_API_URL}/v1/frontend-tokens`, {
     method: "POST",
     headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
     body: JSON.stringify({

@@ -1,7 +1,8 @@
-import { MastraAgent } from "@ag-ui/mastra";
-import type { Message } from "@ag-ui/core";
-import { NextRequest } from "next/server";
+import { agUiTextCollector, messageText, storeTurn } from "@/lib/chat-history";
 import { openuiAgent } from "@/mastra";
+import type { Message } from "@ag-ui/core";
+import { MastraAgent } from "@ag-ui/mastra";
+import { NextRequest } from "next/server";
 
 const agent = new MastraAgent({
   agent: openuiAgent,
@@ -12,13 +13,18 @@ export async function POST(req: NextRequest) {
   try {
     const { messages, threadId }: { messages: Message[]; threadId: string } = await req.json();
     const encoder = new TextEncoder();
+    const question = messages.at(-1);
+    const reply = agUiTextCollector();
 
     const readable = new ReadableStream({
       start(controller) {
         let closed = false;
-        const close = () => {
+        const close = async () => {
           if (closed) return;
           closed = true;
+          if (question?.role === "user") {
+            await storeTurn(threadId, messageText(question.content), reply.segments);
+          }
           controller.enqueue(encoder.encode("data: [DONE]\n\n"));
           controller.close();
         };
@@ -33,6 +39,7 @@ export async function POST(req: NextRequest) {
           })
           .subscribe({
             next: (event) => {
+              reply.add(event);
               controller.enqueue(encoder.encode(`data: ${JSON.stringify(event)}\n\n`));
             },
             complete: close,

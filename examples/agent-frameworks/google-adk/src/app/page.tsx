@@ -1,6 +1,12 @@
 "use client";
 
-import { AgentInterface, agUIAdapter, fetchLLM, useSystemThemeMode } from "@openuidev/react-ui";
+import {
+  AgentInterface,
+  agUIAdapter,
+  fetchLLM,
+  useOpenuiCloudStorage,
+  useSystemThemeMode,
+} from "@openuidev/react-ui";
 import { openuiLibrary } from "@openuidev/react-ui/genui-lib";
 import { useMemo } from "react";
 
@@ -15,10 +21,18 @@ export default function Page() {
     [],
   );
 
+  // Threads live in OpenUI Cloud: the chat route stores each turn, so switching
+  // chats or reloading brings the whole conversation back.
+  const storage = useOpenuiCloudStorage({
+    token: "/api/frontend-token",
+    features: { artifact: false },
+  });
+
   return (
     <div className="app-shell">
       <AgentInterface
         llm={llm}
+        storage={storage}
         componentLibrary={openuiLibrary}
         agentName="OpenUI + Google ADK Chat"
         theme={{ mode }}

@@ -3,6 +3,8 @@ import { Agent, FunctionTool } from "@google/adk";
 import { Custom } from "adk-llm-bridge";
 import { z } from "zod";
 
+const THESYS_API_URL = "https://api.thesys.dev";
+
 /**
  * A tiny custom tool. The LLM decides when to call it based on the
  * `description` and `parameters` schema below.
@@ -44,7 +46,7 @@ export function createAgent() {
     name: "openui-adk-agent",
     model: Custom("google/gemini-3.6-flash-free", {
       name: "openui-adk-agent",
-      baseURL: "https://api.thesys.dev/v1/embed",
+      baseURL: `${THESYS_API_URL}/v1/embed`,
       apiKey,
     }),
     instruction: cloudInstructions(),

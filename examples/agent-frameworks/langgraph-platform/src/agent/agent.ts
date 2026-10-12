@@ -5,6 +5,8 @@ import { createDeepAgent } from "deepagents";
 
 import { getStockPrice, getWeather, searchWeb } from "./tools";
 
+const THESYS_API_URL = "https://api.thesys.dev";
+
 const MODEL = "google/gemini-3.6-flash-free";
 
 // ChatOpenAI → POST /v1/embed/chat/completions
@@ -12,7 +14,7 @@ const model = new ChatOpenAI({
   model: MODEL,
   apiKey: process.env.THESYS_API_KEY,
   streaming: true,
-  configuration: { baseURL: "https://api.thesys.dev/v1/embed" },
+  configuration: { baseURL: `${THESYS_API_URL}/v1/embed` },
 });
 
 export const graph = createDeepAgent({

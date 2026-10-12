@@ -3,6 +3,8 @@ import type {
   ChatCompletionMessageParam,
 } from "openai/resources/chat/completions";
 
+export const THESYS_API_URL = "https://api.thesys.dev";
+
 // A conversation item, in the shape storeChatCompletionHistory() stores it.
 type ConversationItem = {
   type: string;
@@ -27,7 +29,7 @@ export async function loadChatCompletionHistory(options: {
     const query = new URLSearchParams({ order: "asc", limit: "100" });
     if (after) query.set("after", after);
     const response = await fetch(
-      `https://api.thesys.dev/v1/conversations/${encodeURIComponent(options.conversationId)}/items?${query}`,
+      `${THESYS_API_URL}/v1/conversations/${encodeURIComponent(options.conversationId)}/items?${query}`,
       { headers: { Authorization: `Bearer ${options.apiKey}` }, signal: options.signal },
     );
     if (!response.ok) throw new Error(`Could not load the thread from Gateway: ${response.status}`);

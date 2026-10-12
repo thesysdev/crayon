@@ -1,14 +1,13 @@
+import { storeTurn, THESYS_API_URL } from "@/lib/chat-history";
 import { cloudInstructions } from "@/lib/cloud-prompt";
 import { tools } from "@/lib/tools";
 import { createOpenAI } from "@ai-sdk/openai";
 import { convertToModelMessages, stepCountIs, streamText } from "ai";
 
 const openai = createOpenAI({
-  baseURL: "https://api.thesys.dev/v1/embed",
+  baseURL: `${THESYS_API_URL}/v1/embed`,
   apiKey: process.env.THESYS_API_KEY,
 });
-
-const conversationLog: Array<{ role: string; content: string }> = [];
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 function extractText(msg: any): string {
@@ -42,11 +41,10 @@ function extractText(msg: any): string {
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
 export async function POST(req: Request) {
-  const { messages } = await req.json();
+  const { messages, threadId } = await req.json();
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const lastUserMsg = (messages as any[]).filter((m: any) => m.role === "user").pop();
-  if (lastUserMsg) conversationLog.push({ role: "user", content: extractText(lastUserMsg) });
 
   const modelMessages = await convertToModelMessages(messages);
 
@@ -56,10 +54,13 @@ export async function POST(req: Request) {
     messages: modelMessages,
     tools,
     stopWhen: stepCountIs(5),
-  });
-
-  result.text.then((text) => {
-    conversationLog.push({ role: "assistant", content: text });
+    // Each step's text is one segment of the reply, as the chat shows it.
+    onFinish: ({ steps }) =>
+      storeTurn(
+        threadId,
+        extractText(lastUserMsg),
+        steps.map((step) => step.text),
+      ),
   });
 
   return result.toUIMessageStreamResponse();

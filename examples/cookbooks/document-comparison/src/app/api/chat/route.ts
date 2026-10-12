@@ -2,7 +2,7 @@ import { storeChatCompletionHistory } from "@openuidev/server/openai";
 import OpenAI from "openai";
 import type { ChatCompletionMessageParam } from "openai/resources/chat/completions";
 import { listDocuments, openDatabase } from "../../../lib/documents";
-import { loadChatCompletionHistory } from "../../../lib/gateway-history";
+import { loadChatCompletionHistory, THESYS_API_URL } from "../../../lib/gateway-history";
 import { comparisonPrompt } from "../../../lib/prompt";
 import { executeSearchDocuments, searchDocumentsTool } from "../../../lib/tools/search-documents";
 
@@ -36,7 +36,7 @@ export async function POST(request: Request) {
   const documents = listDocuments(db);
   db.close();
 
-  const gateway = new OpenAI({ apiKey, baseURL: "https://api.thesys.dev/v1/embed" });
+  const gateway = new OpenAI({ apiKey, baseURL: `${THESYS_API_URL}/v1/embed` });
   const searchTool = searchDocumentsTool(documents);
 
   const thread = [...(await conversation(apiKey, threadId, request.signal)), question];
@@ -49,7 +49,7 @@ export async function POST(request: Request) {
   // repeats until the model answers. It runs only the tools registered here.
   const runner = gateway.chat.completions.runTools(
     {
-      model: process.env.OPENUI_MODEL || "openai/gpt-5.5",
+      model: "google/gemini-3.6-flash-free",
       messages,
       tools: [
         {

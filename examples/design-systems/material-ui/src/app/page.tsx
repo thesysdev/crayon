@@ -5,7 +5,13 @@ import LightModeIcon from "@mui/icons-material/LightMode";
 import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
-import { AgentInterface, fetchLLM, openAIAdapter, openAIMessageFormat } from "@openuidev/react-ui";
+import {
+  AgentInterface,
+  fetchLLM,
+  openAIAdapter,
+  openAIMessageFormat,
+  useOpenuiCloudStorage,
+} from "@openuidev/react-ui";
 import { useMemo } from "react";
 
 import { useColorMode } from "@/hooks/use-system-theme";
@@ -24,6 +30,13 @@ export default function Page() {
     [],
   );
 
+  // Threads live in OpenUI Cloud: the chat route stores each turn, so switching
+  // chats or reloading brings the whole conversation back.
+  const storage = useOpenuiCloudStorage({
+    token: "/api/frontend-token",
+    features: { artifact: false },
+  });
+
   return (
     <Box sx={{ height: "100vh", width: "100vw", overflow: "hidden", position: "relative" }}>
       <Box sx={{ position: "fixed", top: 12, right: 16, zIndex: 1300 }}>
@@ -40,6 +53,7 @@ export default function Page() {
 
       <AgentInterface
         llm={llm}
+        storage={storage}
         componentLibrary={muiChatLibrary}
         agentName="Material UI Chat"
         theme={{ mode }}

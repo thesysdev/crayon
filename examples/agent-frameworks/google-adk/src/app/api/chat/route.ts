@@ -1,5 +1,6 @@
 import { createAgent } from "@/agent";
 import { adkToAguiEvents } from "@/lib/adk-to-agui";
+import { agUiTextCollector, storeTurn } from "@/lib/chat-history";
 import { InMemorySessionService, Runner, StreamingMode } from "@google/adk";
 import { EventType } from "@openuidev/react-headless";
 import { NextRequest } from "next/server";
@@ -34,9 +35,7 @@ interface ChatMessage {
 function messageText(message: ChatMessage | undefined): string {
   if (!message?.content) return "";
   if (typeof message.content === "string") return message.content;
-  return message.content
-    .map((part) => (typeof part.text === "string" ? part.text : ""))
-    .join("");
+  return message.content.map((part) => (typeof part.text === "string" ? part.text : "")).join("");
 }
 
 async function ensureSession(threadId: string): Promise<string> {
@@ -72,7 +71,9 @@ export async function POST(req: NextRequest) {
     const readable = new ReadableStream({
       async start(controller) {
         let closed = false;
+        const reply = agUiTextCollector();
         const enqueue = (event: object) => {
+          reply.add(event);
           if (closed) return;
           controller.enqueue(encoder.encode(sse(event)));
         };
@@ -103,6 +104,7 @@ export async function POST(req: NextRequest) {
             enqueue({ type: EventType.RUN_ERROR, message });
           }
         } finally {
+          await storeTurn(threadId, prompt, reply.segments);
           close();
         }
       },

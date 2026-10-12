@@ -1,7 +1,7 @@
 import { storeChatCompletionHistory } from "@openuidev/server/openai";
 import OpenAI from "openai";
 import type { ChatCompletionMessageParam } from "openai/resources/chat/completions";
-import { loadChatCompletionHistory } from "../../../lib/gateway-history";
+import { loadChatCompletionHistory, THESYS_API_URL } from "../../../lib/gateway-history";
 import { bookingPrompt } from "../../../lib/prompt";
 import { executeSearchStays, searchStaysTool, today } from "../../../lib/tools/search-stays";
 
@@ -30,7 +30,7 @@ export async function POST(request: Request) {
   const apiKey = process.env.THESYS_API_KEY;
   if (!apiKey) throw new Error("Set THESYS_API_KEY in .env.local, then restart.");
 
-  const gateway = new OpenAI({ apiKey, baseURL: "https://api.thesys.dev/v1/embed" });
+  const gateway = new OpenAI({ apiKey, baseURL: `${THESYS_API_URL}/v1/embed` });
   const searchTool = searchStaysTool();
 
   const thread = [...(await conversation(apiKey, threadId, request.signal)), question];
@@ -43,7 +43,7 @@ export async function POST(request: Request) {
   // repeats until the model answers. It runs only the tools registered here.
   const runner = gateway.chat.completions.runTools(
     {
-      model: process.env.OPENUI_MODEL || "openai/gpt-5.5",
+      model: "google/gemini-3.6-flash-free",
       messages,
       tools: [
         {

@@ -1,3 +1,4 @@
+import { storeTurn } from "@/lib/chat-history";
 import { abortSession, getOrCreateSession } from "@/lib/pi-session";
 import type { NextRequest } from "next/server";
 
@@ -144,11 +145,13 @@ export async function POST(req: NextRequest) {
       };
       let thinkingId: string | undefined;
       let thinkingSeq = 0;
+      let answer = "";
 
       const unsubscribe = session.subscribe((event) => {
         if (event.type === "message_update") {
           const ame = event.assistantMessageEvent;
           if (ame.type === "text_delta" && ame.delta) {
+            answer += ame.delta;
             enqueue(ndjsonChunk({ content: ame.delta }));
           } else if (ame.type === "thinking_delta" && ame.delta) {
             // Stream the model's reasoning into a single "Thinking" card.
@@ -189,6 +192,7 @@ export async function POST(req: NextRequest) {
         } finally {
           unsubscribe();
           req.signal.removeEventListener("abort", onAbort);
+          if (userText) await storeTurn(body.threadId, userText, [answer]);
           finish();
         }
       })();

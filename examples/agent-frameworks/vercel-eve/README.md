@@ -62,10 +62,9 @@ Eve session events ──► eveAdapter() ──► OpenUI renderer
 
 ## Configuration
 
-| Environment variable | Default                                          | Purpose                                        |
-| -------------------- | ------------------------------------------------ | ---------------------------------------------- |
-| `THESYS_API_KEY`     | —                                                | OpenUI Cloud API key.                          |
-| `OPENUI_MODEL`       | `google/gemini-3.6-flash-free`                   | Cloud model id for Eve's Chat Completions call. |
+| Environment variable | Default | Purpose               |
+| -------------------- | ------- | --------------------- |
+| `THESYS_API_KEY`     | —       | OpenUI Cloud API key. |
 
 ## Eve commands
 

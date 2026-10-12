@@ -1,5 +1,11 @@
 import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
-import { MastraModelGateway, type GatewayLanguageModel, type ProviderConfig } from "@mastra/core/llm";
+import {
+  MastraModelGateway,
+  type GatewayLanguageModel,
+  type ProviderConfig,
+} from "@mastra/core/llm";
+
+const THESYS_API_URL = "https://api.thesys.dev";
 
 /** Full OpenUI Cloud model id, including the provider prefix Cloud expects. */
 export const OPENUI_CLOUD_MODEL = "google/gemini-3.6-flash-free";
@@ -34,7 +40,9 @@ function isEmptyAssistant(message: Record<string, unknown>): boolean {
  */
 function sanitizeCompletionsBody(body: Record<string, unknown>): Record<string, unknown> {
   if (!Array.isArray(body.messages)) return body;
-  const messages = (body.messages as Record<string, unknown>[]).filter((message) => !isEmptyAssistant(message));
+  const messages = (body.messages as Record<string, unknown>[]).filter(
+    (message) => !isEmptyAssistant(message),
+  );
   while (messages.length > 0 && messages[messages.length - 1]?.role === "assistant") {
     const last = messages[messages.length - 1];
     const hasToolCalls = Array.isArray(last.tool_calls) && last.tool_calls.length > 0;
@@ -60,13 +68,13 @@ export class OpenUICloudGateway extends MastraModelGateway {
         models: [OPENUI_CLOUD_MODEL],
         apiKeyEnvVar: "THESYS_API_KEY",
         gateway: this.id,
-        url: "https://api.thesys.dev/v1/embed",
+        url: `${THESYS_API_URL}/v1/embed`,
       },
     };
   }
 
   buildUrl(): string {
-    return "https://api.thesys.dev/v1/embed";
+    return `${THESYS_API_URL}/v1/embed`;
   }
 
   async getApiKey(): Promise<string> {
@@ -88,7 +96,7 @@ export class OpenUICloudGateway extends MastraModelGateway {
     return createOpenAICompatible({
       name: OPENUI_CLOUD_GATEWAY_ID,
       apiKey,
-      baseURL: "https://api.thesys.dev/v1/embed",
+      baseURL: `${THESYS_API_URL}/v1/embed`,
       supportsStructuredOutputs: true,
       transformRequestBody: sanitizeCompletionsBody,
     }).chatModel(modelId || OPENUI_CLOUD_MODEL);
