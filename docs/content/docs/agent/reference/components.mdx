@@ -99,12 +99,17 @@ The top bar shown on mobile viewports in place of the (collapsed) sidebar. **Mod
 
 ### `AgentInterface.ThreadHeader`
 
-Header bar above the active conversation. **Modes A, C.**
+Desktop header above the active conversation: leading content, the chat title in the centre, then the workspace toggle and a Rename/Delete menu. Hidden on mobile (use `MobileHeader`). **Modes A, B.**
 
-| Prop        | Type        | Notes                         |
-| ----------- | ----------- | ----------------------------- |
-| `children`  | `ReactNode` | Mode C — replaces the header. |
-| `className` | `string`    |                               |
+| Prop              | Type        | Notes                                           |
+| ----------------- | ----------- | ----------------------------------------------- |
+| `start`           | `ReactNode` | Leading content, e.g. a model switcher.         |
+| `center`          | `ReactNode` | Replaces the chat title.                        |
+| `end`             | `ReactNode` | Trailing content, before the workspace toggle.  |
+| `children`        | `ReactNode` | Shorthand for `end`.                            |
+| `showChatTitle`   | `boolean`   | Show the selected chat's title. Default `true`. |
+| `showChatActions` | `boolean`   | Show the Rename/Delete menu. Default `true`.    |
+| `className`       | `string`    |                                                 |
 
 ### `AgentInterface.Welcome`
 
@@ -296,13 +301,13 @@ Renders the list of the user's threads from `storage.thread` (one row per thread
 
 Renders the active thread's messages, including the in-flight streaming message and the loading indicator. Used inside a custom thread region (typically wrapped in `ScrollArea`).
 
-| Prop               | Type                        | Notes                                                                                                                                                                      |
-| ------------------ | --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `loader`           | `ReactNode`                 | Custom loading indicator shown while a response is pending. Defaults to `MessageLoading`.                                                                                  |
-| `assistantMessage` | component                   | Override for rendering the turn's assistant answer. Mirrors `components.AssistantMessage` on `<AgentInterface>`.                                 |
-| `userMessage`      | component                   | Override for rendering user messages. Mirrors `components.UserMessage`.                                                                                                    |
-| `toolCallTimeline` | component | Override for the turn's tool timeline from the first activity onward. Mirrors `components.ToolCallTimeline` |
-| `className`        | `string`                    |                                                                                                                                                                            |
+| Prop               | Type        | Notes                                                                                                            |
+| ------------------ | ----------- | ---------------------------------------------------------------------------------------------------------------- |
+| `loader`           | `ReactNode` | Custom loading indicator shown while a response is pending. Defaults to `MessageLoading`.                        |
+| `assistantMessage` | component   | Override for rendering the turn's assistant answer. Mirrors `components.AssistantMessage` on `<AgentInterface>`. |
+| `userMessage`      | component   | Override for rendering user messages. Mirrors `components.UserMessage`.                                          |
+| `toolCallTimeline` | component   | Override for the turn's tool timeline from the first activity onward. Mirrors `components.ToolCallTimeline`      |
+| `className`        | `string`    |                                                                                                                  |
 
 ```tsx
 <AgentInterface.ScrollArea>

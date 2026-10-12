@@ -47,7 +47,6 @@ import type {
 import { ArtifactBrowserPage } from "./ArtifactBrowserPage";
 import { ArtifactNav } from "./ArtifactNav";
 import { ArtifactViewPage } from "./ArtifactViewPage";
-import { ChatHeader } from "./ChatHeader";
 import { Composer } from "./Composer";
 import { Container } from "./Container";
 import { type ConversationStarterVariant } from "./ConversationStarter";
@@ -65,7 +64,8 @@ import {
 import { SidebarItem } from "./SidebarItem";
 import { SidebarSlot } from "./SidebarSlot";
 import { ThemeModeToggle } from "./ThemeModeToggle";
-import { MessageLoading, Messages, ScrollArea, ThreadContainer, ThreadHeader } from "./Thread";
+import { MessageLoading, Messages, ScrollArea, ThreadContainer } from "./Thread";
+import { ThreadHeader } from "./ThreadHeader";
 import { ThreadList } from "./ThreadList";
 import { WelcomeGlow } from "./WelcomeGlow";
 import { WelcomeScreen } from "./WelcomeScreen";
@@ -135,7 +135,6 @@ const SLOT_KEY_BY_TYPE = new Map<unknown, SingleSlotKey>([
   [SidebarFooter, "sidebarFooter"],
   [MobileHeader, "mobileHeader"],
   [ThreadHeader, "threadHeader"],
-  [ChatHeader, "threadHeader"],
   [WelcomeScreen, "welcome"],
   [Composer, "composer"],
   [Workspace, "workspace"],
@@ -187,7 +186,6 @@ interface AgentInterfaceComponent extends FC<AgentInterfaceProps> {
   Route: typeof Route;
   MobileHeader: typeof MobileHeader;
   ThreadHeader: typeof ThreadHeader;
-  ChatHeader: typeof ChatHeader;
   Welcome: typeof WelcomeScreen;
   WelcomeGlow: typeof WelcomeGlow;
   Composer: typeof Composer;
@@ -501,7 +499,6 @@ AgentInterface.Workspace = Workspace;
 AgentInterface.Route = Route;
 AgentInterface.MobileHeader = MobileHeader;
 AgentInterface.ThreadHeader = ThreadHeader;
-AgentInterface.ChatHeader = ChatHeader;
 AgentInterface.Welcome = WelcomeScreen;
 AgentInterface.WelcomeGlow = WelcomeGlow;
 AgentInterface.Composer = Composer;

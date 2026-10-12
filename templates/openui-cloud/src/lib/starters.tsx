@@ -1,5 +1,17 @@
 import { PromptTemplate } from "@openuidev/react-ui";
-import { Car, Code, Coffee, Flag, Plane, Rocket, Scale, Search, TreePalm, Trophy, Zap } from "lucide-react";
+import {
+  Car,
+  Code,
+  Coffee,
+  Flag,
+  Plane,
+  Rocket,
+  Scale,
+  Search,
+  TreePalm,
+  Trophy,
+  Zap,
+} from "lucide-react";
 
 export const OPENUI_LOGOS = {
   LIGHT: "/brand-logo.svg",

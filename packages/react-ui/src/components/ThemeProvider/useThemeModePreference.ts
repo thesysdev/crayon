@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
+import { useIsomorphicLayoutEffect } from "../Charts/hooks/core/useIsomorphicLayoutEffect";
 import type { ThemeMode } from "./types";
 import { useSystemThemeMode } from "./useSystemThemeMode";
 
@@ -12,8 +13,8 @@ export const THEME_MODE_STORAGE_KEY = "openui-theme-mode";
 
 /**
  * Attribute set on <html> while a mode is pinned. The default token sheet
- * (openui-defaults) reads it, so an app can set it before paint from the saved
- * preference and render its first frame in the chosen mode.
+ * (openui-defaults) reads it, so pages outside AgentInterface follow the
+ * chosen mode too.
  */
 export const THEME_MODE_ATTRIBUTE = "data-openui-theme";
 
@@ -40,9 +41,12 @@ export function useThemeModePreference(storageKey: string = THEME_MODE_STORAGE_K
   mode: ThemeMode;
 } {
   const systemMode = useSystemThemeMode();
-  const [preference, setPreferenceState] = useState<ThemeModePreference>(() =>
-    typeof window === "undefined" ? "system" : readPreference(storageKey),
-  );
+  // "system" for the first render (as on the server), then the saved choice
+  // before paint, so server-rendered markup hydrates cleanly.
+  const [preference, setPreferenceState] = useState<ThemeModePreference>("system");
+  useIsomorphicLayoutEffect(() => {
+    setPreferenceState(readPreference(storageKey));
+  }, [storageKey]);
 
   const setPreference = useCallback(
     (next: ThemeModePreference) => {
@@ -59,7 +63,7 @@ export function useThemeModePreference(storageKey: string = THEME_MODE_STORAGE_K
 
   const mode: ThemeMode = preference === "system" ? systemMode : preference;
 
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     const root = document.documentElement;
     if (preference === "system") root.removeAttribute(THEME_MODE_ATTRIBUTE);
     else root.setAttribute(THEME_MODE_ATTRIBUTE, preference);

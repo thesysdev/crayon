@@ -686,24 +686,6 @@ export const Messages = ({
   );
 };
 
-export const ThreadHeader = ({
-  children,
-  className,
-}: {
-  children?: React.ReactNode;
-  className?: string;
-}) => {
-  return (
-    <div className={clsx("openui-agent-thread-header", className)}>
-      <div className="openui-agent-thread-header__title">{/* Thread title hidden for now. */}</div>
-      <div className="openui-agent-thread-header__actions">
-        {children}
-        <WorkspaceToggleButton />
-      </div>
-    </div>
-  );
-};
-
 export const WorkspaceToggleButton = () => {
   const artifacts = useArtifactList();
   const { isDetailedViewActive } = useActiveDetailedView();

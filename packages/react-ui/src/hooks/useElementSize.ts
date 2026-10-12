@@ -1,9 +1,12 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useIsomorphicLayoutEffect } from "../components/Charts/hooks/core/useIsomorphicLayoutEffect";
 
 export const useElementSize = ({ ref }: { ref: React.RefObject<HTMLElement | null> }) => {
   const [size, setSize] = useState<{ width: number; height: number }>({ width: 0, height: 0 });
 
-  useEffect(() => {
+  // Before paint, so layout-dependent UI (mobile vs desktop) is right on the
+  // first visible frame.
+  useIsomorphicLayoutEffect(() => {
     if (!ref.current) {
       return;
     }

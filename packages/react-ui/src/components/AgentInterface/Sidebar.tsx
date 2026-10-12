@@ -3,18 +3,11 @@ import clsx from "clsx";
 import { PanelLeft } from "lucide-react";
 import { createContext, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useLayoutContext } from "../../context/LayoutContext";
+import { useIsomorphicLayoutEffect } from "../Charts/hooks/core/useIsomorphicLayoutEffect";
 import { IconButton } from "../IconButton";
 import { SidebarResizeEdge } from "./SidebarResizeEdge";
 import { AgentInterfaceTooltip } from "./_shared/AgentInterfaceTooltip";
-import { SIDEBAR_OPEN_STORAGE_KEY, useAgentInterfaceStore } from "./_shared/store";
-
-const readSavedSidebarOpen = () => {
-  try {
-    return window.localStorage.getItem(SIDEBAR_OPEN_STORAGE_KEY) === "1";
-  } catch {
-    return false;
-  }
-};
+import { useAgentInterfaceStore } from "./_shared/store";
 
 const SIDEBAR_FADE_DURATION_MS = 90;
 const SIDEBAR_RESIZE_DURATION_MS = 160;
@@ -35,9 +28,18 @@ export const SidebarContainer = ({
   children?: React.ReactNode;
   className?: string;
 }) => {
-  const { isSidebarOpen, setIsSidebarOpen } = useAgentInterfaceStore((state) => ({
+  const {
+    isSidebarOpen,
+    setIsSidebarOpen,
+    desktopSidebarOpen,
+    setDesktopSidebarOpen,
+    hasRestoredSidebar,
+  } = useAgentInterfaceStore((state) => ({
     isSidebarOpen: state.isSidebarOpen,
     setIsSidebarOpen: state.setIsSidebarOpen,
+    desktopSidebarOpen: state.desktopSidebarOpen,
+    setDesktopSidebarOpen: state.setDesktopSidebarOpen,
+    hasRestoredSidebar: state.hasRestoredSidebar,
   }));
   const { isDetailedViewActive } = useActiveDetailedView();
   const { layout } = useLayoutContext() || {};
@@ -48,6 +50,7 @@ export const SidebarContainer = ({
   );
   const animationTimeoutsRef = useRef<Array<ReturnType<typeof setTimeout>>>([]);
   const previousIsMobileRef = useRef<boolean | null>(null);
+  const appliedRestoreRef = useRef(false);
 
   const clearAnimationTimeouts = () => {
     animationTimeoutsRef.current.forEach((timeoutId) => clearTimeout(timeoutId));
@@ -60,6 +63,18 @@ export const SidebarContainer = ({
     };
   }, []);
 
+  // The saved desktop choice is restored just after hydration. Apply it once,
+  // before paint and without animating, as if the sidebar had started that
+  // way. The effect below then finds it already in place.
+  useIsomorphicLayoutEffect(() => {
+    if (!hasRestoredSidebar || appliedRestoreRef.current) return;
+    appliedRestoreRef.current = true;
+    if (isMobile || isSidebarOpen === desktopSidebarOpen) return;
+    setIsSidebarOpen(desktopSidebarOpen);
+    setIsCollapsedLayout(!desktopSidebarOpen);
+    setVisualState(desktopSidebarOpen ? "expanded" : "collapsed");
+  }, [hasRestoredSidebar, isMobile]);
+
   useEffect(() => {
     clearAnimationTimeouts();
 
@@ -67,24 +82,19 @@ export const SidebarContainer = ({
     const justSwitchedLayout = previousIsMobileRef.current !== isMobile;
     previousIsMobileRef.current = isMobile;
 
-    // Mobile always starts closed. On desktop the store already holds the
-    // saved choice, so the first run keeps it; coming back from mobile
-    // restores it.
+    // Mobile always starts closed; coming back from mobile restores the
+    // desktop choice.
     if (justSwitchedLayout) {
-      const targetOpen = isMobile ? false : isFirstRun ? isSidebarOpen : readSavedSidebarOpen();
+      const targetOpen = isMobile ? false : isFirstRun ? isSidebarOpen : desktopSidebarOpen;
       if (isSidebarOpen !== targetOpen) {
         setIsSidebarOpen(targetOpen);
         return;
       }
     }
 
-    if (!isMobile) {
-      try {
-        window.localStorage.setItem(SIDEBAR_OPEN_STORAGE_KEY, isSidebarOpen ? "1" : "0");
-      } catch {
-        // Storage can be unavailable (private mode, blocked site data).
-      }
-    }
+    // Only after the restore (as rendered), so the collapsed default never
+    // overwrites the saved choice.
+    if (!isMobile && hasRestoredSidebar) setDesktopSidebarOpen(isSidebarOpen);
 
     if (isMobile) {
       setIsCollapsedLayout(!isSidebarOpen);
@@ -131,7 +141,7 @@ export const SidebarContainer = ({
         );
       }, SIDEBAR_FADE_DURATION_MS),
     );
-  }, [isMobile, isSidebarOpen]);
+  }, [isMobile, isSidebarOpen, hasRestoredSidebar]);
 
   const contextValue = useMemo(
     () => ({

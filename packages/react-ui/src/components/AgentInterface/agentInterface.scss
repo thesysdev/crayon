@@ -4,7 +4,7 @@
 @use "./themeModeToggle.scss";
 @use "./threadlist.scss";
 @use "./thread.scss";
-@use "./chatHeader.scss";
+@use "./threadHeader.scss";
 @use "./renameChatDialog.scss";
 @use "./mobileHeader.scss";
 @use "./resizableSeparator.scss";
@@ -16,9 +16,30 @@
 @use "./components/composer.scss";
 @use "./components/ambientLoader.scss";
 @use "./components/mascotLoader.scss";
+@use "./components/welcomeMascot.scss";
 @use "./artifactBrowser.scss";
 @use "./workspaceSidebar.scss";
 @use "./_shared/shared.scss";
+
+// Covers the interface while saved preferences are restored, on the
+// container's own surface, then fades out to reveal it (see Container.tsx).
+.openui-agent-container__restore-loader {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  background: inherit;
+  transition: opacity 200ms ease-out;
+
+  &--exiting {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
 
 .openui-agent-container {
   display: flex;
@@ -40,6 +61,18 @@
   &.openui-agent-container--mobile {
     padding: 0;
     background: cssUtils.$foreground;
+  }
+
+  // Until saved preferences are restored (see Container.tsx).
+  &.openui-agent-container--restoring > :not(.openui-agent-container__restore-loader) {
+    visibility: hidden;
+  }
+
+  // Until the restored state has settled (see Container.tsx).
+  // The restore loader keeps its fade-out.
+  &[data-openui-settling],
+  &[data-openui-settling] *:not(.openui-agent-container__restore-loader) {
+    transition: none !important;
   }
 }
 
