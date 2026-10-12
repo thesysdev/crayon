@@ -5,13 +5,11 @@ import type {
   ChatCompletionMessageParam,
 } from "openai/resources/chat/completions";
 import { z } from "zod/v4";
-import { listDrivers, openDatabase, type Driver } from "../../../lib/f1-data";
 import { f1PromptContext } from "../../../lib/f1/context";
 import { f1Executors, f1FunctionTools } from "../../../lib/f1/tools";
 import { loadChatCompletionHistory } from "../../../lib/gateway-history";
 import { analyticsPrompt } from "../../../lib/prompt";
-import { runChatToolLoop, type FunctionToolExecutor } from "../../../lib/tool-loop";
-import { executeQueryLapTimes, queryLapTimesTool } from "../../../lib/tools/lap-times";
+import { runChatToolLoop } from "../../../lib/tool-loop";
 import { isOwnOrigin } from "../../../lib/same-origin";
 
 export const runtime = "nodejs";
@@ -86,29 +84,11 @@ export async function POST(request: Request) {
       { status: 503 },
     );
 
-  // The 2024 Miami dataset behind the legacy query_lap_times tool is optional; the OpenF1
-  // tools work from their own cache (npm run snapshot:f1) or the live API.
-  let miamiDrivers: Driver[] = [];
-  let db;
-  try {
-    db = openDatabase();
-    miamiDrivers = listDrivers(db);
-  } catch {
-    miamiDrivers = [];
-  } finally {
-    db?.close();
-  }
-
   const gateway = new OpenAI({ apiKey, baseURL: "https://api.thesys.dev/v1/embed" });
   // App-owned function tools, sent as the request's `tools` because the Gateway system prompt
   // carries no tool definitions. The loop runs only the names registered here.
   const tools = f1FunctionTools();
-  const functionTools: Record<string, FunctionToolExecutor> = f1Executors();
-  if (miamiDrivers.length) {
-    const lapTimesTool = queryLapTimesTool(miamiDrivers);
-    tools.push(lapTimesTool);
-    functionTools[lapTimesTool.function.name] = executeQueryLapTimes;
-  }
+  const functionTools = f1Executors();
   let history: ChatCompletionMessageParam[];
   try {
     history = await conversation(apiKey, threadId, request.signal);
@@ -121,7 +101,7 @@ export async function POST(request: Request) {
     messages: [
       {
         role: "system" as const,
-        content: analyticsPrompt({ today: new Date().toISOString().slice(0, 10), ...context, miamiDrivers }),
+        content: analyticsPrompt({ today: new Date().toISOString().slice(0, 10), ...context }),
       },
       ...history,
       question,

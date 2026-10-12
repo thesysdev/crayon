@@ -10,7 +10,6 @@
 // the components it composes with, how an answer is laid out, and the house style.
 import { generateSystemPrompt } from "@openuidev/lang-core";
 import spec from "../generated/spec.json";
-import { race, type Driver } from "./f1-data";
 
 export interface PromptContext {
   /** Today's date, so "latest" and "next" read naturally. */
@@ -19,8 +18,6 @@ export interface PromptContext {
   season?: string;
   /** Current entrants as "CODE number Name (Team)". */
   entrants?: string[];
-  /** Drivers in the 2024 Miami dataset behind query_lap_times, when it is prepared. */
-  miamiDrivers?: Driver[];
 }
 
 // ---------------------------------------------------------------------------------------
@@ -67,11 +64,6 @@ const dataRules = [
 const entrants = (context: PromptContext) =>
   context.entrants?.length
     ? `Current entrants (code, number, name, team): ${context.entrants.join("; ")}. Past seasons had different line-ups; the tools resolve names per session.`
-    : "";
-
-const legacyTool = (context: PromptContext) =>
-  context.miamiDrivers?.length
-    ? `query_lap_times is a legacy tool covering only the ${race.name} (${race.laps} laps; drivers ${JSON.stringify(context.miamiDrivers.map((d) => ({ number: d.number, name: d.name })))}). Use get_lap_times for every other race, and prefer it for Miami 2024 too unless the user asks for that dataset.`
     : "";
 
 // ---------------------------------------------------------------------------------------
@@ -178,7 +170,7 @@ follow = FollowUpBlock([FollowUpItem("Who won in Baku?", "Baku"), FollowUpItem("
 
 /** The rules, in the order they are sent. */
 function promptRules(context: PromptContext) {
-  return [identity(context), voice, ...dataRules, entrants(context), components, tiles, layout, style, legacyTool(context)].filter(Boolean);
+  return [identity(context), voice, ...dataRules, entrants(context), components, tiles, layout, style].filter(Boolean);
 }
 
 const promptExamples = [winnerExample, comparisonExample, strategyExample, greetingExample];

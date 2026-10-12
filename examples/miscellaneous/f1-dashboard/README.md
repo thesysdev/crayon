@@ -46,8 +46,6 @@ Every app URL is drawn by `src/app/(radio)/layout.tsx` over one empty catch-all 
 
 The tools (`src/lib/f1/tools`) call OpenF1 through one rate-limited client with a disk cache under `data/openf1`. Finished sessions are cached forever, and a stale copy is served if OpenF1 is down. `npm run snapshot:f1` fills that cache ahead of time; `npm run snapshot:f1 -- --year 2025 --light` adds last season.
 
-The legacy `query_lap_times` tool over the 2024 Miami race is only sent to the model after `npm run prepare:data`.
-
 ## Deploying
 
 `next.config.ts` bundles `data/**` into the API routes, so run `npm run snapshot:f1` before building. Hosts with a read-only filesystem keep new OpenF1 responses in memory only.
