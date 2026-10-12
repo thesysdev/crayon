@@ -230,7 +230,7 @@
       "description": "Flex container. direction: \"row\"|\"column\" (default \"column\"). gap: \"none\"|\"xs\"|\"s\"|\"m\"|\"l\"|\"xl\"|\"2xl\" (default \"m\"). align: \"start\"|\"center\"|\"end\"|\"stretch\"|\"baseline\". justify: \"start\"|\"center\"|\"end\"|\"between\"|\"around\"|\"evenly\"."
     },
     "Section": {
-      "signature": "Section(children: (Text | Markdown | Link | Metric | Avatar | AvatarStack | Heading | LeadingText | EntityTitle | ImageTitle | Callout | CodeBlock | Image | ImageGallery | Separator | HorizontalBarChart | RadarChart | PieChart | RadialChart | SingleStackedBarChart | ScatterChart | AreaChart | BarChart | LineChart | Table | TagBlock | Form | Buttons | IconButton | Steps | Timeline | Checklist | EntityList | EditableTable | ValueCard | ValueLayout | InsightCard | CompositeCardBlock | ImageCard | Tabs | Carousel | Stack | Grid | Shell | Bleed)[])",
+      "signature": "Section(children: (Text | Markdown | Link | Metric | Avatar | AvatarStack | Heading | LeadingText | EntityTitle | ImageTitle | Callout | CodeBlock | Image | ImageGallery | Separator | HorizontalBarChart | RadarChart | PieChart | RadialChart | SingleStackedBarChart | ScatterChart | AreaChart | BarChart | LineChart | Table | TagBlock | Form | Buttons | IconButton | Steps | Timeline | Checklist | EntityList | EditableTable | ValueCard | ValueLayout | InsightCard | CompositeCardBlock | ImageCard | Tabs | Carousel | Stack | Grid | Shell | Bleed | FollowUpBlock | Sources)[])",
       "description": "One part of a response. Every response is built from Sections: put each distinct part (an overview, then options, then next steps) in its own Section, directly in the root, so parts get more space between them and their own children sit close together. A short single-part answer is one Section. Sections are high-level divisions, and many responses need only one: never give a lone Text, Markdown or Buttons row its own Section, nor a Section that holds only a title (a Heading or Text, with or without a subtitle; it goes at the top of the Section with the content it introduces), e.g. not Section([Markdown(\"Here is a snapshot…\")]) followed by the table it introduces. Put an intro first inside the Section it introduces, and closing actions last in the final Section. Children stack top to bottom; compose the part yourself inside it: a Heading or Text h2/h3 title first when the part needs one, then Markdown, a Stack row or grid, a card block, a chart. Prose inside a titled Section is a Markdown block without its own # heading. e.g. Section([Heading(\"Where to stay\"), hotels]). Never nest a Section inside a Section. For parts the reader opens on demand (an FAQ, a long report) use the collapsible SectionBlock inside a Section, and for alternative views of the same thing use Tabs."
     },
     "Grid": {
@@ -360,6 +360,18 @@
     "Modal": {
       "signature": "Modal(title: string, open?: $binding<boolean>, children: (Text | Markdown | Link | Metric | Avatar | AvatarStack | Heading | LeadingText | EntityTitle | ImageTitle | Callout | CodeBlock | Image | ImageGallery | Separator | HorizontalBarChart | RadarChart | PieChart | RadialChart | SingleStackedBarChart | ScatterChart | AreaChart | BarChart | LineChart | Table | TagBlock | Form | Buttons | IconButton | Steps | Timeline | Checklist | EntityList | EditableTable | ValueCard | ValueLayout | InsightCard | CompositeCardBlock | ImageCard)[], size?: \"sm\" | \"md\" | \"lg\")",
       "description": "Modal dialog. open is a reactive $boolean binding — set to true to open, X/Escape/backdrop auto-closes. Put Form with buttons inside children."
+    },
+    "FollowUpBlock": {
+      "signature": "FollowUpBlock(items: FollowUpItem[])",
+      "description": "List of clickable follow-up suggestions placed at the end of a response"
+    },
+    "FollowUpItem": {
+      "signature": "FollowUpItem(text: string)",
+      "description": "Clickable follow-up suggestion — when clicked, sends text as user message"
+    },
+    "Sources": {
+      "signature": "Sources(items: {url?: string, title: string, sourceName: string}[])",
+      "description": "Row of source cards (favicon, site name, page title) that closes an answer built from real references, e.g. Sources([{ title: \"Apple (AAPL) Statistics & Valuation\", sourceName: \"Stock Analysis\", url: \"https://stockanalysis.com/stocks/aapl/statistics/\" }]). Each item links to its url."
     }
   },
   "componentGroups": [
@@ -587,6 +599,18 @@
         "- InsightCard: 2+ tall InsightCardItem(id?, title, subtitle?, overline?, leading?, color?) tiles, each one takeaway: a short overline (with an optional leading) at the top, and the title (the insight, 22px) with a composable subtitle at the bottom, on a palette color (picked by meaning, never invented); no photo, which is ImageCard. Keep the overline to a few words and the title to one short insight, never a Tag. Use it for research takeaways, trends or news with a status Tag in the subtitle, topics to explore, plan options and suggested next topics.",
         "- CompositeCardItem: rich white card with a header (EntityTitle, ImageTitle, Image, or a Text(\"…\", \"h3\") title), an optional edge-to-edge media at the top (5th argument: a real photo Image, or an AreaChart, BarChart or LineChart for a metric or trend card), a body array (Text as 14px body copy, Metric at sm, EntityTitle, Image, charts, ListBlock, TagBlock, EntityList, or a Checklist for what a plan includes) and a footer (price Metric, always 18px, with previous for a sale, plus a Button, Buttons([primary, secondary], \"column\") for two actions, or IconButtons on the right; real actions only). The fallback block: use it only when no specialised card (ImageCard, InsightCard, ValueCard, EntityList, ListBlock, OptionCards) fits, for products, offers and plans that need mixed content. Keep one strong block per card: never put an EntityTitle header next to another big block (media, a chart, an ImageTitle, a large Metric); with a photo or chart hero, title the card with a plain Text, or a LeadingText(Icon(...), Text(..., \"body\", true)) when an icon helps.",
         "- ImageCard: 2+ tall ImageCardItem(id?, src, title, subtitle?, overline?, leading?, alt?, actions?) photo tiles for places, products, media or inspiration: a real photo behind an overline (top left), optional IconButton actions (top right), and the title with a composable subtitle (bottom). Only with real image URLs for every item, otherwise InsightCard; IconButtons only for real open_url or continue_conversation actions, never save or share."
+      ]
+    },
+    {
+      "name": "Response endings",
+      "components": [
+        "FollowUpBlock",
+        "FollowUpItem",
+        "Sources"
+      ],
+      "notes": [
+        "- FollowUpBlock([FollowUpItem(\"Show 5-year price performance\"), FollowUpItem(\"Add NVDA to this comparison\")]) lists 3–4 short next questions under a \"Related Queries\" header; clicking one sends its text as the user's next message. Put it last in the final Section of an answer that invites more exploration (research, comparisons, plans), never after a clarifying question or a form.",
+        "- Sources([{ title, sourceName, url }]) is a row of source cards with favicons. Add it only when the answer used real references from a search or tool result, never invented ones, as the very last child of the final Section, after any FollowUpBlock."
       ]
     }
   ],
@@ -863,6 +887,15 @@
       },
       "Modal": {
         "$ref": "#/$defs/Modal"
+      },
+      "FollowUpBlock": {
+        "$ref": "#/$defs/FollowUpBlock"
+      },
+      "FollowUpItem": {
+        "$ref": "#/$defs/FollowUpItem"
+      },
+      "Sources": {
+        "$ref": "#/$defs/Sources"
       }
     },
     "required": [
@@ -955,7 +988,10 @@
       "CompositeCardBlock",
       "ImageCardItem",
       "ImageCard",
-      "Modal"
+      "Modal",
+      "FollowUpBlock",
+      "FollowUpItem",
+      "Sources"
     ],
     "additionalProperties": false,
     "$defs": {
@@ -3581,7 +3617,7 @@
           "items"
         ],
         "additionalProperties": false,
-        "description": "A list of tasks with checkboxes the user can tick: Checklist(items, name?, value?), e.g. Checklist([ChecklistItem(\"Book flights\", \"Paris, Mar 12–19\", true, \"flights\"), ChecklistItem(\"Reserve hotel\", \"Saint-Germain, 7 nights\", false, \"hotel\"), ChecklistItem(\"Get travel insurance\", null, false, \"insurance\")], \"trip-prep\"). Clicking a row, or pressing Space or Enter on it, toggles it; checked rows strike through in secondary. checked on an item is only its starting state. Give the Checklist a name, or bind value to a $variable holding { itemValue: boolean }, when the ticks should be kept or read back; without either, ticks live only on screen. Use it for packing lists, launch or onboarding checklists and to-dos. For a read-only list of what a plan includes, use ListBlock. Use Steps for numbered instructions done in order and Timeline for time-ordered events."
+        "description": "A list of items with round checks: Checklist(items, name?, value?), e.g. Checklist([ChecklistItem(\"Book flights\", \"Paris, Mar 12–19\", true, \"flights\"), ChecklistItem(\"Reserve hotel\", \"Saint-Germain, 7 nights\", false, \"hotel\"), ChecklistItem(\"Get travel insurance\", null, false, \"insurance\")], \"trip-prep\"). On its own the user can tick it: clicking a row, or pressing Space or Enter, toggles it, and checked rows strike through in secondary. checked on an item is its starting state. Give the Checklist a name, or bind value to a $variable holding { itemValue: boolean }, when the ticks should be kept or read back; without either, ticks live only on screen. Inside a CompositeCardItem body it is read-only, so use it there for what a plan or tier includes (checked true) or what is already done. Use it for packing lists, launch or onboarding checklists and to-dos. Use Steps for numbered instructions done in order and Timeline for time-ordered events."
       },
       "ChecklistItem": {
         "type": "object",
@@ -5338,6 +5374,12 @@
                 },
                 {
                   "$ref": "#/$defs/Bleed"
+                },
+                {
+                  "$ref": "#/$defs/FollowUpBlock"
+                },
+                {
+                  "$ref": "#/$defs/Sources"
                 }
               ]
             }
@@ -5812,6 +5854,67 @@
         ],
         "additionalProperties": false,
         "description": "Frameless content wider than the chat column, for expressive layouts: Bleed(children). Same breakout as Shell but with no header, outline or expand button; on narrow screens it just fills the column. Children stack top to bottom, 12px apart. Use it sparingly, for a part that benefits from width: a wide hero Image, a wide comparison Grid, an editorial layout or a wide Carousel, e.g. Bleed([Image(\"Lisbon at dusk\", url, \"16:9\"), Grid([c1, c2, c3], 3)]). When a Grid must compare an odd number of cards side by side, such as 3 or 5 plans or options, wrap it in a Bleed so they sit in one wide row instead of wrapping into an uneven 2 + 1: Bleed([Grid([plan1, plan2, plan3], 3)]). Never nest a Bleed or Shell inside it; for a dashboard with an expand button use Shell."
+      },
+      "FollowUpBlock": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/FollowUpItem"
+            }
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "additionalProperties": false,
+        "description": "List of clickable follow-up suggestions placed at the end of a response"
+      },
+      "FollowUpItem": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "text"
+        ],
+        "additionalProperties": false,
+        "description": "Clickable follow-up suggestion — when clicked, sends text as user message"
+      },
+      "Sources": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "url": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "sourceName": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "title",
+                "sourceName"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "additionalProperties": false,
+        "description": "Row of source cards (favicon, site name, page title) that closes an answer built from real references, e.g. Sources([{ title: \"Apple (AAPL) Statistics & Valuation\", sourceName: \"Stock Analysis\", url: \"https://stockanalysis.com/stocks/aapl/statistics/\" }]). Each item links to its url."
       },
       "Slice": {
         "type": "object",

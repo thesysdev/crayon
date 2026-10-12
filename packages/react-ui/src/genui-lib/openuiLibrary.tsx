@@ -90,6 +90,11 @@ import { Steps, StepsItem } from "./Steps";
 import { TabItem, Tabs } from "./Tabs";
 import { Timeline, TimelineItem } from "./Timeline";
 
+// Response endings
+import { FollowUpBlock } from "./FollowUpBlock";
+import { FollowUpItem } from "./FollowUpItem";
+import { Sources } from "./Sources";
+
 // Data Display
 import { Icon } from "./Icon";
 import { Col, Table } from "./Table";
@@ -310,6 +315,14 @@ export const openuiComponentGroups: ComponentGroup[] = [
       "- ImageCard: 2+ tall ImageCardItem(id?, src, title, subtitle?, overline?, leading?, alt?, actions?) photo tiles for places, products, media or inspiration: a real photo behind an overline (top left), optional IconButton actions (top right), and the title with a composable subtitle (bottom). Only with real image URLs for every item, otherwise InsightCard; IconButtons only for real open_url or continue_conversation actions, never save or share.",
     ],
   },
+  {
+    name: "Response endings",
+    components: ["FollowUpBlock", "FollowUpItem", "Sources"],
+    notes: [
+      '- FollowUpBlock([FollowUpItem("Show 5-year price performance"), FollowUpItem("Add NVDA to this comparison")]) lists 3–4 short next questions under a "Related Queries" header; clicking one sends its text as the user\'s next message. Put it last in the final Section of an answer that invites more exploration (research, comparisons, plans), never after a clarifying question or a form.',
+      "- Sources([{ title, sourceName, url }]) is a row of source cards with favicons. Add it only when the answer used real references from a search or tool result, never invented ones, as the very last child of the final Section, after any FollowUpBlock.",
+    ],
+  },
 ];
 
 // ── Examples & prompt options ──
@@ -423,5 +436,9 @@ export const openuiLibrary = createLibrary({
     ImageCard,
     // Modal
     Modal,
+    // Response endings
+    FollowUpBlock,
+    FollowUpItem,
+    Sources,
   ],
 });

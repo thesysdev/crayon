@@ -1,8 +1,10 @@
 import { z } from "zod/v4";
 import { Bleed } from "../Bleed";
 import { Carousel } from "../Carousel";
+import { FollowUpBlock } from "../FollowUpBlock";
 import { Grid } from "../Grid";
 import { Shell } from "../Shell";
+import { Sources } from "../Sources";
 import { Stack } from "../Stack";
 import { Tabs } from "../Tabs";
 import { ContentChildUnion } from "../unions";
@@ -19,6 +21,9 @@ export const getSectionChildUnion = (): z.ZodType =>
     Grid.ref,
     Shell.ref,
     Bleed.ref,
+    // Response endings: they close the final Section.
+    FollowUpBlock.ref,
+    Sources.ref,
   ]));
 
 export const SectionSchema = z.object({
