@@ -487,7 +487,7 @@ A **fatal** error means nothing renders. Any other error leaves the rest of the 
 | `excess-args` | parser | More arguments than props | Extra arguments dropped, component renders |
 | `inline-reserved` | parser | `Query` or `Mutation` in a value position | Expression evaluates to nothing |
 | `unknown-function` | parser | `@Name` is not a built-in, an action step, or a custom function | The call evaluates to null. The statement is kept |
-| `no-root` | parser | No usable entry (section 2.2), stream complete | Non-fatal when a statement calls the root component and renders. Fatal otherwise |
+| `no-root` | parser, runtime | No usable entry (section 2.2), stream complete. `runtime` when a `root` expression such as a ternary gives no component | Non-fatal when the fallback entry renders. Fatal otherwise |
 | `parse-failed` | parser | The response has text but yields no statements | Fatal |
 | `parse-exception` | parser | The parser itself failed | Fatal. The client MUST catch it |
 | `runtime-error` | runtime | Evaluating an expression threw | The prop whose evaluation threw becomes null |
@@ -515,7 +515,7 @@ Errors cross the wire in one shape, ready to paste into a model conversation:
 }
 ```
 
-`hint` is a short signature from the JSON Schema (prop names only, required props starred), or the available names for an unknown name.
+`hint` is a short signature from the JSON Schema (prop names only, required props starred), or the available names for an unknown name. Query and mutation errors add `toolName`. An error the page renders through, today only the non-fatal `no-root`, carries `"severity": "warning"`. Other errors have no `severity`.
 
 - When a stream starts, the client clears its errors and emits an empty list if the last list was not empty.
 - At stream end, and after each later render, the client emits the error list if it changed.
