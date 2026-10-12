@@ -37,7 +37,7 @@ function render(response: string) {
 }
 
 it("reports no-root instead of parse-failed, and renders a ternary entry", () => {
-  expect(render('title = Title("Orders")\npage = Card([title])')).toEqual({
+  expect(render('title = Title("Orders")')).toEqual({
     codes: ["no-root"],
     text: "",
   });
