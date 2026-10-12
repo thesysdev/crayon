@@ -196,14 +196,14 @@ Fixtures: `evaluation/*-kind-*`
 
 The entry is the statement named `root`. Its value must evaluate to a component: a component call, a reference to a statement whose value is one, or any expression that gives one. For example, `root = $t ? A : B` is a valid entry when `A` and `B` are component statements. When the value is not a component, the client reports a fatal `no-root` at stream end, with no fallback.
 
-With no `root` statement, if the first statement calls the library's root component (the LibrarySpec `root` field, [prompt.md](./prompt.md), section 2.2), it is the entry. It renders with a non-fatal `no-root`.
+With no `root` statement, the first statement that calls the library's root component (the LibrarySpec `root` field, [prompt.md](./prompt.md), section 2.2) is the entry, wherever it is. It renders with a non-fatal `no-root`.
 
 ```openui-lang
-page = Card([title, table])
 title = Header("Orders")
+page = Card([title])
 ```
 
-If the library's root is `Card`, this renders with a non-fatal `no-root`. If `title` came first, nothing would render.
+If the library's root is `Card`, this renders `page` with a non-fatal `no-root`. If no statement called `Card`, nothing would render.
 
 In every other case, at stream end the client reports a fatal `no-root` and nothing renders. If the library has no `root` field, only a `root` statement is an entry. While streaming, a missing entry is not an error.
 
@@ -487,7 +487,7 @@ A **fatal** error means nothing renders. Any other error leaves the rest of the 
 | `excess-args` | parser | More arguments than props | Extra arguments dropped, component renders |
 | `inline-reserved` | parser | `Query` or `Mutation` in a value position | Expression evaluates to nothing |
 | `unknown-function` | parser | `@Name` is not a built-in, an action step, or a custom function | The call evaluates to null. The statement is kept |
-| `no-root` | parser | No usable entry (section 2.2), stream complete | Non-fatal when the first statement calls the root component and renders. Fatal otherwise |
+| `no-root` | parser | No usable entry (section 2.2), stream complete | Non-fatal when a statement calls the root component and renders. Fatal otherwise |
 | `parse-failed` | parser | The response has text but yields no statements | Fatal |
 | `parse-exception` | parser | The parser itself failed | Fatal. The client MUST catch it |
 | `runtime-error` | runtime | Evaluating an expression threw | The prop whose evaluation threw becomes null |
@@ -642,5 +642,5 @@ A step is `{ "click": "<statementId>" }`, `{ "type": ["<statementId>", "<text>"]
 
 ## Appendix C. Changelog
 
-- **2026-09-30**: 1.0. The entry is the `root` statement, or a first statement that calls the library's root component, with a real `no-root` code. Added custom functions, custom actions, single-step actions, any-value `@ToAssistant` context, form state read when the step runs, the `unknown-function` code, and the fixture layout. Streaming must equal a batch parse, and edits merge with the parser's statement boundaries.
+- **2026-09-30**: 1.0. The entry is the `root` statement, or the first statement that calls the library's root component, with a real `no-root` code. Added custom functions, custom actions, single-step actions, any-value `@ToAssistant` context, form state read when the step runs, the `unknown-function` code, and the fixture layout. Streaming must equal a batch parse, and edits merge with the parser's statement boundaries.
 - Earlier drafts: 0.9 community review (2026-07-22) and 1.0-beta (2026-08-05). See the git history.

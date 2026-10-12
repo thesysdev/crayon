@@ -118,7 +118,7 @@ The renderer receives `{ label: "Save changes", action: saveAction, variant: "pr
 
 Rendering starts at the statement named `root`. Everything it reaches renders. A statement nothing reaches is not rendered.
 
-If there is no `root`, the first statement is used when it calls the library's root component, with a warning. Otherwise nothing renders and the client reports `no-root` when the stream ends. Rules in language.md, section 2.2.
+If there is no `root`, the first statement that calls the library's root component is used, with a warning. Otherwise nothing renders and the client reports `no-root` when the stream ends. Rules in language.md, section 2.2.
 
 ### 2.2 References and hoisting
 
