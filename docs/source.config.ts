@@ -32,9 +32,13 @@ export const blogPosts = defineCollections({
   type: "doc",
   dir: "content/blog",
   schema: pageSchema.extend({
+    // Search title for <title>; the H1 keeps `title`.
+    seoTitle: z.string().optional(),
     author: z.string(),
     date: z.string().date().or(z.date()),
     featured: z.boolean().optional(),
+    /** Social preview image in `public/`, used instead of the cropped cover. */
+    ogImage: z.string().optional(),
   }),
 });
 

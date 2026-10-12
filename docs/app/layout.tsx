@@ -2,6 +2,7 @@ import { RootProvider } from "fumadocs-ui/provider/next";
 import type { Metadata } from "next";
 import { Geist_Mono, Inter } from "next/font/google";
 import Script from "next/script";
+import { SITE_NAME, SITE_OPEN_GRAPH } from "../lib/page-metadata";
 import { BASE_URL } from "../lib/source";
 import "./global.css";
 import { PHProvider } from "./providers";
@@ -15,10 +16,9 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const SITE_TITLE = "OpenUI - The Open Standard for Intelligent UI";
+const SITE_TITLE = SITE_NAME;
 const SITE_DESCRIPTION =
   "OpenUI is the open standard for Intelligent UI. Full-stack, framework-agnostic Generative UI built on OpenUI Lang, a streaming-first language with first-party runtimes for React, Vue, Svelte, and Angular, and up to 67% fewer tokens than JSON.";
-const SITE_IMAGE = "/meta-image.png?v=20261008";
 
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
@@ -49,26 +49,9 @@ export const metadata: Metadata = {
     shortcut: "/shiro-logo.svg",
     apple: "/shiro-logo.svg",
   },
-  openGraph: {
-    type: "website",
-    url: "/",
-    siteName: SITE_TITLE,
-    title: SITE_TITLE,
-    description: SITE_DESCRIPTION,
-    images: [
-      {
-        url: SITE_IMAGE,
-        width: 1800,
-        height: 942,
-        alt: "OpenUI preview",
-      },
-    ],
-  },
+  openGraph: SITE_OPEN_GRAPH,
   twitter: {
     card: "summary_large_image",
-    title: SITE_TITLE,
-    description: SITE_DESCRIPTION,
-    images: [SITE_IMAGE],
   },
   robots: {
     index: true,

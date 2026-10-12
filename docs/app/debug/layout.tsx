@@ -1,12 +1,9 @@
 import { WebsiteThemeProvider } from "@/components/website-theme-provider";
-import type { Metadata } from "next";
+import { createPageMetadata } from "@/lib/page-metadata";
 import type { ReactNode } from "react";
+import page from "./metadata";
 
-export const metadata: Metadata = {
-  title: "OpenUI Debug",
-  description:
-    "Try OpenUI Lang against any published @openuidev/lang-core version, replay it as a simulated LLM stream, and see what renders.",
-};
+export const metadata = createPageMetadata(page);
 
 export default function DebugLayout({ children }: { children: ReactNode }) {
   return <WebsiteThemeProvider>{children}</WebsiteThemeProvider>;

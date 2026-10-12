@@ -9,6 +9,11 @@ const withMDX = createMDX();
 /** @type {import('next').NextConfig} */
 const config = {
   serverExternalPackages: ["@takumi-rs/image-response"],
+  // OG metadata and images read artwork from public/ by path, so tracing would otherwise
+  // bundle every video into each function. Media is served from the CDN, never read at runtime.
+  outputFileTracingExcludes: {
+    "/**": ["./public/**/*.{mp4,webm,mov,gif}"],
+  },
   images: {
     /* Dense product screenshots contain small UI text and one-pixel rules.
        Keep the default for general imagery, but allow the illustration pair
