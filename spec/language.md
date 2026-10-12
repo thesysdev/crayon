@@ -123,7 +123,7 @@ A call is a component name or an `@` name followed by `( arguments )`.
 
 #### Member access and indexing
 
-`a.field` and `a[expression]` follow any primary. A field accepts the same tokens as an object key. After `.`, a run of digits is an integer field or index, not a decimal number, so `m.0.1` is `m[0][1]`. A member access is never callable: `foo.bar(x)` is not a call.
+`a.field` and `a[expression]` follow any primary. A field accepts the same tokens as an object key and is read as a string key, so a number after `.` is a field name: on an array, `m.0` plucks (section 3.3), and `m.0.1` reads the field `0.1`. Index arrays with `m[0][1]`. A member access is never callable: `foo.bar(x)` is not a call.
 
 #### Operators and precedence
 
