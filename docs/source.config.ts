@@ -35,6 +35,9 @@ export const blogPosts = defineCollections({
     author: z.string(),
     date: z.string().date().or(z.date()),
     featured: z.boolean().optional(),
+    // Rendered after the post and emitted as FAQPage JSON-LD. Answers are
+    // paragraphs that may use inline code and [links](/path).
+    faq: z.array(z.object({ question: z.string(), answer: z.array(z.string()).min(1) })).optional(),
   }),
 });
 
