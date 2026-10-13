@@ -78,11 +78,7 @@ function runCommand(command, args, options) {
 }
 
 function latestVersion(name) {
-  return registryVersion(name, name);
-}
-
-function registryVersion(name, spec) {
-  const result = spawnSync("pnpm", ["view", spec, "version", "--json"], {
+  const result = spawnSync("pnpm", ["view", name, "version", "--json"], {
     cwd: repoRoot,
     encoding: "utf8",
   });
@@ -101,7 +97,7 @@ function registryVersion(name, spec) {
   }
 
   const version = Array.isArray(response)
-    ? response.findLast((value) => typeof value === "string")
+    ? response.find((value) => typeof value === "string")
     : response;
   if (typeof version !== "string") {
     throw new Error(`Could not resolve the latest version of ${name}: ${result.stdout.trim()}`);
@@ -118,39 +114,73 @@ function latestOpenUIVersions(manifests) {
   );
 }
 
-function registryDependencies(name, version) {
-  const result = spawnSync("pnpm", ["view", `${name}@${version}`, "dependencies", "--json"], {
-    cwd: repoRoot,
-    encoding: "utf8",
-  });
+const registryCache = new Map();
 
-  if (result.error) throw result.error;
-  if (result.status !== 0) {
-    process.stderr.write(result.stderr);
-    process.exit(result.status ?? 1);
+function registryView(spec, field) {
+  const key = `${spec} ${field}`;
+  if (!registryCache.has(key)) {
+    const result = spawnSync("pnpm", ["view", spec, field, "--json"], {
+      cwd: repoRoot,
+      encoding: "utf8",
+    });
+
+    if (result.error) throw result.error;
+    // pnpm view exits non-zero when no published version matches a range.
+    registryCache.set(
+      key,
+      result.status === 0 && result.stdout.trim() ? JSON.parse(result.stdout) : undefined,
+    );
   }
 
-  return result.stdout.trim() ? JSON.parse(result.stdout) : {};
+  return registryCache.get(key);
+}
+
+function compareVersions(left, right) {
+  const [a, b] = [left, right].map((version) => version.split(".").map(Number));
+  return a[0] - b[0] || a[1] - b[1] || a[2] - b[2];
+}
+
+function highestVersionInRanges(name, ranges) {
+  const [first, ...rest] = ranges.map((range) =>
+    [registryView(`${name}@${range}`, "version") ?? []].flat(),
+  );
+  const versions = first.filter((version) => rest.every((matches) => matches.includes(version)));
+  return versions.sort(compareVersions).at(-1);
 }
 
 // Keep each OpenUI package inside the ranges the app's other OpenUI packages
 // declare, so an app follows the lang-core its renderer was built for.
-function applicationOpenUIVersions(manifest, latestVersions) {
-  const names = openUIDependencyNames(manifest);
-  const ranges = new Map();
+function applicationOpenUIVersions(application, latestVersions) {
+  const names = openUIDependencyNames(application.manifest);
+  const versions = new Map(latestVersions);
 
-  for (const name of names) {
-    const dependencies = registryDependencies(name, latestVersions.get(name));
-    for (const [dependency, range] of Object.entries(dependencies)) {
-      if (names.includes(dependency)) {
-        ranges.set(dependency, [...(ranges.get(dependency) ?? []), range]);
+  for (let changed = true; changed;) {
+    changed = false;
+    const ranges = new Map();
+
+    for (const name of names) {
+      for (const field of ["dependencies", "peerDependencies"]) {
+        const declared = registryView(`${name}@${versions.get(name)}`, field) ?? {};
+        for (const [dependency, range] of Object.entries(declared)) {
+          if (names.includes(dependency) && dependency !== name) {
+            ranges.set(dependency, [...(ranges.get(dependency) ?? []), range]);
+          }
+        }
       }
     }
-  }
 
-  const versions = new Map(latestVersions);
-  for (const [name, nameRanges] of ranges) {
-    versions.set(name, registryVersion(name, `${name}@${nameRanges.join(" ")}`));
+    for (const [name, nameRanges] of ranges) {
+      const version = highestVersionInRanges(name, nameRanges);
+      if (!version) {
+        throw new Error(
+          `${application.path}: no ${name} version satisfies ${nameRanges.join(", ")}`,
+        );
+      }
+      if (version !== versions.get(name)) {
+        versions.set(name, version);
+        changed = true;
+      }
+    }
   }
 
   return versions;
@@ -282,7 +312,10 @@ function manageExamples() {
   const applications = findManifests(examplesRoot)
     .map(applicationFromManifest)
     .sort((left, right) => left.path.localeCompare(right.path));
-  const versions = command === "update" ? latestOpenUIVersions(applications.map(({ manifest }) => manifest)) : new Map();
+  const versions =
+    command === "update"
+      ? latestOpenUIVersions(applications.map(({ manifest }) => manifest))
+      : new Map();
 
   for (const application of applications) {
     if (command === "install") {
@@ -293,7 +326,11 @@ function manageExamples() {
     if (command === "update") {
       const manifest = readJson(application.manifestPath);
       if (openUIDependencyNames(manifest).length > 0) {
-        if (pinOpenUIDependencyVersions(manifest, applicationOpenUIVersions(manifest, versions))) {
+        const applicationVersions = applicationOpenUIVersions(
+          { ...application, manifest },
+          versions,
+        );
+        if (pinOpenUIDependencyVersions(manifest, applicationVersions)) {
           writeJson(application.manifestPath, manifest);
         }
         runPnpm(application, ["install", "--lockfile-only", "--fix-lockfile"]);
@@ -323,8 +360,8 @@ function manageTemplates() {
     .filter((template) => !template.path.includes("/overlays/"))
     .sort((left, right) => left.path.localeCompare(right.path));
   const overlayManifests = templates.flatMap((template) =>
-    findOverlayDirectories(template.directory).map((overlayDir) =>
-      readJson(join(overlayDir, "manifest.json")).packageJson ?? {},
+    findOverlayDirectories(template.directory).map(
+      (overlayDir) => readJson(join(overlayDir, "manifest.json")).packageJson ?? {},
     ),
   );
   const versions = latestOpenUIVersions([
