@@ -2,7 +2,6 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 
 import { resolveCloudApiKey, THESYS_KEYS_URL } from "../../../lib/auth/mint";
-import { isInteractiveTerminal } from "../../../lib/detect-tty";
 import { DEFAULT_ENV_FILE, upsertEnvVar } from "../../../lib/env";
 import { CliCancelledError, cliErrorProperties } from "../../../lib/errors";
 import type { CreateAppOptions, EnvResult, TemplateName } from "./create-types";
@@ -98,20 +97,17 @@ export async function resolveCloudEnv(
   tel: CreateTelemetryClient,
 ): Promise<EnvResult> {
   const envFile = options.envFile ?? DEFAULT_ENV_FILE;
-  // Sign-in needs a human at a terminal: an agent or a TTY-less run can't answer
-  // the method prompt or finish the browser flow, so it would cancel or hang.
+  // Sign-in needs a human at a terminal: without one (agent, no TTY, or
+  // --no-interactive) the method prompt and browser flow would cancel or hang.
   // Skip unless a method was asked for explicitly; the closing message points
   // at `generate-api-key` instead.
-  const skipReason =
-    options.auth || options.apiKey
-      ? undefined
-      : agent
-        ? "Coding agent detected"
-        : !isInteractiveTerminal()
-          ? "No interactive terminal"
-          : undefined;
-  const auth = skipReason ? "skip" : options.auth;
-  if (skipReason) console.info(`${skipReason} — skipping OpenUI Cloud sign-in.`);
+  const skipSignIn = !interactive && !options.auth && !options.apiKey;
+  const auth = skipSignIn ? "skip" : options.auth;
+  if (skipSignIn) {
+    console.info(
+      `${agent ? "Coding agent detected" : "Non-interactive run"} — skipping OpenUI Cloud sign-in.`,
+    );
+  }
   const requestedMethod = auth ?? (options.apiKey ? "apikey-flag" : undefined);
   let apiKey: string | null = null;
   let authMethod: EnvResult["authMethod"];

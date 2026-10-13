@@ -3,6 +3,7 @@ import * as fs from "node:fs";
 import { localSourceDir } from "../../lib/checkout";
 import type { CliContext } from "../../lib/context";
 import { resolveInstallPackageManager } from "../../lib/detect-package-manager";
+import { isInteractiveTerminal } from "../../lib/detect-tty";
 import { cliErrorProperties, CreateError, processErrorProperties } from "../../lib/errors";
 import { ensureGitAvailable } from "../../lib/git-preflight";
 import { applyScaffoldFiles, resolveTemplateSource } from "../../lib/scaffold";
@@ -32,7 +33,9 @@ import { findCatalogOverlay } from "./lib/templates-catalog";
 
 export async function runCreateApp(options: CreateAppOptions, ctx: CliContext): Promise<void> {
   const tel = new CreateTelemetryClient(ctx.telemetry);
-  const interactive = !options.noInteractive;
+  // Prompt only when someone can answer: not --no-interactive, not an agent,
+  // and a terminal on both ends. Otherwise every step takes its default.
+  const interactive = !options.noInteractive && !ctx.agent && isInteractiveTerminal();
   const packageManager = resolveInstallPackageManager();
   const t0 = Date.now();
   tel.registerContext({ interactive, package_manager: packageManager.name });

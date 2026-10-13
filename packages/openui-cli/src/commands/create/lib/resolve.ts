@@ -1,4 +1,3 @@
-import { isInteractiveTerminal } from "../../../lib/detect-tty";
 import { CliCancelledError, CreateError } from "../../../lib/errors";
 import { resolveArgs } from "../../../lib/resolve-args";
 import type { RetryAttemptInfo } from "../../../lib/retry";
@@ -11,7 +10,7 @@ import {
   rejectConflictingScaffoldSelectors,
   type ExampleProject,
 } from "./examples-catalog";
-import { resolveAvailableTarget } from "./target-dir";
+import { firstAvailableName, resolveAvailableTarget } from "./target-dir";
 import type { CreateTelemetryClient } from "./telemetry";
 import {
   DEFAULT_TEMPLATE_KEY,
@@ -21,6 +20,8 @@ import {
   type CatalogOverlay,
   type CatalogTemplate,
 } from "./templates-catalog";
+
+const DEFAULT_PROJECT_NAME = "openui-agent";
 
 export function rejectConflictingImmediateFlags(args: string[]): void {
   const separatorIndex = args.indexOf("--");
@@ -53,17 +54,6 @@ export async function loadCreateCatalog(params: {
     template: requestedTemplate,
   });
 
-  // Interactive runs always scaffold the Cloud backend; openui-self-hosted stays
-  // available, but only when requested explicitly with --template.
-  if (!interactive && !example && !requestedTemplate) {
-    throw new CreateError(
-      "args_resolution",
-      "Missing required argument --template",
-      "invalid_input",
-      "MISSING_REQUIRED_ARG",
-    );
-  }
-
   if (example) {
     const examples = await loadExamplesCatalog({ onRetry });
     findExample(example, examples);
@@ -83,6 +73,8 @@ export async function loadCreateCatalog(params: {
     return { examples, template, templateEntry };
   }
 
+  // Without --template every run scaffolds the Cloud backend; openui-self-hosted
+  // is only used when requested explicitly.
   const catalog = await loadTemplatesCatalog({ onRetry });
   const template = requestedTemplate ?? DEFAULT_TEMPLATE_KEY;
   const templateEntry = findCatalogTemplate(catalog, template);
@@ -97,12 +89,17 @@ export async function resolveProjectIdentity(
   interactive: boolean,
   tel: CreateTelemetryClient,
 ): Promise<{ name: string; targetDir: string }> {
+  // Nothing to ask: take the default, stepping past existing directories so a
+  // repeat run still succeeds. An explicit --name is never renamed.
+  if (!requestedName && !interactive) {
+    return resolveAvailableTarget(firstAvailableName(DEFAULT_PROJECT_NAME), interactive, tel);
+  }
   const nameArgs = await resolveArgs(
     {
       name: requestedName
         ? { value: requestedName }
         : {
-            prompt: { type: "input", message: "Project name?", default: "openui-agent" },
+            prompt: { type: "input", message: "Project name?", default: DEFAULT_PROJECT_NAME },
             required: true,
           },
     },
@@ -224,7 +221,7 @@ export function resolveImmediate(
       source: "flag",
     };
   }
-  if (!interactive || !isInteractiveTerminal()) {
+  if (!interactive) {
     return {
       immediate: false,
       installDependencies: true,

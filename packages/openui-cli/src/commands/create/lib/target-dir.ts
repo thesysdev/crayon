@@ -19,6 +19,11 @@ function suggestAvailableName(name: string): string {
   return `${base}-${suffix}`;
 }
 
+/** `name` if that directory is free, otherwise the next free `<name>-<n>`. */
+export function firstAvailableName(name: string): string {
+  return fs.existsSync(path.resolve(process.cwd(), name)) ? suggestAvailableName(name) : name;
+}
+
 /** Resolve a project directory that does not exist yet */
 export async function resolveAvailableTarget(
   requestedName: string,
