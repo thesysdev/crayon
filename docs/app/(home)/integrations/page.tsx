@@ -1,25 +1,14 @@
 import { PageHero } from "@/app/(home)/components/PageHero/PageHero";
 import { Footer } from "@/app/(home)/sections/Footer/Footer";
+import { createPageMetadata } from "@/lib/page-metadata";
 import { ArrowRight, Boxes } from "lucide-react";
-import type { Metadata } from "next";
 import Link from "next/link";
 import { getIntegrationsByCategory, integrationCategories } from "./data";
 import { IntegrationLogo } from "./integration-logo";
+import page from "./metadata";
 import styles from "./page.module.css";
 
-export const metadata: Metadata = {
-  title: "Integrations",
-  description:
-    "Explore OpenUI integrations across AI frameworks and protocols, design systems, and frontend platforms.",
-  alternates: { canonical: "/integrations" },
-  openGraph: {
-    title: "OpenUI integrations",
-    description:
-      "Build generative UI with the AI frameworks, design systems, and frontend platforms you know.",
-    url: "/integrations",
-    type: "website",
-  },
-};
+export const metadata = createPageMetadata(page);
 
 export default function IntegrationsPage() {
   return (

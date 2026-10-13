@@ -4,7 +4,6 @@ import { toFumadocsSource } from "fumadocs-mdx/runtime/server";
 import { blogPosts, docs } from "fumadocs-mdx:collections/server";
 
 export const BASE_URL = "https://www.openui.com";
-export const SITE_IMAGE = "/meta-image.png?v=20261008";
 
 /** Docs sections served from their own top-level path, like `/cookbooks`, instead of under `/docs`. */
 export const TOP_LEVEL_SECTIONS = ["cookbooks", "demos"];
@@ -25,15 +24,6 @@ export const blog = loader({
   baseUrl: "/blog",
   source: toFumadocsSource(blogPosts, []),
 });
-
-export function getPageImage(page: InferPageType<typeof source>) {
-  const segments = [...page.slugs, "image.webp"];
-
-  return {
-    segments,
-    url: `/og/docs/${segments.join("/")}`,
-  };
-}
 
 export async function getLLMText(page: InferPageType<typeof source>) {
   const processed = await page.data.getText("processed");

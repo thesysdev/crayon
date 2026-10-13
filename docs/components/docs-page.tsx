@@ -1,7 +1,9 @@
 import { LLMCopyButton, ViewOptions } from "@/components/ai/page-actions";
 import { gitConfig } from "@/lib/layout.shared";
-import { getPageImage, source } from "@/lib/source";
-import { getMDXComponents } from "@/mdx-components";
+import { docsOgImage } from "@/lib/og/content";
+import { withOgImage } from "@/lib/page-metadata";
+import { source } from "@/lib/source";
+import { getMDXComponents, MdxLink } from "@/mdx-components";
 import { DocsBody, DocsDescription, DocsPage, DocsTitle } from "fumadocs-ui/layouts/docs/page";
 import { createRelativeLink } from "fumadocs-ui/mdx";
 import type { Metadata } from "next";
@@ -41,7 +43,7 @@ export function DocsPageView({ page }: { page: DocsSourcePage }) {
         <MDX
           components={getMDXComponents({
             // this allows you to link to other pages with relative file paths
-            a: createRelativeLink(source, page),
+            a: createRelativeLink(source, page, MdxLink),
           })}
         />
       </DocsBody>
@@ -50,14 +52,17 @@ export function DocsPageView({ page }: { page: DocsSourcePage }) {
 }
 
 export function getDocsPageMetadata(page: DocsSourcePage): Metadata {
+  const image = docsOgImage(page);
+  const description = image.card.template === "card" ? image.card.description : undefined;
+  return withOgImage({ ...docsMetadata(page), description }, image, { description });
+}
+
+function docsMetadata(page: DocsSourcePage): Metadata {
   return {
     title: page.data.title,
     description: page.data.description,
     alternates: {
       canonical: page.url,
-    },
-    openGraph: {
-      images: getPageImage(page).url,
     },
   };
 }

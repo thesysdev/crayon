@@ -2,7 +2,15 @@ import { getGitLastModified } from "@/lib/git-last-modified";
 import { BASE_URL, blog, source } from "@/lib/source";
 import { integrations } from "./(home)/integrations/data";
 
-const PAGE_PATHS = ["/", "/openui-vs-json", "/compare", "/lab", "/chat"];
+const PAGE_PATHS = [
+  "/",
+  "/openui-vs-json",
+  "/compare",
+  "/lab",
+  "/chat",
+  "/demo/f1-dashboard",
+  "/demo/trip-planner",
+];
 
 const BENCHMARK_PATHS = [
   "/benchmarks",

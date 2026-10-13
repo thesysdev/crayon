@@ -1,11 +1,14 @@
 import { GitHubButton } from "@/app/(home)/components/GitHubButton/GitHubButton";
 import { Footer } from "@/app/(home)/sections/Footer/Footer";
-import { SITE_IMAGE, blog } from "@/lib/source";
+import { blogOgImage } from "@/lib/og/content";
+import { withOgImage } from "@/lib/page-metadata";
+import { blog } from "@/lib/source";
 import { getMDXComponents } from "@/mdx-components";
 import { TOCProvider, TOCScrollArea } from "fumadocs-ui/components/toc";
 import { TOCItem, TOCItems } from "fumadocs-ui/components/toc/default";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { BlogFaq } from "../components/BlogFaq";
 
 export default async function BlogPostPage(props: { params: Promise<{ slug: string }> }) {
   const params = await props.params;
@@ -13,9 +16,13 @@ export default async function BlogPostPage(props: { params: Promise<{ slug: stri
 
   if (!page) notFound();
   const Mdx = page.data.body;
+  const { faq } = page.data;
+  const toc = faq?.length
+    ? [...page.data.toc, { title: "FAQ", url: "#faq", depth: 2 }]
+    : page.data.toc;
 
   return (
-    <TOCProvider toc={page.data.toc}>
+    <TOCProvider toc={toc}>
       {/* Blend from the menu bar's surface color into a gray band, then back into the
           footer's surface — matching the home content band (light: foreground->background->foreground;
           dark: black -> neutral-950 -> black, so the edges meet the black menu + footer). */}
@@ -26,7 +33,7 @@ export default async function BlogPostPage(props: { params: Promise<{ slug: stri
               <p className="mb-3 text-sm font-medium text-fd-foreground">On this page</p>
               <TOCScrollArea className="max-h-[calc(100vh-8rem)]">
                 <TOCItems>
-                  {page.data.toc.map((item) => (
+                  {toc.map((item) => (
                     <TOCItem key={item.url} item={item} />
                   ))}
                 </TOCItems>
@@ -48,6 +55,7 @@ export default async function BlogPostPage(props: { params: Promise<{ slug: stri
             </div>
             <article className="prose mt-8 min-w-0">
               <Mdx components={getMDXComponents()} />
+              {faq?.length ? <BlogFaq faqs={faq} url={page.url} /> : null}
             </article>
             <div className="mt-12 border-t border-[color:var(--home-hairline)] pt-8">
               <GitHubButton variant="desktopGlow" />
@@ -68,21 +76,17 @@ export async function generateMetadata(props: {
 
   if (!page) notFound();
 
-  return {
-    title: page.data.title,
-    description: page.data.description,
-    alternates: {
-      canonical: page.url,
-    },
-    openGraph: {
-      type: "article",
-      url: page.url,
-      siteName: "OpenUI",
-      title: page.data.title,
+  return withOgImage(
+    {
+      title: page.data.seoTitle ? { absolute: `${page.data.seoTitle} | OpenUI` } : page.data.title,
       description: page.data.description,
-      images: [{ url: SITE_IMAGE, width: 1800, height: 942, alt: "OpenUI preview" }],
+      alternates: {
+        canonical: page.url,
+      },
     },
-  };
+    blogOgImage(page),
+    { title: page.data.title, description: page.data.description },
+  );
 }
 
 export function generateStaticParams(): { slug: string }[] {
