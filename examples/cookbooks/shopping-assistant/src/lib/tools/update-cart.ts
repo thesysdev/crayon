@@ -1,5 +1,13 @@
 import { z } from "zod/v4";
-import { changeCart, formatPrice, resized, selectVariants, type Cart } from "../shopify";
+import {
+  changeCart,
+  formatPrice,
+  resized,
+  selectVariants,
+  withStore,
+  type Cart,
+  type StoreCall,
+} from "../shopify";
 
 // The update_cart function tool: its JSON schema for Gateway, argument validation, the cart
 // change, and the executor that runTools() calls.
@@ -99,9 +107,9 @@ const argsSchema = z
 
 // Find the in-stock variant with the chosen values. The store does the matching, so the model
 // never handles variant ids, and a product with more variants than a search lists still works.
-async function findVariant(item: z.infer<typeof argsSchema>["add"][number], signal?: AbortSignal) {
+async function findVariant(call: StoreCall, item: z.infer<typeof argsSchema>["add"][number]) {
   const selected = item.options.map((option) => ({ name: option.name, label: option.value }));
-  const product = await selectVariants(item.product_id, selected, signal);
+  const product = await selectVariants(call, item.product_id, selected);
   const inStock = product.variants.filter((variant) => variant.availability?.available);
   if (!inStock.length) throw new Error(`That choice of ${product.title} is out of stock.`);
   if (inStock.length > 1)
@@ -147,12 +155,16 @@ export async function executeUpdateCart(
 ) {
   signal?.throwIfAborted();
   const args = argsSchema.parse(JSON.parse(argsJson));
-  const added = await Promise.all(
-    args.add.map(async (item) => ({
-      variantId: await findVariant(item, signal),
-      quantity: item.quantity,
-    })),
-  );
+  const added = args.add.length
+    ? await withStore(signal, (call) =>
+        Promise.all(
+          args.add.map(async (item) => ({
+            variantId: await findVariant(call, item),
+            quantity: item.quantity,
+          })),
+        ),
+      )
+    : [];
   const cart = await changeCart(
     args.cart_id,
     (lines) => {

@@ -1,8 +1,8 @@
 # Shopping assistant
 
-A runnable companion to the [shopping assistant cookbook](https://www.openui.com/cookbooks/shopping-assistant). Describe what you're shopping for, browse matching products as cards with photos, pick a size and color, and keep a cart with live totals that you can change in place or in words.
+A runnable companion to the [shopping assistant cookbook](https://www.openui.com/cookbooks/shopping-assistant). Describe what you're shopping for in your own words, browse the products that match its meaning as cards with photos, pick a size and color, and keep a cart with live totals that you can change in place or in words.
 
-Products and carts come from a Shopify store's [Catalog](https://shopify.dev/docs/agents/catalog/storefront-catalog) and [Cart](https://shopify.dev/docs/agents/carts-and-checkout/cart-mcp) MCP tools, which every Shopify store serves at `https://<store>/api/ucp/mcp` with no API key. The default store is OpenUI's demo store, [openui.myshopify.com](https://openui.myshopify.com), which sells a dozen OpenUI merch products in US dollars featuring Shiro, OpenUI's mascot: tees, a hoodie, and a crewneck in sizes Small to X-Large, sneakers and slides in US sizes 6 to 12, caps and beanies, and gifts such as a plush, stickers, a mug, and a tote. One hoodie color is sold out in X-Large, so you can see a disabled option. There is no data to download. It runs on Next.js, Agent Interface, OpenUI Gateway's Chat Completions API, and the MCP TypeScript SDK.
+Products and carts come from a Shopify store's [Catalog](https://shopify.dev/docs/agents/catalog/storefront-catalog) and [Cart](https://shopify.dev/docs/agents/carts-and-checkout/cart-mcp) MCP tools, which every Shopify store serves at `https://<store>/api/ucp/mcp` with no API key. The default store is OpenUI's demo store, [openui.myshopify.com](https://openui.myshopify.com). OpenUI Supply sells about 1,000 products in US dollars, from $8 to $210, featuring Shiro, OpenUI's mascot: apparel and outerwear, shoes, bags, desk and tech gear, home goods, and things for kids and pets, most in several materials and themes. Some sizes and colors are sold out, so you can see disabled options. A catalog that size is hard to browse with filters, so the assistant searches it by meaning with an embedding index, as the [document comparison example](../document-comparison) does with long reports. It runs on Next.js, Agent Interface, OpenUI Gateway's Chat Completions API, the MCP TypeScript SDK, and OpenAI embeddings.
 
 ## Run
 
@@ -12,18 +12,20 @@ Requirements: Node.js 22.13+ and npm. This is a standalone example outside the p
 npm ci
 ```
 
-Configure `THESYS_API_KEY` from the [Thesys Console](https://console.thesys.dev/keys) privately in `.env.local`. Optional `OPENUI_MODEL` selects a supported `provider/model` identifier; the default is `openai/gpt-5.5`. Optional `SHOPIFY_STORE` points the app at another store, such as `your-store.myshopify.com`; the default is `openui.myshopify.com`.
+Configure `THESYS_API_KEY` from the [Thesys Console](https://console.thesys.dev/keys) and `OPENAI_API_KEY` from the [OpenAI Platform](https://platform.openai.com/api-keys), for embeddings, privately in `.env.local`. Optional `OPENUI_MODEL` selects a supported `provider/model` identifier; the default is `openai/gpt-5.5`. Optional `SHOPIFY_STORE` points the app at another store, such as `your-store.myshopify.com`; the default is `openui.myshopify.com`.
 
 ```bash
+npm run prepare:catalog
 npm run dev
 ```
 
-Open http://localhost:3000. To use another port, run `npm run dev -- --port 3001`.
+`prepare:catalog` reads every product from the store's public product feed and embeds about 1,000 products into `data/catalog.sqlite` in about 15 seconds, for well under a cent. Run it again whenever the catalog changes, or after changing `SHOPIFY_STORE`. Open http://localhost:3000. To use another port, run `npm run dev -- --port 3001`.
 
 Try:
 
 - “What do you sell? Show me a few favorites.” The assistant browses the catalog and recommends a few products without asking what you want first.
-- “Find shoes under $100 in size 9.” The assistant searches for shoes, keeps those with size 9 in stock within the budget, and shows them as cards.
+- “Something warm for a cold office that isn't wool, in Medium.” The assistant finds fleece, cotton, and synthetic layers by meaning, keeps those with Medium in stock, and says what made each one fit.
+- “Find shoes under $100 in size 9.” The assistant keeps the shoes with size 9 in stock within the budget and shows them as cards.
 - **Select options** on Shiro Canvas Sneakers. Size 9 is already chosen; pick a color and a quantity, then **Add to cart**.
 - “Also add the slides in my size.” The assistant adds them to the same cart without asking again.
 - Open **Cart** in the header at any point. Click + or − on an item: the count and total update right away, with no new answer.
@@ -33,7 +35,7 @@ Try:
 ## How it works
 
 1. Agent Interface sends the new message to `/api/chat`, which loads the thread's earlier turns from Gateway and calls OpenUI Gateway's Chat Completions API.
-2. The model calls `search_products`. The server calls `search_catalog` on the store's MCP server, keeps the products with an in-stock variant that fits the size, color, and budget, and returns their photos, prices, options, and variants.
+2. The model calls `search_products` with the shopper's description. The server embeds it, ranks every product in `data/catalog.sqlite` by similarity, picks 12 close but different products, and checks them with the store's `lookup_catalog` tool, six at a time until six fit. It keeps the products with an in-stock variant that fits the size, color, and budget, and returns their photos, prices, and options.
 3. The model shows the products as cards. **Select options** asks for that product's variant form: one set of chips per option, with sold-out values disabled, and a quantity.
 4. When the shopper submits the form, the model calls `update_cart` with the product id and the chosen values. The server finds the variant with `get_product`, reads the cart, applies the change, and writes the full cart back with `create_cart` or `update_cart`.
 5. The model answers with a short confirmation and `CartLink`, which marks the cart change. A cart button in the thread header finds the thread's cart id in those marks, shows the item count, and opens the cart as a popover, loaded from the store through `/api/cart`, with each item's photo, + and − buttons, the total, and **Continue to checkout** when the store returns a checkout link. After each cart change the gift card is offered as a follow-up.
@@ -45,7 +47,10 @@ Try:
 | File                                  | Purpose                                                                                                             |
 | ------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
 | `src/lib/shopify.ts`                  | MCP client for the store's catalog and cart tools, and price formatting                                             |
-| `src/lib/tools/search-products.ts`    | Function schema, argument validation, stock and budget filter, results                                              |
+| `scripts/prepare-catalog.ts`          | Reads the store's product feed, embeds each product's text, and writes `data/catalog.sqlite`                        |
+| `src/lib/catalog.ts`                  | Loads the catalog index, ranks products by similarity, and picks a diverse set                                      |
+| `src/lib/embeddings.ts`               | OpenAI embeddings and similarity                                                                                    |
+| `src/lib/tools/search-products.ts`    | Function schema, argument validation, search by meaning, live stock and budget check, results                       |
 | `src/lib/tools/update-cart.ts`        | Function schema, argument validation, cart changes, and cart summary                                                |
 | `src/library.ts`                      | The chat library, with `CartLink` and `HtmlArtifact` added and `Card` redefined to hold them                        |
 | `src/components/cart.tsx`             | The header's cart button and popover, and `CartLink`, which marks cart changes in answers                           |
@@ -61,13 +66,21 @@ Try:
 
 `npm run generate` creates the ignored component specification before dev/build/verify. The server passes that specification to `generateSystemPrompt({ cloud: true, library: spec, promptOptions })`, and Agent Interface renders responses with the same component library.
 
+## Search by meaning
+
+The store's `search_catalog` tool ranks products its own way and returns only its best matches: asked for “something for a cold office”, it returns four hoodies from one Pastel collection first, and it can't list a whole catalog. An index of your own lets you choose what each product is found by and return products that differ from each other. `npm run prepare:catalog` reads the catalog from `https://<store>/products.json`, which every Shopify online store serves with no key, 250 products per page, and embeds each product's title, description, type, tags, and option values with OpenAI's `text-embedding-3-small`, in batches of 100. It writes a new SQLite database next to `data/catalog.sqlite` and swaps it in, so a failed run leaves the previous index. Each row holds the product id, title, text, starting price, one photo per color, and the embedding.
+
+`search_products` embeds the query, loads the index into memory on first use, and ranks every product by dot product, which is cosine similarity for OpenAI's normalized vectors; about 1,000 comparisons take a few milliseconds. It drops products more than 10% over the budget by their indexed price, then picks 12 with maximal marginal relevance, trading similarity to the request against similarity to the products already picked, so near-copies of one product, such as the same rain shell in several prints, don't fill every result. It checks them with the store, six at a time until six fit, because the index can be out of date: prices and stock always come from the store, and a product the store no longer sells is reported in `left_out` as no longer sold. For a much larger catalog, store the embeddings in a vector database and keep the tool's contract.
+
+`data/` is ignored by git. Without the index, a search fails with a message that asks you to run `npm run prepare:catalog`; without `OPENAI_API_KEY`, it asks you to configure it.
+
 ## The store's MCP server
 
-Shopify stores speak the [Universal Commerce Protocol](https://ucp.dev) (UCP) over MCP. Every request names the agent's UCP profile, which lists the capabilities it supports; the example uses Shopify's example profile. Publish your own profile before deploying. Writes carry an idempotency key, so a retried request can't add an item twice.
+Shopify stores speak the [Universal Commerce Protocol](https://ucp.dev) (UCP) over MCP. Every request names the agent's UCP profile, which lists the capabilities it supports; the example uses Shopify's example profile. Publish your own profile before deploying. Writes carry an idempotency key, so a retried request can't add an item twice. Each search and each cart change makes all its calls in one MCP session, because opening a session takes requests of its own and Shopify limits each client's request rate.
 
 The app calls the store from two function tools rather than giving the model the store's tools directly:
 
-- `search_products` keeps each product's title, a short description, one photo per color, taken from the variants because a search result lists only the featured photo at the product level, resized by Shopify's CDN (tens of kilobytes instead of up to a few megabytes), the price, and every value of each option, marked in stock when the store checked it. It filters the store's 25 best matches by size, color, and budget itself, asking the store with `get_product` for the in-stock variants with a requested size or color, because a search result lists at most 10 variants per product. It filters by price itself because the store's price filter needs the currency's minor units before the model knows the currency, and reports what it left out and why, such as sold out or over budget.
+- `search_products` keeps each product's title, a short description, one photo per color from the index, taken from the variants because the store lists only the featured photo at the product level, resized by Shopify's CDN (tens of kilobytes instead of up to a few megabytes), the live price, and every value of each option, marked in stock when the store checked it. It asks the store with `get_product` for the in-stock variants with a requested size or color, because a catalog result lists at most 10 variants per product, and reports what it left out and why, such as sold out, over budget, or no longer sold.
 - `update_cart` takes products to add, with the chosen value of each option, and quantities to set for items in the cart. The server finds each product's variant with `get_product`, so the model never handles variant ids. `update_cart` on the store replaces every line, so the server reads the cart first and merges the change, and the model never has to repeat the whole cart. An expired cart is replaced by a new one.
 
 Neither tool forwards the store's messages or tool descriptions to the model; they reach it only as structured data. Prices are live and can change until the shopper checks out.
@@ -110,6 +123,6 @@ The app binds to loopback, and every browser shares one local user's threads. Fo
 npm run verify
 ```
 
-`verify` generates the component specification and runs a production build with type checking. It needs no credentials and makes no network calls to the store.
+`verify` generates the component specification and runs a production build with type checking. It needs no credentials, no catalog index, and makes no network calls to the store.
 
 In the browser, click **Add to cart** without choosing a color to see validation, expand **Behind the scenes** to inspect `search_products` and `update_cart`, reload and open a thread to see its cart again, and switch the operating system between light and dark mode.

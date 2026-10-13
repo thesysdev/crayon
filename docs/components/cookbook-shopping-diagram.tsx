@@ -59,10 +59,10 @@ export function CookbookShoppingDiagram() {
           the shoes that have size 9 in stock within the budget. The shopper opens one and sees a
           form with the size already chosen, a chip for each color, and sold-out values disabled.
           After they add it, the cart shows each item with an editable quantity, the total, and a
-          Checkout button that opens the store&apos;s own checkout. Your server calls the
-          store&apos;s MCP server for every search and cart change, and saves each turn to the
-          thread&apos;s Gateway conversation, so the thread reopens later with its messages and its
-          cart.
+          Checkout button that opens the store&apos;s own checkout. Your server finds the products
+          by meaning in its catalog index, checks their live price and stock with the store&apos;s
+          MCP server, makes every cart change there too, and saves each turn to the thread&apos;s
+          Gateway conversation, so the thread reopens later with its messages and its cart.
         </desc>
         <defs>
           <marker
@@ -237,7 +237,7 @@ export function CookbookShoppingDiagram() {
           The model writes every screen from your components.
         </text>
         <text x={10} y={322} className={note}>
-          The catalog, cart, and payment stay with the store.
+          Prices, stock, cart, and payment stay with the store.
         </text>
 
         <Arrow d={`M${x(2) + 102} 218 V256`} id={id} both />
@@ -264,6 +264,16 @@ export function CookbookShoppingDiagram() {
         </text>
         <text x={x(3) + 102} y={305} textAnchor="middle" className={note}>
           The shopper pays there
+        </text>
+
+        {/* Your server ranks the catalog by meaning in its own index. */}
+        <Arrow d={`M${x(2) + 180} 322 V334 H${x(3) + 40} V344`} id={id} />
+        <rect x={x(3)} y={350} width={205} height={50} rx={12} strokeWidth={1.6} className={box} />
+        <text x={x(3) + 102} y={371} textAnchor="middle" className={label}>
+          Catalog index
+        </text>
+        <text x={x(3) + 102} y={390} textAnchor="middle" className={note}>
+          Finds products by meaning
         </text>
 
         {/* Your server saves each turn to the thread's Gateway conversation. */}

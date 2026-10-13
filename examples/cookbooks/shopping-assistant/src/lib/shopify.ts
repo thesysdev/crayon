@@ -85,11 +85,15 @@ class StoreError extends Error {
   }
 }
 
-// Open one MCP session, run the calls, and close it. Only the structured result reaches the
-// app; tool descriptions and message text meant for a model never reach this app's model.
-async function withStore<T>(
+export type StoreCall = (name: string, args: Record<string, unknown>) => Promise<unknown>;
+
+// Open one MCP session, run the calls, and close it. Opening a session takes its own requests,
+// so a search or a cart change makes all its calls in one session; stores limit request rates.
+// Only the structured result reaches the app; tool descriptions and message text meant for a
+// model never reach this app's model.
+export async function withStore<T>(
   signal: AbortSignal | undefined,
-  run: (call: (name: string, args: Record<string, unknown>) => Promise<unknown>) => Promise<T>,
+  run: (call: StoreCall) => Promise<T>,
 ) {
   const client = new Client({ name: "openui-shopping-assistant", version: "0.1.0" });
   await client.connect(new StreamableHTTPClientTransport(serverUrl), { signal });
@@ -125,32 +129,35 @@ export const majorUnits = (amount: number, currency: string) =>
 export const formatPrice = (amount: number, currency: string) =>
   new Intl.NumberFormat("en", { style: "currency", currency }).format(majorUnits(amount, currency));
 
-export async function searchCatalog(
-  search: { query: string; limit: number },
-  signal?: AbortSignal,
-) {
-  return withStore(signal, async (call) => {
-    const result = await call("search_catalog", {
+// The products with these ids as the store has them now, keyed by id. A product the store no
+// longer sells is missing from the map. lookup_catalog takes up to 10 ids per call.
+export async function lookupProducts(call: StoreCall, ids: string[]) {
+  const found = new Map<string, Product>();
+  for (let start = 0; start < ids.length; start += 10) {
+    const result = await call("lookup_catalog", {
       meta: meta(),
-      catalog: {
-        ...(search.query ? { query: search.query } : {}),
-        pagination: { limit: search.limit },
-      },
+      catalog: { ids: ids.slice(start, start + 10) },
     });
-    return z.object({ products: z.array(productSchema) }).parse(result).products;
-  });
+    for (const product of z.object({ products: z.array(productSchema) }).parse(result).products)
+      found.set(product.id, product);
+  }
+  return found;
 }
+
+export const plainText = (html: string) =>
+  html
+    .replace(/<[^>]+>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
 
 // The product with only the in-stock variants that have the selected option values, and each
 // option value marked available when an in-stock variant has it together with the selection.
-export async function selectVariants(id: string, selected: Selection, signal?: AbortSignal) {
-  return withStore(signal, async (call) => {
-    const result = await call("get_product", {
-      meta: meta(),
-      catalog: { id, ...(selected.length ? { selected } : {}) },
-    });
-    return z.object({ product: productSchema }).parse(result).product;
+export async function selectVariants(call: StoreCall, id: string, selected: Selection) {
+  const result = await call("get_product", {
+    meta: meta(),
+    catalog: { id, ...(selected.length ? { selected } : {}) },
   });
+  return z.object({ product: productSchema }).parse(result).product;
 }
 
 // Shopify's CDN resizes images: a full-size product photo can be a few megabytes, and 640 pixels

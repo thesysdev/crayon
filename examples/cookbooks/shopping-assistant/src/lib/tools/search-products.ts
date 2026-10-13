@@ -1,30 +1,34 @@
 import { z } from "zod/v4";
+import { diverse, rankByMeaning, type IndexedProduct } from "../catalog";
+import { embed } from "../embeddings";
 import {
   formatPrice,
+  lookupProducts,
   majorUnits,
-  resized,
-  searchCatalog,
+  plainText,
   selectVariants,
+  withStore,
   type Product,
   type Selection,
+  type StoreCall,
 } from "../shopify";
 
 // The search_products function tool: its JSON schema for Gateway, argument validation, the
-// catalog search, and the executor that runTools() calls.
+// search by meaning, and the executor that runTools() calls.
 
 export const searchProductsTool = {
   type: "function" as const,
   function: {
     name: "search_products",
     description:
-      "Search the store's catalog. Returns matching products with photos, a price, and every value of each option, such as size and color, marked in stock or not, plus the products it left out and why.",
+      "Search the store's catalog of about 1,000 products by meaning. Returns the best matches with photos, a live price, and every value of each option, such as size and color, plus the products it left out and why.",
     parameters: {
       type: "object",
       properties: {
         query: {
           type: "string",
           description:
-            "One or two product words, such as 'sneakers' or 'hoodie'. The store matches words literally, so 'running shoes' can find nothing where 'shoes' finds two. Empty to browse the whole catalog.",
+            "What the shopper wants, in their own words, with the details that matter: who it's for, the occasion, materials to have or avoid, such as 'a warm hoodie that isn't wool' or 'a gift for a friend who drinks tea'.",
         },
         max_price: {
           type: ["number", "null"],
@@ -47,7 +51,7 @@ export const searchProductsTool = {
 // Validate arguments again on the server; the model's output is untrusted input.
 const argsSchema = z
   .object({
-    query: z.string().trim().max(100),
+    query: z.string().trim().min(2).max(300),
     max_price: z.number().positive().nullable(),
     option_values: z.array(z.string().trim().min(1).max(40)).max(4),
   })
@@ -59,11 +63,11 @@ type Args = z.infer<typeof argsSchema>;
 const realOptions = (product: Product) =>
   (product.options ?? []).filter((option) => option.name !== "Title");
 
-// Check a product against the request: the in-stock variants with every requested option value,
-// within the budget. A value can also be a word of the title, because stores often sell each
-// color as its own product, such as "Black Sunnies". Returns the product to show, with stock
-// for the requested values, or the reason it doesn't fit.
-async function check(product: Product, args: Args, signal?: AbortSignal) {
+// Check a live product against the request: an in-stock variant with every requested option
+// value, within the budget. A value can also be a word of the title, because stores often sell
+// each color as its own product, such as "Black Sunnies". Returns the product to show, a reason
+// it's left out, or neither when it doesn't fit at all.
+async function check(call: StoreCall, product: Product, args: Args) {
   const words = product.title.toLowerCase().split(/\W+/);
   const selected: Selection = [];
   for (const value of args.option_values) {
@@ -71,59 +75,38 @@ async function check(product: Product, args: Args, signal?: AbortSignal) {
     const option = realOptions(product).find((option) =>
       option.values.some((v) => v.label.toLowerCase() === value.toLowerCase()),
     );
-    if (!option) return { reason: `no ${value}` };
+    // A product without that option at all, such as a plush asked for in size 9, doesn't fit.
+    if (!option) return {};
     const label = option.values.find((v) => v.label.toLowerCase() === value.toLowerCase())!.label;
     selected.push({ name: option.name, label });
   }
-  // A search result lists at most 10 variants, so ask the store for the ones with these values.
-  const checked = selected.length ? await selectVariants(product.id, selected, signal) : product;
-  const inStock = checked.variants.filter((variant) => variant.availability?.available);
-  if (!inStock.length)
-    return {
-      reason: selected.length ? `no ${args.option_values.join(" / ")} in stock` : "sold out",
-    };
-  const cheapest = inStock.reduce((a, b) => (b.price.amount < a.price.amount ? b : a)).price;
-  if (args.max_price !== null && majorUnits(cheapest.amount, cheapest.currency) > args.max_price)
-    return { reason: `over budget, from ${formatPrice(cheapest.amount, cheapest.currency)}` };
-  return { product: { ...product, options: checked.options ?? product.options } };
+  let price = product.price_range.min;
+  let options = product.options;
+  // With a size or color, ask the store for the in-stock variants that have it. Without one,
+  // stock is checked when the shopper adds the product to the cart.
+  if (selected.length) {
+    const checked = await selectVariants(call, product.id, selected);
+    const inStock = checked.variants.filter((variant) => variant.availability?.available);
+    if (!inStock.length) return { reason: `no ${args.option_values.join(" / ")} in stock` };
+    price = inStock.reduce((a, b) => (b.price.amount < a.price.amount ? b : a)).price;
+    options = checked.options ?? options;
+  }
+  if (args.max_price !== null && majorUnits(price.amount, price.currency) > args.max_price)
+    return { reason: `over budget, from ${formatPrice(price.amount, price.currency)}` };
+  return { product: { ...product, options } };
 }
 
-const plainText = (html: string) =>
-  html
-    .replace(/<[^>]+>/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
-
-// One photo per color: a store attaches each color's photo to its variants, and a search result
-// lists only the featured photo at the product level. Each photo is labelled with the variant's
-// options other than size, such as "Black", so the answer can show the chosen color.
-function photos(product: Product) {
-  const byUrl = new Map<string, string>();
-  for (const variant of product.variants)
-    for (const media of variant.media ?? []) {
-      const key = media.url.split("?")[0];
-      if (byUrl.has(key)) continue;
-      const label = (variant.options ?? [])
-        .filter((option) => !/size|title/i.test(option.name))
-        .map((option) => option.label)
-        .join(" / ");
-      byUrl.set(key, label || product.title);
-    }
-  for (const media of product.media ?? [])
-    if (!byUrl.has(media.url.split("?")[0])) byUrl.set(media.url.split("?")[0], product.title);
-  return [...byUrl].slice(0, 4).map(([url, label]) => ({ url: resized(url), label }));
-}
-
-// Keep what the product cards and the variant form need. The cart finds the variant from the
+// Keep what the product cards and the variant form need: the store's live title, price, and
+// options, and the photos from the index, one per color. The cart finds the variant from the
 // product id and the chosen values, so variant ids aren't needed here.
-function toResult(product: Product) {
+function toResult(product: Product, indexed: IndexedProduct) {
   const description = plainText(product.description?.plain ?? product.description?.html ?? "");
   const { min } = product.price_range;
   return {
     id: product.id,
     title: product.title,
-    description: description.length > 160 ? `${description.slice(0, 159)}…` : description,
-    photos: photos(product),
+    description: description.length > 320 ? `${description.slice(0, 319)}…` : description,
+    photos: indexed.photos,
     price: formatPrice(min.amount, min.currency),
     // in_stock is null when stock wasn't checked for that value.
     options: realOptions(product).map((option) => ({
@@ -139,20 +122,49 @@ export async function executeSearchProducts(
 ) {
   signal?.throwIfAborted();
   const args = argsSchema.parse(JSON.parse(argsJson));
-  // Filter the best 25 matches here rather than with the catalog's price filter, which takes
-  // minor units of a currency the model doesn't know until it has seen a result.
-  const found = await searchCatalog({ query: args.query, limit: 25 }, signal);
-  const checked = await Promise.all(found.map((product) => check(product, args, signal)));
-  const matches = checked.flatMap((result) => (result.product ? [result.product] : []));
+
+  // Rank the whole catalog by meaning, drop clearly over-budget products using the indexed price,
+  // and pick 12 close but different products to check with the store.
+  const [request] = await embed([args.query], signal);
+  const ranked = rankByMeaning(request, 60).filter(
+    (product) => args.max_price === null || product.price <= args.max_price * 1.1,
+  );
+  const candidates = diverse(request, ranked, 12);
+
+  // The index can be out of date, so the store has the final word on price, stock, and whether
+  // a product is still for sale. Check six candidates at a time and stop once six fit, which
+  // keeps the calls to the store down.
+  type Checked = { indexed: IndexedProduct; product?: Product; reason?: string };
+  const checked = await withStore(signal, async (call) => {
+    const results: Checked[] = [];
+    for (let start = 0; start < candidates.length; start += 6) {
+      const batch = candidates.slice(start, start + 6);
+      const live = await lookupProducts(
+        call,
+        batch.map((product) => product.id),
+      );
+      results.push(
+        ...(await Promise.all(
+          batch.map(async (indexed): Promise<Checked> => {
+            const product = live.get(indexed.id);
+            if (!product) return { indexed, reason: "no longer sold" };
+            return { indexed, ...(await check(call, product, args)) };
+          }),
+        )),
+      );
+      if (results.filter((result) => result.product).length >= 6) break;
+    }
+    return results;
+  });
+  const matches = checked.flatMap((result) =>
+    result.product ? [toResult(result.product, result.indexed)] : [],
+  );
   return JSON.stringify({
     query: args.query,
-    currency: found[0]?.price_range.min.currency ?? null,
-    matches: matches.length,
-    products: matches.slice(0, 6).map(toResult),
-    // The rest of what the search found, so the answer can say why they're missing.
-    left_out: found.flatMap((product, index) => {
-      const { reason } = checked[index];
-      return reason ? [{ title: product.title, reason }] : [];
-    }),
+    products: matches.slice(0, 6),
+    // Close matches that didn't fit, so the answer can say why they're missing.
+    left_out: checked.flatMap((result) =>
+      result.reason ? [{ title: result.indexed.title, reason: result.reason }] : [],
+    ),
   });
 }
