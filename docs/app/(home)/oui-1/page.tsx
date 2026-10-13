@@ -2,12 +2,14 @@ import { ArrowRight, ArrowUpRight } from "lucide-react";
 import type { Metadata } from "next";
 import gatewayStyles from "../cloud/gateway/page.module.css";
 import { BevelButton } from "../components/Button/BevelButton";
+import { ClipboardCommandButton } from "../components/Button/Button";
 import { FadedDither } from "../components/FadedDither/FadedDither";
 import styles from "../components/ProductLanding.module.css";
 import homeStyles from "../page.module.css";
 import { Footer } from "../sections/Footer/Footer";
 import { HeroSection } from "../sections/HeroSection/HeroSection";
 import { FaqSection } from "./FaqSection";
+import howTo from "./HowTo.module.css";
 import { OuiFeatures } from "./OuiFeatures";
 
 export const metadata: Metadata = {
@@ -25,21 +27,57 @@ export const metadata: Metadata = {
 };
 const model = "https://huggingface.co/thesysdev/OUI-1";
 const research = "/blog/oui-1";
-// PLACEHOLDER: there is no OUI-1 integration guide in the docs yet, so the
-// how-to CTA points at the model card. Swap in the guide's URL when it exists.
-const guide = model;
+const guide = "/docs/build-agents/ui-generation";
 const steps = [
   {
-    title: "Run OUI-1 locally",
-    description: "Download the model and serve it on your GPU using vLLM.",
+    title: "Serve the model",
+    description:
+      "On your GPU host, install vLLM 0.24 or newer and start OUI-1. This exposes an OpenAI-compatible API at localhost:8000/v1.",
+    codeTitle: "GPU host",
+    code: [
+      'pip install "vllm>=0.24"',
+      "vllm serve thesysdev/OUI-1 \\",
+      "  --trust-remote-code \\",
+      "  --quantization fp8 \\",
+      "  --max-model-len 16384 \\",
+      "  --served-model-name OUI-1 \\",
+      "  --max-num-seqs 4 \\",
+      "  --enable-auto-tool-choice \\",
+      "  --tool-call-parser gemma4",
+    ].join("\n"),
+    link: model + "#vllm-recommended",
+    linkLabel: "Model serving guide",
+    external: true,
   },
   {
-    title: "Bring your own components",
-    description: "Connect your component library using OpenUI Lang.",
+    title: "Define your components",
+    description:
+      "Export a library of your components and props from src/library.ts. Generate the system prompt so OUI-1 knows what it can build.",
+    codeTitle: "System prompt",
+    code: [
+      "npx @openuidev/cli@latest \\",
+      "  generate src/library.ts \\",
+      "  --out system-prompt.txt",
+    ].join("\n"),
+    link: "/docs/openui-lang/defining-components",
+    linkLabel: "Define a component library",
+    external: false,
   },
   {
-    title: "Generate your first interface",
-    description: "Describe what you need. OUI-1 generates a streaming, interactive UI.",
+    title: "Render the response",
+    description:
+      "Call your endpoint with model OUI-1, the generated system prompt, and stream: true. Pass the arriving text to OpenUI's Renderer with the same library.",
+    codeTitle: "React renderer",
+    code: [
+      "<Renderer",
+      "  library={library}",
+      "  response={text}",
+      "  isStreaming={isStreaming}",
+      "/>",
+    ].join("\n"),
+    link: guide + "#6-stream-the-response-to-the-chat-ui",
+    linkLabel: "Connect the response stream",
+    external: false,
   },
 ];
 /* One half of a laurel: leaf pairs set along an arc, outer and inner. */
@@ -161,27 +199,56 @@ export default function OuiOnePage() {
             <OuiFeatures />
           </div>
         </div>
-        <section className={styles.howBand}>
+        <section className={styles.howBand} aria-labelledby="oui-how-title">
           <div className={styles.howInner}>
             <div className={styles.howHead}>
-              <h2 className={styles.howTitle}>Build your GenUI agent in minutes.</h2>
+              <h2 id="oui-how-title" className={styles.howTitle}>
+                Build your first interface with OUI-1.
+              </h2>
               <BevelButton
                 href={guide}
-                external
                 variant="secondary"
-                label="Read integration guide"
+                label="Read setup docs"
                 badge={<ArrowRight size={16} strokeWidth={2.25} />}
               />
             </div>
             <ol className={styles.steps}>
               {steps.map((step, index) => (
-                <li key={step.title} className={styles.step}>
+                <li key={step.title} className={`${styles.step} ${howTo.step}`}>
                   <span className={styles.stepBadge}>{index + 1}</span>
                   <h3 className={styles.stepTitle}>{step.title}</h3>
-                  <p className={styles.stepDescription}>{step.description}</p>
+                  <p className={`${styles.stepDescription} ${howTo.description}`}>
+                    {step.description}
+                  </p>
+                  <div className={howTo.codeBox}>
+                    <div className={howTo.codeHeader}>
+                      <span>{step.codeTitle}</span>
+                      <ClipboardCommandButton
+                        command={step.code}
+                        className={howTo.copyButton}
+                        copyIconColor="currentColor"
+                      >
+                        <span>Copy</span>
+                      </ClipboardCommandButton>
+                    </div>
+                    <pre className={howTo.code}>
+                      <code>{step.code}</code>
+                    </pre>
+                  </div>
+                  <a
+                    href={step.link}
+                    className={howTo.docLink}
+                    {...(step.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                  >
+                    {step.linkLabel} <ArrowUpRight size={15} aria-hidden="true" />
+                  </a>
                 </li>
               ))}
             </ol>
+            <p className={howTo.requirements}>
+              FP8 weights need about 25.8 GiB of GPU memory, plus runtime and cache. Check the model
+              serving guide before choosing your hardware.
+            </p>
           </div>
         </section>
         <div className={styles.productFaqBand}>
