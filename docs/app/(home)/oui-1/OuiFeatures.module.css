@@ -1,91 +1,3 @@
-.features {
-  --oui-ink: var(--openui-text-neutral-primary);
-  --oui-muted: var(--openui-text-neutral-secondary);
-  --oui-panel: var(--openui-foreground);
-  --oui-line: var(--home-hairline);
-  --oui-fill: color-mix(in srgb, var(--oui-ink) 5%, transparent);
-
-  display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
-  gap: 64px 24px;
-}
-
-.feature {
-  min-width: 0;
-}
-.feature[data-span="half"] {
-  grid-column: span 3;
-}
-.feature[data-span="full"] {
-  grid-column: span 6;
-}
-.feature[data-span="third"] {
-  grid-column: span 2;
-}
-
-/* The same stage the hero uses: shader behind, artwork on top. The stroke is
-   the shader's own base colour; keep in step with TONES in FadedDitherCanvas. */
-.stage {
-  --stage-stroke: #f8f8f8;
-
-  container-type: inline-size;
-  position: relative;
-  overflow: hidden;
-  width: 100%;
-  border: 1px solid var(--stage-stroke);
-  border-radius: 24px;
-}
-[data-theme="dark"] .stage {
-  --stage-stroke: #0e0e0e;
-}
-.stage[data-flat] {
-  background: var(--stage-stroke);
-}
-.feature[data-span="half"] .stage {
-  aspect-ratio: 588 / 360;
-}
-.feature[data-span="full"] .stage {
-  aspect-ratio: 1200 / 420;
-}
-.feature[data-span="third"] .stage {
-  aspect-ratio: 384 / 280;
-}
-.stageShader {
-  position: absolute;
-  z-index: 0;
-  inset: 0;
-}
-.stageShader > * {
-  width: 100%;
-  height: 100%;
-}
-.stageArt {
-  position: relative;
-  z-index: 1;
-  display: grid;
-  place-items: center;
-  width: 100%;
-  height: 100%;
-  color: var(--oui-ink);
-}
-
-.title {
-  margin: 20px 0 0;
-  font-family: var(--home-font-display);
-  font-size: var(--home-heading-size);
-  font-weight: var(--home-heading-weight);
-  line-height: var(--home-heading-leading);
-  letter-spacing: var(--home-heading-tracking);
-  color: var(--oui-ink);
-}
-.description {
-  max-width: 44ch;
-  margin: 8px 0 0;
-  font-size: var(--home-body-size);
-  line-height: var(--home-body-leading);
-  color: var(--oui-muted);
-}
-
 /* ---------- stream ---------- */
 /* Bezel and screen match the hero device (public/oui-1/hero.html). */
 .streamScene {
@@ -457,10 +369,10 @@
   flex: none;
   height: 4px;
   border-radius: 2px;
-  background: color-mix(in srgb, var(--oui-ink) 12%, transparent);
+  background: color-mix(in srgb, var(--feat-ink) 12%, transparent);
 }
 .pipeRow span[data-tone="strong"] {
-  background: color-mix(in srgb, var(--oui-ink) 28%, transparent);
+  background: color-mix(in srgb, var(--feat-ink) 28%, transparent);
 }
 .pipeRow span[data-tone="accent"] {
   background: var(--device-accent);
@@ -486,7 +398,7 @@
   left: 232px;
   border-radius: 12px;
   box-shadow:
-    0 0 0 1px var(--oui-line),
+    0 0 0 1px var(--feat-line),
     0 12px 32px rgb(0 0 0 / 0.08);
   color: var(--device-ink);
 }
@@ -506,26 +418,26 @@
 }
 .chartCurve {
   fill: none;
-  stroke: color-mix(in srgb, var(--oui-ink) 30%, transparent);
+  stroke: color-mix(in srgb, var(--feat-ink) 30%, transparent);
   stroke-width: 1.5;
 }
 .chartAreaTop {
-  stop-color: var(--oui-ink);
+  stop-color: var(--feat-ink);
   stop-opacity: 0.08;
 }
 .chartAreaBottom {
-  stop-color: var(--oui-ink);
+  stop-color: var(--feat-ink);
   stop-opacity: 0;
 }
 .chartLabel {
-  fill: var(--oui-muted);
+  fill: var(--feat-muted);
   font-variant-numeric: tabular-nums;
 }
 .chartDot {
-  fill: color-mix(in srgb, var(--oui-ink) 35%, transparent);
+  fill: color-mix(in srgb, var(--feat-ink) 35%, transparent);
 }
 .chartHeroHalo {
-  fill: color-mix(in srgb, var(--oui-ink) 10%, transparent);
+  fill: color-mix(in srgb, var(--feat-ink) 10%, transparent);
   transform-box: fill-box;
   transform-origin: center;
   animation: ouiHalo 2.4s ease-in-out infinite;
@@ -544,7 +456,7 @@
 }
 @keyframes ouiRing {
   0% {
-    box-shadow: 0 0 0 0 color-mix(in srgb, var(--oui-ink) 28%, transparent);
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--feat-ink) 28%, transparent);
   }
   70%,
   100% {
@@ -554,19 +466,19 @@
 @keyframes ouiCore {
   0%,
   100% {
-    fill: var(--oui-fill);
+    fill: var(--feat-fill);
     transform: scale(1);
   }
   50% {
-    fill: color-mix(in srgb, var(--oui-ink) 14%, transparent);
+    fill: color-mix(in srgb, var(--feat-ink) 14%, transparent);
     transform: scale(1.04);
   }
 }
 .chartHero {
-  fill: var(--oui-ink);
+  fill: var(--feat-ink);
 }
 .chartHeroLabel {
-  fill: var(--oui-ink);
+  fill: var(--feat-ink);
   font-weight: 500;
   font-variant-numeric: tabular-nums;
 }
@@ -575,7 +487,7 @@
 .params {
   position: relative;
   border-radius: 12px;
-  background: color-mix(in srgb, var(--oui-ink) 8%, transparent);
+  background: color-mix(in srgb, var(--feat-ink) 8%, transparent);
   font-family: var(--home-font-mono);
   font-size: 12px;
   line-height: 1;
@@ -584,7 +496,7 @@
   position: absolute;
   top: 12px;
   right: 12px;
-  color: var(--oui-muted);
+  color: var(--feat-muted);
 }
 /* concentric with the outer corner: 12px radius less the 8px inset */
 .paramsActive {
@@ -594,46 +506,46 @@
   display: grid;
   place-items: center;
   border-radius: 4px;
-  background: var(--oui-ink);
-  color: var(--oui-panel);
+  background: var(--feat-ink);
+  color: var(--feat-panel);
   font-weight: 500;
   animation: ouiRing 2.4s ease-out infinite;
 }
 
 /* ---------- hardware ---------- */
 .chipPin {
-  stroke: color-mix(in srgb, var(--oui-ink) 25%, transparent);
+  stroke: color-mix(in srgb, var(--feat-ink) 25%, transparent);
   stroke-width: 2;
   stroke-linecap: round;
 }
 .chipBody {
-  fill: var(--oui-panel);
-  stroke: var(--oui-line);
+  fill: var(--feat-panel);
+  stroke: var(--feat-line);
 }
 .chipRing {
-  stroke: color-mix(in srgb, var(--oui-ink) 10%, transparent);
+  stroke: color-mix(in srgb, var(--feat-ink) 10%, transparent);
   stroke-dasharray: 2 4;
 }
 .chipTrace {
-  stroke: color-mix(in srgb, var(--oui-ink) 12%, transparent);
+  stroke: color-mix(in srgb, var(--feat-ink) 12%, transparent);
 }
 .chipMark {
-  fill: color-mix(in srgb, var(--oui-ink) 30%, transparent);
+  fill: color-mix(in srgb, var(--feat-ink) 30%, transparent);
 }
 .chipCore {
-  fill: var(--oui-fill);
-  stroke: var(--oui-line);
+  fill: var(--feat-fill);
+  stroke: var(--feat-line);
   transform-box: fill-box;
   transform-origin: center;
   animation: ouiCore 2.4s ease-in-out infinite;
 }
 .chipText {
-  fill: var(--oui-ink);
+  fill: var(--feat-ink);
   font-family: var(--home-font-mono);
   font-weight: 500;
 }
 .chipSub {
-  fill: var(--oui-muted);
+  fill: var(--feat-muted);
   font-family: var(--home-font-mono);
 }
 
@@ -643,29 +555,5 @@
   .paramsActive,
   .chipCore {
     animation: none;
-  }
-}
-
-@media (min-width: 768px) and (max-width: 899.98px) {
-  .features {
-    gap: 48px 16px;
-  }
-}
-@media (max-width: 767px) {
-  .features {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 40px;
-  }
-  .feature[data-span] {
-    grid-column: auto;
-  }
-  .stage {
-    border-radius: 12px;
-  }
-  .feature[data-span] .stage {
-    aspect-ratio: 358 / 260;
-  }
-  .feature[data-span="full"] .stage {
-    aspect-ratio: 360 / 300;
   }
 }

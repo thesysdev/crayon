@@ -10,9 +10,11 @@
   --phone-panel: #fff;
   --phone-line: #e7e7e7;
   display: grid;
-  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  /* Code, phone, timeline. The phone holds the centre column, so it sits in
+     the middle of the panel. */
+  grid-template-columns: minmax(0, 1fr) 326px minmax(0, 1fr);
   align-items: stretch;
-  gap: 64px;
+  gap: 48px;
   height: 100%;
   padding: 48px 64px 64px;
   position: relative;
@@ -32,9 +34,6 @@
   flex-direction: column;
   min-width: 0;
   min-height: 0;
-  background: var(--demo-panel);
-  border: 1px solid var(--demo-line);
-  border-radius: 16px;
   overflow: hidden;
 }
 .panelHeader {
@@ -42,17 +41,10 @@
   padding: 12px 20px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   gap: 12px;
   flex: none;
-  border-bottom: 1px solid var(--demo-line);
   font-size: 13px;
-}
-.panelHeader > span:first-child {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  white-space: nowrap;
 }
 .timer {
   display: flex;
@@ -145,7 +137,6 @@
   font-size: 13px;
   line-height: 1.4;
   color: var(--demo-muted);
-  border-bottom: 1px solid var(--demo-line);
 }
 .code {
   flex: 1;
@@ -167,7 +158,6 @@
   user-select: none;
   text-align: right;
   color: var(--demo-muted);
-  box-shadow: 0 1px 3px #00000012;
 }
 .string {
   color: var(--demo-green);
@@ -177,6 +167,118 @@
 }
 .annotation {
   color: var(--demo-purple);
+}
+/* ---------- timeline ---------- */
+.timeline {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 20px 0 12px 20px;
+}
+.timerLabel {
+  margin-bottom: 2px;
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--demo-muted);
+}
+.timeline .timer time {
+  min-width: 0;
+  text-align: left;
+}
+.timeline .timer strong {
+  font-size: 20px;
+}
+.timeline .timer time span {
+  font-size: 13px;
+}
+/* the timer stays at the top of the column; the events drop to the bottom */
+.events {
+  position: relative;
+  margin: auto 0 0;
+  padding: 0;
+  list-style: none;
+}
+/* the rail the dots sit on: time column (36px) + gap (12px) + half a dot */
+.events::before {
+  content: "";
+  position: absolute;
+  top: 14px;
+  bottom: 14px;
+  left: 50px;
+  width: 1px;
+  background: var(--demo-line);
+}
+.event {
+  position: relative;
+  display: grid;
+  grid-template-columns: 36px 5px minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+  padding: 6px 0;
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--demo-muted);
+  opacity: 0.45;
+  transition:
+    color 150ms,
+    opacity 150ms;
+}
+.event[data-done="true"] {
+  color: color-mix(in srgb, var(--demo-ink) 72%, transparent);
+  opacity: 1;
+}
+.eventTime {
+  font-family: var(--home-font-mono);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  color: var(--demo-muted);
+  opacity: 0.7;
+}
+.eventDot {
+  box-sizing: border-box;
+  width: 5px;
+  height: 5px;
+  margin-top: 6.5px;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  background: var(--openui-background);
+  transition: background-color 150ms;
+}
+.event[data-done="true"] .eventDot {
+  background: currentColor;
+}
+.eventCopy small {
+  display: block;
+  font-size: 12px;
+  color: var(--demo-muted);
+}
+/* On wide screens the timeline carries the timer and the request. */
+@media (min-width: 1100.02px) {
+  .codePanel .panelHeader,
+  .codePanel .request {
+    display: none;
+  }
+  /* The phone stays centred, so the code gains width by reaching into the
+     panel's padding on its left and the gap on its right. */
+  .codePanel {
+    margin: 0 -16px 0 -40px;
+  }
+  .codePanel .code {
+    padding: 22px 0;
+  }
+  /* Beside the phone the code and the timeline are supporting detail, so they
+     sit back into the stage and let the phone lead. */
+  .codePanel,
+  .timeline {
+    opacity: 0.55;
+  }
+}
+/* Below that there is no room for three columns: drop the timeline. */
+@media (max-width: 1100px) {
+  .timeline {
+    display: none;
+  }
 }
 .phoneSide {
   display: flex;
