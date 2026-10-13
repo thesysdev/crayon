@@ -13,7 +13,7 @@ const docsPageSchema = pageSchema.extend({
   // Hides Copy Markdown and Open, for pages whose Markdown is mostly component tags.
   pageActions: z.boolean().optional().default(true),
   // Day the content last changed, used as the sitemap `lastmod`. Bump it when readers would
-  // notice the edit; CI (docs/scripts/check-updated-at.mjs) checks this.
+  // notice the edit; CI (.github/workflows/content-dates.yml) checks this.
   updatedAt: z.string().date().or(z.date()).optional(),
 });
 

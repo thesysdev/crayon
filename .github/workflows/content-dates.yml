@@ -7,23 +7,33 @@ on:
     types: [opened, synchronize, reopened, labeled, unlabeled]
     paths:
       - "docs/content/**"
-      - "docs/app/(home)/integrations/data.ts"
 
 permissions:
   contents: read
 
 jobs:
   updated-at:
-    # A docs page, blog post, or integration whose content changes must bump its `updatedAt`, which
-    # feeds sitemap lastmod. Typo-level edits can skip with the `no-date-bump` label.
+    # A PR that edits a docs page or blog post must also change its `updatedAt`, the page's sitemap
+    # lastmod. For edits readers won't notice, like a typo fix, label the PR `no-date-bump`.
     if: ${{ !contains(github.event.pull_request.labels.*.name, 'no-date-bump') }}
     runs-on: ubuntu-latest
     steps:
-      # The PR merge commit and its first parent (the base tip) are all the history this needs.
+      # The PR merge commit and its first parent (the base branch) are all the history this needs.
       - uses: actions/checkout@v4
         with:
           fetch-depth: 2
-      - uses: actions/setup-node@v4
-        with:
-          node-version: v24.21.0
-      - run: node docs/scripts/check-updated-at.mjs HEAD^1
+      - name: Edited pages change updatedAt
+        run: |
+          # New and edited docs pages, and edited blog posts (new posts are dated by `date`).
+          files=$({
+            git diff --name-only --diff-filter=AM HEAD^1 HEAD -- docs/content/docs
+            git diff --name-only --diff-filter=M HEAD^1 HEAD -- docs/content/blog
+          } | grep -E '\.mdx?$' || true)
+          status=0
+          for file in $files; do
+            if ! git diff HEAD^1 HEAD -- "$file" | grep -q '^+updatedAt:'; then
+              echo "::error file=$file::Edited without changing updatedAt. Set it to today's date, or label the PR no-date-bump."
+              status=1
+            fi
+          done
+          exit $status

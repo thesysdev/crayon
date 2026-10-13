@@ -71,10 +71,10 @@ Before opening a pull request, please make sure that:
   (patch for fixes and compatible changes; minor for breaking changes — all
   packages are 0.x), and commit the generated file. Releases are automated
   from these; see [`.changeset/README.md`](./.changeset/README.md).
-- If the change edits what readers see on a docs page or blog post under
-  `docs/content/`, or an integration in `docs/app/(home)/integrations/data.ts`,
-  its `updatedAt` is set to today's date. It feeds the sitemap's `lastmod`, and
-  CI checks it. For typo-level fixes, label the PR `no-date-bump` instead.
+- If the change edits a docs page or blog post under `docs/content/`, its
+  `updatedAt` frontmatter is set to today's date. It feeds the sitemap's
+  `lastmod`, and CI checks it. For typo-level fixes, label the PR
+  `no-date-bump` instead.
 
 ## Bug Reports
 
