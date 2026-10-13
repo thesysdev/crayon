@@ -720,13 +720,40 @@
   })();
 </script>
 <style>
-  /* Keep the front tablet legible on a phone, with the text answer behind it. */
-  [data-layout="compact"] .viz { width: 1000px; height: 1000px; padding: 0; }
-  [data-layout="compact"] .device.back { top: 42px; left: -240px; }
-  [data-layout="compact"] .device.front { top: 150px; left: 150px; }
-  [data-layout="compact"] .notch { height: 42px; font-size: 22px; line-height: 41px; }
-  [data-layout="compact"] .device.back .notch { left: 68%; }
-  [data-layout="compact"] .status { padding-top: 42px; }
+  .model-switch { display: none; }
+  /* One device on a phone; the header switches between the two responses. */
+  [data-layout="compact"] body { touch-action: pan-y; }
+  [data-layout="compact"] .viz { width: 860px; height: 860px; padding: 0; cursor: default; }
+  [data-layout="compact"] .device { top: 32px; left: 38px; }
+  [data-layout="compact"][data-mobile-model="oui"] .device.back,
+  [data-layout="compact"][data-mobile-model="general"] .device.front { display: none; }
+  [data-layout="compact"] .device.back::after { display: none; }
+  [data-layout="compact"] .desktop-model-label { display: none; }
+  [data-layout="compact"] .notch {
+    left: 50%;
+    height: auto;
+    padding: calc(2px / var(--hero-scale));
+    border-radius: 0 0 calc(14px / var(--hero-scale)) calc(14px / var(--hero-scale));
+    line-height: normal;
+  }
+  [data-layout="compact"] .model-switch { display: flex; gap: calc(2px / var(--hero-scale)); }
+  [data-layout="compact"] .model-switch button {
+    min-height: calc(44px / var(--hero-scale));
+    padding: 0 calc(12px / var(--hero-scale));
+    border: 0;
+    border-radius: calc(12px / var(--hero-scale));
+    background: transparent;
+    color: #bdbdbd;
+    font: 600 calc(12px / var(--hero-scale))/1.2 Inter, sans-serif;
+    white-space: nowrap;
+    cursor: pointer;
+    touch-action: manipulation;
+  }
+  [data-layout="compact"] .model-switch button[aria-pressed="true"] { background: #fff; color: #111; }
+  [data-layout="compact"] .model-switch button:focus-visible { outline: calc(2px / var(--hero-scale)) solid #8fa0ff; outline-offset: calc(-3px / var(--hero-scale)); }
+  [data-layout="compact"] .status { height: calc(52px / var(--hero-scale)); align-items: flex-end; padding-bottom: 8px; }
+  [data-layout="compact"] .t-body { max-width: none; font-size: 24px; line-height: 1.55; }
+  [data-layout="compact"] .t-body h5 { font-size: 24px; }
 </style>
 </head>
 <body>
@@ -738,7 +765,13 @@
    <!-- behind: the same question answered in text -->
    <div class="device back">
     <div class="screen">
-      <div class="notch">General-purpose models</div>
+      <div class="notch">
+        <span class="desktop-model-label">General-purpose models</span>
+        <div class="model-switch" role="group" aria-label="Compare model responses">
+          <button type="button" data-model="oui" aria-pressed="true">OUI-1</button>
+          <button type="button" data-model="general" aria-pressed="false">General-purpose</button>
+        </div>
+      </div>
 
       <div class="status">
         <span class="time">9:41</span>
@@ -785,7 +818,13 @@
    <!-- in front: the answer OUI-1 renders -->
    <div class="device front">
     <div class="screen">
-      <div class="notch">OUI-1</div>
+      <div class="notch">
+        <span class="desktop-model-label">OUI-1</span>
+        <div class="model-switch" role="group" aria-label="Compare model responses">
+          <button type="button" data-model="oui" aria-pressed="true">OUI-1</button>
+          <button type="button" data-model="general" aria-pressed="false">General-purpose</button>
+        </div>
+      </div>
 
       <div class="status">
         <span class="time">9:41</span>
@@ -1519,21 +1558,49 @@ function playText() {
   });
 }
 
-// fit the wide composition to the width of the frame it is embedded in; a
-// frame shorter than 16:9 crops the bottom
+document.documentElement.dataset.mobileModel = 'oui';
+
+function selectMobileModel(model) {
+  document.documentElement.dataset.mobileModel = model;
+  document.querySelectorAll('.model-switch button').forEach(button => {
+    button.setAttribute('aria-pressed', String(button.dataset.model === model));
+  });
+  if (model === 'general') {
+    timers.forEach(clearTimeout);
+    timers = [];
+    if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+    playText();
+  } else {
+    play();
+  }
+  const device = document.querySelector(model === 'oui' ? '.device.front' : '.device.back');
+  device.querySelector(`[data-model="${model}"]`).focus({ preventScroll: true });
+}
+
+document.querySelectorAll('.model-switch button').forEach(button => {
+  button.addEventListener('click', event => {
+    event.stopPropagation();
+    selectMobileModel(button.dataset.model);
+  });
+});
+
+// Fit the desktop pair or the single mobile device to its host frame.
 function fit() {
   const box = document.getElementById('fitbox');
   let hostWidth = window.innerWidth;
   try { hostWidth = window.parent.innerWidth; } catch (e) {}
   const compact = hostWidth < 768;
+  const previousLayout = document.documentElement.dataset.layout;
   document.documentElement.dataset.layout = compact ? 'compact' : 'wide';
-  const width = compact ? 1000 : 1584;
-  const height = compact ? 1000 : 891;
+  const width = compact ? 860 : 1584;
+  const height = compact ? 860 : 891;
   const k = window.innerWidth / width;
+  document.documentElement.style.setProperty('--hero-scale', k);
   box.style.width = width * k + 'px';
   box.style.height = height * k + 'px';
   box.style.left = '0px';
   box.firstElementChild.style.transform = `scale(${k})`;
+  if (!compact && previousLayout === 'compact') { play(); playText(); }
 }
 fit();
 window.addEventListener('resize', fit);
