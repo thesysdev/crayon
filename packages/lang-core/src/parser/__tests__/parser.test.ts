@@ -373,7 +373,7 @@ a = Title("y")`;
 
 describe("triple-quoted strings", () => {
   const text = (input: string) => {
-    const root = parse(input, schema).root as {
+    const root = parse(input, schema).root as unknown as {
       props: { children: { props: { text: string } }[] };
     };
     return root.props.children[0].props.text;
@@ -391,7 +391,9 @@ describe("triple-quoted strings", () => {
   it("streams an unclosed body without the partial closing quotes", () => {
     const sp = createStreamParser(schema);
     sp.push(`root = Stack([a])\na = Title(code)\ncode = """\nline 1\n`);
-    const root = sp.push(`line 2""`).root as { props: { children: { props: { text: string } }[] } };
+    const root = sp.push(`line 2""`).root as unknown as {
+      props: { children: { props: { text: string } }[] };
+    };
     expect(root.props.children[0].props.text).toBe("line 1\nline 2");
   });
 });
