@@ -23,7 +23,7 @@ export async function generateMetadata({ params }: DemoChatPageProps) {
   // Link previews reuse the /chat card.
   return withOgImage(
     {
-      title: `${conversation.title} | OpenUI Cloud Chat`,
+      title: { absolute: `${conversation.title} | OpenUI Cloud Chat` },
       description: conversation.description,
       alternates: { canonical: getDemoConversationPath(conversation) },
     },
