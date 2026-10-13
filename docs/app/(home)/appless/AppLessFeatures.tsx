@@ -12,7 +12,7 @@ import styles from "./AppLessFeatures.module.css";
 /* ---------- Just ask ---------- */
 function AskIllustration() {
   return (
-    <div className={styles.scene} aria-hidden="true">
+    <div className={`${styles.scene} ${styles.sceneSmall}`} aria-hidden="true">
       <div className={styles.ask}>
         <i className={styles.askAvatar}>
           <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor">
@@ -34,7 +34,7 @@ function AskIllustration() {
           <div className={styles.askHead}>
             <span className={styles.screenTitle}>Luigi’s Hearth</span>
             <span className={styles.askHeadMeta}>
-              Italian · 4.7 <Star size={11} weight="fill" /> · $$
+              4.7 <Star size={11} weight="fill" /> · $$
             </span>
           </div>
         </div>
@@ -121,7 +121,7 @@ function ExploreIllustration() {
   return (
     /* A button running off the left edge, and the screen it leads to running
        off the right. */
-    <div className={styles.scene} aria-hidden="true">
+    <div className={`${styles.scene} ${styles.sceneSmall}`} aria-hidden="true">
       <span className={styles.searchButton}>
         <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
           <circle cx="5.2" cy="5.2" r="3.4" stroke="currentColor" strokeWidth="1.4" />
@@ -210,9 +210,9 @@ function LightspeedIllustration() {
   // Each option in the list, the screen prefetched for it, and where its
   // connector runs: from the row's right edge to the card's left edge.
   const options = [
-    { name: "The Larch House", price: "$182 a night", photo: "larch", from: 106, to: 34 },
+    { name: "The Larch House", price: "$182 a night", photo: "larch", from: 106, to: 31 },
     { name: "Harbor Loft", price: "$149 a night", photo: "harbor", from: 140, to: 140 },
-    { name: "Casa Verde", price: "$165 a night", photo: "casa", from: 174, to: 250 },
+    { name: "Casa Verde", price: "$165 a night", photo: "casa", from: 174, to: 253 },
   ];
   return (
     /* A list on the left, and on the right the screen behind every option,
