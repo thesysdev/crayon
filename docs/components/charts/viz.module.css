@@ -8,6 +8,11 @@
   --c1: #7c3aed; /* OpenUI */
   --c2: #252525; /* A2UI */
   --c3: #a3a3a3; /* json-render */
+  /* Text set on a filled series chip: whichever of black or white clears
+     4.5:1 against that fill. */
+  --c1-ink: #fff;
+  --c2-ink: #fff;
+  --c3-ink: #000;
 
   --ink: var(--openui-text-neutral-primary, #000);
   --ink-muted: color-mix(in srgb, var(--ink) 50%, transparent);
@@ -49,6 +54,9 @@
     --c1: #a78bfa;
     --c2: #e5e5e5;
     --c3: #777;
+    --c1-ink: #000;
+    --c2-ink: #000;
+    --c3-ink: #000;
     --rule: color-mix(in srgb, var(--ink) 14%, transparent);
   }
 }
@@ -57,6 +65,9 @@
   --c1: #a78bfa;
   --c2: #e5e5e5;
   --c3: #777;
+  --c1-ink: #000;
+  --c2-ink: #000;
+  --c3-ink: #000;
   --rule: color-mix(in srgb, var(--ink) 14%, transparent);
 }
 
@@ -77,12 +88,15 @@
 
 .s1 {
   --c: var(--c1);
+  --c-ink: var(--c1-ink);
 }
 .s2 {
   --c: var(--c2);
+  --c-ink: var(--c2-ink);
 }
 .s3 {
   --c: var(--c3);
+  --c-ink: var(--c3-ink);
 }
 
 .head {
@@ -905,15 +919,13 @@
   align-items: center;
   gap: 6px;
   padding: 7px 0 2px;
-  color: var(--ink-muted);
+  /* Stronger than --ink-muted: at 12px the 50% mix falls short of 4.5:1. */
+  color: color-mix(in srgb, var(--ink) 66%, transparent);
   font-size: 0.75rem;
   font-weight: 450;
-  opacity: 0.62;
   cursor: pointer;
   list-style: none;
-  transition:
-    color 140ms ease,
-    opacity 140ms ease;
+  transition: color 140ms ease;
 }
 
 /* a chevron, drawn from two borders so it inherits the summary's colour and
@@ -943,7 +955,6 @@
 .dataDisclosure > summary:focus-visible,
 .dataDisclosure[open] > summary {
   color: var(--ink);
-  opacity: 0.9;
 }
 
 /* The body no longer scrolls: each table carries its own scroller, so a wide
@@ -1492,12 +1503,8 @@
   background: var(--c);
   font-size: 0.875rem;
   font-weight: 600;
-  color: #fff;
+  color: var(--c-ink, #fff);
   font-variant-numeric: tabular-nums;
-}
-
-.panel.s2 .panelRate {
-  color: var(--surface);
 }
 
 .panelPlot {

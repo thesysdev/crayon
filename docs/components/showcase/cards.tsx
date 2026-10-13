@@ -71,7 +71,7 @@ export function LinkCardGrid({ items }: { items: LinkCardItem[] }) {
       {items.map((item) => (
         <article key={item.name} className={styles.card}>
           <div className={styles.cardHeader}>
-            <h4 className={styles.cardTitle}>{item.name}</h4>
+            <h3 className={styles.cardTitle}>{item.name}</h3>
             {item.tag ? <span className={styles.tag}>{item.tag}</span> : null}
           </div>
           <p className={styles.cardDescription}>{item.description}</p>
