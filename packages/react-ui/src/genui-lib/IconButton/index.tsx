@@ -43,6 +43,6 @@ export const IconButton = defineComponent({
   name: "IconButton",
   props: IconButtonSchema,
   description:
-    'A round icon-only button: IconButton(name, icon, action?, variant?, size?). name is the accessible label and the action\'s label, so it must say what the click does, e.g. IconButton("Share", Icon("share-2"), { type: "continue_conversation", context: "Share this itinerary" }, "secondary"). Use it only where the icon alone is unmistakable (share, close, more, next) and space is tight, like a card corner or a row of tools; anything less obvious needs a Button with a label. variant "primary" (solid) | "secondary" | "tertiary" (lowest emphasis, the usual choice). size "default" (32px) for almost every case; "large" (40px) only beside a large Button.',
+    'A round icon-only button: IconButton(name, icon, action?, variant?, size?). name is the accessible label and the action\'s label, so it must say what the click does, e.g. IconButton("Share", Icon("share-2"), @ToAssistant("Share this itinerary"), "secondary"). Use it only where the icon alone is unmistakable (share, close, more, next) and space is tight, like a card corner or a row of tools; anything less obvious needs a Button with a label. variant "primary" (solid) | "secondary" | "tertiary" (lowest emphasis, the usual choice). size "default" (32px) for almost every case; "large" (40px) only beside a large Button.',
   component: IconButtonRenderer,
 });

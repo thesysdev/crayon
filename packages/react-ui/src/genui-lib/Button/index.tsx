@@ -26,7 +26,7 @@ export const Button = defineComponent({
   name: "Button",
   props: ButtonSchema,
   description:
-    'A pill button: Button(label, action?, variant?, type?, size?, leading?). The label says exactly what clicking does, e.g. Button("Book a table", { type: "continue_conversation", context: "Book a table at Septime" }, "primary"). variant "primary" (solid, the one main action in a group) | "secondary" (supporting actions) | "tertiary" (lowest emphasis, e.g. "Skip"). type "destructive" (red) only for an action that deletes or cancels something. size "default" (32px) for almost every button; "large" (40px) only for a single prominent call to action, never for a row of buttons. Don\'t use the older "extra-small" | "small" | "medium" sizes. leading is an optional Icon before the label, added only where it clarifies the action (e.g. Icon("external-link") on a button that opens a site); most buttons have none.',
+    'A pill button: Button(label, action?, variant?, type?, size?, leading?). The label says exactly what clicking does, e.g. Button("Book a table", @ToAssistant("Book a table at Septime"), "primary"). variant "primary" (solid, the one main action in a group) | "secondary" (supporting actions) | "tertiary" (lowest emphasis, e.g. "Skip"). type "destructive" (red) only for an action that deletes or cancels something. size "default" (32px) for almost every button; "large" (40px) only for a single prominent call to action, never for a row of buttons. Don\'t use the older "extra-small" | "small" | "medium" sizes. leading is an optional Icon before the label, added only where it clarifies the action (e.g. Icon("external-link") on a button that opens a site); most buttons have none.',
 
   component: ({ props }) => {
     const triggerAction = useTriggerAction();
@@ -56,10 +56,11 @@ export const Button = defineComponent({
           // Validate form for primary buttons before firing action
           if (formValidation && variant === "primary") {
             if (action?.steps) {
-              // v0.5 ActionPlan — validate if any step is ToAssistant or mutation
+              // v0.5 ActionPlan: validate if any step is ToAssistant, a mutation, or a custom action
               const needsValidation = action.steps.some(
                 (s) =>
                   s.type === ACTION_STEPS.ToAssistant ||
+                  s.type === "custom_action" ||
                   (s.type === ACTION_STEPS.Run && s.refType === "mutation"),
               );
               if (needsValidation && !formValidation.validateForm()) return;

@@ -1,4 +1,5 @@
 import { useLayoutEffect, useRef, type PointerEvent } from "react";
+import { readPreference, writePreference } from "../../utils/preferences";
 import { useAgentInterfaceStore } from "./_shared/store";
 
 /* Keep DEFAULT in step with $sidebar-width in sidebar.scss. */
@@ -10,18 +11,12 @@ const MAX_WIDTH = 420;
 const COLLAPSE_AT = 150;
 /* Lands on the default width when released within this many px of it. */
 const SNAP_DISTANCE = 14;
-const STORAGE_KEY = "openui-agent-sidebar-width";
 const SAVE_DELAY_MS = 300;
+const WIDTH_KEY = "openui-agent-sidebar-width";
 const WIDTH_VAR = "--openui-agent-sidebar-width";
 
-const readStoredWidth = () => {
-  try {
-    const value = Number(window.localStorage.getItem(STORAGE_KEY));
-    return value >= MIN_WIDTH && value <= MAX_WIDTH ? value : null;
-  } catch {
-    return null;
-  }
-};
+const isValidWidth = (width: unknown): width is number =>
+  typeof width === "number" && width >= MIN_WIDTH && width <= MAX_WIDTH;
 
 const fitWidth = (raw: number) => {
   const width = Math.min(Math.max(raw, MIN_WIDTH), MAX_WIDTH);
@@ -32,7 +27,7 @@ const fitWidth = (raw: number) => {
  * The sidebar's right edge, draggable. It has no look of its own beyond the
  * resize cursor. The width lives in a CSS variable on the sidebar container,
  * written straight to the element so a drag doesn't re-render the tree, and is
- * saved to localStorage once the pointer settles.
+ * saved as a preference once the pointer settles.
  */
 export const SidebarResizeEdge = () => {
   const { isSidebarOpen, setIsSidebarOpen } = useAgentInterfaceStore((state) => ({
@@ -55,27 +50,22 @@ export const SidebarResizeEdge = () => {
 
   const scheduleSave = () => {
     if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
-    saveTimeoutRef.current = setTimeout(() => {
-      try {
-        window.localStorage.setItem(STORAGE_KEY, String(widthRef.current));
-      } catch {
-        // Storage can be unavailable (private mode, blocked site data).
-      }
-    }, SAVE_DELAY_MS);
+    saveTimeoutRef.current = setTimeout(
+      () => writePreference(WIDTH_KEY, widthRef.current),
+      SAVE_DELAY_MS,
+    );
   };
 
   // Before paint, so the sidebar opens at its saved width rather than the
-  // default and then jumping.
+  // default and then jumping: apply it with transitions off, force the style
+  // to settle, then let transitions back on.
   useLayoutEffect(() => {
-    const stored = readStoredWidth();
+    const saved = readPreference<number>(WIDTH_KEY);
     const el = container();
-    if (stored !== null && el) {
-      // Land on the saved width without animating to it from the default:
-      // apply it with transitions off, force the style to settle, then let
-      // transitions back on for later changes.
+    if (el && isValidWidth(saved)) {
       el.classList.add("openui-agent-sidebar-container--resizing");
-      widthRef.current = stored;
-      el.style.setProperty(WIDTH_VAR, `${stored}px`);
+      widthRef.current = saved;
+      el.style.setProperty(WIDTH_VAR, `${saved}px`);
       void el.offsetWidth;
       el.classList.remove("openui-agent-sidebar-container--resizing");
     }

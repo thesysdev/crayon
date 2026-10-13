@@ -14,9 +14,9 @@ import { Mascot } from "../AgentInterface/components/Mascot";
 import { MarkDownRenderer } from "../MarkDownRenderer";
 import { TimelineEntry } from "../_shared/tool-renderer/TimelineEntry";
 import type { ToolDetailedViewPanel } from "../_shared/tool-renderer/ToolActivityRenderer";
-import { defaultLabel } from "./ToolCallPrimitives";
+import { isToolRunning } from "./ToolCallPrimitives";
 import { TIMELINE_GLYPH, ThinkingGlyph, toolIcon } from "./ToolGlyphs";
-import { useToolLabels } from "./toolLabels";
+import { toolLabel, useToolLabels } from "./toolLabels";
 
 /**
  * One display row of the timeline: a tool activity, or a thinking-text step
@@ -27,8 +27,6 @@ export type TimelineStep =
 
 const stepKey = (step: TimelineStep) =>
   step.type === "text" ? `text-${step.id}` : step.activity.id;
-
-const isRunning = (a: ToolActivity) => a.status === "streaming" || a.status === "executing";
 
 /**
  * A thinking-text step as a timeline row: brain glyph and label, expanding into
@@ -141,7 +139,7 @@ const LiveStepSummary = ({ step }: { step: TimelineStep }) => {
   }
   const { activity } = step;
   const Glyph = toolIcon(activity.toolName, activity.status);
-  const label = activity.statusMessage ?? defaultLabel(activity.status, activity.toolName, labels);
+  const label = activity.statusMessage ?? toolLabel(activity.status, activity.toolName, labels);
   return (
     <>
       <span className="openui-behind-the-scenes__glyph">
@@ -302,7 +300,7 @@ export function ToolCallTimeline({
     isThreadRunning &&
     isLast &&
     activities.length > 0 &&
-    (isRunning(activities[activities.length - 1]!) || awaitingResponse);
+    (isToolRunning(activities[activities.length - 1]!.status) || awaitingResponse);
 
   // Collapsed by default; the header carries the live step instead.
   const [expanded, setExpanded] = useState(false);
@@ -436,7 +434,7 @@ export function ToolCallTimeline({
     current.type === "text"
       ? current.text
       : (current.activity.statusMessage ??
-        defaultLabel(current.activity.status, current.activity.toolName, labels));
+        toolLabel(current.activity.status, current.activity.toolName, labels));
 
   // Once settled, surface a failure count on the toggle so errors aren't hidden
   // behind a collapsed "Behind the scenes".

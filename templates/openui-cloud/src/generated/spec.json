@@ -215,7 +215,7 @@
     },
     "Button": {
       "signature": "Button(label: string, action?: ActionExpression, variant?: \"primary\" | \"secondary\" | \"tertiary\", type?: \"normal\" | \"destructive\", size?: \"default\" | \"large\", leading?: Icon)",
-      "description": "A pill button: Button(label, action?, variant?, type?, size?, leading?). The label says exactly what clicking does, e.g. Button(\"Book a table\", { type: \"continue_conversation\", context: \"Book a table at Septime\" }, \"primary\"). variant \"primary\" (solid, the one main action in a group) | \"secondary\" (supporting actions) | \"tertiary\" (lowest emphasis, e.g. \"Skip\"). type \"destructive\" (red) only for an action that deletes or cancels something. size \"default\" (32px) for almost every button; \"large\" (40px) only for a single prominent call to action, never for a row of buttons. Don't use the older \"extra-small\" | \"small\" | \"medium\" sizes. leading is an optional Icon before the label, added only where it clarifies the action (e.g. Icon(\"external-link\") on a button that opens a site); most buttons have none."
+      "description": "A pill button: Button(label, action?, variant?, type?, size?, leading?). The label says exactly what clicking does, e.g. Button(\"Book a table\", @ToAssistant(\"Book a table at Septime\"), \"primary\"). variant \"primary\" (solid, the one main action in a group) | \"secondary\" (supporting actions) | \"tertiary\" (lowest emphasis, e.g. \"Skip\"). type \"destructive\" (red) only for an action that deletes or cancels something. size \"default\" (32px) for almost every button; \"large\" (40px) only for a single prominent call to action, never for a row of buttons. Don't use the older \"extra-small\" | \"small\" | \"medium\" sizes. leading is an optional Icon before the label, added only where it clarifies the action (e.g. Icon(\"external-link\") on a button that opens a site); most buttons have none."
     },
     "Buttons": {
       "signature": "Buttons(buttons: Button[], direction?: \"row\" | \"column\")",
@@ -223,7 +223,7 @@
     },
     "IconButton": {
       "signature": "IconButton(name: string, icon: Icon, action?: ActionExpression, variant?: \"primary\" | \"secondary\" | \"tertiary\", size?: \"default\" | \"large\")",
-      "description": "A round icon-only button: IconButton(name, icon, action?, variant?, size?). name is the accessible label and the action's label, so it must say what the click does, e.g. IconButton(\"Share\", Icon(\"share-2\"), { type: \"continue_conversation\", context: \"Share this itinerary\" }, \"secondary\"). Use it only where the icon alone is unmistakable (share, close, more, next) and space is tight, like a card corner or a row of tools; anything less obvious needs a Button with a label. variant \"primary\" (solid) | \"secondary\" | \"tertiary\" (lowest emphasis, the usual choice). size \"default\" (32px) for almost every case; \"large\" (40px) only beside a large Button."
+      "description": "A round icon-only button: IconButton(name, icon, action?, variant?, size?). name is the accessible label and the action's label, so it must say what the click does, e.g. IconButton(\"Share\", Icon(\"share-2\"), @ToAssistant(\"Share this itinerary\"), \"secondary\"). Use it only where the icon alone is unmistakable (share, close, more, next) and space is tight, like a card corner or a row of tools; anything less obvious needs a Button with a label. variant \"primary\" (solid) | \"secondary\" | \"tertiary\" (lowest emphasis, the usual choice). size \"default\" (32px) for almost every case; \"large\" (40px) only beside a large Button."
     },
     "Stack": {
       "signature": "Stack(children: any[], direction?: \"row\" | \"column\", gap?: \"none\" | \"xs\" | \"s\" | \"m\" | \"l\" | \"xl\" | \"2xl\", align?: \"start\" | \"center\" | \"end\" | \"stretch\" | \"baseline\", justify?: \"start\" | \"center\" | \"end\" | \"between\" | \"around\" | \"evenly\", wrap?: boolean)",
@@ -303,7 +303,7 @@
     },
     "ListItem": {
       "signature": "ListItem(title: string | Text | Link | Tag | (string | Text | Link | Tag)[], subtitle?: string | Text | Metric | Tag | TagBlock | LeadingText | Link | (string | Text | Metric | Tag | TagBlock | LeadingText | Link)[], leading?: Avatar | Icon | Emoji, actionLabel?: string, action?: ActionExpression, actionSlot?: Button | Buttons | IconButton)",
-      "description": "One row in a ListBlock: ListItem(title, subtitle?, leading?, actionLabel?, action?, actionSlot?). title is a string, or a Text, Link or Tag. For a step or option with a name plus a description, emphasize the name with the \"body\" Text variant (it lines up with the number) and put the description in subtitle: ListItem(Text(\"Read the docs\", \"body\", true), \"Skim the quickstart and the component reference.\"). subtitle is one line of context: a string, or a Text, Metric, Tag, TagBlock, LeadingText or Link. leading is an optional Avatar (a real photo, a company logo via domain, or a tinted icon badge), an Icon, or a rare Emoji; it is 40px when the list has subtitles and 24px otherwise, and fits best in a \"plain\" list since numbered rows already lead with their number. The row is clickable only when it has an action (5th argument), e.g. ListItem(\"Cherry blossoms at Parc de Sceaux\", \"March – May\", null, null, { type: \"continue_conversation\", context: \"Tell me about cherry blossom season in Paris\" }); actionLabel is an optional short word shown at the right next to the chevron, e.g. \"View\". Use action for a whole-row drill-in like that. For an explicit verb, put real controls on the right with actionSlot (6th argument), a Button, a Buttons group or an IconButton, e.g. ListItem(\"Septime\", \"Tonight · 8:30pm\", null, null, null, Button(\"Book\", { type: \"continue_conversation\", context: \"Book Septime tonight at 8:30pm\" }, \"secondary\")), or Buttons with Approve and Decline. With actionSlot the row itself is not clickable, so leave action and actionLabel out. When title or subtitle needs two or more pieces side by side, pass an array and they sit on one line, e.g. subtitle [Metric(\"$89\", null, null, \"sm\"), Tag(\"In stock\", null, \"success\")]; a single piece goes in directly."
+      "description": "One row in a ListBlock: ListItem(title, subtitle?, leading?, actionLabel?, action?, actionSlot?). title is a string, or a Text, Link or Tag. For a step or option with a name plus a description, emphasize the name with the \"body\" Text variant (it lines up with the number) and put the description in subtitle: ListItem(Text(\"Read the docs\", \"body\", true), \"Skim the quickstart and the component reference.\"). subtitle is one line of context: a string, or a Text, Metric, Tag, TagBlock, LeadingText or Link. leading is an optional Avatar (a real photo, a company logo via domain, or a tinted icon badge), an Icon, or a rare Emoji; it is 40px when the list has subtitles and 24px otherwise, and fits best in a \"plain\" list since numbered rows already lead with their number. The row is clickable only when it has an action (5th argument), e.g. ListItem(\"Cherry blossoms at Parc de Sceaux\", \"March – May\", null, null, @ToAssistant(\"Tell me about cherry blossom season in Paris\")); actionLabel is an optional short word shown at the right next to the chevron, e.g. \"View\". Use action for a whole-row drill-in like that. For an explicit verb, put real controls on the right with actionSlot (6th argument), a Button, a Buttons group or an IconButton, e.g. ListItem(\"Septime\", \"Tonight · 8:30pm\", null, null, null, Button(\"Book\", @ToAssistant(\"Book Septime tonight at 8:30pm\"), \"secondary\")), or Buttons with Approve and Decline. With actionSlot the row itself is not clickable, so leave action and actionLabel out. When title or subtitle needs two or more pieces side by side, pass an array and they sit on one line, e.g. subtitle [Metric(\"$89\", null, null, \"sm\"), Tag(\"In stock\", null, \"success\")]; a single piece goes in directly."
     },
     "Timeline": {
       "signature": "Timeline(items: TimelineItem[])",
@@ -327,7 +327,7 @@
     },
     "ValueCard": {
       "signature": "ValueCard(items: ValueCardItem[], layout?: \"horizontal\" | \"vertical\", responsive?: boolean, action?: ActionExpression, gap?: number | string, carousel?: boolean)",
-      "description": "A responsive grid of 2 or more compact cards, each one short fact or KPI: ValueCard([item1, item2, item3], layout?, responsive?, action?, gap?, carousel?). Each card is a ValueCardItem(id?, title, subtitle?, leading?, value?), e.g. ValueCardItem(\"revenue\", \"Revenue\", \"Month to date\", Icon(\"circle-dollar-sign\", \"finance\"), Metric(\"$48,200\", \"+8.1%\", null, \"sm\")). Set layout once on the ValueCard for the whole group, never per item. Use \"horizontal\" only when every value is a single short piece (one Metric or a short Text); if any value has more, such as a Metric plus a Tag or a Metric plus a Text note, use \"vertical\" for the whole block. \"horizontal\" (default) is for key/value facts: the value goes on the right, with a Metric at \"sm\"; with a subtitle the title stacks over it beside a 36px leading (an Avatar fills it, a bare Icon becomes a neutral badge), and without one the leading sits inline before the title like a LeadingText. \"vertical\" is for KPI tiles where the number is the hero: the leading and title sit on one line, the subtitle on its own line under the title, and the value goes below at the default size, e.g. ValueCard([v1, v2, v3], \"vertical\", true). leading is an Icon for a concept, or an Avatar for a person or company with a real photo or logo. carousel (vertical only) scrolls the cards sideways instead of wrapping, for secondary browsing. Every item uses the same parts. action is one shared action for all cards, with the clicked card's details attached, so keep a continue_conversation context generic and never use open_url. Use ValueCard for dashboard-like output, such as an analytics or monitoring view; for an inline section of figures inside a normal response use ValueLayout instead. For a long list of key/value rows use EntityList; for one headline figure use a Metric on its own."
+      "description": "A responsive grid of 2 or more compact cards, each one short fact or KPI: ValueCard([item1, item2, item3], layout?, responsive?, action?, gap?, carousel?). Each card is a ValueCardItem(id?, title, subtitle?, leading?, value?), e.g. ValueCardItem(\"revenue\", \"Revenue\", \"Month to date\", Icon(\"circle-dollar-sign\", \"finance\"), Metric(\"$48,200\", \"+8.1%\", null, \"sm\")). Set layout once on the ValueCard for the whole group, never per item. Use \"horizontal\" only when every value is a single short piece (one Metric or a short Text); if any value has more, such as a Metric plus a Tag or a Metric plus a Text note, use \"vertical\" for the whole block. \"horizontal\" (default) is for key/value facts: the value goes on the right, with a Metric at \"sm\"; with a subtitle the title stacks over it beside a 36px leading (an Avatar fills it, a bare Icon becomes a neutral badge), and without one the leading sits inline before the title like a LeadingText. \"vertical\" is for KPI tiles where the number is the hero: the leading and title sit on one line, the subtitle on its own line under the title, and the value goes below at the default size, e.g. ValueCard([v1, v2, v3], \"vertical\", true). leading is an Icon for a concept, or an Avatar for a person or company with a real photo or logo. carousel (vertical only) scrolls the cards sideways instead of wrapping, for secondary browsing. Every item uses the same parts. action is one shared action for all cards, with the clicked card's details attached, so keep its @ToAssistant message generic and never use @OpenUrl. Use ValueCard for dashboard-like output, such as an analytics or monitoring view; for an inline section of figures inside a normal response use ValueLayout instead. For a long list of key/value rows use EntityList; for one headline figure use a Metric on its own."
     },
     "ValueLayout": {
       "signature": "ValueLayout(items: ValueCardItem[], layout?: \"horizontal\" | \"vertical\", responsive?: boolean, gap?: number | string, carousel?: boolean)",
@@ -339,23 +339,23 @@
     },
     "InsightCard": {
       "signature": "InsightCard(items: InsightCardItem[], layout?: \"grid\" | \"carousel\", responsive?: boolean, action?: ActionExpression, gap?: number | string)",
-      "description": "A grid or carousel of 2 or more tall tiles, each one takeaway: InsightCard([item1, item2, item3], layout?, responsive?, action?, gap?). Each tile has a short overline (the topic) at the top and the insight as a large title at the bottom. Use it for key takeaways from research, trends or news (with a status Tag in each subtitle), topics to explore as entry points, plan options, or suggested next topics after an answer. layout \"grid\" (default) for the main side-by-side set, \"carousel\" for secondary browsing. Keep every item the same shape, with the same kind of subtitle. Tiles have no photo; for photo tiles use ImageCard. action is one shared action for every tile, with the clicked tile's details attached and hover and press feedback added automatically, so keep a continue_conversation context generic (e.g. \"Tell me more about this trend\") and never use open_url. For figures use ValueCard or ValueLayout; for products with a price and a button use CompositeCardBlock."
+      "description": "A grid or carousel of 2 or more tall tiles, each one takeaway: InsightCard([item1, item2, item3], layout?, responsive?, action?, gap?). Each tile has a short overline (the topic) at the top and the insight as a large title at the bottom. Use it for key takeaways from research, trends or news (with a status Tag in each subtitle), topics to explore as entry points, plan options, or suggested next topics after an answer. layout \"grid\" (default) for the main side-by-side set, \"carousel\" for secondary browsing. Keep every item the same shape, with the same kind of subtitle. Tiles have no photo; for photo tiles use ImageCard. action is one shared action for every tile, with the clicked tile's details attached and hover and press feedback added automatically, so keep its @ToAssistant message generic (e.g. \"Tell me more about this trend\") and never use @OpenUrl. For figures use ValueCard or ValueLayout; for products with a price and a button use CompositeCardBlock."
     },
     "CompositeCardItem": {
       "signature": "CompositeCardItem(id?: string, header?: EntityTitle | ImageTitle | Text | Image | LeadingText, body?: (Text | Metric | EntityTitle | Image | AreaChart | BarChart | LineChart | ListBlock | TagBlock | EntityList | Checklist)[], footer?: {price?: Metric, button?: Button | Buttons | IconButton | IconButton[]}, media?: Image | AreaChart | BarChart | LineChart)",
-      "description": "One rich white card: CompositeCardItem(id?, header?, body?, footer?, media?), e.g. CompositeCardItem(\"widget-pro\", EntityTitle(Icon(\"package\", \"shopping\"), \"Widget Pro\", \"Best seller\"), [Text(\"Sold this month\"), Metric(\"2,410 units\", \"+12%\", null, \"sm\")], { price: Metric(\"$29.00\"), button: Button(\"View details\", { type: \"continue_conversation\", context: \"Show details for Widget Pro\" }, \"secondary\") }). header is an EntityTitle for a named product, company or person, an ImageTitle or Image for a real photo, or a Text title as Text(\"…\", \"h3\"). body stacks the content: Text renders as 14px body copy (secondary unless emphasis is true), Metric at size \"sm\", EntityTitle, Image, a chart, ListBlock, TagBlock, a small EntityList, or a Checklist for what is included or done (pricing tiers, onboarding, launch readiness), which beats a ListBlock with check icons. footer holds an optional price Metric, always shown at 18px so it needs no size (pass previous for a sale), and a Button; for two actions use Buttons([primary, secondary], \"column\"), which stacks them full width. For compact actions, pass one IconButton or an array of them instead; they sit in a row to the right of the price. Each must open a real page (open_url) or ask a real follow-up (continue_conversation), never a save, share or cart action the app cannot do, e.g. { price: Metric(\"$179\"), button: [IconButton(\"Show similar\", Icon(\"search\"), { type: \"continue_conversation\", context: \"Show headphones similar to Studio Headphones\" }, \"secondary\"), IconButton(\"Open product page\", Icon(\"external-link\"), { type: \"open_url\", url: \"https://…\" }, \"secondary\")] }. A footer Button can open the card's own real page with open_url. media (5th) is a real photo, with a URL from a tool result or the user and never invented, shown edge to edge across the top of the card, above the header: CompositeCardItem(\"lutetia\", Text(\"Hôtel Lutetia\", \"h3\"), [Text(\"Art Deco landmark on the Left Bank.\")], { price: Metric(\"€420 / night\"), button: Button(\"Book\", { type: \"continue_conversation\", context: \"Book Hôtel Lutetia\" }, \"primary\") }, Image(\"Hôtel Lutetia\", \"https://…\", \"16:9\")). Prefer media over an Image header when the card leads with a photo. media can instead be an AreaChart, BarChart or LineChart for a compact trend across the top of a metric or trend card, such as MRR over six months or weekly signups, e.g. CompositeCardItem(\"mrr\", Text(\"MRR · last 6 months\", \"h3\"), [Metric(\"$84.2k\", \"+12%\", null, \"sm\")], null, AreaChart([\"May\", \"Jun\", \"Jul\", \"Aug\", \"Sep\", \"Oct\"], [Series(\"MRR\", [52, 58, 61, 66, 75, 84])])). Keep one strong block per card: never stack two big-hierarchy blocks together, such as an EntityTitle header (with its 44px badge) next to media, a chart, an ImageTitle or a large Metric. When the card already has a hero like a photo or chart, title it with a plain Text, or a LeadingText such as LeadingText(Icon(\"dollar-sign\", \"finance\"), Text(\"MRR\", \"body\", true)) when an icon helps, instead of an EntityTitle."
+      "description": "One rich white card: CompositeCardItem(id?, header?, body?, footer?, media?), e.g. CompositeCardItem(\"widget-pro\", EntityTitle(Icon(\"package\", \"shopping\"), \"Widget Pro\", \"Best seller\"), [Text(\"Sold this month\"), Metric(\"2,410 units\", \"+12%\", null, \"sm\")], { price: Metric(\"$29.00\"), button: Button(\"View details\", @ToAssistant(\"Show details for Widget Pro\"), \"secondary\") }). header is an EntityTitle for a named product, company or person, an ImageTitle or Image for a real photo, or a Text title as Text(\"…\", \"h3\"). body stacks the content: Text renders as 14px body copy (secondary unless emphasis is true), Metric at size \"sm\", EntityTitle, Image, a chart, ListBlock, TagBlock, a small EntityList, or a Checklist for what is included or done (pricing tiers, onboarding, launch readiness), which beats a ListBlock with check icons. footer holds an optional price Metric, always shown at 18px so it needs no size (pass previous for a sale), and a Button; for two actions use Buttons([primary, secondary], \"column\"), which stacks them full width. For compact actions, pass one IconButton or an array of them instead; they sit in a row to the right of the price. Each must open a real page (@OpenUrl) or ask a real follow-up (@ToAssistant), never a save, share or cart action the app cannot do, e.g. { price: Metric(\"$179\"), button: [IconButton(\"Show similar\", Icon(\"search\"), @ToAssistant(\"Show headphones similar to Studio Headphones\"), \"secondary\"), IconButton(\"Open product page\", Icon(\"external-link\"), @OpenUrl(\"https://…\"), \"secondary\")] }. A footer Button can open the card's own real page with @OpenUrl. media (5th) is a real photo, with a URL from a tool result or the user and never invented, shown edge to edge across the top of the card, above the header: CompositeCardItem(\"lutetia\", Text(\"Hôtel Lutetia\", \"h3\"), [Text(\"Art Deco landmark on the Left Bank.\")], { price: Metric(\"€420 / night\"), button: Button(\"Book\", @ToAssistant(\"Book Hôtel Lutetia\"), \"primary\") }, Image(\"Hôtel Lutetia\", \"https://…\", \"16:9\")). Prefer media over an Image header when the card leads with a photo. media can instead be an AreaChart, BarChart or LineChart for a compact trend across the top of a metric or trend card, such as MRR over six months or weekly signups, e.g. CompositeCardItem(\"mrr\", Text(\"MRR · last 6 months\", \"h3\"), [Metric(\"$84.2k\", \"+12%\", null, \"sm\")], null, AreaChart([\"May\", \"Jun\", \"Jul\", \"Aug\", \"Sep\", \"Oct\"], [Series(\"MRR\", [52, 58, 61, 66, 75, 84])])). Keep one strong block per card: never stack two big-hierarchy blocks together, such as an EntityTitle header (with its 44px badge) next to media, a chart, an ImageTitle or a large Metric. When the card already has a hero like a photo or chart, title it with a plain Text, or a LeadingText such as LeadingText(Icon(\"dollar-sign\", \"finance\"), Text(\"MRR\", \"body\", true)) when an icon helps, instead of an EntityTitle."
     },
     "CompositeCardBlock": {
       "signature": "CompositeCardBlock(items: CompositeCardItem[], layout?: \"grid\" | \"carousel\", responsive?: boolean, action?: ActionExpression, gap?: number | string)",
-      "description": "The fallback card block: use it only when no specialised card fits, so first reach for ImageCard (photo tiles), InsightCard (takeaways), ValueCard or ValueLayout (figures), EntityList or ListBlock (rows), or OptionCards (choices in a form). A two-per-row grid or carousel of 2 or more rich cards, for products, offers, plans or deep-dive topics that need more than a title and a line, such as a header, mixed body content and a price or button footer: CompositeCardBlock([item1, item2], layout?, responsive?, action?, gap?). layout \"grid\" (default) for side-by-side comparison, \"carousel\" for secondary browsing. Every card uses the same parts in the same order. action is one shared action for every card, with the clicked card's details attached, so keep a continue_conversation context generic and never use open_url there; give each card its own link with a footer Button instead. For short facts use ValueCard or ValueLayout; for photo tiles use ImageCard."
+      "description": "The fallback card block: use it only when no specialised card fits, so first reach for ImageCard (photo tiles), InsightCard (takeaways), ValueCard or ValueLayout (figures), EntityList or ListBlock (rows), or OptionCards (choices in a form). A two-per-row grid or carousel of 2 or more rich cards, for products, offers, plans or deep-dive topics that need more than a title and a line, such as a header, mixed body content and a price or button footer: CompositeCardBlock([item1, item2], layout?, responsive?, action?, gap?). layout \"grid\" (default) for side-by-side comparison, \"carousel\" for secondary browsing. Every card uses the same parts in the same order. action is one shared action for every card, with the clicked card's details attached, so keep its @ToAssistant message generic and never use @OpenUrl there; give each card its own link with a footer Button instead. For short facts use ValueCard or ValueLayout; for photo tiles use ImageCard."
     },
     "ImageCardItem": {
       "signature": "ImageCardItem(id?: string, src: string, title: string, subtitle?: string | Text | Metric | Tag | LeadingText | Link | (string | Text | Metric | Tag | LeadingText | Link)[], overline?: string, leading?: Avatar | Icon | Emoji, alt?: string, actions?: IconButton | IconButton[])",
-      "description": "One tall photo tile: ImageCardItem(id?, src, title, subtitle?, overline?, leading?, alt?, actions?), e.g. ImageCardItem(\"eiffel-tower\", \"https://…/eiffel.jpg\", \"Eiffel Tower\", [\"Open daily 9am–midnight\", Tag(\"Must-See\", null, \"info\")], null, null, \"Aerial view of the Eiffel Tower\"). src is a real image URL from a tool result or the user, never invented, shown full-bleed behind the text with dark gradients so the white text stays readable. overline is an optional short label at the top left (a category such as \"Museum\"), with leading (an Icon, Avatar or Emoji) before it. title (22px) is the name of the place or item, and subtitle sits under it: a string, Text, Metric, Tag, LeadingText or Link, or an array of them on one line. actions are optional IconButtons at the top right, only for something that really happens: an open_url to the item's own page from a tool result, or a continue_conversation follow-up such as IconButton(\"Hotels nearby\", Icon(\"bed\", \"travel\"), { type: \"continue_conversation\", context: \"Show hotels near the Eiffel Tower\" }); never save, share or download, which you cannot perform. alt describes the photo."
+      "description": "One tall photo tile: ImageCardItem(id?, src, title, subtitle?, overline?, leading?, alt?, actions?), e.g. ImageCardItem(\"eiffel-tower\", \"https://…/eiffel.jpg\", \"Eiffel Tower\", [\"Open daily 9am–midnight\", Tag(\"Must-See\", null, \"info\")], null, null, \"Aerial view of the Eiffel Tower\"). src is a real image URL from a tool result or the user, never invented, shown full-bleed behind the text with dark gradients so the white text stays readable. overline is an optional short label at the top left (a category such as \"Museum\"), with leading (an Icon, Avatar or Emoji) before it. title (22px) is the name of the place or item, and subtitle sits under it: a string, Text, Metric, Tag, LeadingText or Link, or an array of them on one line. actions are optional IconButtons at the top right, only for something that really happens: an @OpenUrl to the item's own page from a tool result, or a @ToAssistant follow-up such as IconButton(\"Hotels nearby\", Icon(\"bed\", \"travel\"), @ToAssistant(\"Show hotels near the Eiffel Tower\")); never save, share or download, which you cannot perform. alt describes the photo."
     },
     "ImageCard": {
       "signature": "ImageCard(items: ImageCardItem[], layout?: \"grid\" | \"carousel\", responsive?: boolean, action?: ActionExpression, gap?: number | string)",
-      "description": "A grid or carousel of 2 or more tall photo tiles for places, products, media or inspiration: ImageCard([item1, item2], layout?, responsive?, action?, gap?), e.g. ImageCard([lm1, lm2, lm3], \"carousel\", true, { type: \"continue_conversation\", context: \"Tell me more about this Paris landmark\" }). Each tile is a real photo behind an overline (top left), optional IconButton actions (top right), and a title with a composable subtitle (bottom). Use it only when every item has a real image URL from a tool result or the user; with no real photos, use InsightCard. layout \"grid\" (default) for a main side-by-side set, \"carousel\" for secondary browsing. Keep every item the same shape. action is one shared action for every tile, with the clicked tile's details attached, so keep a continue_conversation context generic and never use open_url there; IconButtons keep their own actions. For a single picture that illustrates an answer use Image, and for products with a price and a buy button use CompositeCardBlock."
+      "description": "A grid or carousel of 2 or more tall photo tiles for places, products, media or inspiration: ImageCard([item1, item2], layout?, responsive?, action?, gap?), e.g. ImageCard([lm1, lm2, lm3], \"carousel\", true, @ToAssistant(\"Tell me more about this Paris landmark\")). Each tile is a real photo behind an overline (top left), optional IconButton actions (top right), and a title with a composable subtitle (bottom). Use it only when every item has a real image URL from a tool result or the user; with no real photos, use InsightCard. layout \"grid\" (default) for a main side-by-side set, \"carousel\" for secondary browsing. Keep every item the same shape. action is one shared action for every tile, with the clicked tile's details attached, so keep its @ToAssistant message generic and never use @OpenUrl there; IconButtons keep their own actions. For a single picture that illustrates an answer use Image, and for products with a price and a buy button use CompositeCardBlock."
     },
     "Modal": {
       "signature": "Modal(title: string, open?: $binding<boolean>, children: (Text | Markdown | Link | Metric | Avatar | AvatarStack | Heading | LeadingText | EntityTitle | ImageTitle | Callout | CodeBlock | Image | ImageGallery | Separator | HorizontalBarChart | RadarChart | PieChart | RadialChart | SingleStackedBarChart | ScatterChart | AreaChart | BarChart | LineChart | Table | TagBlock | Form | Buttons | IconButton | Steps | Timeline | Checklist | EntityList | EditableTable | ValueCard | ValueLayout | InsightCard | CompositeCardBlock | ImageCard)[], size?: \"sm\" | \"md\" | \"lg\")",
@@ -598,7 +598,7 @@
         "- ValueLayout takes the same ValueCardItems and layout rules as ValueCard but draws dashed rules instead of tinted cards and has no action. Use ValueCard for dashboard-like output (analytics, monitoring) and ValueLayout as an inline section of figures inside a normal UI response.",
         "- InsightCard: 2+ tall InsightCardItem(id?, title, subtitle?, overline?, leading?, color?) tiles, each one takeaway: a short overline (with an optional leading) at the top, and the title (the insight, 22px) with a composable subtitle at the bottom, on a palette color (picked by meaning, never invented); no photo, which is ImageCard. Keep the overline to a few words and the title to one short insight, never a Tag. Use it for research takeaways, trends or news with a status Tag in the subtitle, topics to explore, plan options and suggested next topics.",
         "- CompositeCardItem: rich white card with a header (EntityTitle, ImageTitle, Image, or a Text(\"…\", \"h3\") title), an optional edge-to-edge media at the top (5th argument: a real photo Image, or an AreaChart, BarChart or LineChart for a metric or trend card), a body array (Text as 14px body copy, Metric at sm, EntityTitle, Image, charts, ListBlock, TagBlock, EntityList, or a Checklist for what a plan includes) and a footer (price Metric, always 18px, with previous for a sale, plus a Button, Buttons([primary, secondary], \"column\") for two actions, or IconButtons on the right; real actions only). The fallback block: use it only when no specialised card (ImageCard, InsightCard, ValueCard, EntityList, ListBlock, OptionCards) fits, for products, offers and plans that need mixed content. Keep one strong block per card: never put an EntityTitle header next to another big block (media, a chart, an ImageTitle, a large Metric); with a photo or chart hero, title the card with a plain Text, or a LeadingText(Icon(...), Text(..., \"body\", true)) when an icon helps.",
-        "- ImageCard: 2+ tall ImageCardItem(id?, src, title, subtitle?, overline?, leading?, alt?, actions?) photo tiles for places, products, media or inspiration: a real photo behind an overline (top left), optional IconButton actions (top right), and the title with a composable subtitle (bottom). Only with real image URLs for every item, otherwise InsightCard; IconButtons only for real open_url or continue_conversation actions, never save or share."
+        "- ImageCard: 2+ tall ImageCardItem(id?, src, title, subtitle?, overline?, leading?, alt?, actions?) photo tiles for places, products, media or inspiration: a real photo behind an overline (top left), optional IconButton actions (top right), and the title with a composable subtitle (bottom). Only with real image URLs for every item, otherwise InsightCard; IconButtons only for real @OpenUrl or @ToAssistant actions, never save or share."
       ]
     },
     {
@@ -2281,60 +2281,7 @@
             "type": "string"
           },
           "action": {
-            "anyOf": [
-              {
-                "type": "object",
-                "properties": {
-                  "type": {
-                    "type": "string",
-                    "const": "open_url"
-                  },
-                  "url": {
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "type",
-                  "url"
-                ],
-                "additionalProperties": false
-              },
-              {
-                "type": "object",
-                "properties": {
-                  "type": {
-                    "type": "string",
-                    "const": "continue_conversation"
-                  },
-                  "context": {
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "type"
-                ],
-                "additionalProperties": false
-              },
-              {
-                "type": "object",
-                "properties": {
-                  "type": {
-                    "type": "string"
-                  },
-                  "params": {
-                    "type": "object",
-                    "propertyNames": {
-                      "type": "string"
-                    },
-                    "additionalProperties": {}
-                  }
-                },
-                "required": [
-                  "type"
-                ],
-                "additionalProperties": false
-              }
-            ]
+            "$ref": "#/$defs/ActionExpression"
           },
           "variant": {
             "type": "string",
@@ -2366,7 +2313,63 @@
           "label"
         ],
         "additionalProperties": false,
-        "description": "A pill button: Button(label, action?, variant?, type?, size?, leading?). The label says exactly what clicking does, e.g. Button(\"Book a table\", { type: \"continue_conversation\", context: \"Book a table at Septime\" }, \"primary\"). variant \"primary\" (solid, the one main action in a group) | \"secondary\" (supporting actions) | \"tertiary\" (lowest emphasis, e.g. \"Skip\"). type \"destructive\" (red) only for an action that deletes or cancels something. size \"default\" (32px) for almost every button; \"large\" (40px) only for a single prominent call to action, never for a row of buttons. Don't use the older \"extra-small\" | \"small\" | \"medium\" sizes. leading is an optional Icon before the label, added only where it clarifies the action (e.g. Icon(\"external-link\") on a button that opens a site); most buttons have none."
+        "description": "A pill button: Button(label, action?, variant?, type?, size?, leading?). The label says exactly what clicking does, e.g. Button(\"Book a table\", @ToAssistant(\"Book a table at Septime\"), \"primary\"). variant \"primary\" (solid, the one main action in a group) | \"secondary\" (supporting actions) | \"tertiary\" (lowest emphasis, e.g. \"Skip\"). type \"destructive\" (red) only for an action that deletes or cancels something. size \"default\" (32px) for almost every button; \"large\" (40px) only for a single prominent call to action, never for a row of buttons. Don't use the older \"extra-small\" | \"small\" | \"medium\" sizes. leading is an optional Icon before the label, added only where it clarifies the action (e.g. Icon(\"external-link\") on a button that opens a site); most buttons have none."
+      },
+      "ActionExpression": {
+        "anyOf": [
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "const": "open_url"
+              },
+              "url": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "type",
+              "url"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "const": "continue_conversation"
+              },
+              "context": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "type"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "params": {
+                "type": "object",
+                "propertyNames": {
+                  "type": "string"
+                },
+                "additionalProperties": {}
+              }
+            },
+            "required": [
+              "type"
+            ],
+            "additionalProperties": false
+          }
+        ]
       },
       "FormControl": {
         "type": "object",
@@ -3235,60 +3238,7 @@
             "$ref": "#/$defs/Icon"
           },
           "action": {
-            "anyOf": [
-              {
-                "type": "object",
-                "properties": {
-                  "type": {
-                    "type": "string",
-                    "const": "open_url"
-                  },
-                  "url": {
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "type",
-                  "url"
-                ],
-                "additionalProperties": false
-              },
-              {
-                "type": "object",
-                "properties": {
-                  "type": {
-                    "type": "string",
-                    "const": "continue_conversation"
-                  },
-                  "context": {
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "type"
-                ],
-                "additionalProperties": false
-              },
-              {
-                "type": "object",
-                "properties": {
-                  "type": {
-                    "type": "string"
-                  },
-                  "params": {
-                    "type": "object",
-                    "propertyNames": {
-                      "type": "string"
-                    },
-                    "additionalProperties": {}
-                  }
-                },
-                "required": [
-                  "type"
-                ],
-                "additionalProperties": false
-              }
-            ]
+            "$ref": "#/$defs/ActionExpression"
           },
           "variant": {
             "type": "string",
@@ -3311,7 +3261,7 @@
           "icon"
         ],
         "additionalProperties": false,
-        "description": "A round icon-only button: IconButton(name, icon, action?, variant?, size?). name is the accessible label and the action's label, so it must say what the click does, e.g. IconButton(\"Share\", Icon(\"share-2\"), { type: \"continue_conversation\", context: \"Share this itinerary\" }, \"secondary\"). Use it only where the icon alone is unmistakable (share, close, more, next) and space is tight, like a card corner or a row of tools; anything less obvious needs a Button with a label. variant \"primary\" (solid) | \"secondary\" | \"tertiary\" (lowest emphasis, the usual choice). size \"default\" (32px) for almost every case; \"large\" (40px) only beside a large Button."
+        "description": "A round icon-only button: IconButton(name, icon, action?, variant?, size?). name is the accessible label and the action's label, so it must say what the click does, e.g. IconButton(\"Share\", Icon(\"share-2\"), @ToAssistant(\"Share this itinerary\"), \"secondary\"). Use it only where the icon alone is unmistakable (share, close, more, next) and space is tight, like a card corner or a row of tools; anything less obvious needs a Button with a label. variant \"primary\" (solid) | \"secondary\" | \"tertiary\" (lowest emphasis, the usual choice). size \"default\" (32px) for almost every case; \"large\" (40px) only beside a large Button."
       },
       "Steps": {
         "type": "object",
@@ -3941,60 +3891,7 @@
             "type": "boolean"
           },
           "action": {
-            "anyOf": [
-              {
-                "type": "object",
-                "properties": {
-                  "type": {
-                    "type": "string",
-                    "const": "open_url"
-                  },
-                  "url": {
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "type",
-                  "url"
-                ],
-                "additionalProperties": false
-              },
-              {
-                "type": "object",
-                "properties": {
-                  "type": {
-                    "type": "string",
-                    "const": "continue_conversation"
-                  },
-                  "context": {
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "type"
-                ],
-                "additionalProperties": false
-              },
-              {
-                "type": "object",
-                "properties": {
-                  "type": {
-                    "type": "string"
-                  },
-                  "params": {
-                    "type": "object",
-                    "propertyNames": {
-                      "type": "string"
-                    },
-                    "additionalProperties": {}
-                  }
-                },
-                "required": [
-                  "type"
-                ],
-                "additionalProperties": false
-              }
-            ]
+            "$ref": "#/$defs/ActionExpression"
           },
           "gap": {
             "anyOf": [
@@ -4014,7 +3911,7 @@
           "items"
         ],
         "additionalProperties": false,
-        "description": "A responsive grid of 2 or more compact cards, each one short fact or KPI: ValueCard([item1, item2, item3], layout?, responsive?, action?, gap?, carousel?). Each card is a ValueCardItem(id?, title, subtitle?, leading?, value?), e.g. ValueCardItem(\"revenue\", \"Revenue\", \"Month to date\", Icon(\"circle-dollar-sign\", \"finance\"), Metric(\"$48,200\", \"+8.1%\", null, \"sm\")). Set layout once on the ValueCard for the whole group, never per item. Use \"horizontal\" only when every value is a single short piece (one Metric or a short Text); if any value has more, such as a Metric plus a Tag or a Metric plus a Text note, use \"vertical\" for the whole block. \"horizontal\" (default) is for key/value facts: the value goes on the right, with a Metric at \"sm\"; with a subtitle the title stacks over it beside a 36px leading (an Avatar fills it, a bare Icon becomes a neutral badge), and without one the leading sits inline before the title like a LeadingText. \"vertical\" is for KPI tiles where the number is the hero: the leading and title sit on one line, the subtitle on its own line under the title, and the value goes below at the default size, e.g. ValueCard([v1, v2, v3], \"vertical\", true). leading is an Icon for a concept, or an Avatar for a person or company with a real photo or logo. carousel (vertical only) scrolls the cards sideways instead of wrapping, for secondary browsing. Every item uses the same parts. action is one shared action for all cards, with the clicked card's details attached, so keep a continue_conversation context generic and never use open_url. Use ValueCard for dashboard-like output, such as an analytics or monitoring view; for an inline section of figures inside a normal response use ValueLayout instead. For a long list of key/value rows use EntityList; for one headline figure use a Metric on its own."
+        "description": "A responsive grid of 2 or more compact cards, each one short fact or KPI: ValueCard([item1, item2, item3], layout?, responsive?, action?, gap?, carousel?). Each card is a ValueCardItem(id?, title, subtitle?, leading?, value?), e.g. ValueCardItem(\"revenue\", \"Revenue\", \"Month to date\", Icon(\"circle-dollar-sign\", \"finance\"), Metric(\"$48,200\", \"+8.1%\", null, \"sm\")). Set layout once on the ValueCard for the whole group, never per item. Use \"horizontal\" only when every value is a single short piece (one Metric or a short Text); if any value has more, such as a Metric plus a Tag or a Metric plus a Text note, use \"vertical\" for the whole block. \"horizontal\" (default) is for key/value facts: the value goes on the right, with a Metric at \"sm\"; with a subtitle the title stacks over it beside a 36px leading (an Avatar fills it, a bare Icon becomes a neutral badge), and without one the leading sits inline before the title like a LeadingText. \"vertical\" is for KPI tiles where the number is the hero: the leading and title sit on one line, the subtitle on its own line under the title, and the value goes below at the default size, e.g. ValueCard([v1, v2, v3], \"vertical\", true). leading is an Icon for a concept, or an Avatar for a person or company with a real photo or logo. carousel (vertical only) scrolls the cards sideways instead of wrapping, for secondary browsing. Every item uses the same parts. action is one shared action for all cards, with the clicked card's details attached, so keep its @ToAssistant message generic and never use @OpenUrl. Use ValueCard for dashboard-like output, such as an analytics or monitoring view; for an inline section of figures inside a normal response use ValueLayout instead. For a long list of key/value rows use EntityList; for one headline figure use a Metric on its own."
       },
       "ValueCardItem": {
         "type": "object",
@@ -4194,60 +4091,7 @@
             "type": "boolean"
           },
           "action": {
-            "anyOf": [
-              {
-                "type": "object",
-                "properties": {
-                  "type": {
-                    "type": "string",
-                    "const": "open_url"
-                  },
-                  "url": {
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "type",
-                  "url"
-                ],
-                "additionalProperties": false
-              },
-              {
-                "type": "object",
-                "properties": {
-                  "type": {
-                    "type": "string",
-                    "const": "continue_conversation"
-                  },
-                  "context": {
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "type"
-                ],
-                "additionalProperties": false
-              },
-              {
-                "type": "object",
-                "properties": {
-                  "type": {
-                    "type": "string"
-                  },
-                  "params": {
-                    "type": "object",
-                    "propertyNames": {
-                      "type": "string"
-                    },
-                    "additionalProperties": {}
-                  }
-                },
-                "required": [
-                  "type"
-                ],
-                "additionalProperties": false
-              }
-            ]
+            "$ref": "#/$defs/ActionExpression"
           },
           "gap": {
             "anyOf": [
@@ -4264,7 +4108,7 @@
           "items"
         ],
         "additionalProperties": false,
-        "description": "A grid or carousel of 2 or more tall tiles, each one takeaway: InsightCard([item1, item2, item3], layout?, responsive?, action?, gap?). Each tile has a short overline (the topic) at the top and the insight as a large title at the bottom. Use it for key takeaways from research, trends or news (with a status Tag in each subtitle), topics to explore as entry points, plan options, or suggested next topics after an answer. layout \"grid\" (default) for the main side-by-side set, \"carousel\" for secondary browsing. Keep every item the same shape, with the same kind of subtitle. Tiles have no photo; for photo tiles use ImageCard. action is one shared action for every tile, with the clicked tile's details attached and hover and press feedback added automatically, so keep a continue_conversation context generic (e.g. \"Tell me more about this trend\") and never use open_url. For figures use ValueCard or ValueLayout; for products with a price and a button use CompositeCardBlock."
+        "description": "A grid or carousel of 2 or more tall tiles, each one takeaway: InsightCard([item1, item2, item3], layout?, responsive?, action?, gap?). Each tile has a short overline (the topic) at the top and the insight as a large title at the bottom. Use it for key takeaways from research, trends or news (with a status Tag in each subtitle), topics to explore as entry points, plan options, or suggested next topics after an answer. layout \"grid\" (default) for the main side-by-side set, \"carousel\" for secondary browsing. Keep every item the same shape, with the same kind of subtitle. Tiles have no photo; for photo tiles use ImageCard. action is one shared action for every tile, with the clicked tile's details attached and hover and press feedback added automatically, so keep its @ToAssistant message generic (e.g. \"Tell me more about this trend\") and never use @OpenUrl. For figures use ValueCard or ValueLayout; for products with a price and a button use CompositeCardBlock."
       },
       "InsightCardItem": {
         "type": "object",
@@ -4381,60 +4225,7 @@
             "type": "boolean"
           },
           "action": {
-            "anyOf": [
-              {
-                "type": "object",
-                "properties": {
-                  "type": {
-                    "type": "string",
-                    "const": "open_url"
-                  },
-                  "url": {
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "type",
-                  "url"
-                ],
-                "additionalProperties": false
-              },
-              {
-                "type": "object",
-                "properties": {
-                  "type": {
-                    "type": "string",
-                    "const": "continue_conversation"
-                  },
-                  "context": {
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "type"
-                ],
-                "additionalProperties": false
-              },
-              {
-                "type": "object",
-                "properties": {
-                  "type": {
-                    "type": "string"
-                  },
-                  "params": {
-                    "type": "object",
-                    "propertyNames": {
-                      "type": "string"
-                    },
-                    "additionalProperties": {}
-                  }
-                },
-                "required": [
-                  "type"
-                ],
-                "additionalProperties": false
-              }
-            ]
+            "$ref": "#/$defs/ActionExpression"
           },
           "gap": {
             "anyOf": [
@@ -4453,7 +4244,7 @@
           "responsive"
         ],
         "additionalProperties": false,
-        "description": "The fallback card block: use it only when no specialised card fits, so first reach for ImageCard (photo tiles), InsightCard (takeaways), ValueCard or ValueLayout (figures), EntityList or ListBlock (rows), or OptionCards (choices in a form). A two-per-row grid or carousel of 2 or more rich cards, for products, offers, plans or deep-dive topics that need more than a title and a line, such as a header, mixed body content and a price or button footer: CompositeCardBlock([item1, item2], layout?, responsive?, action?, gap?). layout \"grid\" (default) for side-by-side comparison, \"carousel\" for secondary browsing. Every card uses the same parts in the same order. action is one shared action for every card, with the clicked card's details attached, so keep a continue_conversation context generic and never use open_url there; give each card its own link with a footer Button instead. For short facts use ValueCard or ValueLayout; for photo tiles use ImageCard."
+        "description": "The fallback card block: use it only when no specialised card fits, so first reach for ImageCard (photo tiles), InsightCard (takeaways), ValueCard or ValueLayout (figures), EntityList or ListBlock (rows), or OptionCards (choices in a form). A two-per-row grid or carousel of 2 or more rich cards, for products, offers, plans or deep-dive topics that need more than a title and a line, such as a header, mixed body content and a price or button footer: CompositeCardBlock([item1, item2], layout?, responsive?, action?, gap?). layout \"grid\" (default) for side-by-side comparison, \"carousel\" for secondary browsing. Every card uses the same parts in the same order. action is one shared action for every card, with the clicked card's details attached, so keep its @ToAssistant message generic and never use @OpenUrl there; give each card its own link with a footer Button instead. For short facts use ValueCard or ValueLayout; for photo tiles use ImageCard."
       },
       "CompositeCardItem": {
         "type": "object",
@@ -4570,7 +4361,7 @@
           "body"
         ],
         "additionalProperties": false,
-        "description": "One rich white card: CompositeCardItem(id?, header?, body?, footer?, media?), e.g. CompositeCardItem(\"widget-pro\", EntityTitle(Icon(\"package\", \"shopping\"), \"Widget Pro\", \"Best seller\"), [Text(\"Sold this month\"), Metric(\"2,410 units\", \"+12%\", null, \"sm\")], { price: Metric(\"$29.00\"), button: Button(\"View details\", { type: \"continue_conversation\", context: \"Show details for Widget Pro\" }, \"secondary\") }). header is an EntityTitle for a named product, company or person, an ImageTitle or Image for a real photo, or a Text title as Text(\"…\", \"h3\"). body stacks the content: Text renders as 14px body copy (secondary unless emphasis is true), Metric at size \"sm\", EntityTitle, Image, a chart, ListBlock, TagBlock, a small EntityList, or a Checklist for what is included or done (pricing tiers, onboarding, launch readiness), which beats a ListBlock with check icons. footer holds an optional price Metric, always shown at 18px so it needs no size (pass previous for a sale), and a Button; for two actions use Buttons([primary, secondary], \"column\"), which stacks them full width. For compact actions, pass one IconButton or an array of them instead; they sit in a row to the right of the price. Each must open a real page (open_url) or ask a real follow-up (continue_conversation), never a save, share or cart action the app cannot do, e.g. { price: Metric(\"$179\"), button: [IconButton(\"Show similar\", Icon(\"search\"), { type: \"continue_conversation\", context: \"Show headphones similar to Studio Headphones\" }, \"secondary\"), IconButton(\"Open product page\", Icon(\"external-link\"), { type: \"open_url\", url: \"https://…\" }, \"secondary\")] }. A footer Button can open the card's own real page with open_url. media (5th) is a real photo, with a URL from a tool result or the user and never invented, shown edge to edge across the top of the card, above the header: CompositeCardItem(\"lutetia\", Text(\"Hôtel Lutetia\", \"h3\"), [Text(\"Art Deco landmark on the Left Bank.\")], { price: Metric(\"€420 / night\"), button: Button(\"Book\", { type: \"continue_conversation\", context: \"Book Hôtel Lutetia\" }, \"primary\") }, Image(\"Hôtel Lutetia\", \"https://…\", \"16:9\")). Prefer media over an Image header when the card leads with a photo. media can instead be an AreaChart, BarChart or LineChart for a compact trend across the top of a metric or trend card, such as MRR over six months or weekly signups, e.g. CompositeCardItem(\"mrr\", Text(\"MRR · last 6 months\", \"h3\"), [Metric(\"$84.2k\", \"+12%\", null, \"sm\")], null, AreaChart([\"May\", \"Jun\", \"Jul\", \"Aug\", \"Sep\", \"Oct\"], [Series(\"MRR\", [52, 58, 61, 66, 75, 84])])). Keep one strong block per card: never stack two big-hierarchy blocks together, such as an EntityTitle header (with its 44px badge) next to media, a chart, an ImageTitle or a large Metric. When the card already has a hero like a photo or chart, title it with a plain Text, or a LeadingText such as LeadingText(Icon(\"dollar-sign\", \"finance\"), Text(\"MRR\", \"body\", true)) when an icon helps, instead of an EntityTitle."
+        "description": "One rich white card: CompositeCardItem(id?, header?, body?, footer?, media?), e.g. CompositeCardItem(\"widget-pro\", EntityTitle(Icon(\"package\", \"shopping\"), \"Widget Pro\", \"Best seller\"), [Text(\"Sold this month\"), Metric(\"2,410 units\", \"+12%\", null, \"sm\")], { price: Metric(\"$29.00\"), button: Button(\"View details\", @ToAssistant(\"Show details for Widget Pro\"), \"secondary\") }). header is an EntityTitle for a named product, company or person, an ImageTitle or Image for a real photo, or a Text title as Text(\"…\", \"h3\"). body stacks the content: Text renders as 14px body copy (secondary unless emphasis is true), Metric at size \"sm\", EntityTitle, Image, a chart, ListBlock, TagBlock, a small EntityList, or a Checklist for what is included or done (pricing tiers, onboarding, launch readiness), which beats a ListBlock with check icons. footer holds an optional price Metric, always shown at 18px so it needs no size (pass previous for a sale), and a Button; for two actions use Buttons([primary, secondary], \"column\"), which stacks them full width. For compact actions, pass one IconButton or an array of them instead; they sit in a row to the right of the price. Each must open a real page (@OpenUrl) or ask a real follow-up (@ToAssistant), never a save, share or cart action the app cannot do, e.g. { price: Metric(\"$179\"), button: [IconButton(\"Show similar\", Icon(\"search\"), @ToAssistant(\"Show headphones similar to Studio Headphones\"), \"secondary\"), IconButton(\"Open product page\", Icon(\"external-link\"), @OpenUrl(\"https://…\"), \"secondary\")] }. A footer Button can open the card's own real page with @OpenUrl. media (5th) is a real photo, with a URL from a tool result or the user and never invented, shown edge to edge across the top of the card, above the header: CompositeCardItem(\"lutetia\", Text(\"Hôtel Lutetia\", \"h3\"), [Text(\"Art Deco landmark on the Left Bank.\")], { price: Metric(\"€420 / night\"), button: Button(\"Book\", @ToAssistant(\"Book Hôtel Lutetia\"), \"primary\") }, Image(\"Hôtel Lutetia\", \"https://…\", \"16:9\")). Prefer media over an Image header when the card leads with a photo. media can instead be an AreaChart, BarChart or LineChart for a compact trend across the top of a metric or trend card, such as MRR over six months or weekly signups, e.g. CompositeCardItem(\"mrr\", Text(\"MRR · last 6 months\", \"h3\"), [Metric(\"$84.2k\", \"+12%\", null, \"sm\")], null, AreaChart([\"May\", \"Jun\", \"Jul\", \"Aug\", \"Sep\", \"Oct\"], [Series(\"MRR\", [52, 58, 61, 66, 75, 84])])). Keep one strong block per card: never stack two big-hierarchy blocks together, such as an EntityTitle header (with its 44px badge) next to media, a chart, an ImageTitle or a large Metric. When the card already has a hero like a photo or chart, title it with a plain Text, or a LeadingText such as LeadingText(Icon(\"dollar-sign\", \"finance\"), Text(\"MRR\", \"body\", true)) when an icon helps, instead of an EntityTitle."
       },
       "ListBlock": {
         "type": "object",
@@ -4703,60 +4494,7 @@
             "type": "string"
           },
           "action": {
-            "anyOf": [
-              {
-                "type": "object",
-                "properties": {
-                  "type": {
-                    "type": "string",
-                    "const": "open_url"
-                  },
-                  "url": {
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "type",
-                  "url"
-                ],
-                "additionalProperties": false
-              },
-              {
-                "type": "object",
-                "properties": {
-                  "type": {
-                    "type": "string",
-                    "const": "continue_conversation"
-                  },
-                  "context": {
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "type"
-                ],
-                "additionalProperties": false
-              },
-              {
-                "type": "object",
-                "properties": {
-                  "type": {
-                    "type": "string"
-                  },
-                  "params": {
-                    "type": "object",
-                    "propertyNames": {
-                      "type": "string"
-                    },
-                    "additionalProperties": {}
-                  }
-                },
-                "required": [
-                  "type"
-                ],
-                "additionalProperties": false
-              }
-            ]
+            "$ref": "#/$defs/ActionExpression"
           },
           "actionSlot": {
             "anyOf": [
@@ -4776,7 +4514,7 @@
           "title"
         ],
         "additionalProperties": false,
-        "description": "One row in a ListBlock: ListItem(title, subtitle?, leading?, actionLabel?, action?, actionSlot?). title is a string, or a Text, Link or Tag. For a step or option with a name plus a description, emphasize the name with the \"body\" Text variant (it lines up with the number) and put the description in subtitle: ListItem(Text(\"Read the docs\", \"body\", true), \"Skim the quickstart and the component reference.\"). subtitle is one line of context: a string, or a Text, Metric, Tag, TagBlock, LeadingText or Link. leading is an optional Avatar (a real photo, a company logo via domain, or a tinted icon badge), an Icon, or a rare Emoji; it is 40px when the list has subtitles and 24px otherwise, and fits best in a \"plain\" list since numbered rows already lead with their number. The row is clickable only when it has an action (5th argument), e.g. ListItem(\"Cherry blossoms at Parc de Sceaux\", \"March – May\", null, null, { type: \"continue_conversation\", context: \"Tell me about cherry blossom season in Paris\" }); actionLabel is an optional short word shown at the right next to the chevron, e.g. \"View\". Use action for a whole-row drill-in like that. For an explicit verb, put real controls on the right with actionSlot (6th argument), a Button, a Buttons group or an IconButton, e.g. ListItem(\"Septime\", \"Tonight · 8:30pm\", null, null, null, Button(\"Book\", { type: \"continue_conversation\", context: \"Book Septime tonight at 8:30pm\" }, \"secondary\")), or Buttons with Approve and Decline. With actionSlot the row itself is not clickable, so leave action and actionLabel out. When title or subtitle needs two or more pieces side by side, pass an array and they sit on one line, e.g. subtitle [Metric(\"$89\", null, null, \"sm\"), Tag(\"In stock\", null, \"success\")]; a single piece goes in directly."
+        "description": "One row in a ListBlock: ListItem(title, subtitle?, leading?, actionLabel?, action?, actionSlot?). title is a string, or a Text, Link or Tag. For a step or option with a name plus a description, emphasize the name with the \"body\" Text variant (it lines up with the number) and put the description in subtitle: ListItem(Text(\"Read the docs\", \"body\", true), \"Skim the quickstart and the component reference.\"). subtitle is one line of context: a string, or a Text, Metric, Tag, TagBlock, LeadingText or Link. leading is an optional Avatar (a real photo, a company logo via domain, or a tinted icon badge), an Icon, or a rare Emoji; it is 40px when the list has subtitles and 24px otherwise, and fits best in a \"plain\" list since numbered rows already lead with their number. The row is clickable only when it has an action (5th argument), e.g. ListItem(\"Cherry blossoms at Parc de Sceaux\", \"March – May\", null, null, @ToAssistant(\"Tell me about cherry blossom season in Paris\")); actionLabel is an optional short word shown at the right next to the chevron, e.g. \"View\". Use action for a whole-row drill-in like that. For an explicit verb, put real controls on the right with actionSlot (6th argument), a Button, a Buttons group or an IconButton, e.g. ListItem(\"Septime\", \"Tonight · 8:30pm\", null, null, null, Button(\"Book\", @ToAssistant(\"Book Septime tonight at 8:30pm\"), \"secondary\")), or Buttons with Approve and Decline. With actionSlot the row itself is not clickable, so leave action and actionLabel out. When title or subtitle needs two or more pieces side by side, pass an array and they sit on one line, e.g. subtitle [Metric(\"$89\", null, null, \"sm\"), Tag(\"In stock\", null, \"success\")]; a single piece goes in directly."
       },
       "ImageCard": {
         "type": "object",
@@ -4799,60 +4537,7 @@
             "type": "boolean"
           },
           "action": {
-            "anyOf": [
-              {
-                "type": "object",
-                "properties": {
-                  "type": {
-                    "type": "string",
-                    "const": "open_url"
-                  },
-                  "url": {
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "type",
-                  "url"
-                ],
-                "additionalProperties": false
-              },
-              {
-                "type": "object",
-                "properties": {
-                  "type": {
-                    "type": "string",
-                    "const": "continue_conversation"
-                  },
-                  "context": {
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "type"
-                ],
-                "additionalProperties": false
-              },
-              {
-                "type": "object",
-                "properties": {
-                  "type": {
-                    "type": "string"
-                  },
-                  "params": {
-                    "type": "object",
-                    "propertyNames": {
-                      "type": "string"
-                    },
-                    "additionalProperties": {}
-                  }
-                },
-                "required": [
-                  "type"
-                ],
-                "additionalProperties": false
-              }
-            ]
+            "$ref": "#/$defs/ActionExpression"
           },
           "gap": {
             "anyOf": [
@@ -4869,7 +4554,7 @@
           "items"
         ],
         "additionalProperties": false,
-        "description": "A grid or carousel of 2 or more tall photo tiles for places, products, media or inspiration: ImageCard([item1, item2], layout?, responsive?, action?, gap?), e.g. ImageCard([lm1, lm2, lm3], \"carousel\", true, { type: \"continue_conversation\", context: \"Tell me more about this Paris landmark\" }). Each tile is a real photo behind an overline (top left), optional IconButton actions (top right), and a title with a composable subtitle (bottom). Use it only when every item has a real image URL from a tool result or the user; with no real photos, use InsightCard. layout \"grid\" (default) for a main side-by-side set, \"carousel\" for secondary browsing. Keep every item the same shape. action is one shared action for every tile, with the clicked tile's details attached, so keep a continue_conversation context generic and never use open_url there; IconButtons keep their own actions. For a single picture that illustrates an answer use Image, and for products with a price and a buy button use CompositeCardBlock."
+        "description": "A grid or carousel of 2 or more tall photo tiles for places, products, media or inspiration: ImageCard([item1, item2], layout?, responsive?, action?, gap?), e.g. ImageCard([lm1, lm2, lm3], \"carousel\", true, @ToAssistant(\"Tell me more about this Paris landmark\")). Each tile is a real photo behind an overline (top left), optional IconButton actions (top right), and a title with a composable subtitle (bottom). Use it only when every item has a real image URL from a tool result or the user; with no real photos, use InsightCard. layout \"grid\" (default) for a main side-by-side set, \"carousel\" for secondary browsing. Keep every item the same shape. action is one shared action for every tile, with the clicked tile's details attached, so keep its @ToAssistant message generic and never use @OpenUrl there; IconButtons keep their own actions. For a single picture that illustrates an answer use Image, and for products with a price and a buy button use CompositeCardBlock."
       },
       "ImageCardItem": {
         "type": "object",
@@ -4968,7 +4653,7 @@
           "title"
         ],
         "additionalProperties": false,
-        "description": "One tall photo tile: ImageCardItem(id?, src, title, subtitle?, overline?, leading?, alt?, actions?), e.g. ImageCardItem(\"eiffel-tower\", \"https://…/eiffel.jpg\", \"Eiffel Tower\", [\"Open daily 9am–midnight\", Tag(\"Must-See\", null, \"info\")], null, null, \"Aerial view of the Eiffel Tower\"). src is a real image URL from a tool result or the user, never invented, shown full-bleed behind the text with dark gradients so the white text stays readable. overline is an optional short label at the top left (a category such as \"Museum\"), with leading (an Icon, Avatar or Emoji) before it. title (22px) is the name of the place or item, and subtitle sits under it: a string, Text, Metric, Tag, LeadingText or Link, or an array of them on one line. actions are optional IconButtons at the top right, only for something that really happens: an open_url to the item's own page from a tool result, or a continue_conversation follow-up such as IconButton(\"Hotels nearby\", Icon(\"bed\", \"travel\"), { type: \"continue_conversation\", context: \"Show hotels near the Eiffel Tower\" }); never save, share or download, which you cannot perform. alt describes the photo."
+        "description": "One tall photo tile: ImageCardItem(id?, src, title, subtitle?, overline?, leading?, alt?, actions?), e.g. ImageCardItem(\"eiffel-tower\", \"https://…/eiffel.jpg\", \"Eiffel Tower\", [\"Open daily 9am–midnight\", Tag(\"Must-See\", null, \"info\")], null, null, \"Aerial view of the Eiffel Tower\"). src is a real image URL from a tool result or the user, never invented, shown full-bleed behind the text with dark gradients so the white text stays readable. overline is an optional short label at the top left (a category such as \"Museum\"), with leading (an Icon, Avatar or Emoji) before it. title (22px) is the name of the place or item, and subtitle sits under it: a string, Text, Metric, Tag, LeadingText or Link, or an array of them on one line. actions are optional IconButtons at the top right, only for something that really happens: an @OpenUrl to the item's own page from a tool result, or a @ToAssistant follow-up such as IconButton(\"Hotels nearby\", Icon(\"bed\", \"travel\"), @ToAssistant(\"Show hotels near the Eiffel Tower\")); never save, share or download, which you cannot perform. alt describes the photo."
       },
       "Tabs": {
         "type": "object",

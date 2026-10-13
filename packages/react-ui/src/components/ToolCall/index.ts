@@ -6,7 +6,7 @@ export { ToolCallComponent, type ToolCallProps } from "./ToolCall";
 export { DefaultToolCard } from "./DefaultToolCard";
 export { SourceIcon } from "./SourceIcon";
 export { TimelineToolCard } from "./TimelineToolCard";
-export { ToolCall, defaultLabel, prettyResult, useToolCall } from "./ToolCallPrimitives";
+export { ToolCall, prettyResult, useToolCall } from "./ToolCallPrimitives";
 export { ToolCallTimeline, type TimelineStep } from "./ToolCallTimeline";
 export {
   ArtifactGlyph,
@@ -22,6 +22,7 @@ export {
 } from "./ToolGlyphs";
 export {
   ToolLabelsProvider,
+  defaultLabel,
   humanizeToolName,
   toolLabel,
   useToolLabels,

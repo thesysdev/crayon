@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useState } from "react";
+import { readPreference, writePreference } from "../../utils/preferences";
 import { useIsomorphicLayoutEffect } from "../Charts/hooks/core/useIsomorphicLayoutEffect";
 import type { ThemeMode } from "./types";
 import { useSystemThemeMode } from "./useSystemThemeMode";
@@ -8,7 +9,7 @@ import { useSystemThemeMode } from "./useSystemThemeMode";
 /** A user's theme choice: a fixed mode, or follow the OS. */
 export type ThemeModePreference = ThemeMode | "system";
 
-/** localStorage key the preference is saved under (absent means "system"). */
+/** localStorage key the preference is saved under (unset means "system"). */
 export const THEME_MODE_STORAGE_KEY = "openui-theme-mode";
 
 /**
@@ -20,15 +21,6 @@ export const THEME_MODE_ATTRIBUTE = "data-openui-theme";
 
 const isPreference = (value: unknown): value is ThemeModePreference =>
   value === "light" || value === "dark" || value === "system";
-
-const readPreference = (storageKey: string): ThemeModePreference => {
-  try {
-    const saved = window.localStorage.getItem(storageKey);
-    return isPreference(saved) ? saved : "system";
-  } catch {
-    return "system";
-  }
-};
 
 /**
  * The user's Light / Dark / System choice, saved to localStorage and mirrored
@@ -45,18 +37,14 @@ export function useThemeModePreference(storageKey: string = THEME_MODE_STORAGE_K
   // before paint, so server-rendered markup hydrates cleanly.
   const [preference, setPreferenceState] = useState<ThemeModePreference>("system");
   useIsomorphicLayoutEffect(() => {
-    setPreferenceState(readPreference(storageKey));
+    const saved = readPreference(storageKey);
+    setPreferenceState(isPreference(saved) ? saved : "system");
   }, [storageKey]);
 
   const setPreference = useCallback(
     (next: ThemeModePreference) => {
       setPreferenceState(next);
-      try {
-        if (next === "system") window.localStorage.removeItem(storageKey);
-        else window.localStorage.setItem(storageKey, next);
-      } catch {
-        // Storage can be unavailable (private mode); the choice still applies.
-      }
+      writePreference(storageKey, next === "system" ? undefined : next);
     },
     [storageKey],
   );

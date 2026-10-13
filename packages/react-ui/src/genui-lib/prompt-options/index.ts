@@ -37,7 +37,7 @@ emailField = FormControl("Email", Input("email", "you@example.com", "email", { r
 countryField = FormControl("Country", Select("country", countryOpts, "Select...", { required: true }))
 msgField = FormControl("Message", TextArea("message", "Tell us more...", 4, { required: true, minLength: 10 }))
 countryOpts = [SelectItem("us", "United States"), SelectItem("uk", "United Kingdom"), SelectItem("de", "Germany")]
-btns = Buttons([Button("Submit", Action([@ToAssistant("Submit")]), "primary"), Button("Cancel", Action([@ToAssistant("Cancel")]), "secondary")])`,
+btns = Buttons([Button("Submit", @ToAssistant("Submit"), "primary"), Button("Cancel", @ToAssistant("Cancel"), "secondary")])`,
 
   `Example 4 — Tabs with mixed content:
 
@@ -74,14 +74,14 @@ p1icon = Icon("package", "shopping")
 p1bodyLabel = Text("Sold this month", "small")
 p1body = Metric("2,410 units", "+12%", null, "sm")
 p1footer = { price: Metric("$29.00"), button: p1btn }
-p1btn = Button("View Details", Action([@ToAssistant("Show details for Widget Pro")]), "secondary")
+p1btn = Button("View Details", @ToAssistant("Show details for Widget Pro"), "secondary")
 p2 = CompositeCardItem("widget-mini", p2header, [p2bodyLabel, p2body], p2footer)
 p2header = EntityTitle(p2icon, "Widget Mini", "New arrival")
 p2icon = Icon("box", "shopping")
 p2bodyLabel = Text("Sold this month", "small")
 p2body = Metric("980 units", "+4%", null, "sm")
 p2footer = { price: Metric("$14.00", null, null, null, "$19.00"), button: p2btn }
-p2btn = Button("View Details", Action([@ToAssistant("Show details for Widget Mini")]), "secondary")`,
+p2btn = Button("View Details", @ToAssistant("Show details for Widget Mini"), "secondary")`,
 
   `Example 6 — Editable table and a selection form:
 
@@ -109,7 +109,7 @@ tool2 = ChipItem("slack", "Slack", tool2icon)
 tool2icon = Icon("message-square", "communication")
 tool3 = ChipItem("notion", "Notion", tool3icon)
 tool3icon = Icon("notebook", "text")
-formButtons = Buttons([Button("Save", Action([@ToAssistant("Save preferences")]), "primary")])`,
+formButtons = Buttons([Button("Save", @ToAssistant("Save preferences"), "primary")])`,
   `Example 7 — Dashboard (one Section holding a Shell: KPI Grid, chart Grid, then a wide table outside the Grids; Cards are titled with their own title/subtitle args):
 
 root = Stack([dash])
@@ -133,26 +133,26 @@ gallery = ImageGallery([{ src: "https://images.unsplash.com/photo-1519741497674-
 options = Section([venuesTitle, wideVenues, nextBtns])
 venuesTitle = Heading("Venue styles", "Tap one to see venues and typical costs")
 wideVenues = Bleed([venues])
-venues = ImageCard([v1, v2, v3], "grid", true, Action([@ToAssistant("Show venues and typical costs for this style")]))
+venues = ImageCard([v1, v2, v3], "grid", true, @ToAssistant("Show venues and typical costs for this style"))
 v1 = ImageCardItem("classic-barn", "https://images.unsplash.com/photo-1464366400600-7168b8af9bc3", "Classic barn", ["80–150 guests", Tag("Most popular", null, "success")], "Rustic", null, "Red barn at sunset")
 v2 = ImageCardItem("vineyard-barn", "https://images.unsplash.com/photo-1510076857177-7470076d4098", "Vineyard barn", ["50–120 guests", Tag("Wine pairing", null, "info")], "Rustic", null, "Vineyard rows beside a barn")
 v3 = ImageCardItem("mountain-lodge", "https://images.unsplash.com/photo-1470770841072-f978cf4d019e", "Mountain lodge", ["40–100 guests", Tag("Scenic", null, "neutral")], "Rustic", null, "Lodge beside a mountain lake")
-nextBtns = Buttons([Button("Plan my budget", Action([@ToAssistant("Help me plan a rustic barn wedding budget")]), "primary"), Button("Build a timeline", Action([@ToAssistant("Build a 12-month wedding planning timeline")]), "secondary")])`,
+nextBtns = Buttons([Button("Plan my budget", @ToAssistant("Help me plan a rustic barn wedding budget"), "primary"), Button("Build a timeline", @ToAssistant("Build a 12-month wedding planning timeline"), "secondary")])`,
 
   `Example 9 — Clarifying question as visual choices, not a form (one question, tappable options, a stated default):
 
 root = Stack([main])
 main = Section([question, paceCards, skipBtns])
 question = Markdown("Happy to plan your Japan trip. **What pace do you want?** Tap one, or I will plan a balanced pace.")
-paceCards = InsightCard([p1, p2, p3], "grid", true, Action([@ToAssistant("Plan my Japan trip at this pace")]))
+paceCards = InsightCard([p1, p2, p3], "grid", true, @ToAssistant("Plan my Japan trip at this pace"))
 p1 = InsightCardItem("relaxed", "2–3 sights a day, long meals", null, "Relaxed", Icon("coffee", "food"), "neutral")
 p2 = InsightCardItem("balanced", "Highlights with downtime", null, "Balanced", Icon("scale", "tools"), "info")
 p3 = InsightCardItem("packed", "See as much as possible", null, "Packed", Icon("zap", "weather"), "neutral")
-skipBtns = Buttons([Button("Surprise me", Action([@ToAssistant("Plan my Japan trip at a balanced pace")]), "secondary", "normal", "default", Icon("sparkles", "ai"))])`,
+skipBtns = Buttons([Button("Surprise me", @ToAssistant("Plan my Japan trip at a balanced pace"), "secondary", "normal", "default", Icon("sparkles", "ai"))])`,
 ];
 
 const openuiPreamble =
-  'You are an AI assistant that responds using openui-lang, a declarative UI language. Your ENTIRE response must be valid openui-lang code — no markdown, no explanations, just openui-lang.\n\nHow to shape every response — decide before writing, in this order:\n\n1) Visual first: when the topic is visual (travel, weddings, events, food, places, products, fashion, home and design), use an image search tool if one is available and lead with real photos: an ImageGallery or a hero Image (in a Bleed for width) near the top of the first Section, then an ImageCard grid or carousel for the options. Only use image URLs from a tool result or the user, never invented ones; with no real photos, compose the answer from text, icons and cards instead, never with a placeholder.\n\n2) Ask before guessing, with visual choices: when the request is ambiguous or missing a detail that changes the answer (a style, a budget range, which product or place), ask one short question and let the user pick instead of typing. Offer 2–5 concrete options plus your default: ImageCard tiles with real photos for visual options, InsightCard tiles or Buttons with leading icons for the rest, all with Action([@ToAssistant("…")]) actions. A Markdown line asks the question and names the default you will use. Use a Form only for essential input that cannot be picked (a name, an email, exact dates, free text), with the fewest fields possible, never a long form of options the user could tap instead. Ask one question at a time, and never ask when the intent is clear.\n\n3) Match the UI to the need: a plain or conversational answer is concise Markdown in one Section; a visual answer leads with images as above; a structured or data answer uses the compositions (Card with title, Grid, Shell for a dashboard, Bleed for wide comparisons, Tabs, Accordion, Steps, Timeline, Checklist, Table and charts). Never add UI the answer does not need.';
+  'You are an AI assistant that responds using openui-lang, a declarative UI language. Your ENTIRE response must be valid openui-lang code — no markdown, no explanations, just openui-lang.\n\nHow to shape every response — decide before writing, in this order:\n\n1) Visual first: when the topic is visual (travel, weddings, events, food, places, products, fashion, home and design), use an image search tool if one is available and lead with real photos: an ImageGallery or a hero Image (in a Bleed for width) near the top of the first Section, then an ImageCard grid or carousel for the options. Only use image URLs from a tool result or the user, never invented ones; with no real photos, compose the answer from text, icons and cards instead, never with a placeholder.\n\n2) Ask before guessing, with visual choices: when the request is ambiguous or missing a detail that changes the answer (a style, a budget range, which product or place), ask one short question and let the user pick instead of typing. Offer 2–5 concrete options plus your default: ImageCard tiles with real photos for visual options, InsightCard tiles or Buttons with leading icons for the rest, all with @ToAssistant("…") actions. A Markdown line asks the question and names the default you will use. Use a Form only for essential input that cannot be picked (a name, an email, exact dates, free text), with the fewest fields possible, never a long form of options the user could tap instead. Ask one question at a time, and never ask when the intent is clear.\n\n3) Match the UI to the need: a plain or conversational answer is concise Markdown in one Section; a visual answer leads with images as above; a structured or data answer uses the compositions (Card with title, Grid, Shell for a dashboard, Bleed for wide comparisons, Tabs, Accordion, Steps, Timeline, Checklist, Table and charts). Never add UI the answer does not need.';
 
 export const openuiAdditionalRules: string[] = [
   "When asked about data, generate realistic/plausible data",
@@ -195,7 +195,7 @@ secIntro = Section([intro, highlights])
 secStats = Section([statsHeader, statsCards])
 secExplore = Section([sectionsBlock, actionBtns])
 intro = Markdown("# Paris\\n\\nParis is ==one of the world's most visited cities== — a timeless blend of iconic landmarks, world-class cuisine, art, and romance [1]. In 2026 the city is buzzing with new energy: the **Grand Palais** has reopened after a €466M renovation, and you can now **swim in the Seine** for the first time in over a century [2].")
-highlights = InsightCard([h1, h2, h3], "grid", true, { type: "continue_conversation", context: "Tell me more about this aspect of Paris" })
+highlights = InsightCard([h1, h2, h3], "grid", true, @ToAssistant("Tell me more about this aspect of Paris"))
 h1 = InsightCardItem("art-museums", "143 museums including the Louvre & newly reopened Grand Palais.", null, "Art & Museums", null, "neutral")
 h2 = InsightCardItem("gastronomy", "9,000+ restaurants, 130+ Michelin stars, and the world's best baguettes.", null, "Gastronomy", null, "neutral")
 h3 = InsightCardItem("fashion-capital", "Home to Chanel, Dior, Louis Vuitton & Hermès — the global luxury hub.", null, "Fashion Capital", null, "neutral")
@@ -212,7 +212,7 @@ ov3icon = Icon("circle-dollar-sign", "finance")
 ov3metric = Metric("€23.4B")
 sectionsBlock = SectionBlock([secLandmarks, secFood, secWhen], false)
 secLandmarks = SectionItem("landmarks", "Iconic Landmarks", [landmarksCarousel])
-landmarksCarousel = ImageCard([lm1, lm2, lm3, lm4], "carousel", true, { type: "continue_conversation", context: "Tell me more about this Paris landmark" })
+landmarksCarousel = ImageCard([lm1, lm2, lm3, lm4], "carousel", true, @ToAssistant("Tell me more about this Paris landmark"))
 lm1 = ImageCardItem("eiffel-tower", "https://c8.alamy.com/comp/RYEB13/aerial-view-of-the-eiffel-tower-with-the-park-champ-de-mars-and-the-river-seine-paris-france-RYEB13.jpg", "Eiffel Tower", ["Open daily 9am–midnight", lm1tag], null, null, "Aerial view of the Eiffel Tower")
 lm1tag = Tag("Must-See", lm1tagIcon, "info")
 lm1tagIcon = Icon("star", "shapes")
@@ -226,7 +226,7 @@ lm4 = ImageCardItem("versailles", "https://cdn.britannica.com/76/130076-050-3112
 lm4tag = Tag("Day Trip", lm4tagIcon, "neutral")
 lm4tagIcon = Icon("train-front", "travel")
 secFood = SectionItem("food", "Food & Drink", [foodCards])
-foodCards = InsightCard([f1, f2, f3], "grid", true, { type: "continue_conversation", context: "Tell me more about eating and drinking in Paris" })
+foodCards = InsightCard([f1, f2, f3], "grid", true, @ToAssistant("Tell me more about eating and drinking in Paris"))
 f1 = InsightCardItem("bistros", "Classic French fare — try Les Arlots for confit beef cheeks.", null, "Bistros", null, "neutral")
 f2 = InsightCardItem("fine-dining", "Septime leads a new wave of creative Michelin-starred cuisine.", null, "Fine Dining", null, "neutral")
 f3 = InsightCardItem("bakeries", "Shinya Pain for sourdough. Grand Prix-winning baguettes citywide.", null, "Bakeries", null, "neutral")
@@ -234,18 +234,18 @@ secWhen = SectionItem("when", "Best Time to Visit", [whenTabs])
 whenTabs = Tabs([tabSpring, tabSummer])
 tabSpring = TabItem("spring", "Spring", [springList])
 springList = ListBlock([sp1, sp2, sp3], "number")
-sp1 = ListItem("Cherry blossoms at Parc de Sceaux", "March – May", null, null, { type: "continue_conversation", context: "Tell me about cherry blossom season in Paris" })
-sp2 = ListItem("Picnics along the Seine & in city parks", "Warm, lively atmosphere", null, null, { type: "continue_conversation", context: "Where are the best picnic spots in Paris?" })
-sp3 = ListItem("Fewer crowds than summer", "Ideal for sightseeing", null, null, { type: "continue_conversation", context: "How busy is Paris in spring?" })
+sp1 = ListItem("Cherry blossoms at Parc de Sceaux", "March – May", null, null, @ToAssistant("Tell me about cherry blossom season in Paris"))
+sp2 = ListItem("Picnics along the Seine & in city parks", "Warm, lively atmosphere", null, null, @ToAssistant("Where are the best picnic spots in Paris?"))
+sp3 = ListItem("Fewer crowds than summer", "Ideal for sightseeing", null, null, @ToAssistant("How busy is Paris in spring?"))
 tabSummer = TabItem("summer", "Summer", [summerList])
 summerList = ListBlock([su1, su2, su3], "number")
-su1 = ListItem("Swim in the Seine — open July & August 2026", "First time in 102 years", null, null, { type: "continue_conversation", context: "Tell me about swimming in the Seine" })
-su2 = ListItem("Open-air cinema at Parc de la Villette", "Free films under the stars", null, null, { type: "continue_conversation", context: "Tell me about the open-air cinema at Parc de la Villette" })
-su3 = ListItem("Bastille Day celebrations on July 14", "Fireworks at the Eiffel Tower", null, null, { type: "continue_conversation", context: "What happens in Paris on Bastille Day?" })
+su1 = ListItem("Swim in the Seine — open July & August 2026", "First time in 102 years", null, null, @ToAssistant("Tell me about swimming in the Seine"))
+su2 = ListItem("Open-air cinema at Parc de la Villette", "Free films under the stars", null, null, @ToAssistant("Tell me about the open-air cinema at Parc de la Villette"))
+su3 = ListItem("Bastille Day celebrations on July 14", "Fireworks at the Eiffel Tower", null, null, @ToAssistant("What happens in Paris on Bastille Day?"))
 actionBtns = Buttons([btn1, btn2, btn3], "row")
-btn1 = Button("Plan a Trip to Paris", { type: "continue_conversation", context: "Help me plan a trip to Paris" }, "primary")
-btn2 = Button("Best Hotels in Paris", { type: "continue_conversation", context: "Show me the best hotels in Paris" }, "secondary")
-btn3 = Button("Build a Paris Itinerary", { type: "continue_conversation", context: "Build a 5-day Paris itinerary for me" }, "secondary")
+btn1 = Button("Plan a Trip to Paris", @ToAssistant("Help me plan a trip to Paris"), "primary")
+btn2 = Button("Best Hotels in Paris", @ToAssistant("Show me the best hotels in Paris"), "secondary")
+btn3 = Button("Build a Paris Itinerary", @ToAssistant("Build a 5-day Paris itinerary for me"), "secondary")
 src1 = { title: "Paris Travel Guide 2025", sourceName: "Travel and Tour World", url: "https://www.travelandtourworld.com/news/article/from-iconic-landmarks-to-hidden-gems-the-ultimate-paris-travel-guide-for-2025-you-need-to-read-now/" }
 src2 = { title: "Best Things to Do in Paris 2026", sourceName: "Time Out Paris", url: "http://www.timeout.fr/paris/en/for-tourists" }`,
 
@@ -297,7 +297,7 @@ colCac = Col("CAC ($)", [188, 395, 132, 109, 218, 154], "number")
 colRevenue = Col("Revenue ($k)", [82.4, 68.1, 54.6, 38.2, 26.8, 14.4], "number")
 colStatus = Col("Status", ["Scaling", "Optimizing", "Scaling", "Growing", "Stable", "Stable"], "string")
 deepDiveHeader = Text("Support Health & Marketing ROI", "h3")
-compositeCards = CompositeCardBlock([cardSupport, cardMarketing], "grid", true, { type: "continue_conversation", context: "Explore this deep-dive area in more detail" })
+compositeCards = CompositeCardBlock([cardSupport, cardMarketing], "grid", true, @ToAssistant("Explore this deep-dive area in more detail"))
 cardSupport = CompositeCardItem("support-health", supportHeader, [supportMetricLabel, supportMetric, supportChart, supportList])
 supportHeader = EntityTitle(supportIcon, "Support Health", "Ticket volume & resolution trends")
 supportIcon = Icon("headphones", "communication")
@@ -323,15 +323,15 @@ mkt1 = EntityListItem("Total Ad Spend (Apr)", "$51,600", "number")
 mkt2 = EntityListItem("Cost per Lead", "$48.20", "number")
 mkt3 = EntityListItem("Top Channel", "Organic Search", "text")
 actionButtons = Buttons([btnChannels, btnForecast], "row")
-btnChannels = Button("Break Down by Channel", { type: "continue_conversation", context: "Break down this month's revenue by acquisition channel" }, "primary")
-btnForecast = Button("Forecast Next Quarter", { type: "continue_conversation", context: "Forecast revenue and active users for next quarter" }, "secondary")`,
+btnChannels = Button("Break Down by Channel", @ToAssistant("Break down this month's revenue by acquisition channel"), "primary")
+btnForecast = Button("Forecast Next Quarter", @ToAssistant("Forecast revenue and active users for next quarter"), "secondary")`,
 
   `Example 3 — Form response (help-me-choose/plan asks: inspiration cards FIRST, then a compact form). The inspiration-card images below came from an image tool call — include such cards ONLY when you have real URLs; with no real URLs, start directly with the form:
 
 root = Card([main])
 main = Section([intro, inspoCards, form])
 intro = Markdown("# Plan Your Trip\\n\\nTap a style to jump straight in, or fill the quick form below for a tailored plan.")
-inspoCards = ImageCard([insp1, insp2], "grid", true, { type: "continue_conversation", context: "Plan me a trip in this style with destinations, itinerary, and costs" })
+inspoCards = ImageCard([insp1, insp2], "grid", true, @ToAssistant("Plan me a trip in this style with destinations, itinerary, and costs"))
 insp1 = ImageCardItem("inspo-beach", "https://www.travelandleisure.com/thmb/cuAB7XMQ6s_Gji-no956KNopT7M=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/TAL-maldives-TROPVACAY0325-1b5047d5931d4850b47d082966f9f563.jpg", "Tropical Beach Escape", ["Overwater villas & snorkeling", insp1tag], null, null, "Maldives overwater villas")
 insp1tag = Tag("Relaxation", insp1icon, "info")
 insp1icon = Icon("umbrella", "travel")
@@ -340,8 +340,8 @@ insp2tag = Tag("Active", insp2icon, "warning")
 insp2icon = Icon("mountain", "nature")
 form = Form("trip-planner", formButtons, [fcDates, fcTravellers])
 formButtons = Buttons([btnSubmit, btnSkip], "row")
-btnSubmit = Button("Plan My Trip", { type: "continue_conversation", context: "Help me plan a trip based on my form submission" }, "primary")
-btnSkip = Button("Just Surprise Me", { type: "continue_conversation", context: "Skip the form and surprise me with a destination and itinerary" }, "secondary")
+btnSubmit = Button("Plan My Trip", @ToAssistant("Help me plan a trip based on my form submission"), "primary")
+btnSkip = Button("Just Surprise Me", @ToAssistant("Skip the form and surprise me with a destination and itinerary"), "secondary")
 fcDates = FormControl("Travel Dates", datesPicker, "Select your start and end dates")
 datesPicker = DatePicker("travel-dates", "range", { required: true })
 fcTravellers = FormControl("Number of Travellers", travellersSelect, "How many people are travelling?")
@@ -357,7 +357,7 @@ root = Card([secPosters, secLinks], [src1, src2])
 secPosters = Section([intro, posters])
 secLinks = Section([linksHeader, trackCards])
 intro = Markdown("# Retro-Energetic Indian Tracks\\n\\nThese recent tracks channel retro synths and 90s party percussion [1][2]. Tap a poster to explore a track, or use its button to watch the exact official video.")
-posters = ImageCard([v1, v2], "grid", true, { type: "continue_conversation", context: "Tell me more about this track and its retro influences" })
+posters = ImageCard([v1, v2], "grid", true, @ToAssistant("Tell me more about this track and its retro influences"))
 v1 = ImageCardItem("tamma", "https://i.ytimg.com/vi/PQHeOb0Q9oo/hq720.jpg", "Tamma Tamma", ["Dhurandhar · Ranveer Singh", v1tag], null, null, "Tamma Tamma video poster")
 v1tag = Tag("80s Electro-Disco", v1icon, "success")
 v1icon = Icon("disc-3", "multimedia")
@@ -371,13 +371,13 @@ t1h = EntityTitle(t1icon, "Tamma Tamma", "Bappi Lahiri classic, electro-funk rew
 t1icon = Icon("disc-3", "multimedia")
 t1body = Text("Heavy analog synths and brass over a fast disco groove.", "small")
 t1tags = TagBlock(["2026 Film Hit", "Peak Party"])
-t1btn = Button("Watch on YouTube", { type: "open_url", url: "https://www.youtube.com/watch?v=PQHeOb0Q9oo" }, "primary")
+t1btn = Button("Watch on YouTube", @OpenUrl("https://www.youtube.com/watch?v=PQHeOb0Q9oo"), "primary")
 t2 = CompositeCardItem("t-sajan", t2h, [t2body, t2tags], { button: t2btn })
 t2h = EntityTitle(t2icon, "Sajan Re", "Nora Fatehi · Badshah · Sanjoy")
 t2icon = Icon("music", "multimedia")
 t2body = Text("Synthwave melody hooks over a modern club beat.", "small")
 t2tags = TagBlock(["Club Anthem", "Nora x Badshah"])
-t2btn = Button("Watch on YouTube", { type: "open_url", url: "https://www.youtube.com/watch?v=COUSCnFazzc" }, "primary")
+t2btn = Button("Watch on YouTube", @OpenUrl("https://www.youtube.com/watch?v=COUSCnFazzc"), "primary")
 src1 = { title: "Tamma Tamma (Full Video) - Dhurandhar", sourceName: "YouTube (T-Series)", url: "https://www.youtube.com/watch?v=PQHeOb0Q9oo" }
 src2 = { title: "Sajan Re (Official Music Video)", sourceName: "YouTube (T-Series)", url: "https://www.youtube.com/watch?v=COUSCnFazzc" }`,
 
@@ -396,7 +396,7 @@ fu2 = FollowUpItem("Show me a JavaScript comparison")`,
 ];
 
 const openuiChatPreamble =
-  "You are an AI assistant that responds using openui-lang, a declarative UI language. Your ENTIRE response must be valid openui-lang code — no markdown, no explanations, just openui-lang.\n\nHow to shape every response — decide before writing, in this order:\n\n1) Visual first: when the topic is visual (travel, weddings, events, food, places, products, fashion, home and design), use an image search tool if one is available and lead with real photos: an ImageGallery or a hero Image (in a Bleed for width) near the top of the first Section, then an ImageCard grid or carousel for the options. Only use image URLs from a tool result or the user, never invented ones; with no real photos, compose the answer from text, icons and cards instead, never with a placeholder.\n\n2) Ask before guessing, with visual choices: when the request is ambiguous or missing a detail that changes the answer (a style, a budget range, which product or place), ask one short question and let the user pick instead of typing. Offer 2–5 concrete options plus your default: ImageCard tiles with real photos for visual options, InsightCard tiles or Buttons with leading icons for the rest, all with continue_conversation actions. A Markdown line asks the question and names the default you will use. Use a Form only for essential input that cannot be picked (a name, an email, exact dates, free text), with the fewest fields possible, never a long form of options the user could tap instead. Ask one question at a time, and never ask when the intent is clear.\n\n3) Match the UI to the need: a plain or conversational answer is concise Markdown in one Section; a visual answer leads with images as above; a structured or data answer uses the compositions (Card with title, Grid, Shell for a dashboard, Bleed for wide comparisons, Tabs, Accordion, Steps, Timeline, Checklist, Table and charts). Never add UI the answer does not need.";
+  "You are an AI assistant that responds using openui-lang, a declarative UI language. Your ENTIRE response must be valid openui-lang code — no markdown, no explanations, just openui-lang.\n\nHow to shape every response — decide before writing, in this order:\n\n1) Visual first: when the topic is visual (travel, weddings, events, food, places, products, fashion, home and design), use an image search tool if one is available and lead with real photos: an ImageGallery or a hero Image (in a Bleed for width) near the top of the first Section, then an ImageCard grid or carousel for the options. Only use image URLs from a tool result or the user, never invented ones; with no real photos, compose the answer from text, icons and cards instead, never with a placeholder.\n\n2) Ask before guessing, with visual choices: when the request is ambiguous or missing a detail that changes the answer (a style, a budget range, which product or place), ask one short question and let the user pick instead of typing. Offer 2–5 concrete options plus your default: ImageCard tiles with real photos for visual options, InsightCard tiles or Buttons with leading icons for the rest, all with @ToAssistant actions. A Markdown line asks the question and names the default you will use. Use a Form only for essential input that cannot be picked (a name, an email, exact dates, free text), with the fewest fields possible, never a long form of options the user could tap instead. Ask one question at a time, and never ask when the intent is clear.\n\n3) Match the UI to the need: a plain or conversational answer is concise Markdown in one Section; a visual answer leads with images as above; a structured or data answer uses the compositions (Card with title, Grid, Shell for a dashboard, Bleed for wide comparisons, Tabs, Accordion, Steps, Timeline, Checklist, Table and charts). Never add UI the answer does not need.";
 
 export const openuiChatAdditionalRules: string[] = [
   "When asked about data, generate realistic/plausible data",
@@ -422,8 +422,8 @@ export const openuiChatAdditionalRules: string[] = [
   "Argument-order trap: Image takes alt FIRST and src second (Image(alt, src)), while Avatar takes name first and src second — a URL in the alt slot ships a broken image.",
   "CompositeCardBlock is the fallback card block: first use the specialised one that fits (ImageCard for photo tiles, InsightCard for takeaways, ValueCard or ValueLayout for figures, EntityList or ListBlock for rows, OptionCards or Chips for choices in a form), and use CompositeCardBlock only when a card needs mixed content none of them offers, such as a header, a body with charts or a Checklist, and a price or button footer.",
   'Card blocks (ValueCard, InsightCard, CompositeCardBlock, ImageCard) need at least 2 items, all with the same structure. InsightCard, CompositeCardBlock and ImageCard take layout "grid" for primary side-by-side comparison or "carousel" for secondary browsing; ValueCard and ValueLayout take layout "horizontal" (key/value facts) or "vertical" (KPI tiles), plus carousel true for vertical cards only. ValueLayout has no action.',
-  'The card-block action is BLOCK-LEVEL: one action shared by every card, with the clicked card\'s details attached automatically — keep continue_conversation context generic (e.g. "Tell me more about this destination"), and never use a block-level open_url since it would send every card to the same URL.',
-  'Card items have NO per-item action: to give each item its own external link, use CompositeCardItem with footer { button: Button(label, { type: "open_url", url }) } — never claim a card opens a link it cannot.',
+  'The card-block action is BLOCK-LEVEL: one action shared by every card, with the clicked card\'s details attached automatically — keep the @ToAssistant message generic (e.g. "Tell me more about this destination"), and never use a block-level @OpenUrl since it would send every card to the same URL.',
+  "Card items have NO per-item action: to give each item its own external link, use CompositeCardItem with footer { button: Button(label, @OpenUrl(url)) } — never claim a card opens a link it cannot.",
   'EntityList size "small" is reserved for CompositeCardItem body content (no header/footer); use size "default" elsewhere.',
   'Tag(text, leading, variant): pick variant by meaning (success=positive, danger=negative, warning=cautionary, info=informational, neutral=plain label); purple and pink only to tell categories apart, inverted for a single high-emphasis label. leading is optional: an Icon for a concept, a Shape for a status dot or category marker, an Avatar for a person or company, and an Emoji only in rare expressive content. Pass null for leading to set just a variant: Tag("Open", null, "success").',
   "TagBlock takes plain strings — keep it to at most 3 tags.",
@@ -439,8 +439,8 @@ export const openuiChatAdditionalRules: string[] = [
   'Every Form MUST have EXACTLY ONE submit Button with variant "primary" — that button validates the form; other buttons (secondary/tertiary escape hatches like "Just Surprise Me") skip validation, and there is never a reset button.',
   "Prefer structured inputs (Select, Chips, OptionCards, DatePicker, Slider) over free-text Input, give every FormControl a clear label (and a hint where it prevents mistakes), and keep each field name unique within the response.",
   "Validation rules ({ required: true, email: true, minLength: 8, ... }) are enforced with inline errors — use them for genuinely essential fields, but never require a free-text field where leaving it blank is meaningful.",
-  "Form inputs work ONLY inside a FormControl within a Form; for tappable suggestion choices OUTSIDE a form, use Buttons of continue_conversation Buttons — never a bare OptionCards or Chips.",
-  "Only add Buttons for real actions: form submit, open_url with a URL from a tool or the user (never fabricated), or a continue_conversation follow-up — never a button for an app action (open, download, export, edit) you cannot perform.",
+  "Form inputs work ONLY inside a FormControl within a Form; for tappable suggestion choices OUTSIDE a form, use Buttons whose Button actions are @ToAssistant, never a bare OptionCards or Chips.",
+  "Only add Buttons for real actions: form submit, @OpenUrl with a URL from a tool or the user (never fabricated), or a @ToAssistant follow-up. Never add a button for an app action (open, download, export, edit) you cannot perform.",
   'Every Button label must accurately describe what clicking it does; use "primary" for the main action and "secondary"/"tertiary" only for lower-emphasis supporting actions.',
   'Icon names must be exact lucide kebab-case names (e.g. "calendar", "circle-check"); an unknown name renders a plain circle, so prefer common icons over guesses.',
   "Pass sources on Card ONLY when the answer relies on real references you actually have, and cite them inline in Markdown as [1], [2] (1-based index into sources).",

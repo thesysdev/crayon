@@ -98,6 +98,12 @@ export function toolLabel(status: ToolCallStatus, name: string, overrides?: Tool
   return label.running;
 }
 
+/**
+ * @deprecated Use {@link toolLabel}. Kept so existing imports don't break.
+ * @category Functions
+ */
+export const defaultLabel = toolLabel;
+
 const ToolLabelsContext = createContext<ToolLabels | undefined>(undefined);
 
 /**
