@@ -77,6 +77,7 @@
   list-style: none;
 }
 .step {
+  min-width: 0;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -263,16 +264,11 @@
   width: 100%;
   height: 100%;
   border: 0;
-  /* The embedded document is light-only. Matching its scheme here keeps the
-     frame transparent on a dark page, so the shader behind it shows through. */
+  /* The embedded document follows the host theme with its own surface tokens. */
   color-scheme: light;
 }
 
 /* ---------- AppLess page ---------- */
-.appDemoStage {
-  aspect-ratio: auto;
-  height: 780px;
-}
 .poweredBanner {
   display: flow-root;
   padding-top: 224px;
@@ -292,11 +288,7 @@
 .applessPage .featuresBand {
   background: transparent;
 }
-@media (max-width: 1100px) {
-  .appDemoStage {
-    height: 760px;
-  }
-}
+
 @media (max-width: 767px) {
   .poweredBanner {
     padding-top: 128px;
@@ -333,13 +325,21 @@
     gap: 12px;
   }
 }
-@media (max-width: 360px) {
-  .appDemoStage {
-    height: 720px;
+
+@media (max-width: 899.98px) {
+  .ouiPage div:has(> .ouiArtStage) {
+    max-width: none;
+  }
+  .ouiPage .ouiArtStage {
+    aspect-ratio: 358 / 380;
   }
 }
-@media (max-width: 767px) {
-  .ouiPage .ouiArtStage {
-    aspect-ratio: 358 / 320;
-  }
+
+.stepInlineLink {
+  color: var(--openui-text-neutral-primary);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.stepInlineLink:hover {
+  text-decoration-thickness: 2px;
 }

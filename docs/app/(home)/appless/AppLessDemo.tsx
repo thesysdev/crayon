@@ -13,6 +13,7 @@ import {
   Pizza,
   Play,
   RotateCcw,
+  UserRound,
   Utensils,
   Wallet,
   type LucideIcon,
@@ -20,7 +21,15 @@ import {
 import Image from "next/image";
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import styles from "./AppLessDemo.module.css";
+import mapStyles from "./DeliveryMap.module.css";
 import { scenes } from "./demo-programs";
+
+const mobileRequests = {
+  dinner: "Order dinner nearby",
+  truffle: "Customize my pizza",
+  cart: "Add the pizza to my cart",
+  checkout: "Checkout with saved details",
+};
 
 // The presentation's component signatures, in their original positional order.
 const signatures: Record<string, string[]> = {
@@ -178,20 +187,21 @@ function DemoNode({
       return (
         <div className={styles.deliveryMap}>
           <svg
+            className={mapStyles.map}
             viewBox="0 0 300 150"
             role="img"
             aria-label={`Illustrative delivery map to ${str(p.address)}`}
           >
-            <rect width="300" height="150" fill="#e9e8e2" />
-            <path d="M0 0H46L15 150H0Z" fill="#bfdbe3" />
-            <path d="M200 4h78v35h-78zM57 96h43v44H57z" fill="#c6d5be" />
-            <g stroke="#fff" strokeWidth="9">
+            <rect width="300" height="150" fill="var(--map-land)" />
+            <path d="M0 0H46L15 150H0Z" fill="var(--map-water)" />
+            <path d="M200 4h78v35h-78zM57 96h43v44H57z" fill="var(--map-park)" />
+            <g stroke="var(--map-road)" strokeWidth="9">
               <path d="M60-10 35 160M112-10 87 160M170-10 145 160M227-10 202 160M283-10 258 160M25 45 310 89M20 95 300 139M35-8 300 33" />
             </g>
             <path
               d="m95 115 8-55 111 17 6-40"
               fill="none"
-              stroke="#92a7d1"
+              stroke="var(--map-route-halo)"
               strokeWidth="9"
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -199,15 +209,28 @@ function DemoNode({
             <path
               d="m95 115 8-55 111 17 6-40"
               fill="none"
-              stroke="#3877d0"
+              stroke="var(--map-route)"
               strokeWidth="4"
               strokeLinecap="round"
               strokeLinejoin="round"
             />
-            <circle cx="95" cy="115" r="6" fill="#3877d0" stroke="white" strokeWidth="3" />
-            <circle cx="220" cy="37" r="13" fill="#202a35" />
-            <path d="m214 38 6-6 6 6v6h-4v-5h-4v5h-4z" fill="white" />
-            <text x="130" y="119" fontSize="8" fill="#6d736f" transform="rotate(9 130 119)">
+            <circle
+              cx="95"
+              cy="115"
+              r="6"
+              fill="var(--map-route)"
+              stroke="var(--map-road)"
+              strokeWidth="3"
+            />
+            <circle cx="220" cy="37" r="13" fill="var(--map-pin)" />
+            <path d="m214 38 6-6 6 6v6h-4v-5h-4v5h-4z" fill="var(--map-pin-ink)" />
+            <text
+              x="130"
+              y="119"
+              fontSize="8"
+              fill="var(--map-label)"
+              transform="rotate(9 130 119)"
+            >
               WEST 14TH ST
             </text>
           </svg>
@@ -382,7 +405,7 @@ export function AppLessDemo() {
   );
 
   useEffect(() => {
-    const mobile = matchMedia("(max-width: 767px)");
+    const mobile = matchMedia("(max-width: 1100px)");
     const readMobile = () => setCompact(mobile.matches);
     readMobile();
     mobile.addEventListener("change", readMobile);
@@ -440,13 +463,25 @@ export function AppLessDemo() {
       data-demo-scene={scene.key}
       data-demo-complete={complete}
     >
-      <div className={styles.codePanel} inert={compact}>
-        {/* Narrow screens have no timeline, so the timer and request stay here. */}
-        <div className={styles.panelHeader}>
-          <span className={styles.codeLabel}>OpenUI Lang</span>
+      <div className={styles.mobileRequest}>
+        <div className={styles.mobileRequestText}>
+          <span className={styles.mobileQueryAvatar} aria-hidden="true">
+            <UserRound size={14} strokeWidth={2} />
+          </span>
+          <span>{mobileRequests[scene.key]}</span>
+        </div>
+        <div className={styles.mobileTiming}>
+          <span className={styles.mobileRequestLabel}>Time to render</span>
           {timer}
         </div>
-        <p className={styles.request}>{scene.request}</p>
+      </div>
+      <div className={styles.codePanel} inert={compact}>
+        {/* The same source and replay power all three panels. */}
+        <div className={styles.panelHeader}>
+          <span className={styles.codeLabel}>OpenUI Lang</span>
+          <span className={styles.panelMeta}>Source</span>
+          <span className={styles.compactTimer}>{timer}</span>
+        </div>
         <pre
           className={styles.code}
           ref={code}
@@ -466,48 +501,88 @@ export function AppLessDemo() {
           </code>
         </pre>
       </div>
-      <div className={styles.phoneSide}>
-        <div className={styles.phone}>
-          {/* Status-bar proportions follow the original presentation phone shell. */}
-          <div className={styles.statusBar} aria-hidden="true">
-            <span>9:41</span>
-            <svg width="58" height="12" viewBox="0 0 58 12" fill="currentColor">
-              <path d="M0 8h3v4H0zm5-3h3v7H5zm5-3h3v10h-3zm5-2h3v12h-3z" />
-              <path d="M23 4a10 10 0 0 1 14 0l-1.5 1.5a8 8 0 0 0-11 0zm3 3a6 6 0 0 1 8 0l-1.5 1.5a4 4 0 0 0-5 0zm2.5 3 1.5-1 1.5 1L30 12z" />
-              <rect x="41" y="2" width="14" height="8" rx="2" fill="none" stroke="currentColor" />
-              <rect x="43" y="4" width="10" height="4" rx=".5" />
-              <path d="M57 4h1v4h-1z" />
-            </svg>
-          </div>
-          <div
-            className={styles.screen}
-            ref={phone}
-            inert={compact}
-            onPointerDown={() => setPaused(true)}
-            onFocusCapture={() => setPaused(true)}
-            aria-label="Rendered phone interface"
-            key={scene.key}
-          >
-            {settled.map((node, index) => {
-              const resolved = current.find((n) => n.statementId === node.statementId);
-              return (
-                <div
-                  key={node.statementId ?? index}
-                  className={styles.block}
-                  style={{ visibility: resolved ? "visible" : "hidden" }}
+      <div className={styles.previewPanel}>
+        <div className={styles.panelHeader}>
+          <span className={styles.previewLabel}>Live preview</span>
+          <div className={styles.controls}>
+            <div>
+              {!reduced && (
+                <button
+                  aria-label={paused ? "Play demo animation" : "Pause demo animation"}
+                  onClick={() => setPaused(!paused)}
                 >
-                  <DemoNode node={resolved ?? node} advance={advance} scene={frame.scene} />
-                </div>
-              );
-            })}
+                  {paused ? <Play size={15} /> : <Pause size={15} />}
+                </button>
+              )}
+              <button
+                aria-label="Restart demo"
+                onClick={() => {
+                  setFrame({ scene: 0, tick: 0 });
+                  setPaused(false);
+                }}
+              >
+                <RotateCcw size={15} />
+              </button>
+            </div>
           </div>
-          <span className={styles.homeIndicator} aria-hidden="true" />
+        </div>
+        <div className={styles.phoneSide}>
+          <div className={styles.phone}>
+            {/* Status-bar proportions follow the original presentation phone shell. */}
+            <div className={styles.statusBar} aria-hidden="true">
+              <span>9:41</span>
+              <svg width="58" height="12" viewBox="0 0 58 12" fill="currentColor">
+                <path d="M0 8h3v4H0zm5-3h3v7H5zm5-3h3v10h-3zm5-2h3v12h-3z" />
+                <path d="M23 4a10 10 0 0 1 14 0l-1.5 1.5a8 8 0 0 0-11 0zm3 3a6 6 0 0 1 8 0l-1.5 1.5a4 4 0 0 0-5 0zm2.5 3 1.5-1 1.5 1L30 12z" />
+                <rect x="41" y="2" width="14" height="8" rx="2" fill="none" stroke="currentColor" />
+                <rect x="43" y="4" width="10" height="4" rx=".5" />
+                <path d="M57 4h1v4h-1z" />
+              </svg>
+            </div>
+            <div
+              className={styles.screen}
+              ref={phone}
+              inert={compact}
+              onPointerDown={() => setPaused(true)}
+              onFocusCapture={() => setPaused(true)}
+              aria-label="Rendered phone interface"
+              key={scene.key}
+            >
+              {settled.map((node, index) => {
+                const resolved = current.find((n) => n.statementId === node.statementId);
+                return (
+                  <div
+                    key={node.statementId ?? index}
+                    className={styles.block}
+                    style={{ visibility: resolved ? "visible" : "hidden" }}
+                  >
+                    <DemoNode node={resolved ?? node} advance={advance} scene={frame.scene} />
+                  </div>
+                );
+              })}
+            </div>
+            <span className={styles.homeIndicator} aria-hidden="true" />
+          </div>
         </div>
       </div>
       {/* Wide screens only: the replay told as events, right of the phone. */}
       <div className={styles.timeline}>
-        <span className={styles.timerLabel}>Time to render</span>
-        {timer}
+        <div className={styles.panelHeader}>
+          <span>Render trace</span>
+          <span className={styles.panelMeta}>OUI-1</span>
+        </div>
+        <div className={styles.traceSummary}>
+          <span className={styles.timerLabel}>Time to render</span>
+          {timer}
+          <div className={styles.progressTrack} aria-hidden="true">
+            <span
+              style={{
+                width: `${(count / lines.length) * 100}%`,
+                transition: count === 0 ? "none" : undefined,
+              }}
+            />
+          </div>
+        </div>
         <ol className={styles.events} aria-label="Replay timeline">
           {events.map((event) => (
             <li key={event.key} className={styles.event} data-done={count >= event.atLine}>
@@ -523,27 +598,6 @@ export function AppLessDemo() {
             </li>
           ))}
         </ol>
-      </div>
-      <div className={styles.controls}>
-        <div>
-          {!reduced && (
-            <button
-              aria-label={paused ? "Play demo animation" : "Pause demo animation"}
-              onClick={() => setPaused(!paused)}
-            >
-              {paused ? <Play size={15} /> : <Pause size={15} />}
-            </button>
-          )}
-          <button
-            aria-label="Restart demo"
-            onClick={() => {
-              setFrame({ scene: 0, tick: 0 });
-              setPaused(false);
-            }}
-          >
-            <RotateCcw size={15} />
-          </button>
-        </div>
       </div>
     </div>
   );

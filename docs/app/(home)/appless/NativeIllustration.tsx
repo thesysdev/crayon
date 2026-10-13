@@ -8,7 +8,7 @@ import styles from "./PhoneIllustrations.module.css";
 
 function NativeScreen({ android = false }: { android?: boolean }) {
   return (
-    <div className={`${styles.nativeScreen} ${android ? styles.android : styles.ios}`}>
+    <div className={`${styles.nativeScreen} ${android ? styles.android : ""}`}>
       {android ? (
         <div className={styles.androidStatus} aria-hidden="true">
           <span>9:41</span>

@@ -1,9 +1,6 @@
-"use client";
-
 import { Check, Clock3, Star } from "lucide-react";
 import Image from "next/image";
-import { useEffect, useState } from "react";
-import { scenes } from "./demo-programs";
+import mapStyles from "./DeliveryMap.module.css";
 import devices from "./DeviceFrames.module.css";
 import { DeviceStatusBar } from "./DeviceStatusBar";
 import ui from "./IllustrationUi.module.css";
@@ -67,7 +64,7 @@ function PhoneContent({ scene }: { scene: number }) {
     return (
       <>
         <div className={styles.requestProductPhoto}>
-          <Image src="/appless/demo-pizza.jpg" width={390} height={230} alt="" />
+          <Image src="/appless/demo-pizza.jpg" fill sizes="(max-width: 767px) 42vw, 280px" alt="" />
         </div>
         <div className={styles.requestProductBody}>
           <span className={styles.restaurantCategory}>Luigi’s Hearth · Pizza</span>
@@ -123,29 +120,48 @@ function PhoneContent({ scene }: { scene: number }) {
         <span>Luigi’s Hearth</span>
       </div>
       <div className={styles.requestMap}>
-        <svg viewBox="0 0 340 150" aria-hidden="true">
-          <rect width="340" height="150" fill="#e9e8e2" />
-          <path d="M0 0h56L20 150H0z" fill="#c5dce5" />
-          <path d="M250 0h72v35h-72zM64 102h52v48H64z" fill="#cad9c7" />
-          <g stroke="#fff" strokeWidth="9">
+        <svg
+          className={mapStyles.map}
+          viewBox="0 0 340 150"
+          preserveAspectRatio="xMidYMid slice"
+          aria-hidden="true"
+        >
+          <rect width="340" height="150" fill="var(--map-land)" />
+          <path d="M0 0h56L20 150H0z" fill="var(--map-water)" />
+          <path d="M250 0h72v35h-72zM64 102h52v48H64z" fill="var(--map-park)" />
+          <g stroke="var(--map-road)" strokeWidth="9">
             <path d="M66-10 40 160M126-10 98 160M190-10 165 160M253-10 229 160M318-10 295 160M18 45 350 93M20 104 330 145M30-8 325 36" />
           </g>
           <path
             d="m109 116 8-56 126 18 8-40"
             fill="none"
-            stroke="#a4b9db"
+            stroke="var(--map-route-halo)"
             strokeWidth="9"
             strokeLinecap="round"
           />
           <path
             d="m109 116 8-56 126 18 8-40"
             fill="none"
-            stroke="#457ccf"
+            stroke="var(--map-route)"
             strokeWidth="4"
             strokeLinecap="round"
           />
-          <circle cx="109" cy="116" r="7" fill="#457ccf" stroke="white" strokeWidth="3" />
-          <circle cx="251" cy="38" r="10" fill="#242a33" stroke="white" strokeWidth="3" />
+          <circle
+            cx="109"
+            cy="116"
+            r="7"
+            fill="var(--map-route)"
+            stroke="var(--map-road)"
+            strokeWidth="3"
+          />
+          <circle
+            cx="251"
+            cy="38"
+            r="10"
+            fill="var(--map-pin)"
+            stroke="var(--map-road)"
+            strokeWidth="3"
+          />
         </svg>
         <div>
           <strong>Arriving in 18–20 min</strong>
@@ -167,48 +183,12 @@ function PhoneContent({ scene }: { scene: number }) {
 }
 
 export function RequestIllustration() {
-  const [activeStep, setActiveStep] = useState(4);
-  const [resetting, setResetting] = useState(false);
-  const scene = activeStep % scenes.length;
-
-  useEffect(() => {
-    const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
-    if (motion.matches) return;
-    const timer = window.setInterval(() => setActiveStep((current) => current + 1), 4800);
-    return () => window.clearInterval(timer);
-  }, []);
-
-  useEffect(() => {
-    if (activeStep !== 8) return;
-    const reset = window.setTimeout(() => {
-      setResetting(true);
-      setActiveStep(4);
-    }, 800);
-    return () => window.clearTimeout(reset);
-  }, [activeStep]);
-
-  useEffect(() => {
-    if (!resetting) return;
-    const resume = window.setTimeout(() => setResetting(false), 50);
-    return () => window.clearTimeout(resume);
-  }, [resetting]);
-
   return (
     <div className={`${styles.wideScene} ${devices.devices} ${ui.ui}`}>
       <div className={styles.requestQueue}>
-        <div
-          className={styles.requestQueueTrack}
-          style={{
-            transform: `translateY(${90 - activeStep * 56}px)`,
-            transition: resetting ? "none" : undefined,
-          }}
-        >
+        <div className={styles.requestQueueTrack}>
           {Array.from({ length: 12 }, (_, index) => (
-            <div
-              className={styles.requestQueueItem}
-              data-active={index === activeStep || undefined}
-              key={index}
-            >
+            <div className={styles.requestQueueItem} key={index} data-row={index}>
               {promptLabels[index % promptLabels.length]}
             </div>
           ))}
@@ -218,8 +198,12 @@ export function RequestIllustration() {
         <div className="device-frame">
           <div className={`device-screen ${styles.requestScreen}`}>
             <DeviceStatusBar className={styles.requestStatus} />
-            <div className={styles.requestContent} key={`screen-${scene}`}>
-              <PhoneContent scene={scene} />
+            <div className={styles.requestScreens}>
+              {promptLabels.map((label, index) => (
+                <div className={styles.requestContent} key={label} data-scene={index}>
+                  <PhoneContent scene={index} />
+                </div>
+              ))}
             </div>
           </div>
         </div>

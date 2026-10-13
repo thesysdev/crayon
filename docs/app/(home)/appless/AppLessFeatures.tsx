@@ -109,7 +109,7 @@ function rail(x0: number, y0: number, x1: number, y1: number, mid: number) {
 
 function LightspeedIllustration() {
   // Each option in the list, the screen prefetched for it, and where its
-  // connector runs: from the row's right edge to the card's left edge.
+  // connector runs from the shared timing pill to the card's left edge.
   const options = [
     { name: "The Larch House", price: "$182 a night", photo: "larch", from: 106, to: 31 },
     { name: "Harbor Loft", price: "$149 a night", photo: "harbor", from: 140, to: 140 },
@@ -133,7 +133,7 @@ function LightspeedIllustration() {
         {options.map((option) => (
           // the outer two sit back; the rail to the screen in view leads
           <g key={option.name} opacity={option.from === option.to ? 1 : 0.5}>
-            {rail(156, option.from, option.from === option.to ? 222 : 250, option.to, 188).map(
+            {rail(156, 140, option.from === option.to ? 222 : 250, option.to, 190).map(
               (arrow, i) => (
                 <path key={i} d="M-1.5 -2.5 1 0-1.5 2.5" {...arrow} />
               ),
@@ -141,6 +141,7 @@ function LightspeedIllustration() {
           </g>
         ))}
       </svg>
+      <span className={styles.timingChip}>0 ms</span>
       {options.map((option, i) => (
         <div key={option.name} className={styles.toScreen} data-slot={i}>
           <Image

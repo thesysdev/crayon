@@ -381,12 +381,6 @@
 .foodGrid .restaurant > img {
   height: 104px;
 }
-.foodGrid .restaurantCopy {
-  padding: 9px 12px;
-}
-.foodGrid .restaurantCopy p {
-  margin-bottom: 8px;
-}
 .requestPhone {
   position: absolute !important;
   left: 271px;
@@ -397,22 +391,27 @@
 .requestQueue {
   position: absolute;
   z-index: 2;
-  inset: 0 auto 0 0;
-  width: 242px;
+  inset: 0 auto auto 0;
+  height: 300px;
+  width: 258px;
   overflow: hidden;
-  mask-image: linear-gradient(to bottom, transparent, #000 13%, #000 78%, transparent);
-  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 13%, #000 78%, transparent);
+  mask-image: linear-gradient(to bottom, transparent, #000 13%, #000 70%, transparent);
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 13%, #000 70%, transparent);
 }
 .requestQueueTrack {
   position: absolute;
   left: 24px;
   top: 0;
+  width: 220px;
   display: flex;
   flex-direction: column;
   gap: 20px;
-  transition: transform 650ms cubic-bezier(0.22, 1, 0.36, 1);
+  transform: translateY(-134px);
+  animation: requestQueueLoop 9.6s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+  will-change: transform;
 }
 .requestQueueItem {
+  flex: none;
   display: flex;
   align-items: center;
   width: 220px;
@@ -425,17 +424,38 @@
   font-size: 14px;
   font-weight: 500;
   line-height: 20px;
-  opacity: 0.45;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  transition:
-    opacity 450ms ease,
-    box-shadow 450ms ease;
 }
-.requestQueueItem[data-active] {
-  opacity: 1;
-  box-shadow: 0 3px 14px rgb(0 0 0 / 0.09);
+.requestQueue {
+  --queue-active-bg: #0a0a0a;
+  --queue-active-ink: #fff;
+}
+[data-theme="dark"] .requestQueue {
+  --queue-active-bg: #fff;
+  --queue-active-ink: #0a0a0a;
+}
+@keyframes requestQueueLoop {
+  0%,
+  18.229% {
+    transform: translateY(-134px);
+  }
+  25%,
+  43.229% {
+    transform: translateY(-190px);
+  }
+  50%,
+  68.229% {
+    transform: translateY(-246px);
+  }
+  75%,
+  93.229% {
+    transform: translateY(-302px);
+  }
+  100% {
+    transform: translateY(-358px);
+  }
 }
 .requestScreen {
   height: 830px;
@@ -450,17 +470,7 @@
 }
 .requestContent {
   padding: 30px 18px 24px;
-  animation: requestScreenEnter 500ms ease both;
-}
-@keyframes requestScreenEnter {
-  from {
-    opacity: 0;
-    transform: translateY(9px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  animation: none;
 }
 .requestContent .answerHead {
   margin-top: 0;
@@ -540,9 +550,12 @@
   white-space: nowrap;
 }
 .requestProductPhoto {
-  margin: -30px -18px 18px;
-  height: 180px;
+  position: relative;
+  width: 100%;
+  height: 132px;
+  margin-bottom: 16px;
   overflow: hidden;
+  border-radius: 12px;
 }
 .requestProductPhoto img {
   display: block;
@@ -767,11 +780,9 @@
 @media (prefers-reduced-motion: reduce) {
   .requestQueueTrack,
   .requestQueueItem,
-  .requestContent,
-  .streamLine,
-  .streamPoint,
-  .streamArea {
+  .requestContent {
     animation: none;
+    transition: none;
   }
 }
 @media (max-width: 767px) {
@@ -790,4 +801,172 @@
   --app-muted: #aaa;
   --app-panel: #222;
   --app-screen: #161618;
+}
+
+.requestQueueItem[data-row="4"] {
+  animation: queueHighlight0 9.6s steps(1, end) infinite;
+}
+@keyframes queueHighlight0 {
+  0% {
+    background: var(--queue-active-bg);
+    color: var(--queue-active-ink);
+  }
+  18.229%,
+  100% {
+    background: var(--app-panel);
+    color: var(--app-ink);
+  }
+}
+
+.requestQueueItem[data-row="5"] {
+  animation: queueHighlight1 9.6s steps(1, end) infinite;
+}
+@keyframes queueHighlight1 {
+  0% {
+    background: var(--app-panel);
+    color: var(--app-ink);
+  }
+  18.229% {
+    background: var(--queue-active-bg);
+    color: var(--queue-active-ink);
+  }
+  43.229%,
+  100% {
+    background: var(--app-panel);
+    color: var(--app-ink);
+  }
+}
+
+.requestQueueItem[data-row="6"] {
+  animation: queueHighlight2 9.6s steps(1, end) infinite;
+}
+@keyframes queueHighlight2 {
+  0% {
+    background: var(--app-panel);
+    color: var(--app-ink);
+  }
+  43.229% {
+    background: var(--queue-active-bg);
+    color: var(--queue-active-ink);
+  }
+  68.229%,
+  100% {
+    background: var(--app-panel);
+    color: var(--app-ink);
+  }
+}
+
+.requestQueueItem[data-row="7"] {
+  animation: queueHighlight3 9.6s steps(1, end) infinite;
+}
+@keyframes queueHighlight3 {
+  0% {
+    background: var(--app-panel);
+    color: var(--app-ink);
+  }
+  68.229% {
+    background: var(--queue-active-bg);
+    color: var(--queue-active-ink);
+  }
+  93.229%,
+  100% {
+    background: var(--app-panel);
+    color: var(--app-ink);
+  }
+}
+
+.requestQueueItem[data-row="8"] {
+  animation: queueHighlight4 9.6s steps(1, end) infinite;
+}
+@keyframes queueHighlight4 {
+  0% {
+    background: var(--app-panel);
+    color: var(--app-ink);
+  }
+  93.229%,
+  100% {
+    background: var(--queue-active-bg);
+    color: var(--queue-active-ink);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .requestQueueTrack .requestQueueItem {
+    animation: none;
+  }
+  .requestQueueItem[data-row="4"] {
+    background: var(--queue-active-bg);
+    color: var(--queue-active-ink);
+  }
+}
+
+/* The phone and prompt highlights share the CSS document timeline. */
+.requestScreens {
+  position: relative;
+  width: 100%;
+}
+.requestContent[data-scene] {
+  position: absolute;
+  top: 0;
+  left: 0;
+  visibility: hidden;
+  animation: requestScene0 9.6s steps(1, end) infinite;
+}
+.requestContent[data-scene="1"] {
+  animation-name: requestScene1;
+}
+.requestContent[data-scene="2"] {
+  animation-name: requestScene2;
+}
+.requestContent[data-scene="3"] {
+  animation-name: requestScene3;
+}
+@keyframes requestScene0 {
+  0%,
+  93.229%,
+  100% {
+    visibility: visible;
+  }
+  18.229% {
+    visibility: hidden;
+  }
+}
+@keyframes requestScene1 {
+  0%,
+  43.229%,
+  100% {
+    visibility: hidden;
+  }
+  18.229% {
+    visibility: visible;
+  }
+}
+@keyframes requestScene2 {
+  0%,
+  68.229%,
+  100% {
+    visibility: hidden;
+  }
+  43.229% {
+    visibility: visible;
+  }
+}
+@keyframes requestScene3 {
+  0%,
+  93.229%,
+  100% {
+    visibility: hidden;
+  }
+  68.229% {
+    visibility: visible;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .requestContent[data-scene] {
+    animation: none;
+    visibility: hidden;
+  }
+  .requestContent[data-scene="0"] {
+    visibility: visible;
+  }
 }

@@ -1,8 +1,7 @@
-import { ArrowUpRight } from "lucide-react";
+import { ArrowRight, ArrowUpRight } from "lucide-react";
 import type { Metadata } from "next";
 import gatewayStyles from "../cloud/gateway/page.module.css";
 import { BevelButton } from "../components/Button/BevelButton";
-import { FadedDither } from "../components/FadedDither/FadedDither";
 import styles from "../components/ProductLanding.module.css";
 import homeStyles from "../page.module.css";
 import { AutofixSection } from "../sections/AutofixSection/AutofixSection";
@@ -10,6 +9,7 @@ import { Footer } from "../sections/Footer/Footer";
 import { HeroSection } from "../sections/HeroSection/HeroSection";
 import { ShiroPeek } from "../sections/ShiroPeek/ShiroPeek";
 import { AppLessDemo } from "./AppLessDemo";
+import demoStyles from "./AppLessDemo.module.css";
 import { AppLessFeatures } from "./AppLessFeatures";
 import { AppRail } from "./AppRail";
 import { FaqSection } from "./FaqSection";
@@ -28,16 +28,11 @@ export const metadata: Metadata = {
 };
 const github = "https://github.com/thesysdev/appless";
 export default function AppLessPage() {
-  const demo = (
-    <div className={`${gatewayStyles.heroArtSpace} ${styles.appDemoStage}`}>
-      <FadedDither band="light" className={gatewayStyles.heroShader} />
-      <div className={gatewayStyles.heroArtwork}>
-        <AppLessDemo />
-      </div>
-    </div>
-  );
+  const demo = <AppLessDemo />;
   return (
-    <div className={`${homeStyles.page} ${styles.pageFocus} ${styles.applessPage}`}>
+    <div
+      className={`${homeStyles.page} ${styles.pageFocus} ${styles.applessPage} ${demoStyles.responsiveHero}`}
+    >
       <div className={homeStyles.heroShell}>
         <HeroSection
           align="left"
@@ -109,6 +104,72 @@ export default function AppLessPage() {
             }}
           />
         </div>
+        <section className={styles.howBand} aria-labelledby="appless-how-title">
+          <div className={styles.howInner}>
+            <div className={styles.howHead}>
+              <h2 id="appless-how-title" className={styles.howTitle}>
+                Run AppLess yourself.
+              </h2>
+              <BevelButton
+                href={github + "#quick-start"}
+                external
+                variant="secondary"
+                label="Read setup docs"
+                badge={<ArrowRight size={16} strokeWidth={2.25} />}
+              />
+            </div>
+            <ol className={styles.steps}>
+              <li className={styles.step}>
+                <span className={styles.stepBadge}>1</span>
+                <h3 className={styles.stepTitle}>Get the app</h3>
+                <p className={styles.stepDescription}>
+                  Clone the{" "}
+                  <a
+                    className={styles.stepInlineLink}
+                    href={github}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    repository
+                  </a>{" "}
+                  and install its dependencies.
+                </p>
+              </li>
+              <li className={styles.step}>
+                <span className={styles.stepBadge}>2</span>
+                <h3 className={styles.stepTitle}>Start OUI-1</h3>
+                <p className={styles.stepDescription}>
+                  Serve OUI-1 on your GPU with{" "}
+                  <a
+                    className={styles.stepInlineLink}
+                    href="https://huggingface.co/thesysdev/OUI-1#vllm-recommended"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    vLLM
+                  </a>
+                  .
+                </p>
+              </li>
+              <li className={styles.step}>
+                <span className={styles.stepBadge}>3</span>
+                <h3 className={styles.stepTitle}>Launch and ask</h3>
+                <p className={styles.stepDescription}>
+                  Set your{" "}
+                  <a
+                    className={styles.stepInlineLink}
+                    href={github + "#quick-start"}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    server address
+                  </a>
+                  , launch on iOS or Android, and ask for a screen.
+                </p>
+              </li>
+            </ol>
+          </div>
+        </section>
         <div className={styles.productFaqBand}>
           <FaqSection />
         </div>
