@@ -1,0 +1,53 @@
+// Welcome mascot (components/WelcomeMascot.tsx): blink, cursor-following eyes
+// and a squish on click. All motion is off under prefers-reduced-motion.
+
+.openui-agent-welcome-mascot {
+  display: block;
+  width: 98px;
+  height: auto;
+  overflow: visible;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+
+  .openui-agent-container--mobile & {
+    width: 72px;
+  }
+}
+
+.openui-agent-welcome-mascot__lid {
+  transform-box: view-box;
+  transition: transform 90ms ease-in;
+
+  &[data-blinking] {
+    transform: scaleY(0.1);
+  }
+}
+
+.openui-agent-welcome-mascot__body--squish {
+  transform-box: view-box;
+  transform-origin: 100px 158px;
+  animation: openui-agent-mascot-squish 600ms ease-in-out;
+}
+
+@keyframes openui-agent-mascot-squish {
+  0% {
+    transform: scale(1, 1);
+  }
+  30% {
+    transform: scale(1.025, 0.97);
+  }
+  60% {
+    transform: scale(0.99, 1.012);
+  }
+  100% {
+    transform: scale(1, 1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .openui-agent-welcome-mascot__lid,
+  .openui-agent-welcome-mascot__body--squish {
+    transition: none;
+    animation: none;
+  }
+}

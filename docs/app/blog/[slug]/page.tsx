@@ -1,5 +1,7 @@
 import { GitHubButton } from "@/app/(home)/components/GitHubButton/GitHubButton";
 import { Footer } from "@/app/(home)/sections/Footer/Footer";
+import { blogOgImage } from "@/lib/og/content";
+import { withOgImage } from "@/lib/page-metadata";
 import { blog } from "@/lib/source";
 import { getMDXComponents } from "@/mdx-components";
 import { TOCProvider, TOCScrollArea } from "fumadocs-ui/components/toc";
@@ -74,13 +76,17 @@ export async function generateMetadata(props: {
 
   if (!page) notFound();
 
-  return {
-    title: page.data.title,
-    description: page.data.description,
-    alternates: {
-      canonical: page.url,
+  return withOgImage(
+    {
+      title: page.data.seoTitle ? { absolute: `${page.data.seoTitle} | OpenUI` } : page.data.title,
+      description: page.data.description,
+      alternates: {
+        canonical: page.url,
+      },
     },
-  };
+    blogOgImage(page),
+    { title: page.data.title, description: page.data.description },
+  );
 }
 
 export function generateStaticParams(): { slug: string }[] {

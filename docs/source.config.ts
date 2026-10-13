@@ -32,12 +32,16 @@ export const blogPosts = defineCollections({
   type: "doc",
   dir: "content/blog",
   schema: pageSchema.extend({
+    // Search title for <title>; the H1 keeps `title`.
+    seoTitle: z.string().optional(),
     author: z.string(),
     date: z.string().date().or(z.date()),
     featured: z.boolean().optional(),
     // Rendered after the post and emitted as FAQPage JSON-LD. Answers are
     // paragraphs that may use inline code and [links](/path).
     faq: z.array(z.object({ question: z.string(), answer: z.array(z.string()).min(1) })).optional(),
+    /** Social preview image in `public/`, used instead of the cropped cover. */
+    ogImage: z.string().optional(),
   }),
 });
 

@@ -1,5 +1,5 @@
+import { createPageMetadata } from "@/lib/page-metadata";
 import { ArrowRight } from "lucide-react";
-import type { Metadata } from "next";
 import { GatewayPlans } from "../cloud/gateway/GatewayPlans";
 import heroStyles from "../cloud/gateway/page.module.css";
 import layout from "../cloud/gateway/sections.module.css";
@@ -13,14 +13,10 @@ import {
 import { Footer } from "../sections/Footer/Footer";
 import { HeroSection } from "../sections/HeroSection/HeroSection";
 import { ProductLabel } from "../sections/ProductSection/ProductSection";
+import page from "./metadata";
 import styles from "./page.module.css";
 
-export const metadata: Metadata = {
-  title: "OpenUI Pricing",
-  description:
-    "OpenUI is MIT licensed and free forever. Add OpenUI Gateway for production reliability and OpenUI Observability for agent product analytics.",
-  alternates: { canonical: "/pricing" },
-};
+export const metadata = createPageMetadata(page);
 
 const BILLING_DETAILS: GridFeature[] = [
   {

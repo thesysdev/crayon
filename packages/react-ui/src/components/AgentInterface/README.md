@@ -86,7 +86,7 @@ See `stories/AgentInterface.stories.tsx` (`Default`, `WithWelcome`, `Routing`, `
 
 ## The slot / compound-component model
 
-`AgentInterface` is a function component with ~17 **static members** attached
+`AgentInterface` is a function component with ~21 **static members** attached
 (`AgentInterface.Sidebar`, `AgentInterface.Composer`, …). At render time it walks
 `props.children` once (`extractSlots`, in `AgentInterface.tsx`) and routes each child by the
 **identity of its element type**:
@@ -95,6 +95,7 @@ See `stories/AgentInterface.stories.tsx` (`Default`, `WithWelcome`, `Routing`, `
 const SLOT_KEY_BY_TYPE = new Map<unknown, SingleSlotKey>([
   [SidebarSlot, "sidebar"],
   [SidebarHeader, "sidebarHeader"],
+  [SidebarFooter, "sidebarFooter"],
   [MobileHeader, "mobileHeader"],
   [ThreadHeader, "threadHeader"],
   [WelcomeScreen, "welcome"],
@@ -123,25 +124,28 @@ A child is recognized **only** if `child.type === <the exact component reference
 
 The full list of static members and whether each is a top-level slot:
 
-| Member                            | Top-level slot?     | Role                                               |
-| --------------------------------- | ------------------- | -------------------------------------------------- |
-| `AgentInterface.Sidebar`          | ✅ `sidebar`        | Replace the whole sidebar; you compose its insides |
-| `AgentInterface.SidebarHeader`    | ✅ `sidebarHeader`¹ | Default sidebar's header (logo + name + collapse)  |
-| `AgentInterface.MobileHeader`     | ✅ `mobileHeader`   | Top bar on mobile                                  |
-| `AgentInterface.ThreadHeader`     | ✅ `threadHeader`   | Thread region header (actions, workspace toggle)   |
-| `AgentInterface.Welcome`          | ✅ `welcome`        | Empty-state hero (`WelcomeScreen`)                 |
-| `AgentInterface.Composer`         | ✅ `composer`       | Message input                                      |
-| `AgentInterface.Workspace`        | ✅ `workspace`      | Per-thread artifact rail                           |
-| `AgentInterface.Route`            | ✅ `routes[]`       | Custom routable view (see Routing)                 |
-| `AgentInterface.SidebarContent`   | ❌ building block   | Scrollable region inside a custom Sidebar          |
-| `AgentInterface.SidebarSeparator` | ❌ building block   | Divider inside a custom Sidebar                    |
-| `AgentInterface.SidebarItem`      | ❌ building block   | Styled nav row (also exported standalone)          |
-| `AgentInterface.ArtifactNav`      | ❌ building block   | Artifact-category nav rows                         |
-| `AgentInterface.NewChatButton`    | ❌ building block   | "New chat" affordance                              |
-| `AgentInterface.ThreadList`       | ❌ building block   | Date-grouped thread history                        |
-| `AgentInterface.Messages`         | ❌ building block   | The message list itself                            |
-| `AgentInterface.MessageLoading`   | ❌ building block   | Streaming loader row                               |
-| `AgentInterface.ScrollArea`       | ❌ building block   | Auto-scroll container                              |
+| Member                            | Top-level slot?     | Role                                                                                              |
+| --------------------------------- | ------------------- | ------------------------------------------------------------------------------------------------- |
+| `AgentInterface.Sidebar`          | ✅ `sidebar`        | Replace the whole sidebar; you compose its insides                                                |
+| `AgentInterface.SidebarHeader`    | ✅ `sidebarHeader`¹ | Default sidebar's header (logo + name + collapse)                                                 |
+| `AgentInterface.SidebarFooter`    | ✅ `sidebarFooter`  | Pinned below the thread list (e.g. theme toggle)                                                  |
+| `AgentInterface.MobileHeader`     | ✅ `mobileHeader`   | Top bar on mobile                                                                                 |
+| `AgentInterface.ThreadHeader`     | ✅ `threadHeader`   | Floating desktop header: `start`/`center`/`end`, chat title, Rename/Delete menu, workspace toggle |
+| `AgentInterface.Welcome`          | ✅ `welcome`        | Empty-state hero (`WelcomeScreen`)                                                                |
+| `AgentInterface.Composer`         | ✅ `composer`       | Message input                                                                                     |
+| `AgentInterface.Workspace`        | ✅ `workspace`      | Per-thread artifact rail                                                                          |
+| `AgentInterface.Route`            | ✅ `routes[]`       | Custom routable view (see Routing)                                                                |
+| `AgentInterface.SidebarContent`   | ❌ building block   | Scrollable region inside a custom Sidebar                                                         |
+| `AgentInterface.SidebarSeparator` | ❌ building block   | Divider inside a custom Sidebar                                                                   |
+| `AgentInterface.SidebarItem`      | ❌ building block   | Styled nav row (also exported standalone)                                                         |
+| `AgentInterface.ArtifactNav`      | ❌ building block   | Artifact-category nav rows                                                                        |
+| `AgentInterface.NewChatButton`    | ❌ building block   | "New chat" affordance                                                                             |
+| `AgentInterface.HistoryButton`    | ❌ building block   | Thread-history menu on the collapsed rail                                                         |
+| `AgentInterface.ThemeModeToggle`  | ❌ building block   | Light/dark toggle for `SidebarFooter`                                                             |
+| `AgentInterface.ThreadList`       | ❌ building block   | Date-grouped thread history                                                                       |
+| `AgentInterface.Messages`         | ❌ building block   | The message list itself                                                                           |
+| `AgentInterface.MessageLoading`   | ❌ building block   | Streaming loader row                                                                              |
+| `AgentInterface.ScrollArea`       | ❌ building block   | Auto-scroll container                                                                             |
 
 ¹ Only honored at top level when no `Sidebar` slot is present; otherwise nest it inside `Sidebar`.
 
@@ -171,13 +175,14 @@ Defined as `AgentInterfaceProps` in `AgentInterface.tsx`. It `extends Omit<ChatP
 | Prop                   | Type                                                     | Default | Notes                                                                                                     |
 | ---------------------- | -------------------------------------------------------- | ------- | --------------------------------------------------------------------------------------------------------- |
 | `componentLibrary`     | `Library` (react-lang)                                   | —       | Auto-derive assistant (and user) message rendering via GenUI when `components.AssistantMessage` is absent |
+| `onAction`             | `(event: ActionEvent) => void`                           | —       | GenUI actions the chat does not handle itself, such as custom actions from `defineAction`                 |
 | `components`           | `{ AssistantMessage?; UserMessage?; ToolCallTimeline? }` | —       | Explicit render overrides; `ToolCallTimeline` replaces the turn-level tool activity UI                    |
 | `theme`                | `ThemeProps`                                             | —       | Passed to `<ThemeProvider>`                                                                               |
 | `disableThemeProvider` | `boolean`                                                | `false` | Skip the internal `<ThemeProvider>` wrapper                                                               |
 | `logoUrl`              | `string`                                                 | `""`    | Brand logo (default `SidebarHeader` + `MobileHeader`)                                                     |
 | `agentName`            | `string`                                                 | `""`    | Agent display name                                                                                        |
 | `starters`             | `ConversationStarterProps[]`                             | —       | Global starters inherited by Welcome (if active) or the Composer                                          |
-| `starterVariant`       | `"short" \| "long"`                                      | —       | Layout variant for inherited starters                                                                     |
+| `starterVariant`       | `"short" \| "long" \| "card"`                            | —       | Layout variant for inherited starters                                                                     |
 | `path`                 | `string`                                                 | —       | **Controlled** current path (pair with `onNavigate`); `undefined` = thread view                           |
 | `defaultPath`          | `string`                                                 | —       | **Uncontrolled** initial path (ignored when `onNavigate` is set)                                          |
 | `onNavigate`           | `(next: string \| undefined) => void`                    | —       | Presence selects controlled mode                                                                          |
@@ -205,16 +210,18 @@ and avatar). Resolution order, per message kind:
 
 ### Named exports (from `index.ts`)
 
-| Export                                                                         | Kind             | Purpose                                    |
-| ------------------------------------------------------------------------------ | ---------------- | ------------------------------------------ |
-| `AgentInterface`                                                               | component        | The compound root                          |
-| `AgentInterfaceProps`, `AgentInterfaceComponents`, `ToolCallTimelineComponent` | types            | Root props / override map                  |
-| `SidebarItem`, `SidebarItemProps`                                              | component + type | Standalone nav row                         |
-| `ArtifactNav`, `ArtifactNavProps`                                              | component + type | Artifact-category nav                      |
-| `useNav`, `NavContextValue`                                                    | hook + type      | Read/drive navigation from inside the tree |
-| `RouteProps`                                                                   | type             | `<AgentInterface.Route>` props             |
-| `WorkspaceProps`                                                               | type             | `<AgentInterface.Workspace>` props         |
-| `artifactListPath`, `artifactViewPath`                                         | functions        | Build reserved `artifacts/…` paths         |
+| Export                                                                         | Kind             | Purpose                                                |
+| ------------------------------------------------------------------------------ | ---------------- | ------------------------------------------------------ |
+| `AgentInterface`                                                               | component        | The compound root                                      |
+| `AgentInterfaceProps`, `AgentInterfaceComponents`, `ToolCallTimelineComponent` | types            | Root props / override map                              |
+| `SidebarItem`, `SidebarItemProps`                                              | component + type | Standalone nav row                                     |
+| `ArtifactNav`, `ArtifactNavProps`                                              | component + type | Artifact-category nav                                  |
+| `useNav`, `NavContextValue`                                                    | hook + type      | Read/drive navigation from inside the tree             |
+| `RouteProps`                                                                   | type             | `<AgentInterface.Route>` props                         |
+| `WorkspaceProps`                                                               | type             | `<AgentInterface.Workspace>` props                     |
+| `ThreadHeaderProps`                                                            | type             | `<AgentInterface.ThreadHeader>` props                  |
+| `ThemeModeToggle`, `ThemeModeToggleProps`                                      | component + type | Light/dark toggle (pair with `useThemeModePreference`) |
+| `artifactListPath`, `artifactViewPath`                                         | functions        | Build reserved `artifacts/…` paths                     |
 
 ---
 
@@ -270,7 +277,7 @@ Most slots support three levels of customization (the codebase comments call the
 
 When you go Mode C on the Sidebar, compose it from the building-block members:
 `SidebarHeader`, `SidebarContent`, `SidebarSeparator`, `SidebarItem`, `ArtifactNav`, `NewChatButton`,
-`ThreadList`.
+`HistoryButton`, `ThreadList`, and `SidebarFooter` + `ThemeModeToggle` at the bottom.
 
 ---
 
@@ -294,14 +301,32 @@ Mounted by `<ChatProvider>`. Read via hooks:
 Two **separate** zustand stores are mounted in `Container.tsx`. They are _not_ the same store and
 serve different consumers:
 
-| Store                   | File                                                                  | Holds                                                                                              | Read with                | Used by                                                                                                |
-| ----------------------- | --------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- | ------------------------ | ------------------------------------------------------------------------------------------------------ |
-| **AgentInterfaceStore** | `_shared/store/store.tsx`                                             | `isSidebarOpen` (default **true**), `isWorkspaceOpen` (default **false**), `agentName`, `logoUrl`  | `useAgentInterfaceStore` | All AgentInterface chrome (sidebar, workspace toggles, header)                                         |
-| **ShellStore**          | `../_shared/store/store.tsx` (library-wide, shared with `OpenUIChat`) | `isSidebarOpen`, `isWorkspaceOpen` (default **true**), `agentName`, `logoUrl`, `showAssistantLogo` | `useShellStore`          | The GenUI assistant-message components, which read `agentName`/`logoUrl`/`showAssistantLogo` from here |
+| Store                   | File                                                                  | Holds                                                                                                            | Read with                | Used by                                                                                                |
+| ----------------------- | --------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- | ------------------------ | ------------------------------------------------------------------------------------------------------ |
+| **AgentInterfaceStore** | `_shared/store/store.tsx`                                             | `isSidebarOpen` (default **false**), `isHydrated`, `isWorkspaceOpen` (default **false**), `agentName`, `logoUrl` | `useAgentInterfaceStore` | All AgentInterface chrome (sidebar, workspace toggles, header)                                         |
+| **ShellStore**          | `../_shared/store/store.tsx` (library-wide, shared with `OpenUIChat`) | `isSidebarOpen`, `isWorkspaceOpen` (default **true**), `agentName`, `logoUrl`, `showAssistantLogo`               | `useShellStore`          | The GenUI assistant-message components, which read `agentName`/`logoUrl`/`showAssistantLogo` from here |
 
 Both are seeded from the same `logoUrl`/`agentName` and kept in sync to props via effects, but
 their `isWorkspaceOpen` defaults differ and they are **not** cross-synced. See
 [Gotchas](#gotchas--known-rough-edges).
+
+### Saved preferences & server rendering
+
+Saved UI preferences go through one helper, `utils/preferences.ts` (`readPreference` /
+`writePreference`: JSON values, never throws, so blocked or full storage just means nothing is
+kept). Each is read once after hydration, before paint, so server HTML and the client's first
+render match.
+
+- **Sidebar open** (`openui-agent-sidebar-open`): read and written by `SidebarContainer` (desktop
+  only, so opening the drawer on mobile isn't remembered on desktop). The store holds just the
+  live `isSidebarOpen`; once `isHydrated` is set, `SidebarContainer` restores the saved choice
+  without animating.
+- **Sidebar width** (`openui-agent-sidebar-width`): read and written by `SidebarResizeEdge`, which
+  sets it straight on the container as a CSS variable.
+- **Theme** (`openui-theme-mode`): `ThemeProvider/useThemeModePreference.ts`.
+- **Reveal:** until `isHydrated` is set, `Container` hides its contents (`visibility`, so
+  layout still measures) under a fading loader, and keeps transitions off until the restored
+  styles settle.
 
 Plus three React contexts:
 
@@ -534,27 +559,32 @@ AgentInterface/
 ├ AgentInterface.tsx        Root: props, extractSlots, provider stack, AgentInterfaceBody view switch
 ├ Container.tsx             Flex shell; width→layout mode; mounts the two stores + LayoutContext + Tooltip.Provider
 ├ Route.tsx                 Slot marker for routable views (renders null; consumed by parent)
-├ Sidebar.tsx               SidebarContainer/Header/Content/Separator + collapse/expand state machine
+├ Sidebar.tsx               SidebarContainer/Header/Content/Separator/Footer + collapse/expand state machine
+├ SidebarResizeEdge.tsx     Draggable sidebar edge (220–420px, snaps shut below 150px; width saved in the store)
+├ HistoryButton.tsx         Collapsed-rail thread-history menu
+├ ThemeModeToggle.tsx       Light/dark toggle for SidebarFooter
 ├ SidebarItem.tsx           Styled, nav-aware clickable row (exported)
 ├ SidebarSlot.tsx           The <AgentInterface.Sidebar> slot marker
 ├ SidebarTooltip.tsx        Collapsed-sidebar tooltip (right/center, fixed offset)
-├ ThreadList.tsx            Date-grouped thread history + per-thread menu
-├ Thread.tsx                ThreadContainer, ScrollArea, Messages, RenderMessage, ThreadHeader, ThreadError, loader
+├ ThreadList.tsx            Date-grouped thread history + per-thread menu (Rename/Delete)
+├ RenameChatDialog.tsx      Rename dialog shared by ThreadList and ThreadHeader
+├ Thread.tsx                ThreadContainer, ScrollArea, Messages, RenderMessage, WorkspaceToggleButton, ThreadError, loader
+├ ThreadHeader.tsx          Floating desktop header (start/center/end, chat title, actions menu)
 ├ UserMessageContent.tsx    Full AG-UI InputContent union renderer (+ URL/data allowlists, file chips)
 ├ MobileHeader.tsx          Mobile top bar
 ├ NewChatButton.tsx         New-chat affordance
 ├ Composer.tsx              Thin re-export of components/Composer
-├ ConversationStarter.tsx   Starter chips ("short" | "long" variant)
-├ WelcomeScreen.tsx         Empty-state hero (title/description/image/starters or children)
+├ ConversationStarter.tsx   Starters ("short" | "long" | "card" variant)
+├ WelcomeScreen.tsx         Empty-state hero (title/description/image/starters, prompt-template tabs, or children)
 ├ Workspace.tsx             Per-thread artifact rail (tabs, sections, mobile drawer)
 ├ ArtifactBrowserPage.tsx   Global searchable artifact list (also exports preview/format helpers)
 ├ ArtifactNav.tsx           Sidebar category nav into the browser (exported)
 ├ ArtifactViewPage.tsx      Full-page artifact view
 ├ ResizableSeparator.tsx    Keyboard+ARIA resize handle for the detailed-view split
 ├ useDetailedViewResize.ts  Drag/keyboard resize logic (writes panel width imperatively)
-├ components/               Composer + DesktopWelcomeComposer (and their SCSS)
+├ components/               Composer, DesktopWelcomeComposer, AmbientLoader, Mascot/MascotLoader, WelcomeMascot (and their SCSS)
 ├ _shared/
-│  ├ store/                 AgentInterfaceStore (sidebar/workspace/agentName/logoUrl)
+│  ├ store/                 AgentInterfaceStore (sidebar + saved preferences/workspace/agentName/logoUrl)
 │  ├ navContext.tsx         NavProvider / useNav / useOptionalNav
 │  ├ startersContext.tsx    StartersProvider / useStartersFromContext
 │  ├ artifactPaths.ts       Reserved artifacts/… path build+parse
