@@ -12,7 +12,7 @@ export interface IntegrationLink {
 export interface IntegrationCode {
   /** Path in the source project, shown as the block's title. */
   filename: string;
-  lang: "ts" | "tsx" | "vue" | "svelte" | "python" | "bash" | "json" | "html";
+  lang: "ts" | "tsx" | "js" | "vue" | "svelte" | "python" | "bash" | "json" | "html";
   code: string;
 }
 
@@ -258,16 +258,80 @@ const integrationCatalog: Integration[] = [
         title: "Add the stream transformer",
         description:
           "Add openUIStreamTransformer from @openuidev/langchain/transformer to your graph's streamTransformers, and give the agent the generated OpenUI system prompt.",
+        code: {
+          filename: "src/agent/agent.ts",
+          lang: "ts",
+          code: `import { cloudInstructions } from "@/lib/cloud-prompt";
+import { ChatOpenAI } from "@langchain/openai";
+import { openUIStreamTransformer } from "@openuidev/langchain/transformer";
+import { createDeepAgent } from "deepagents";
+
+import { getStockPrice, getWeather, searchWeb } from "./tools";
+
+const model = new ChatOpenAI({
+  model: "google/gemini-3.6-flash-free",
+  apiKey: process.env.THESYS_API_KEY,
+  streaming: true,
+  configuration: { baseURL: "https://api.thesys.dev/v1/embed" },
+});
+
+export const graph = createDeepAgent({
+  model,
+  tools: [getWeather, getStockPrice, searchWeb],
+  systemPrompt: cloudInstructions(
+    [
+      "You are an OpenUI assistant with weather, finance, and research tools.",
+      "Use the tools when they help answer the user's request, then answer only in OpenUI Lang.",
+    ].join("\\n"),
+  ),
+  streamTransformers: [openUIStreamTransformer],
+});`,
+        },
       },
       {
         title: "Expose an AG-UI route",
         description:
           "Return createLangChainStreamResponse(request, options) from a server route. It starts a protocol-v2 run and relays the output as AG-UI SSE while the API key and deployment URL stay on the server.",
+        code: {
+          filename: "src/app/api/chat/route.ts",
+          lang: "ts",
+          code: `import { createLangChainStreamResponse } from "@openuidev/langchain";
+
+export const runtime = "nodejs";
+
+export async function POST(request: Request) {
+  return createLangChainStreamResponse(request, {
+    apiUrl: process.env.LANGGRAPH_API_URL ?? "http://localhost:2024",
+    assistantId: process.env.LANGGRAPH_ASSISTANT_ID ?? "agent",
+    apiKey: process.env.LANGSMITH_API_KEY,
+    debug: process.env.NODE_ENV !== "production",
+  });
+}`,
+        },
       },
       {
         title: "Connect your chat UI",
         description:
           "Point fetchLLM at the route with agUIAdapter(), then pass it to AgentInterface for a ready-made chat app or to ChatProvider from @openuidev/react-headless for your own UI. For native LangGraph named-event SSE, use langGraphAdapter() with langGraphMessageFormat instead.",
+        code: {
+          filename: "src/app/page.tsx",
+          lang: "tsx",
+          code: `"use client";
+
+import { AgentInterface, agUIAdapter, fetchLLM } from "@openuidev/react-ui";
+import { openuiLibrary } from "@openuidev/react-ui/genui-lib";
+
+const llm = fetchLLM({
+  url: "/api/chat",
+  streamAdapter: agUIAdapter(),
+});
+
+export default function Page() {
+  return (
+    <AgentInterface llm={llm} componentLibrary={openuiLibrary} agentName="OpenUI + DeepAgents Chat" />
+  );
+}`,
+        },
       },
     ],
     links: [
@@ -302,16 +366,68 @@ const integrationCatalog: Integration[] = [
         title: "Stream with streamText",
         description:
           "Call streamText with the generated OpenUI system prompt and your AI SDK tools, then return toUIMessageStreamResponse() from the route.",
+        code: {
+          filename: "src/app/api/chat/route.ts",
+          lang: "ts",
+          code: `import { cloudInstructions } from "@/lib/cloud-prompt";
+import { tools } from "@/lib/tools";
+import { createOpenAI } from "@ai-sdk/openai";
+import { convertToModelMessages, stepCountIs, streamText } from "ai";
+
+const gateway = createOpenAI({
+  baseURL: "https://api.thesys.dev/v1/embed",
+  apiKey: process.env.THESYS_API_KEY,
+});
+
+export async function POST(req: Request) {
+  const { messages } = await req.json();
+  const result = streamText({
+    model: gateway.chat("google/gemini-3.6-flash-free"),
+    system: cloudInstructions(),
+    messages: await convertToModelMessages(messages),
+    tools,
+    stopWhen: stepCountIs(5),
+  });
+  return result.toUIMessageStreamResponse();
+}`,
+        },
       },
       {
         title: "Configure the adapter",
         description:
           "Create the client connection with fetchLLM({ streamAdapter: vercelAIAdapter(), messageFormat: vercelAIMessageFormat }).",
+        code: {
+          filename: "src/app/page.tsx",
+          lang: "ts",
+          code: `import { fetchLLM, vercelAIAdapter, vercelAIMessageFormat } from "@openuidev/react-ui";
+
+const llm = fetchLLM({
+  url: "/api/chat",
+  streamAdapter: vercelAIAdapter(),
+  messageFormat: vercelAIMessageFormat,
+});`,
+        },
       },
       {
         title: "Connect your chat UI",
         description:
           "Pass that llm to AgentInterface for a ready-made chat app, or to ChatProvider from @openuidev/react-headless to build your own UI. Either way, streamed text, tool calls, and multi-step runs arrive as the same chat events.",
+        code: {
+          filename: "src/app/page.tsx",
+          lang: "tsx",
+          code: `"use client";
+
+import { AgentInterface } from "@openuidev/react-ui";
+import { openuiLibrary } from "@openuidev/react-ui/genui-lib";
+
+// const llm = fetchLLM({ ... }) from the previous step
+
+export default function Page() {
+  return (
+    <AgentInterface llm={llm} componentLibrary={openuiLibrary} agentName="OpenUI + Vercel AI SDK" />
+  );
+}`,
+        },
       },
     ],
     links: [
@@ -724,24 +840,100 @@ const shouldContinue = createShouldContinueAfterOpenUIPrompt({
     category: "ai-frameworks",
     type: "Agent protocol",
     summary:
-      "OpenUI works as a frontend for AG-UI: point it at any AG-UI SSE endpoint and agUIAdapter() renders the event stream as generative UI. Lifecycle, text, tool and error events are supported.",
+      "OpenUI works as a frontend for AG-UI: point it at any AG-UI SSE endpoint and agUIAdapter() renders the event stream as generative UI. Text message, tool call, tool result and run error events are supported.",
     howItWorks:
-      "Point fetchLLM or a direct ChatLLM implementation at an AG-UI SSE endpoint and use agUIAdapter() as the stream adapter. OpenUI maps supported lifecycle, text, tool, and error events into its chat runtime.",
+      "Point fetchLLM or a direct ChatLLM implementation at an AG-UI SSE endpoint and use agUIAdapter() as the stream adapter. OpenUI maps text message, tool call, tool result and run error events into its chat runtime, and the run ends when the stream closes.",
     steps: [
       {
         title: "Prompt your agent for OpenUI Lang",
         description:
           "Give the agent a system prompt generated from the same component library the client renders, so its text output is valid OpenUI Lang.",
+        code: {
+          filename: "server.ts",
+          lang: "ts",
+          code: `import { generateSystemPrompt, type LibrarySpec } from "@openuidev/lang-core";
+import library from "./lib/openui.spec.json";
+
+// The complete prompt, ready to send to any model.
+const openuiInstructions = generateSystemPrompt({
+  library: library as LibrarySpec,
+});`,
+        },
       },
       {
         title: "Serve AG-UI events",
         description:
-          "Expose the agent as an SSE endpoint that emits standard AG-UI run lifecycle, text message, tool call, and error events.",
+          "Expose the agent as an SSE endpoint whose data lines are AG-UI events: TEXT_MESSAGE_* for text, TOOL_CALL_* and TOOL_CALL_RESULT for tools, and RUN_ERROR for failures. Close the stream to end the run.",
+        code: {
+          filename: "app/api/chat/route.ts",
+          lang: "ts",
+          code: `import Anthropic from "@anthropic-ai/sdk";
+
+const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY }); // server-side only
+
+export async function POST(req: Request) {
+  const { messages } = await req.json(); // { threadId, messages } from fetchLLM
+  // ...
+  const stream = new ReadableStream({
+    async start(controller) {
+      const sse = (event: object) =>
+        controller.enqueue(new TextEncoder().encode(\`data: \${JSON.stringify(event)}\\n\\n\`));
+      const messageId = crypto.randomUUID();
+
+      try {
+        const anthropicStream = anthropic.messages.stream({
+          // ...
+        });
+
+        sse({ type: "TEXT_MESSAGE_START", messageId });
+        for await (const chunk of anthropicStream) {
+          if (chunk.type === "content_block_delta" && chunk.delta.type === "text_delta") {
+            sse({ type: "TEXT_MESSAGE_CONTENT", messageId, delta: chunk.delta.text });
+          }
+        }
+        sse({ type: "TEXT_MESSAGE_END", messageId });
+      } catch (err) {
+        sse({
+          type: "RUN_ERROR",
+          message: err instanceof Error ? err.message : "Anthropic call failed",
+        });
+      } finally {
+        controller.close(); // flips the UI loading state off — leave it open and the loader never disappears
+      }
+    },
+  });
+
+  return new Response(stream, {
+    headers: {
+      "Content-Type": "text/event-stream",
+      // ...
+    },
+  });
+}`,
+        },
       },
       {
         title: "Connect the adapter",
         description:
           "Point fetchLLM, or your own ChatLLM implementation, at that endpoint with agUIAdapter() as the stream adapter. Pass it to AgentInterface for a ready-made chat app, or to ChatProvider from @openuidev/react-headless for your own UI.",
+        code: {
+          filename: "app/page.tsx",
+          lang: "tsx",
+          code: `"use client";
+
+import { AgentInterface, agUIAdapter, fetchLLM, openAIMessageFormat } from "@openuidev/react-ui";
+import { library } from "@/lib/openui";
+
+const llm = fetchLLM({
+  url: "/api/chat",
+  streamAdapter: agUIAdapter(),
+  messageFormat: openAIMessageFormat,
+});
+
+export default function Page() {
+  return <AgentInterface llm={llm} componentLibrary={library} />;
+}`,
+        },
       },
     ],
     links: [
@@ -1021,25 +1213,89 @@ class Tools:
     category: "frontend-platforms",
     type: "Native runtime",
     summary:
-      "To build generative UI in Vue, define your components with Zod schemas and render streamed OpenUI Lang with @openuidev/vue-lang. The UI updates progressively as the model's output arrives.",
+      "To build generative UI in Vue, register Vue 3 single-file components with Zod schemas and render streamed OpenUI Lang with @openuidev/vue-lang. The Renderer component takes the response as a prop, and composables such as useTriggerAction connect your components to it.",
     howItWorks:
-      "Vue component definitions and Zod schemas form a shared library for prompt generation and rendering. The Vue Renderer updates progressively as OpenUI Lang arrives.",
-    install: "npm install @openuidev/vue-lang",
+      "Each SFC declares a props prop for the parsed values and a renderNode prop for nested content, and defineComponent pairs it with a Zod schema whose key order sets the positional arguments in OpenUI Lang. Renderer reports back through callback props such as onAction, onStateUpdate and onError rather than emitted events. Inside it, composables like useTriggerAction, useSetFieldValue and useIsStreaming give components access to actions, form state and streaming status.",
+    install: "npm install @openuidev/vue-lang zod",
     steps: [
       {
-        title: "Define Vue components",
+        title: "Write the component as an SFC",
         description:
-          "Register each Vue component with defineComponent and a Zod prop schema, then combine them with createLibrary.",
+          "A registered component receives the parsed values in a props prop and a renderNode function. Declare both with defineProps, otherwise Vue forwards renderNode to the root element as an attribute.",
+        code: {
+          filename: "Greeting.vue",
+          lang: "vue",
+          code: `<script setup lang="ts">
+import type { RenderNodeResult } from "@openuidev/vue-lang";
+
+defineProps<{
+  props: { name?: string };
+  renderNode: (value: unknown) => RenderNodeResult;
+}>();
+</script>
+
+<template>
+  <p>Hello, {{ props.name }}!</p>
+</template>`,
+        },
       },
       {
-        title: "Generate the system prompt",
+        title: "Register it and generate the prompt",
         description:
-          "Build the prompt from the same library with library.prompt(), or with generateSystemPrompt on the server, so the model only calls components the renderer knows.",
+          "Pair the SFC with a Zod schema in defineComponent, collect the definitions with createLibrary, and call library.prompt(). A Nuxt server route cannot import .vue files, so share the schemas there and generate the prompt with @openuidev/lang-core ^0.4.",
+        code: {
+          filename: "library.ts",
+          lang: "ts",
+          code: `import { createLibrary, defineComponent } from "@openuidev/vue-lang";
+import { z } from "zod/v4";
+import GreetingComponent from "./Greeting.vue";
+
+const Greeting = defineComponent({
+  name: "Greeting",
+  description: "Greet the user by name.",
+  props: z.object({ name: z.string() }),
+  component: GreetingComponent,
+});
+
+export const library = createLibrary({
+  components: [Greeting],
+  root: "Greeting",
+});
+
+const systemPrompt = library.prompt({
+  preamble: "You are a helpful assistant.",
+  examples: ['root = Greeting("Alice")'],
+});`,
+        },
       },
       {
-        title: "Render the stream",
+        title: "Render the stream with Renderer",
         description:
-          "Bind the streamed text to the Renderer component's response prop along with library and is-streaming. Handle button and form actions with on-action.",
+          "Bind the accumulated text, the library and the streaming flag with :response, :library and :is-streaming. Renderer callbacks are props, not emitted events, so bind onAction with :on-action and send continuation actions back to the model as a new turn.",
+        code: {
+          filename: "AssistantMessage.vue",
+          lang: "vue",
+          code: `<script setup lang="ts">
+import { Renderer, type ActionEvent } from "@openuidev/vue-lang";
+import { library } from "./library";
+
+defineProps<{ response: string | null; isStreaming: boolean }>();
+
+function handleAction(event: ActionEvent) {
+  // Forward continuation actions to your application's normal send-message path.
+  console.log(event.humanFriendlyMessage, event.formState);
+}
+</script>
+
+<template>
+  <Renderer
+    :response="response"
+    :library="library"
+    :is-streaming="isStreaming"
+    :on-action="handleAction"
+  />
+</template>`,
+        },
       },
     ],
     links: [
@@ -1057,25 +1313,106 @@ class Tools:
     category: "frontend-platforms",
     type: "Native runtime",
     summary:
-      "To build generative UI in Angular, define your components with Zod schemas and render streamed OpenUI Lang with @openuidev/angular-lang. The UI updates progressively as the model's output arrives.",
+      "To build generative UI in Angular, register standalone components with Zod schemas and render streamed OpenUI Lang with the <openui-renderer> component from @openuidev/angular-lang. Results reach your app through outputs such as (action) and (error).",
     howItWorks:
-      "Standalone Angular components and Zod schemas form one library for prompt generation and rendering. The openui-renderer component resolves streamed statements into those components, and injection helpers give them access to actions, form state, and query loading.",
+      "Each registered component accepts props, renderNode and statementId inputs, and defineComponent pairs its class with a Zod schema. The <openui-renderer> component takes response, library and isStreaming inputs, emits (action), (stateUpdate), (parseResult) and (error) outputs, and runs Query() and mutation calls through a toolProvider. Inside it, injection helpers such as injectTriggerAction and injectIsStreaming expose actions and streaming state, the latter as a Signal.",
     install: "npm install @openuidev/angular-lang zod rxjs",
     steps: [
       {
-        title: "Define Angular components",
+        title: "Define a standalone component",
         description:
-          "Write standalone components that accept props, renderNode, and statementId inputs. Register each one with defineComponent and a Zod schema, then combine them with createLibrary.",
+          "Give the component props, renderNode and statementId inputs, which the renderer sets on every instance, and register its class with defineComponent and a Zod schema. Use optional access in the template, since props can be incomplete while the model streams.",
+        code: {
+          filename: "library.ts",
+          lang: "ts",
+          code: `import { Component, Input } from "@angular/core";
+import { createLibrary, defineComponent } from "@openuidev/angular-lang";
+import { z } from "zod/v4";
+
+@Component({
+  selector: "demo-greeting",
+  template: \`<p>Hello, {{ props?.name }}!</p>\`,
+})
+export class GreetingComponent {
+  @Input() props: { name?: string } | null = null;
+  @Input() renderNode: ((value: unknown) => unknown) | null = null;
+  @Input() statementId: string | undefined;
+}
+
+const Greeting = defineComponent({
+  name: "Greeting",
+  description: "Greet the user by name.",
+  props: z.object({ name: z.string() }),
+  component: GreetingComponent,
+});
+
+export const library = createLibrary({
+  components: [Greeting],
+  root: "Greeting",
+});`,
+        },
       },
       {
-        title: "Generate the system prompt",
+        title: "Generate the prompt on a Node server",
         description:
-          "Call library.prompt() in the app, or share the Zod schemas with a Node backend and use @openuidev/lang-core so the server never imports Angular classes.",
+          "Keep the Zod schemas in a file both sides import, and rebuild the library on the server with @openuidev/lang-core ^0.4 and component: null so it never loads Angular classes. The example's build script passes library.toSpec() to generateSystemPrompt and writes the prompt to a file the server reads.",
+        code: {
+          filename: "server/library.mjs",
+          lang: "js",
+          code: `import { createLibrary, defineComponent } from "@openuidev/lang-core";
+import { z } from "zod/v4";
+import { definitions, promptOptions } from "../src/app/openui/schema.ts";
+export { promptOptions };
+const blocks = Object.entries(definitions).map(([name, definition]) =>
+  defineComponent({ name, ...definition, component: null }),
+);
+const root = defineComponent({
+  name: "Response",
+  description: "Root container for every assistant message.",
+  props: z.object({ children: z.array(z.union(blocks.map((block) => block.ref))) }),
+  component: null,
+});
+export const library = createLibrary({
+  id: "angular-agent-chat",
+  root: "Response",
+  components: [root, ...blocks],
+});`,
+        },
       },
       {
         title: "Render with openui-renderer",
         description:
-          "Import Renderer and bind response, library, and isStreaming. Handle the (action), (stateUpdate), and (error) outputs, and pass a toolProvider to run Query and Mutation calls.",
+          "Add Renderer to the host component's imports, bind [response], [library] and [isStreaming], and handle (action) to send the next turn. The same element also emits (stateUpdate) and (error) and accepts a [toolProvider] for Query() and mutation calls.",
+        code: {
+          filename: "assistant-message.ts",
+          lang: "ts",
+          code: `import { Component, Input } from "@angular/core";
+import { Renderer, type ActionEvent } from "@openuidev/angular-lang";
+import { library } from "./library";
+
+@Component({
+  selector: "assistant-message",
+  imports: [Renderer],
+  template: \`
+    <openui-renderer
+      [response]="response"
+      [library]="library"
+      [isStreaming]="isStreaming"
+      (action)="handleAction($event)"
+    />
+  \`,
+})
+export class AssistantMessageComponent {
+  @Input() response: string | null = null;
+  @Input() isStreaming = false;
+  readonly library = library;
+
+  handleAction(event: ActionEvent): void {
+    // Forward continuation actions to your application's normal send-message path.
+    console.log(event.humanFriendlyMessage, event.formState);
+  }
+}`,
+        },
       },
     ],
     links: [
@@ -1134,25 +1471,93 @@ class Tools:
     category: "frontend-platforms",
     type: "Native runtime",
     summary:
-      "To build generative UI in Svelte, define your components with Zod schemas and render streamed OpenUI Lang with @openuidev/svelte-lang. The UI updates progressively as the model's output arrives.",
+      "To build generative UI in Svelte, register Svelte 5 components with Zod schemas and render streamed OpenUI Lang with @openuidev/svelte-lang. Components read parsed values with $props() and render nested output through a renderNode snippet.",
     howItWorks:
-      "Svelte component definitions and Zod schemas become one component library. The package generates the model prompt and its Renderer resolves streamed statements into Svelte components.",
-    install: "npm install @openuidev/svelte-lang",
+      "Each .svelte component receives the parsed values as props and a renderNode snippet that it renders with {@render}. Renderer takes callbacks such as onAction and onStateUpdate as ordinary props, and context helpers like getTriggerAction and getIsStreaming give components access to actions and streaming state. The Svelte runtime covers components, simple actions and form state; unlike the React, Vue and Angular runtimes, it does not yet run Query() calls, Action([...]) step plans or $variable state.",
+    install: "npm install @openuidev/svelte-lang zod",
     steps: [
       {
-        title: "Define Svelte components",
+        title: "Write the component with $props()",
         description:
-          "Pair each .svelte component with defineComponent and a Zod prop schema, then combine them with createLibrary.",
+          "Destructure props and renderNode from $props(). renderNode is a Snippet passed as a prop, not through context, so render children with {@render renderNode(...)} and forward it to any child component that renders nested nodes.",
+        code: {
+          filename: "Card.svelte",
+          lang: "svelte",
+          code: `<script lang="ts">
+  import type { Snippet } from "svelte";
+
+  let {
+    props,
+    renderNode,
+  }: { props: { title?: string; children?: unknown[] }; renderNode: Snippet<[unknown]> } =
+    $props();
+</script>
+
+<section>
+  {#if props.title}<h3>{props.title}</h3>{/if}
+  {@render renderNode(props.children)}
+</section>`,
+        },
       },
       {
-        title: "Generate the system prompt",
+        title: "Register components in a library",
         description:
-          "Build the prompt from the same library with library.prompt(), or with generateSystemPrompt on the server, so the model only calls components the renderer knows.",
+          "Pair each .svelte file with defineComponent and a Zod schema, and list a container's allowed children with their .ref schemas. Build the system prompt with library.prompt(), or in a SvelteKit server route share the schemas and generate it with @openuidev/lang-core ^0.4.",
+        code: {
+          filename: "src/lib/library.ts",
+          lang: "ts",
+          code: `import { createLibrary, defineComponent } from "@openuidev/svelte-lang";
+import { z } from "zod";
+import Card from "./components/Card.svelte";
+import TextContent from "./components/TextContent.svelte";
+// ...
+
+const TextContentDef = defineComponent({
+  name: "TextContent",
+  props: z.object({ text: z.string() }),
+  description: "Displays a block of text. Supports markdown formatting within the string.",
+  component: TextContent,
+});
+// ...
+
+const CardDef = defineComponent({
+  name: "Card",
+  props: z.object({
+    title: z.string(),
+    children: z.array(z.union([TextContentDef.ref, ButtonDef.ref, ChartDef.ref])),
+  }),
+  description: "A card container with a title and child components",
+  component: Card,
+});
+// ...
+
+export const library = createLibrary({
+  components: [TextContentDef, ButtonDef, ChartDef, CardDef, StackDef],
+  root: "Stack",
+});`,
+        },
       },
       {
         title: "Render the stream",
         description:
-          "Pass the streamed text, the library, and isStreaming to the Renderer component. It resolves each statement into a Svelte component as it arrives.",
+          "Pass the accumulated text, the library and isStreaming to Renderer, with onAction as an ordinary callback prop. The Svelte Renderer has no onError prop, so read parser errors from onParseResult.",
+        code: {
+          filename: "AssistantMessage.svelte",
+          lang: "svelte",
+          code: `<script lang="ts">
+  import { Renderer, type ActionEvent } from "@openuidev/svelte-lang";
+  import { library } from "$lib/library";
+
+  let { response, isStreaming }: { response: string | null; isStreaming: boolean } = $props();
+
+  function handleAction(event: ActionEvent) {
+    // Forward continuation actions to your application's normal send-message path.
+    console.log(event.humanFriendlyMessage, event.formState);
+  }
+</script>
+
+<Renderer {response} {library} {isStreaming} onAction={handleAction} />`,
+        },
       },
     ],
     links: [
