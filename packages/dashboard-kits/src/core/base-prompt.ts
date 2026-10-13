@@ -123,5 +123,5 @@ export const DATA_RULES: string[] = [
   'Query defaults must match the tool\'s output shape, e.g. {labels: [], totalSales: []} or {periodLabel: "", metrics: []}.',
   "Tool outputs are shaped for the component that shows them: pass the field straight through, e.g. KpiStrip(kpis.metrics), ConversionFunnel(funnel.steps), CohortGrid(c.cohorts, c.periodLabels, c.format). The tool descriptions name the component each one feeds.",
   'Pluck table columns from an object array: Col("Name", result.rows.name).',
-  "Declare each filter as a $variable with a default, bind it as the FilterSelect's defaultValue, and pass it to every Query that accepts that argument.",
+  "Declare each filter as a $variable with a default near the top of the program, before any statement that uses it, bind it as the FilterSelect's defaultValue, and pass it to every Query that accepts that argument.",
 ];

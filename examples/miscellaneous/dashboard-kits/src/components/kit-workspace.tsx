@@ -206,6 +206,20 @@ function GalleryView({ kitId }: { kitId: string }) {
   );
 }
 
+/**
+ * The part of a streaming program that is safe to render. A `$variable`
+ * declaration still arriving (`$range = "3`) parses as that partial value, and
+ * react-lang's store keeps the first default it sees for a variable, so the
+ * filter would stick at "3" and every Query reading it would fail. Holding back
+ * an unfinished declaration line until its newline arrives avoids that; the
+ * finished program renders in full.
+ */
+function renderable(text: string, streaming: boolean): string {
+  if (!streaming) return text;
+  const lineStart = text.lastIndexOf("\n") + 1;
+  return /^\s*\$[\w]+\s*=/.test(text.slice(lineStart)) ? text.slice(0, lineStart) : text;
+}
+
 function GenerateView({ kitId }: { kitId: string }) {
   const { kit, library, toolProvider, calls, errors, onError, reset } = useKitRenderer(kitId);
   const [prompt, setPrompt] = useState(kit.starters[0]);
@@ -318,7 +332,7 @@ function GenerateView({ kitId }: { kitId: string }) {
           <div className="canvas">
             <Renderer
               key={run}
-              response={program}
+              response={renderable(program, status === "streaming")}
               library={library}
               isStreaming={status === "streaming"}
               toolProvider={toolProvider}

@@ -253,6 +253,8 @@ These are not kit bugs. Each one affects anyone who builds on the dashboard arti
 13. react-ui's chart motion is internal: the spring and data morph, `FadeFollower`, `useSeededAim`, `useTranslate`, `AnimatedPath`, the line crosshair, and the d3 series geometry are not exported, so the kit ports them (`Charts/shared`, with tests and a note naming each source). Exporting them would let other packages build charts that move like react-ui's without a copy.
 14. A react-ui chart's entrance runs only once, on mount: on a filter change `BarChart` bars snap to their new heights. (An earlier draft of this document reported a bar stuck at zero height after its entrance; that was a capture taken mid-animation. All 240 animated bars on the Merchandising dashboard finish at full height.)
 
+15. A streamed `$variable` default can lock in half-received. Mid-stream the parser reports `$range = "3` as `"3"` (and `$range = "` as `""`), and react-lang's store applies a declared default only to a key it has not seen, so the finished `"30d"` never replaces it. The filter then shows no selection and every Query reading it fails validation. It depends on where the network chunks split, so it is intermittent; replaying a failing program one character at a time reproduces it every time. The Generate view holds back an unfinished `$` declaration line until its newline arrives, and the prompt asks for declarations before first use. A fix belongs in react-lang: initialize state from completed statements only, or let a declaration update a default the user has not changed.
+
 ## Open questions
 
 1. One "e-commerce analytics" kit, or separate e-commerce and analytics kits? This draft builds two, sharing four analytics blocks.
