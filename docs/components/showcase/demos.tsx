@@ -1,40 +1,44 @@
 import { EXAMPLES_REPO_URL } from "@/lib/examples-catalog";
 import { labProjects } from "@/lib/lab-projects";
-import { LinkCardGrid, ShowcaseGrid, type LinkCardItem, type ShowcaseItem } from "./cards";
+import { LinkCardGrid, ShowcaseGrid, type ShowcaseItem } from "./cards";
 
-const PLAYGROUND: LinkCardItem[] = [
+const PLAYGROUND: ShowcaseItem[] = [
   {
     name: "OpenUI Chat",
-    tag: "Chat assistant",
+    tagline: "Chat assistant",
     description:
       "A ChatGPT-like assistant powered by OpenUI Cloud. Start a live conversation or replay a curated one.",
+    image: { light: "/nav/chat-light.webp", dark: "/nav/chat-dark.webp" },
     links: [{ label: "Open demo", href: "/chat" }],
   },
   {
     name: "AI Dashboards",
-    tag: "Live GitHub data",
+    tagline: "Live GitHub data",
     description:
       "Enter a GitHub username and ask questions about their activity. Each answer is an interactive dashboard.",
+    image: { light: "/nav/dashboard-light.webp", dark: "/nav/dashboard-dark.webp" },
     links: [{ label: "Open demo", href: "/demo/github" }],
   },
   {
     name: "Compare",
-    tag: "Side by side",
+    tagline: "Side by side",
     description:
       "See the same answers rendered as Markdown, with OpenUI OSS, and with OpenUI Cloud, side by side.",
+    image: { light: "/nav/compare-light.webp", dark: "/nav/compare-dark.webp" },
     links: [{ label: "Open demo", href: "/compare" }],
   },
   {
     name: "OpenUI vs JSON",
-    tag: "Tokens",
+    tagline: "Tokens",
     description:
       "Generate UI from a prompt and watch OpenUI Lang stream against JSON, with up to 67% fewer tokens.",
+    image: { light: "/nav/vsjson-light.webp", dark: "/nav/vsjson-dark.webp" },
     links: [{ label: "Open demo", href: "/openui-vs-json" }],
   },
 ];
 
 export function Playground() {
-  return <LinkCardGrid items={PLAYGROUND} />;
+  return <ShowcaseGrid items={PLAYGROUND} />;
 }
 
 const FEATURED_PROJECTS: ShowcaseItem[] = [
