@@ -12,6 +12,7 @@ import {
   integrationBySlug,
   integrations,
 } from "../data";
+import { IntegrationCode } from "../integration-code";
 import { IntegrationLogo } from "../integration-logo";
 import styles from "../page.module.css";
 
@@ -87,9 +88,10 @@ export default async function IntegrationDetailPage(props: { params: Promise<{ s
                 {integration.steps.map((step, index) => (
                   <li key={step.title}>
                     <span className={styles.flowNumber}>{index + 1}</span>
-                    <div>
+                    <div className={styles.flowStep}>
                       <h3>{step.title}</h3>
                       <p>{step.description}</p>
+                      {step.code ? <IntegrationCode code={step.code} /> : null}
                     </div>
                   </li>
                 ))}

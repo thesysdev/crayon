@@ -8,9 +8,18 @@ export interface IntegrationLink {
   kind: "Docs" | "Example" | "Guide" | "GitHub" | "npm" | "Website" | "Plugin";
 }
 
+/** A snippet copied from the docs guide or example app the page links to. */
+export interface IntegrationCode {
+  /** Path in the source project, shown as the block's title. */
+  filename: string;
+  lang: "ts" | "tsx" | "vue" | "svelte" | "python" | "bash" | "json" | "html";
+  code: string;
+}
+
 export interface IntegrationStep {
   title: string;
   description: string;
+  code?: IntegrationCode;
 }
 
 export interface Integration {
