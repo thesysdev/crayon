@@ -8,6 +8,8 @@ const STATIC_PATHS = [
   "/lab",
   "/integrations",
   "/chat",
+  "/demo/f1-dashboard",
+  "/demo/trip-planner",
   "/blog",
   "/benchmarks",
   "/benchmarks/language",

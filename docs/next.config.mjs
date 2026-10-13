@@ -7,10 +7,10 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const withMDX = createMDX();
 
 // Demos deployed as their own Vercel projects, served under openui.com/demo/<path>. Each app sets
-// `basePath` to the same path, so its pages, assets and API routes all live under it.
+// NEXT_PUBLIC_BASE_PATH to the same path, so its pages, assets and API routes all live under it.
 const proxiedDemos = {
-  "f1-dashboard-agent": "https://openui-f1-dashboard.vercel.app",
-  "travel-planner-agent": "https://openui-travel-planner-agent.vercel.app",
+  "f1-dashboard": "https://openui-f1-dashboard.vercel.app",
+  "trip-planner": "https://openui-travel-planner-agent.vercel.app",
 };
 
 /** @type {import('next').NextConfig} */
