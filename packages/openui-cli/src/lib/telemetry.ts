@@ -3,6 +3,7 @@ import * as os from "node:os";
 import * as path from "node:path";
 import type { PostHog } from "posthog-node";
 
+import { isInteractiveTerminal } from "./detect-tty";
 import { isTruthyEnv } from "./env";
 import { cliErrorProperties } from "./errors";
 import { createPostHogClient } from "./posthog";
@@ -17,7 +18,6 @@ const isCi = () => {
   const e = process.env;
   return isTruthyEnv(e["CI"]) || !!e["GITHUB_ACTIONS"] || !!e["GITLAB_CI"] || !!e["BUILDKITE"];
 };
-const isInteractiveTerminal = () => Boolean(process.stdin.isTTY && process.stdout.isTTY);
 const debugLogPostHogFailure = (stage: string, error: unknown) => {
   if (!isTelemetryDebug()) return;
   const message = error instanceof Error ? error.message : String(error);

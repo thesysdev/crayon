@@ -1,13 +1,15 @@
+import { isInteractiveTerminal } from "../../../lib/detect-tty";
 import { CliCancelledError } from "../../../lib/errors";
 
 /** True when stdin/stdout are TTYs and `--no-interactive` was not passed. */
 export function canPromptInteractive(noInteractive = false): boolean {
-  return Boolean(process.stdin.isTTY && process.stdout.isTTY) && !noInteractive;
+  return isInteractiveTerminal() && !noInteractive;
 }
 
 /**
  * Confirm with default yes when a TTY is available. `--yes` accepts without
- * asking. No TTY and no `--yes` returns false so secrets are not written remotely.
+ * asking. No TTY (or an agent run) without `--yes` returns false so secrets are
+ * not written remotely.
  */
 export async function confirmOrDefault(
   message: string,

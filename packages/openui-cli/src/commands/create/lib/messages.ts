@@ -1,9 +1,26 @@
 import { THESYS_KEYS_URL } from "../../../lib/auth/mint";
+import { DEFAULT_ENV_FILE } from "../../../lib/env";
 import type { TemplateName } from "./create-types";
+
+/** Shown when create finished without an OpenUI Cloud key (skipped, agent, or failed sign-in). */
+export function missingCloudKeyNote(
+  projectDir: string,
+  dlxCmd: string,
+  envFile = DEFAULT_ENV_FILE,
+): string {
+  const fileArg = envFile === DEFAULT_ENV_FILE ? "" : ` --file ${envFile}`;
+  return [
+    `[!] No OpenUI Cloud API key added. Sign in and write one to ${envFile} with:`,
+    `> cd ${projectDir}`,
+    `> ${dlxCmd} @openuidev/cli@latest generate-api-key${fileArg}`,
+    `(or create one at ${THESYS_KEYS_URL} and set THESYS_API_KEY yourself)`,
+  ].join("\n");
+}
 
 export function getStartedMessage(o: {
   name: string;
   devCmd: string;
+  dlxCmd: string;
   template: TemplateName;
   backendGettingStarted?: string;
   skillInstalled: boolean;
@@ -20,7 +37,7 @@ export function getStartedMessage(o: {
     o.template === "openui-cloud"
       ? o.envWritten
         ? "✅ .env created with your OpenUI Cloud API key + base URL."
-        : `[!] .env created without a key. Add THESYS_API_KEY=… (get one at ${THESYS_KEYS_URL}).`
+        : missingCloudKeyNote(o.name, o.dlxCmd)
       : o.envWritten
         ? "✅ .env created with your API key."
         : "Add your API key to .env:\nOPENAI_API_KEY=sk-your-key-here";
@@ -33,9 +50,8 @@ export function getStartedMessage(o: {
         `> ${o.devCmd} run dev`,
       ].join("\n");
 
-  const deployHint = "Share a preview:\n> npx @openuidev/cli@latest deploy";
-  const feedbackHint =
-    'Found a bug or have an idea?\n> npx @openuidev/cli@latest feedback "<message>"';
+  const deployHint = `Share a preview:\n> ${o.dlxCmd} @openuidev/cli@latest deploy`;
+  const feedbackHint = `Found a bug or have an idea?\n> ${o.dlxCmd} @openuidev/cli@latest feedback "<message>"`;
 
   const frameworkNote = o.backendGettingStarted?.replaceAll("{{packageManager}}", o.devCmd) ?? "";
 

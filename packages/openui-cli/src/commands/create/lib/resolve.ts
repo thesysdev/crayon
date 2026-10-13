@@ -1,3 +1,4 @@
+import { isInteractiveTerminal } from "../../../lib/detect-tty";
 import { CliCancelledError, CreateError } from "../../../lib/errors";
 import { resolveArgs } from "../../../lib/resolve-args";
 import type { RetryAttemptInfo } from "../../../lib/retry";
@@ -203,8 +204,6 @@ export async function resolveCreateSelection(params: {
     return { kind: "example", example: findExample(exampleSelected, examples) };
   }
 }
-
-const isInteractiveTerminal = () => Boolean(process.stdin.isTTY && process.stdout.isTTY);
 
 export function resolveImmediate(
   immediate: boolean | undefined,

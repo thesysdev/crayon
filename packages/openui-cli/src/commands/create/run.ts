@@ -70,6 +70,7 @@ export async function runCreateApp(options: CreateAppOptions, ctx: CliContext): 
     await runCreateExample({
       options,
       interactive,
+      agent: ctx.agent,
       packageManager,
       t0,
       name,
@@ -111,7 +112,7 @@ export async function runCreateApp(options: CreateAppOptions, ctx: CliContext): 
   const envResult =
     template === "openui-self-hosted"
       ? await resolveChatEnv(interactive)
-      : await resolveCloudEnv(name, options, interactive, tel);
+      : await resolveCloudEnv(name, options, interactive, ctx.agent, tel);
 
   const installSkill = await shouldInstallSkill(options.skill, interactive);
   tel.trackSkillInstalled({ skill_installed: installSkill });
@@ -220,6 +221,7 @@ export async function runCreateApp(options: CreateAppOptions, ctx: CliContext): 
     getStartedMessage({
       name,
       devCmd,
+      dlxCmd: packageManager.dlxCmd,
       template,
       backendGettingStarted: overlay?.manifest.gettingStarted,
       skillInstalled,

@@ -5,6 +5,7 @@ export type CliContext = {
   argv: string[];
   telemetry: Telemetry;
   verbose: boolean;
+  agent?: string;
   cliVersion?: string;
 };
 

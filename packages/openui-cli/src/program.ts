@@ -7,7 +7,7 @@ import { Command } from "commander";
 import { commands } from "./commands";
 import { CreateTelemetryClient } from "./commands/create/lib/telemetry";
 import { context as ctx } from "./lib/context";
-import { detectAgent, UNKNOWN_AGENT_NAME } from "./lib/detect-agent";
+import { detectAgent, resolveAgent, UNKNOWN_AGENT_NAME } from "./lib/detect-agent";
 import { CliCancelledError, cliErrorProperties, CreateError } from "./lib/errors";
 
 let activeCommand = "unknown";
@@ -40,6 +40,7 @@ function buildProgram(): Command {
       telemetry?: boolean;
       verbose?: boolean;
     }>();
+    ctx.agent = resolveAgent(globalOptions.agentName);
     ctx.verbose = Boolean(globalOptions.verbose || actionCommand.optsWithGlobals()["verbose"]);
     ctx.telemetry.init({ cliVersion, flagEnabled: globalOptions.telemetry !== false });
     ctx.telemetry.registerRun({
