@@ -10,6 +10,12 @@ import { FadedDither } from "../../components/FadedDither/FadedDither";
 import { FeatureGridSection, type GridFeatureIcon } from "../FeatureGridSection/FeatureGridSection";
 import styles from "./ProductSection.module.css";
 
+/* Rendered widths of the stage artwork, so phones fetch a phone-sized file
+   rather than the 2x desktop one. The wide shot shows from 768px up, capped at
+   --home-container-max; the compact one fills the band minus its gutters. */
+const STAGE_WIDE_SIZES = "(max-width: 1023px) calc(100vw - 80px), 1200px";
+const STAGE_COMPACT_SIZES = "calc(100vw - 40px)";
+
 export type ProductCard = {
   Icon: Icon;
   /* The same icon named as a string. The phone layout hands these cards to
@@ -72,6 +78,10 @@ export type ProductSectionProps = {
   stageAspectRatio?: string;
   stageMobileAspectRatio?: string;
   cards: ProductCard[];
+  /* The headline's level in the page outline: 3 under a section title (the
+     Cloud band), 2 where the band opens a section itself. Card titles sit one
+     level below. */
+  headingLevel?: 2 | 3;
 };
 
 /* One product band: a split lockup, two calls to action, a wide visual, then
@@ -95,7 +105,10 @@ export function ProductSection({
   stageAspectRatio,
   stageMobileAspectRatio,
   cards,
+  headingLevel = 3,
 }: ProductSectionProps) {
+  const Headline = headingLevel === 2 ? "h2" : "h3";
+  const CardTitle = headingLevel === 2 ? "h3" : "h4";
   const primaryVariant = tone === "dark" ? "light" : "primary";
   const secondaryVariant = tone === "dark" ? "dark" : "secondary";
 
@@ -104,7 +117,7 @@ export function ProductSection({
       <div className={styles.lockup}>
         <div className={styles.lead}>
           <ProductLabel name={name} tag={tag} />
-          <h3 className={styles.headline}>{headline}</h3>
+          <Headline className={styles.headline}>{headline}</Headline>
           <div className={styles.ctas}>
             {primaryCta && (
               <BevelButton
@@ -171,6 +184,7 @@ export function ProductSection({
                   width={1280}
                   height={720}
                   loading="lazy"
+                  sizes={STAGE_WIDE_SIZES}
                 />
                 <Image
                   className={`${styles.stageImage} ${styles.stageDark}`}
@@ -180,6 +194,7 @@ export function ProductSection({
                   width={1280}
                   height={720}
                   loading="lazy"
+                  sizes={STAGE_WIDE_SIZES}
                 />
               </span>
               <span className={styles.stageCompact}>
@@ -191,6 +206,7 @@ export function ProductSection({
                   width={720}
                   height={600}
                   loading="lazy"
+                  sizes={STAGE_COMPACT_SIZES}
                 />
                 <Image
                   className={`${styles.stageImage} ${styles.stageDark}`}
@@ -200,6 +216,7 @@ export function ProductSection({
                   width={720}
                   height={600}
                   loading="lazy"
+                  sizes={STAGE_COMPACT_SIZES}
                 />
               </span>
             </>
@@ -215,7 +232,7 @@ export function ProductSection({
                   <CardIcon size={20} weight="light" />
                 </span>
                 <div className={styles.cardCopy}>
-                  <h4 className={styles.cardTitle}>{title}</h4>
+                  <CardTitle className={styles.cardTitle}>{title}</CardTitle>
                   <p className={styles.cardDescription}>{cardCopy}</p>
                 </div>
               </div>

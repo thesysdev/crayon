@@ -43,6 +43,7 @@ export function ThesysLogo({
       href="https://thesys.dev"
       target="_blank"
       rel="noopener noreferrer"
+      aria-label="Thesys"
       className="relative shrink-0 size-6 cursor-pointer"
       onMouseEnter={() => onHoverChange(true)}
       onMouseLeave={() => onHoverChange(false)}
@@ -86,8 +87,8 @@ export function ThesysLogo({
 export function OpenUILogo({ variant = "light" }: { variant?: LogoVariant }) {
   const isDark = variant === "dark";
   const textClass = isDark
-    ? "font-['Geist',sans-serif] font-semibold text-[15px] text-white leading-6"
-    : "font-['Geist',sans-serif] font-semibold text-[15px] text-black leading-6";
+    ? "font-[family-name:var(--font-geist),sans-serif] font-semibold text-[15px] text-white leading-6"
+    : "font-[family-name:var(--font-geist),sans-serif] font-semibold text-[15px] text-black leading-6";
 
   return (
     <Link href="/" className="flex items-center gap-0.5 no-underline">

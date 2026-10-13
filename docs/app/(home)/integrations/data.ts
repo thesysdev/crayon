@@ -478,7 +478,7 @@ const integrationCatalog: Integration[] = [
     slug: "grok-build",
     name: "Grok Build",
     seoTitle: "Grok Build generative UI with OpenUI",
-    logo: "https://media.x.ai/v1/website/spacexai-symbol-black-transparent-6435cf42.png",
+    logo: "/brand-icons/xai.svg",
     category: "ai-frameworks",
     type: "Coding agent",
     summary:

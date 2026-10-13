@@ -98,7 +98,8 @@ export default function HomePage() {
       <div className={styles.contentSection}>
         <div className={styles.contentShell}>
           <div className={styles.langBand}>
-            <ProductSection {...LANG_PRODUCT} />
+            {/* The first heading after the hero, so it opens the outline at h2. */}
+            <ProductSection {...LANG_PRODUCT} headingLevel={2} />
           </div>
           {/* The benchmark header and the compatibility band, without the feature
               grid that used to sit between them. */}
