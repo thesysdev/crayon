@@ -17,7 +17,7 @@ import benchmarkStyles from "../benchmarks.module.css";
 import page from "./metadata";
 
 export const metadata = createPageMetadata(page, {
-  openGraph: { type: "article", modifiedTime: "2026-08-26" },
+  openGraph: { type: "article", modifiedTime: METHODOLOGY_UPDATED_ISO },
 });
 
 const SECTIONS = [

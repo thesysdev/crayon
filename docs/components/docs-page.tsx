@@ -1,8 +1,10 @@
 import { LLMCopyButton, ViewOptions } from "@/components/ai/page-actions";
+import { JsonLd } from "@/components/seo/JsonLd";
 import { gitConfig } from "@/lib/layout.shared";
 import { docsOgImage } from "@/lib/og/content";
+import { ogImageUrl } from "@/lib/og/images";
 import { withOgImage } from "@/lib/page-metadata";
-import { source } from "@/lib/source";
+import { BASE_URL, source } from "@/lib/source";
 import { getMDXComponents, MdxLink } from "@/mdx-components";
 import { DocsBody, DocsDescription, DocsPage, DocsTitle } from "fumadocs-ui/layouts/docs/page";
 import { createRelativeLink } from "fumadocs-ui/mdx";
@@ -24,6 +26,7 @@ export function DocsPageView({ page }: { page: DocsSourcePage }) {
       // Without a sidebar there is room for the `full` page width next to the TOC (see global.css).
       data-no-sidebar={!page.data.sidebar || undefined}
     >
+      <JsonLd data={docsStructuredData(page)} />
       {!page.data.customHeader && (
         <>
           <DocsTitle>{page.data.title}</DocsTitle>
@@ -57,9 +60,33 @@ export function getDocsPageMetadata(page: DocsSourcePage): Metadata {
   return withOgImage({ ...docsMetadata(page), description }, image, { description });
 }
 
+/* TechArticle structured data: gives Google the page's last-modified date and publisher. */
+function docsStructuredData(page: DocsSourcePage) {
+  const url = `${BASE_URL}${page.url}`;
+  return {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    "@id": `${url}#article`,
+    headline: page.data.title,
+    description: page.data.description,
+    image: `${BASE_URL}${ogImageUrl(docsOgImage(page))}`,
+    ...(page.data.updatedAt && {
+      dateModified: new Date(page.data.updatedAt).toISOString(),
+    }),
+    publisher: {
+      "@type": "Organization",
+      "@id": "https://www.thesys.dev/#organization",
+      name: "Thesys",
+      url: "https://www.thesys.dev",
+    },
+    mainEntityOfPage: url,
+    url,
+  };
+}
+
 function docsMetadata(page: DocsSourcePage): Metadata {
   return {
-    title: page.data.title,
+    title: page.data.seoTitle ?? page.data.title,
     description: page.data.description,
     alternates: {
       canonical: page.url,

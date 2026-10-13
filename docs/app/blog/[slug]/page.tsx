@@ -1,8 +1,10 @@
 import { GitHubButton } from "@/app/(home)/components/GitHubButton/GitHubButton";
 import { Footer } from "@/app/(home)/sections/Footer/Footer";
+import { JsonLd } from "@/components/seo/JsonLd";
 import { blogOgImage } from "@/lib/og/content";
+import { ogImageUrl } from "@/lib/og/images";
 import { withOgImage } from "@/lib/page-metadata";
-import { blog } from "@/lib/source";
+import { BASE_URL, blog } from "@/lib/source";
 import { getMDXComponents } from "@/mdx-components";
 import { TOCProvider, TOCScrollArea } from "fumadocs-ui/components/toc";
 import { TOCItem, TOCItems } from "fumadocs-ui/components/toc/default";
@@ -11,6 +13,44 @@ import { notFound } from "next/navigation";
 import { BlogFaq } from "../components/BlogFaq";
 
 const isoDay = (date: string | Date) => new Date(date).toISOString().slice(0, 10);
+
+type BlogSourcePage = NonNullable<ReturnType<typeof blog.getPage>>;
+
+/* BlogPosting and breadcrumb structured data: gives Google the post's dates and author. */
+function blogStructuredData(page: BlogSourcePage) {
+  const url = `${BASE_URL}${page.url}`;
+  const { title, description, author, date, updatedAt } = page.data;
+  return [
+    {
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      "@id": `${url}#article`,
+      headline: title,
+      description,
+      image: `${BASE_URL}${ogImageUrl(blogOgImage(page))}`,
+      datePublished: new Date(date).toISOString(),
+      dateModified: new Date(updatedAt ?? date).toISOString(),
+      // Bylines are a person or a team ("Thesys Engineering Team").
+      author: { "@type": /\bteam\b/i.test(author) ? "Organization" : "Person", name: author },
+      publisher: {
+        "@type": "Organization",
+        "@id": "https://www.thesys.dev/#organization",
+        name: "Thesys",
+        url: "https://www.thesys.dev",
+      },
+      mainEntityOfPage: url,
+      url,
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "Blog", item: `${BASE_URL}/blog` },
+        { "@type": "ListItem", position: 2, name: title, item: url },
+      ],
+    },
+  ];
+}
 
 export default async function BlogPostPage(props: { params: Promise<{ slug: string }> }) {
   const params = await props.params;
@@ -25,6 +65,7 @@ export default async function BlogPostPage(props: { params: Promise<{ slug: stri
 
   return (
     <TOCProvider toc={toc}>
+      <JsonLd data={blogStructuredData(page)} />
       {/* Blend from the menu bar's surface color into a gray band, then back into the
           footer's surface — matching the home content band (light: foreground->background->foreground;
           dark: black -> neutral-950 -> black, so the edges meet the black menu + footer). */}
