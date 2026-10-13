@@ -6,7 +6,7 @@ import type { ASTNode } from "./ast";
 import { walkAST } from "./ast";
 import { parseExpression } from "./expressions";
 import { tokenize } from "./lexer";
-import { normalizeTripleQuotes, stripFences } from "./parser";
+import { stripFences } from "./parser";
 import { split } from "./statements";
 
 interface ParsedStatement {
@@ -57,7 +57,7 @@ function splitStatementSource(input: string): string[] {
 }
 
 function parseStatements(input: string): ParsedStatement[] {
-  const trimmed = normalizeTripleQuotes(input.trim());
+  const trimmed = input.trim();
   if (!trimmed) return [];
 
   const result: ParsedStatement[] = [];

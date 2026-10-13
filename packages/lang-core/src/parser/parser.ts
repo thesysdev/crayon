@@ -443,63 +443,9 @@ function stripComments(input: string): string {
     .join("\n");
 }
 
-/**
- * Rewrite Python-style triple-quoted strings ("""…""" or '''…''') as JSON
- * string literals, so the rest of the pipeline only sees ordinary strings.
- * LLMs reach for them for multi-line code (`code = """…"""`); without this the
- * lexer reads `"""` as an empty string followed by an open quote.
- *
- * The body is kept raw (backslashes are literal, newlines preserved). One
- * newline right after the opening quotes and a whitespace-only last line before
- * the closing quotes are dropped. An unclosed body (streaming) becomes an
- * unclosed string, with any trailing quotes held back since they may be the
- * start of the closing delimiter.
- */
-export function normalizeTripleQuotes(input: string): string {
-  if (!input.includes('"""') && !input.includes("'''")) return input;
-  let out = "";
-  let i = 0;
-  let inStr: false | '"' | "'" = false;
-  while (i < input.length) {
-    const c = input[i];
-    if (inStr) {
-      out += c;
-      if (c === "\\" && i + 1 < input.length) {
-        out += input[i + 1];
-        i += 2;
-        continue;
-      }
-      if (c === inStr) inStr = false;
-      i++;
-      continue;
-    }
-    if ((c === '"' || c === "'") && input.startsWith(c.repeat(3), i)) {
-      const delim = c.repeat(3);
-      const bodyStart = i + 3;
-      const close = input.indexOf(delim, bodyStart);
-      let body = input.slice(bodyStart, close === -1 ? input.length : close);
-      if (body.startsWith("\r\n")) body = body.slice(2);
-      else if (body.startsWith("\n")) body = body.slice(1);
-      if (close === -1) {
-        body = body.replace(new RegExp(`${c}{1,2}$`), "");
-        out += JSON.stringify(body).slice(0, -1);
-        break;
-      }
-      body = body.replace(/\r?\n[ \t]*$/, "");
-      out += JSON.stringify(body);
-      i = close + 3;
-      continue;
-    }
-    if (c === '"' || c === "'") inStr = c;
-    out += c;
-    i++;
-  }
-  return out;
-}
-
-/** Clean LLM response: strip fences, triple quotes, comments, whitespace. */
+/** Clean LLM response: strip fences, comments, whitespace. */
 function preprocess(input: string): string {
-  return stripComments(normalizeTripleQuotes(stripFences(input.trim()))).trim();
+  return stripComments(stripFences(input.trim())).trim();
 }
 
 /**
