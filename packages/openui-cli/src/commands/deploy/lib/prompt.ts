@@ -1,10 +1,5 @@
-import { isInteractiveTerminal } from "../../../lib/detect-tty";
+import { canPromptInteractive } from "../../../lib/detect-tty";
 import { CliCancelledError } from "../../../lib/errors";
-
-/** True when stdin/stdout are TTYs and `--no-interactive` was not passed. */
-export function canPromptInteractive(noInteractive = false): boolean {
-  return isInteractiveTerminal() && !noInteractive;
-}
 
 /**
  * Confirm with default yes when a TTY is available. `--yes` accepts without
