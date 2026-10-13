@@ -2,7 +2,13 @@ import { ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 import styles from "./showcase.module.css";
 
-export type CardLinkItem = { label: string; href: string; external?: boolean };
+export type CardLinkItem = {
+  label: string;
+  href: string;
+  external?: boolean;
+  /** A path served by another app behind a rewrite (the proxied demos), so it needs a full page load. */
+  reloadDocument?: boolean;
+};
 
 /** A card with a light/dark screenshot, used for featured projects and demos. */
 export type ShowcaseItem = {
@@ -21,12 +27,20 @@ export type LinkCardItem = {
   links: CardLinkItem[];
 };
 
-export function CardLink({ label, href, external }: CardLinkItem) {
+export function CardLink({ label, href, external, reloadDocument }: CardLinkItem) {
   if (external) {
     return (
       <a className={styles.cardLink} href={href} target="_blank" rel="noopener noreferrer">
         {label}
         <ArrowUpRight aria-hidden className={styles.cardLinkIcon} />
+      </a>
+    );
+  }
+
+  if (reloadDocument) {
+    return (
+      <a className={styles.cardLink} href={href}>
+        {label}
       </a>
     );
   }
