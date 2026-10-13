@@ -7,6 +7,7 @@ import styles from "../components/ProductLanding.module.css";
 import homeStyles from "../page.module.css";
 import { Footer } from "../sections/Footer/Footer";
 import { HeroSection } from "../sections/HeroSection/HeroSection";
+import { FaqSection } from "./FaqSection";
 import { OuiFeatures } from "./OuiFeatures";
 
 export const metadata: Metadata = {
@@ -183,6 +184,9 @@ export default function OuiOnePage() {
             </ol>
           </div>
         </section>
+        <div className={styles.productFaqBand}>
+          <FaqSection />
+        </div>
         <div className={`${styles.statementBand} ${styles.closingBand}`}>
           <div className={styles.openBadge}>
             <LaurelBranch />

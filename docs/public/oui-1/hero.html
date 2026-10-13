@@ -719,6 +719,15 @@
     } catch (e) {}
   })();
 </script>
+<style>
+  /* Keep the front tablet legible on a phone, with the text answer behind it. */
+  [data-layout="compact"] .viz { width: 1000px; height: 1000px; padding: 0; }
+  [data-layout="compact"] .device.back { top: 42px; left: -240px; }
+  [data-layout="compact"] .device.front { top: 150px; left: 150px; }
+  [data-layout="compact"] .notch { height: 42px; font-size: 22px; line-height: 41px; }
+  [data-layout="compact"] .device.back .notch { left: 68%; }
+  [data-layout="compact"] .status { padding-top: 42px; }
+</style>
 </head>
 <body>
 
@@ -1514,10 +1523,16 @@ function playText() {
 // frame shorter than 16:9 crops the bottom
 function fit() {
   const box = document.getElementById('fitbox');
-  const k = window.innerWidth / 1584;
-  box.style.width = 1584 * k + 'px';
-  box.style.height = 891 * k + 'px';
-  box.style.left = (window.innerWidth - 1584 * k) / 2 + 'px';
+  let hostWidth = window.innerWidth;
+  try { hostWidth = window.parent.innerWidth; } catch (e) {}
+  const compact = hostWidth < 768;
+  document.documentElement.dataset.layout = compact ? 'compact' : 'wide';
+  const width = compact ? 1000 : 1584;
+  const height = compact ? 1000 : 891;
+  const k = window.innerWidth / width;
+  box.style.width = width * k + 'px';
+  box.style.height = height * k + 'px';
+  box.style.left = '0px';
   box.firstElementChild.style.transform = `scale(${k})`;
 }
 fit();

@@ -442,7 +442,10 @@ export function AppLessDemo() {
     >
       <div className={styles.codePanel} inert={compact}>
         {/* Narrow screens have no timeline, so the timer and request stay here. */}
-        <div className={styles.panelHeader}>{timer}</div>
+        <div className={styles.panelHeader}>
+          <span className={styles.codeLabel}>OpenUI Lang</span>
+          {timer}
+        </div>
         <p className={styles.request}>{scene.request}</p>
         <pre
           className={styles.code}

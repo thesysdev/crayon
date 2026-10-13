@@ -12,6 +12,7 @@ import { ShiroPeek } from "../sections/ShiroPeek/ShiroPeek";
 import { AppLessDemo } from "./AppLessDemo";
 import { AppLessFeatures } from "./AppLessFeatures";
 import { AppRail } from "./AppRail";
+import { FaqSection } from "./FaqSection";
 
 export const metadata: Metadata = {
   title: "AppLess | What if your phone had no apps?",
@@ -107,6 +108,9 @@ export default function AppLessPage() {
               action: { label: "Meet OUI-1", href: "/oui-1" },
             }}
           />
+        </div>
+        <div className={styles.productFaqBand}>
+          <FaqSection />
         </div>
         <div className={`${styles.statementBand} ${styles.closingBand}`}>
           <h2 className={`${styles.statement} ${styles.statementLarge}`}>
