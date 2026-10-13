@@ -105,21 +105,109 @@ const integrationCatalog: Integration[] = [
       "To add generative UI to shadcn/ui, wrap your shadcn/ui components in an OpenUI library and let the model compose them as streaming interfaces.",
     howItWorks:
       "Each shadcn component is registered with defineComponent and a Zod prop schema. createLibrary produces both the prompt vocabulary and the renderer mapping used by the example chat app.",
+    install:
+      "npm install @openuidev/react-ui @openuidev/react-headless @openuidev/react-lang @openuidev/lang-core zod",
     steps: [
       {
         title: "Wrap your shadcn/ui components",
         description:
           "Register each component with defineComponent and a Zod prop schema, then combine them with createLibrary. The example library covers 45+ components, including cards, tables, charts, forms, and dialogs.",
+        code: {
+          filename: "src/lib/shadcn-genui/index.tsx",
+          lang: "tsx",
+          code: `import { createLibrary, defineComponent } from "@openuidev/react-lang";
+import { z } from "zod";
+
+import { Card, CardContent } from "@/components/ui/card";
+import { Alert } from "./components/alert";
+import { CardHeader } from "./components/card-header";
+import { TextContent } from "./components/text-content";
+// ...
+
+const ChatCard = defineComponent({
+  name: "Card",
+  props: z.object({
+    children: z.array(ChatCardChildUnion),
+  }),
+  description:
+    "Vertical container for all content in a chat response. Children stack top to bottom automatically.",
+  component: ({ props, renderNode }) => (
+    <Card>
+      <CardContent className="p-0 space-y-3">{renderNode(props.children)}</CardContent>
+    </Card>
+  ),
+});
+
+// ...
+
+export const shadcnChatLibrary = createLibrary({
+  root: "Card",
+  componentGroups: shadcnComponentGroups,
+  components: [ChatCard, CardHeader, TextContent, Alert /* ... */],
+});`,
+        },
       },
       {
         title: "Generate the library spec",
         description:
           "Run openui generate --spec on the library file. The chat route passes that spec to generateSystemPrompt({ cloud: true }), so the model can only call components the client can render.",
+        code: {
+          filename: "src/lib/cloud-prompt.ts",
+          lang: "ts",
+          code: `import { generateSystemPrompt, type LibrarySpec } from "@openuidev/lang-core";
+import { readFileSync } from "fs";
+import { join } from "path";
+
+/** Load the generated library spec and wrap it in Cloud's managed prompt block. */
+export function cloudInstructions(extra?: string): string {
+  const library = JSON.parse(
+    readFileSync(join(process.cwd(), "src/generated/spec.json"), "utf-8"),
+  ) as LibrarySpec;
+  return generateSystemPrompt({
+    cloud: true,
+    library,
+    ...(extra ? { instructions: extra } : {}),
+  });
+}`,
+        },
       },
       {
         title: "Render the responses",
         description:
           "Pass the library to Renderer from @openuidev/react-lang wherever your app shows model output. For a ready-made chat app, the example passes it to AgentInterface as componentLibrary instead.",
+        code: {
+          filename: "src/app/page.tsx",
+          lang: "tsx",
+          code: `"use client";
+
+import { shadcnChatLibrary } from "@/lib/shadcn-genui";
+import { AgentInterface, fetchLLM, openAIAdapter, openAIMessageFormat } from "@openuidev/react-ui";
+import { useMemo } from "react";
+
+export default function Page() {
+  // ...
+  const llm = useMemo(
+    () =>
+      fetchLLM({
+        url: "/api/chat",
+        streamAdapter: openAIAdapter(),
+        messageFormat: openAIMessageFormat,
+      }),
+    [],
+  );
+
+  return (
+    <div className="h-screen w-screen overflow-hidden relative">
+      <AgentInterface
+        llm={llm}
+        componentLibrary={shadcnChatLibrary}
+        agentName="shadcn/ui Chat"
+        // ...
+      />
+    </div>
+  );
+}`,
+        },
       },
     ],
     links: [
@@ -143,21 +231,122 @@ const integrationCatalog: Integration[] = [
       "To add generative UI to Material UI, expose your Material UI components to a model through OpenUI without replacing your existing React design system.",
     howItWorks:
       "The example wraps Material UI components with OpenUI definitions, generates a constrained component prompt, and renders model output back into the same Material UI primitives.",
+    install:
+      "npm install @openuidev/react-ui @openuidev/react-headless @openuidev/react-lang @openuidev/lang-core zod",
     steps: [
       {
         title: "Map MUI components to OpenUI",
         description:
           "Wrap Material UI components with defineComponent and Zod schemas, and export them through createLibrary. Charts use @mui/x-charts.",
+        code: {
+          filename: "src/lib/mui-genui/components/card-header.tsx",
+          lang: "tsx",
+          code: `"use client";
+
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import { defineComponent } from "@openuidev/react-lang";
+import { z } from "zod";
+
+const CardHeaderSchema = z.object({
+  title: z.string(),
+  description: z.string().optional(),
+});
+
+export const CardHeader = defineComponent({
+  name: "CardHeader",
+  props: CardHeaderSchema,
+  description: "Title/description header block for a Card.",
+  component: ({ props }) => (
+    <Box>
+      <Typography variant="h3" component="h2">
+        {props.title}
+      </Typography>
+      {props.description && (
+        <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+          {props.description}
+        </Typography>
+      )}
+    </Box>
+  ),
+});`,
+        },
       },
       {
         title: "Generate the library spec",
         description:
           "Run openui generate --spec on src/library.ts. The chat route sends that spec to OpenUI Cloud and runs app-owned tools with runChatToolLoop.",
+        code: {
+          filename: "src/app/api/chat/route.ts",
+          lang: "ts",
+          code: `import { appToolDeclarations, appToolExecutors } from "@/lib/app-tools";
+import { cloudInstructions } from "@/lib/cloud-prompt";
+import { DEFAULT_MODEL } from "@/lib/env";
+import { runChatToolLoop } from "@/lib/tool-loop";
+
+export async function POST(req: Request) {
+  // ...
+  const body = new ReadableStream<Uint8Array>({
+    async start(controller) {
+      // ...
+      try {
+        await runChatToolLoop({
+          client,
+          model: DEFAULT_MODEL,
+          messages: [{ role: "system", content: cloudInstructions() }, ...messages],
+          tools: appToolDeclarations,
+          executors: appToolExecutors,
+          enqueue,
+          signal: req.signal,
+        });
+      } catch (err) {
+        enqueue({ error: err instanceof Error ? err.message : String(err) });
+      } finally {
+        controller.enqueue(encoder.encode("data: [DONE]\\n\\n"));
+        controller.close();
+      }
+    },
+  });
+  // ...
+}`,
+        },
       },
       {
         title: "Render inside your MUI theme",
         description:
           "Render responses with Renderer, or with AgentInterface as the example does, inside your MUI ThemeProvider. Generated components then use the app's theme and light or dark mode.",
+        code: {
+          filename: "src/hooks/use-system-theme.tsx",
+          lang: "tsx",
+          code: `"use client";
+
+import CssBaseline from "@mui/material/CssBaseline";
+import { ThemeProvider } from "@mui/material/styles";
+import { useSystemThemeMode } from "@openuidev/react-ui";
+import { useMemo, useState } from "react";
+
+import { createAppTheme } from "@/lib/mui-genui/theme";
+
+// ...
+
+export function ColorModeProvider({ children }: { children: React.ReactNode }) {
+  const systemMode = useSystemThemeMode();
+  const [userOverride, setUserOverride] = useState<ThemeMode | null>(null);
+  const mode = userOverride ?? systemMode;
+  // ...
+  const theme = useMemo(() => createAppTheme(mode), [mode]);
+  // ...
+
+  return (
+    <ColorModeContext.Provider value={value}>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        {children}
+      </ThemeProvider>
+    </ColorModeContext.Provider>
+  );
+}`,
+        },
       },
     ],
     links: [
@@ -181,21 +370,120 @@ const integrationCatalog: Integration[] = [
       "To add generative UI to Handsontable, connect a live Handsontable spreadsheet to OpenUI so agent tools can analyze and update its data.",
     howItWorks:
       "The maintained example shares table state between Handsontable and a custom OpenUI SpreadsheetTable component. Tool calls update the server-side data, and the rendered component synchronizes those results back into the live grid.",
+    install:
+      "npm install @openuidev/react-ui @openuidev/react-headless @openuidev/react-lang @openuidev/lang-core zod handsontable @handsontable/react-wrapper hyperformula",
     steps: [
       {
         title: "Share the table state",
         description:
           "Keep the table in a server-side store that both the grid and the chat route use. Edits made in Handsontable sync back to the server through POST /api/table.",
+        code: {
+          filename: "src/app/api/table/route.ts",
+          lang: "ts",
+          code: `import { NextRequest, NextResponse } from "next/server";
+import { getTableStore, TableData } from "../chat/tableStore";
+
+// ...
+
+export async function POST(req: NextRequest) {
+  try {
+    const { threadId, data, colHeaders } = (await req.json()) as {
+      threadId: string;
+      data: TableData;
+      colHeaders?: string[];
+    };
+
+    if (!threadId)
+      return NextResponse.json({ error: "threadId is required" }, { status: 400 });
+    if (!data)
+      return NextResponse.json({ error: "data is required" }, { status: 400 });
+
+    const store = getTableStore(threadId);
+    store.data = data;
+    if (colHeaders) store.colHeaders = colHeaders;
+
+    return NextResponse.json({ success: true, message: "Table data synced" });
+  } catch (error) {
+    console.error("Error syncing table data:", error);
+    return NextResponse.json({ error: "Failed to sync table data" }, { status: 500 });
+  }
+}`,
+        },
       },
       {
         title: "Give the model spreadsheet tools",
         description:
           "Expose tools such as get_table_data, update_cells, add_rows, and set_formula. After a write, the model responds with a SpreadsheetTable component.",
+        code: {
+          filename: "src/app/api/chat/tools.ts",
+          lang: "ts",
+          code: `import { getTableData } from "./tableStore";
+// ...
+
+export const tools: any[] = [
+  {
+    type: "function",
+    function: {
+      name: "get_table_data",
+      description:
+        "Get the current table data including all cell values, formulas, and column headers. Call this first to see the current state of the spreadsheet.",
+      parameters: { type: "object", properties: {}, required: [] },
+      parse: JSON.parse,
+      function: async () => {
+        const result = getTableData(currentThreadId);
+        return JSON.stringify({
+          success: true,
+          colHeaders: result.colHeaders,
+          data: result.data,
+          rowCount: result.data.length,
+          colCount: result.colHeaders.length,
+          message: \`Table has \${result.data.length} rows and \${result.colHeaders.length} columns\`,
+        });
+      },
+    },
+  },
+  // ...
+];`,
+        },
       },
       {
         title: "Sync results into the grid",
         description:
           "The Renderer draws SpreadsheetTable from the custom library, and the useSpreadsheetSync hook pushes the new data into the live Handsontable instance.",
+        code: {
+          filename: "src/lib/spreadsheet-library.tsx",
+          lang: "tsx",
+          code: `import { createLibrary, defineComponent } from "@openuidev/react-lang";
+import { openuiLibrary } from "@openuidev/react-ui/genui-lib";
+import { z } from "zod";
+
+export const SpreadsheetTable = defineComponent({
+  name: "SpreadsheetTable",
+  description:
+    "Syncs data to the live spreadsheet panel. ONLY use this AFTER modification tools " +
+    "(update_cells, add_rows, delete_rows, set_formula, add_column) to push updated data " +
+    "to the user's spreadsheet. NEVER use for read-only display. Always include colHeaders.",
+  props: z.object({
+    data: z
+      .array(z.array(z.union([z.string(), z.number(), z.null()])))
+      .describe(
+        "2D array of cell values. Each inner array is a row. Values can be numbers, strings, or Excel-like formulas starting with ="
+      ),
+    // ...
+  }),
+  component: ({ props }) => {
+    const { useSpreadsheetSync } = require("@/app/useSpreadsheetSync");
+    useSpreadsheetSync(props.data, props.colHeaders);
+    return null;
+  },
+});
+
+export const spreadsheetLibrary = createLibrary({
+  root: openuiLibrary.root ?? "Stack",
+  componentGroups: openuiLibrary.componentGroups,
+  components: [...Object.values(openuiLibrary.components), SpreadsheetTable],
+});`,
+        },
       },
     ],
     links: [
@@ -214,7 +502,7 @@ const integrationCatalog: Integration[] = [
       "To generate React Email templates with an LLM, use OpenUI's React Email component package to generate, preview, and export email-safe interfaces.",
     howItWorks:
       "@openuidev/react-email provides 44 OpenUI component definitions, an emailLibrary, and prompt rules. OpenUI Lang streams into a React Email preview, which @react-email/render can convert to email-compatible HTML.",
-    install: "npm install @openuidev/react-email @openuidev/react-lang",
+    install: "npm install @openuidev/react-email @openuidev/react-lang @react-email/render",
     steps: [
       {
         title: "Import the email library",
@@ -225,11 +513,38 @@ const integrationCatalog: Integration[] = [
         title: "Generate the email prompt",
         description:
           "Build the system prompt from emailLibrary and emailPromptOptions, so the model composes emails only from those components.",
+        code: {
+          filename: "system-prompt.ts",
+          lang: "ts",
+          code: `import { emailLibrary, emailPromptOptions } from "@openuidev/react-email";
+
+// With examples and rules (recommended)
+const systemPrompt = emailLibrary.prompt(emailPromptOptions);
+
+// Without — schema only, no examples or rules
+const minimalPrompt = emailLibrary.prompt();`,
+        },
       },
       {
         title: "Preview and export HTML",
         description:
           "Stream the response into Renderer from @openuidev/react-lang for a live preview, then convert the email to client-compatible HTML with @react-email/render.",
+        code: {
+          filename: "EmailPreview.tsx",
+          lang: "tsx",
+          code: `import { Renderer } from "@openuidev/react-lang";
+import { emailLibrary } from "@openuidev/react-email";
+import { render } from "@react-email/render";
+
+function EmailPreview({ response, isStreaming }) {
+  return <Renderer response={response} library={emailLibrary} isStreaming={isStreaming} />;
+}
+
+const html = await render(
+  <Renderer response={llmResponse} library={emailLibrary} isStreaming={false} />,
+  { pretty: true },
+);`,
+        },
       },
     ],
     links: [
