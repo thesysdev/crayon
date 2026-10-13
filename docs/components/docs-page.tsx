@@ -1,14 +1,10 @@
 import { LLMCopyButton, ViewOptions } from "@/components/ai/page-actions";
+import { JsonLd } from "@/components/seo/JsonLd";
 import { gitConfig } from "@/lib/layout.shared";
 import { docsOgImage } from "@/lib/og/content";
+import { ogImageUrl } from "@/lib/og/images";
 import { withOgImage } from "@/lib/page-metadata";
 import { BASE_URL, source } from "@/lib/source";
-import {
-  absoluteOgImageUrl,
-  breadcrumbList,
-  jsonLdHtml,
-  THESYS_ORGANIZATION,
-} from "@/lib/structured-data";
 import { getMDXComponents, MdxLink } from "@/mdx-components";
 import { DocsBody, DocsDescription, DocsPage, DocsTitle } from "fumadocs-ui/layouts/docs/page";
 import { createRelativeLink } from "fumadocs-ui/mdx";
@@ -20,40 +16,6 @@ type DocsSourcePage = NonNullable<ReturnType<typeof source.getPage>>;
 export function DocsPageView({ page }: { page: DocsSourcePage }) {
   const MDX = page.data.body;
 
-  const image = docsOgImage(page);
-  const description = image.card.template === "card" ? image.card.description : undefined;
-  const canonical = new URL(page.url, BASE_URL).toString();
-
-  const isCookbooks = page.url.startsWith("/cookbooks");
-  const section = isCookbooks
-    ? { name: "Cookbooks", path: "/cookbooks" }
-    : { name: "Docs", path: "/docs" };
-  const breadcrumbItems = [
-    { name: "Home", path: "/" },
-    section,
-    ...(page.url === section.path ? [] : [{ name: page.data.title, path: page.url }]),
-  ];
-
-  const jsonLdGraph = {
-    "@context": "https://schema.org",
-    "@graph": [
-      {
-        "@type": "TechArticle",
-        headline: page.data.title,
-        ...(description && { description }),
-        image: [absoluteOgImageUrl(image)],
-        ...(page.data.lastModified && {
-          dateModified: new Date(page.data.lastModified).toISOString(),
-        }),
-        author: THESYS_ORGANIZATION,
-        publisher: THESYS_ORGANIZATION,
-        url: canonical,
-        mainEntityOfPage: { "@type": "WebPage", "@id": canonical },
-      },
-      breadcrumbList(breadcrumbItems),
-    ],
-  };
-
   return (
     <DocsPage
       toc={page.data.toc}
@@ -64,6 +26,7 @@ export function DocsPageView({ page }: { page: DocsSourcePage }) {
       // Without a sidebar there is room for the `full` page width next to the TOC (see global.css).
       data-no-sidebar={!page.data.sidebar || undefined}
     >
+      <JsonLd data={docsStructuredData(page)} />
       {!page.data.customHeader && (
         <>
           <DocsTitle>{page.data.title}</DocsTitle>
@@ -80,10 +43,6 @@ export function DocsPageView({ page }: { page: DocsSourcePage }) {
         </>
       )}
       <DocsBody>
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: jsonLdHtml(jsonLdGraph) }}
-        />
         <MDX
           components={getMDXComponents({
             // this allows you to link to other pages with relative file paths
@@ -101,9 +60,33 @@ export function getDocsPageMetadata(page: DocsSourcePage): Metadata {
   return withOgImage({ ...docsMetadata(page), description }, image, { description });
 }
 
+/* TechArticle structured data: gives Google the page's last-modified date and publisher. */
+function docsStructuredData(page: DocsSourcePage) {
+  const url = `${BASE_URL}${page.url}`;
+  return {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    "@id": `${url}#article`,
+    headline: page.data.title,
+    description: page.data.description,
+    image: `${BASE_URL}${ogImageUrl(docsOgImage(page))}`,
+    ...(page.data.lastModified && {
+      dateModified: new Date(page.data.lastModified).toISOString(),
+    }),
+    publisher: {
+      "@type": "Organization",
+      "@id": "https://www.thesys.dev/#organization",
+      name: "Thesys",
+      url: "https://www.thesys.dev",
+    },
+    mainEntityOfPage: url,
+    url,
+  };
+}
+
 function docsMetadata(page: DocsSourcePage): Metadata {
   return {
-    title: page.data.title,
+    title: page.data.seoTitle ?? page.data.title,
     description: page.data.description,
     alternates: {
       canonical: page.url,
