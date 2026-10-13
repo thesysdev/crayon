@@ -26,10 +26,10 @@ Try:
 - “What do you sell? Show me a few favorites.” The assistant browses the catalog and recommends a few products without asking what you want first.
 - “Something warm for a cold office that isn't wool, in Medium.” The assistant finds fleece, cotton, and synthetic layers by meaning, keeps those with Medium in stock, and says what made each one fit.
 - “Find shoes under $100 in size 9.” The assistant keeps the shoes with size 9 in stock within the budget and shows them as cards.
-- **Select options** on Shiro Canvas Sneakers. Size 9 is already chosen; pick a color and a quantity, then **Add to cart**.
-- “Also add the slides in my size.” The assistant adds them to the same cart without asking again.
+- **Select options** on one of the shoes. Size 9 is already chosen; pick a color and a quantity, then **Add to cart**.
+- “A gift under $50 for a friend who drinks a lot of tea.” Ceramic tea sets and a bottle that's good for tea, with a close match left out as over budget.
 - Open **Cart** in the header at any point. Click + or − on an item: the count and total update right away, with no new answer.
-- “Put together a gift set under $100 for a friend who loves OpenUI.” The assistant proposes a bundle with every product selected; deselect what you don't want, pick a size if asked, and add the rest in one step.
+- “Put together a gift set under $100 for a friend who codes late at night.” The assistant proposes a bundle with every product selected; deselect what you don't want, pick a size if asked, and add the rest in one step.
 - **Make a gift card for this set.** Fill in the names and message, and a printable card opens in the side panel, with **Print** and **Download** (as a PNG).
 
 ## How it works

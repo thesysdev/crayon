@@ -60,11 +60,11 @@ The example shops OpenUI's demo store, [openui.myshopify.com](https://openui.mys
 
 Try this conversation:
 
-1. **“Find shoes under $100 in size 9.”** See the shoes that have size 9 in stock within the budget, as cards with photos and prices.
-2. **Select options on Shiro Canvas Sneakers.** Size 9 is already chosen. Pick Black, then **Add to cart**.
-3. **“Also add the slides in my size.”** The assistant adds them to the same cart and shows the new total.
-4. **Open Cart in the header and click + on the slides.** The count and total update right away, with no new answer, and the cart button stays in the header as you keep chatting. **Continue to checkout** opens the store's checkout with the same items.
-5. **“Put together a gift set under $100 for a friend who loves OpenUI.”** Get a bundle of three to five products, all selected. Deselect one, pick a size if asked, and click **Add bundle to cart**.
+1. **“Something warm for a cold office that isn't wool, in Medium.”** See warm layers from across the catalog, such as a synthetic puffer vest, a fleece hoodie, and a waffle long sleeve, each with the detail that made it fit, and a note that a merino crewneck was left out because it contains wool.
+2. **“A gift under $50 for a friend who drinks a lot of tea.”** See ceramic tea sets, a glass bottle that keeps tea from tasting of metal, and a close match that was over budget.
+3. **Select options on Weekend Ceramic Tea Set.** Pick Black, then **Add to cart**.
+4. **Open Cart in the header and click + on the tea set.** The count and total update right away, with no new answer, and the cart button stays in the header as you keep chatting. **Continue to checkout** opens the store's checkout with the same items.
+5. **“Put together a gift set under $100 for a friend who codes late at night.”** Get a bundle of products from different parts of the catalog, all selected. Deselect one, pick a size if asked, and click **Add bundle to cart**.
 6. **Make a gift card for this set.** Fill in who it's for and who it's from, keep or edit the suggested message, and click **Create card**. The card opens in a side panel, ready to print or to download as an image.
 
 ## How it works
@@ -402,21 +402,22 @@ The example also customizes Agent Interface with a theme from `createTheme`, a l
 
 ## Verify it works
 
-In the browser:
+After `npm run prepare:catalog`, confirm it reports about 1,000 indexed products. Then, in the browser:
 
-1. Ask **“Find shoes under $100 in size 9.”** Confirm you see Shiro Canvas Sneakers at $90.00 and Shiro Slides at $35.00.
-2. Click **Select options** on Shiro Canvas Sneakers. Confirm size 9 is chosen, then click **Add to cart** without a color. The color field should report that it is required, and nothing is sent.
-3. Pick Black and add it. Confirm the cart shows Shiro Canvas Sneakers - 9 / Black with a total of $90.00, and expand **Behind the scenes** to see the `update_cart` call.
-4. Ask **“Also add the slides in my size.”** Confirm the same cart now totals $125.00.
-5. Open **Cart** in the header and click **Remove** on an item. It should disappear and the total drop without a new answer. Then ask **“What's in my cart?”** and confirm the answer matches the panel.
-6. Ask for **“a Shiro hoodie in X-Large”** and open its options. Cream should be disabled, because it's sold out in X-Large.
-7. Ask for **“a gift set under $100 for a friend who loves OpenUI”**. Confirm the bundle's total is under $100, deselect an item, and add the rest; the cart should hold exactly the selected items.
-8. Click **Make a gift card for this set**, fill in the names, and click **Create card**. Confirm the side panel opens with a card that shows the names, the message, and photos of the gift's products, that **Print** opens the print dialog, and that **Download** saves a PNG of the card.
-9. Click **Continue to checkout**. The store's checkout should open with the items in your cart. Leave it without paying.
-10. Reload the page and open an earlier thread. Confirm its messages load, and that a follow-up changes the same cart.
-11. Switch your operating system between light and dark mode, and confirm the theme follows.
+1. Ask **“Something warm for a cold office that isn't wool, in Medium.”** Confirm every product has Medium in stock and none contains wool, and that the answer says why it left out a merino sweater.
+2. Ask **“A gift under $50 for a friend who drinks a lot of tea.”** Confirm you see Weekend Ceramic Tea Set at $41.99 among the tea sets, and that Open Source Ceramic Tea Set is left out as over budget at $52.99.
+3. Click **Select options** on Weekend Ceramic Tea Set, then click **Add to cart** without a color. The color field should report that it is required, and nothing is sent.
+4. Pick Black and add it. Confirm the cart shows Weekend Ceramic Tea Set - Black with a total of $41.99, and expand **Behind the scenes** to see the `update_cart` call.
+5. Ask for a second product by name, such as **“Also add the Retro Terminal Diner Mug in white, 12 oz.”** Confirm the same cart now holds both.
+6. Open **Cart** in the header and click **Remove** on an item. It should disappear and the total drop without a new answer. Then ask **“What's in my cart?”** and confirm the answer matches the panel.
+7. Ask for **“the Shiro Hoodie in X-Large”** and open its options. Cream should be disabled, because it's sold out in X-Large.
+8. Ask for **“a gift set under $100 for a friend who codes late at night”**. Confirm the bundle's total is under $100, deselect an item, and add the rest; the cart should hold exactly the selected items.
+9. Click **Make a gift card for this set**, fill in the names, and click **Create card**. Confirm the side panel opens with a card that shows the names, the message, and photos of the gift's products, that **Print** opens the print dialog, and that **Download** saves a PNG of the card.
+10. Click **Continue to checkout**. The store's checkout should open with the items in your cart. Leave it without paying.
+11. Reload the page and open an earlier thread. Confirm its messages load, and that a follow-up changes the same cart.
+12. Switch your operating system between light and dark mode, and confirm the theme follows.
 
-Generated layouts can vary. Products, prices, photos, and variant ids should always come from a tool result.
+Generated layouts and the exact products can vary. Products, prices, photos, and variant ids should always come from a tool result.
 
 ## Adapt it to your store
 
