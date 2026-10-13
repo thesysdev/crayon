@@ -1,0 +1,29 @@
+name: Content dates
+
+on:
+  pull_request:
+    branches: [main]
+    # labeled/unlabeled re-run the check when `no-date-bump` is added or removed.
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+    paths:
+      - "docs/content/**"
+      - "docs/app/(home)/integrations/data.ts"
+
+permissions:
+  contents: read
+
+jobs:
+  updated-at:
+    # A docs page, blog post, or integration whose content changes must bump its `updatedAt`, which
+    # feeds sitemap lastmod. Typo-level edits can skip with the `no-date-bump` label.
+    if: ${{ !contains(github.event.pull_request.labels.*.name, 'no-date-bump') }}
+    runs-on: ubuntu-latest
+    steps:
+      # The PR merge commit and its first parent (the base tip) are all the history this needs.
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: v24.21.0
+      - run: node docs/scripts/check-updated-at.mjs HEAD^1
