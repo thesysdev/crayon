@@ -370,3 +370,30 @@ a = Title("y")`;
     expect(titleText(sp.push(`")\n`))).toBe("y");
   });
 });
+
+describe("triple-quoted strings", () => {
+  const text = (input: string) => {
+    const root = parse(input, schema).root as unknown as {
+      props: { children: { props: { text: string } }[] };
+    };
+    return root.props.children[0].props.text;
+  };
+
+  it("keeps newlines, quotes and # lines in the body", () => {
+    const src = `root = Stack([a])\na = Title(code)\ncode = """\nimport os  # list\nprint("hi", 'x')\n"""`;
+    expect(text(src)).toBe(`import os  # list\nprint("hi", 'x')`);
+  });
+
+  it("supports ''' delimiters", () => {
+    expect(text(`root = Stack([Title('''a\nb''')])`)).toBe("a\nb");
+  });
+
+  it("streams an unclosed body without the partial closing quotes", () => {
+    const sp = createStreamParser(schema);
+    sp.push(`root = Stack([a])\na = Title(code)\ncode = """\nline 1\n`);
+    const root = sp.push(`line 2""`).root as unknown as {
+      props: { children: { props: { text: string } }[] };
+    };
+    expect(root.props.children[0].props.text).toBe("line 1\nline 2");
+  });
+});
