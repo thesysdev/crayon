@@ -8,6 +8,7 @@ import {
   WarningDiamond,
   Wrench,
 } from "@phosphor-icons/react/dist/ssr";
+import { OpenSourceIllustration } from "../ProductIllustrations/OpenSourceIllustration";
 import type { ProductSectionProps } from "./ProductSection";
 
 /* The product bands, in the order the page tells them: what OpenUI is, then
@@ -45,11 +46,12 @@ export const LANG_PRODUCT: ProductSectionProps = {
     "Make your AI agents stream live charts, forms, cards, tables, and dashboards faster, with fewer tokens.",
   secondaryCta: { label: "View docs", href: "/docs/openui-lang" },
   tone: "light",
-  shot: "/homepage/openui-lang",
+  // The illustration renders the same OpenUI Lang string shown in its code panel.
+  art: <OpenSourceIllustration />,
   fullBleedArt: true,
-  stageAspectRatio: "1120 / 440",
-  /* The phone artwork is a different drawing, at 1440x1200. */
-  stageMobileAspectRatio: "1440 / 1200",
+  stageAspectRatio: "1120 / 520",
+  /* Keep the rendered example and complete response legible on phones. */
+  stageMobileAspectRatio: "1 / 1.35",
   /* No cards. Interactive, Bring your UI library, Safe by default and Stream UI
      live all moved to the feature grid directly below this band, which states
      them once alongside Live data and Cross-platform. */
