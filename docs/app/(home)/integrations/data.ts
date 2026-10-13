@@ -1173,17 +1173,80 @@ class Tools:
       {
         title: "Create the library",
         description:
-          "Build a component library with createOpenUiLibrary() from @lynx-js/genui/openui, and import the renderer stylesheet from @lynx-js/genui/openui/styles/renderer.css.",
+          "Build a component library with createOpenUiLibrary() from @lynx-js/genui/openui, and import the theme stylesheet from @lynx-js/genui/openui/styles/theme.css. The renderer's own CSS ships with the renderer module.",
+        code: {
+          filename: "src/App.tsx",
+          lang: "tsx",
+          code: `import { createOpenUiLibrary } from '@lynx-js/genui/openui';
+import { useMemo } from '@lynx-js/react';
+
+import '@lynx-js/genui/openui/styles/theme.css';
+
+export function App() {
+  const library = useMemo(() => createOpenUiLibrary(), []);
+  // ...
+}`,
+        },
       },
       {
         title: "Generate the agent instructions",
         description:
           "On the server, build the system prompt with buildOpenUiSystemPrompt() from @lynx-js/genui/openui/prompt.",
+        code: {
+          filename: "server/openuiPrompt.ts",
+          lang: "ts",
+          code: `import { buildOpenUiSystemPrompt } from '@lynx-js/genui/openui/prompt';
+
+const systemPrompt = buildOpenUiSystemPrompt({
+  appendix: [
+    'Prefer one-column mobile layouts.',
+    'Never invent tool names or arguments.',
+  ].join('\\n'),
+  // ...
+});`,
+        },
       },
       {
         title: "Render with OpenUiRenderer",
         description:
           "Pass the full text received so far, not just the latest delta, to OpenUiRenderer with the library. Handle host-side effects such as navigation in onAction.",
+        code: {
+          filename: "src/StreamingSurface.tsx",
+          lang: "tsx",
+          code: `import { OpenUiRenderer, createOpenUiLibrary } from '@lynx-js/genui/openui';
+import { useMemo, useState } from '@lynx-js/react';
+
+export function StreamingSurface() {
+  const library = useMemo(() => createOpenUiLibrary(), []);
+  const [response, setResponse] = useState('');
+  const [isStreaming, setIsStreaming] = useState(false);
+
+  async function consume(source: AsyncIterable<string>) {
+    setResponse('');
+    setIsStreaming(true);
+
+    try {
+      for await (const delta of source) {
+        setResponse((current) => current + delta);
+      }
+    } finally {
+      setIsStreaming(false);
+    }
+  }
+
+  return (
+    <OpenUiRenderer
+      response={response}
+      library={library}
+      isStreaming={isStreaming}
+      onAction={(event) => {
+        // Forward ContinueConversation/OpenUrl events to your host.
+        console.info(event.humanFriendlyMessage);
+      }}
+    />
+  );
+}`,
+        },
       },
     ],
     links: [
@@ -1440,22 +1503,120 @@ export class AssistantMessageComponent {
     summary:
       "To add generative UI to a React Native app, render model-generated interfaces in a native mobile chat application with a dedicated component library.",
     howItWorks:
-      "The reference project pairs a React Native chat app with a backend that prompts for OpenUI Lang. Native component definitions map the same structured response model to mobile views and actions.",
+      "The reference project pairs a React Native chat app with a backend that prompts for OpenUI Lang. Native component definitions map the same component names to mobile views and charts, and the app renders the streamed text as it arrives.",
+    install: "npm install @openuidev/react-lang zod",
     steps: [
       {
         title: "Describe the components on the backend",
         description:
-          "Define the component vocabulary (Card, Text, and chart components) with defineComponent and createLibrary in a Node-compatible file, with renderers set to null. The CLI compiles it into the system prompt.",
+          "Define the component vocabulary (Card, Text, and chart components) with defineComponent and createLibrary in a Node-compatible file, with renderers set to null. The chat route turns it into the system prompt with generateSystemPrompt from @openuidev/lang-core.",
+        code: {
+          filename: "backend/src/library.ts",
+          lang: "ts",
+          code: `import { createLibrary, defineComponent } from "@openuidev/lang-core";
+import { z } from "zod";
+
+const TextComponent = defineComponent({
+  name: "Text",
+  description: "Renders a line of text. Use variant to control emphasis.",
+  props: z.object({
+    content: z.string().describe("The text to display"),
+    variant: z
+      .enum(["body", "heading", "caption"])
+      .optional()
+      .describe("Visual style of the text — heading | body | caption"),
+  }),
+  component: () => null,
+});
+
+// ...
+
+export const library = createLibrary({
+  components: [
+    TextComponent,
+    BarChartComponent,
+    LineChartComponent,
+    PieChartComponent,
+    CardComponent,
+  ],
+  root: "Card",
+});`,
+        },
       },
       {
         title: "Stream plain text",
         description:
           "Return raw text/plain chunks from the chat route instead of SSE, so the mobile app can read the stream without a browser EventSource.",
+        code: {
+          filename: "backend/src/app/api/chat/route.ts",
+          lang: "ts",
+          code: `import { NextRequest } from "next/server";
+// ...
+export async function POST(req: NextRequest) {
+  // ...
+  const completion = await openai.chat.completions.create({
+    model: "google/gemini-3.6-flash-free",
+    stream: true,
+    messages: [{ role: "system", content: SYSTEM_PROMPT }, ...messages],
+  });
+
+  // Stream raw text chunks — simpler for React Native to consume than SSE
+  const readable = new ReadableStream({
+    async start(controller) {
+      for await (const chunk of completion) {
+        const text = chunk.choices[0]?.delta?.content ?? "";
+        if (text) {
+          controller.enqueue(new TextEncoder().encode(text));
+        }
+      }
+      controller.close();
+    },
+  });
+
+  return new Response(readable, {
+    headers: {
+      "Content-Type": "text/plain; charset=utf-8",
+      // ...
+    },
+  });
+}`,
+        },
       },
       {
         title: "Render native components",
         description:
           "Use Renderer from @openuidev/react-lang in the Expo app with a library that maps the same component names to native views and charts.",
+        code: {
+          filename: "chat-app/components/BotBubble.tsx",
+          lang: "tsx",
+          code: `import { Renderer } from "@openuidev/react-lang";
+import React from "react";
+import { ActivityIndicator, StyleSheet, View } from "react-native";
+import { library } from "../library";
+import { useStreamContent } from "../store/streamStore";
+
+export function BotBubble({ messageId }: { messageId: string }) {
+  const content = useStreamContent(messageId);
+  const openui = content?.openui ?? "";
+  const isStreaming = content?.isStreaming ?? true;
+
+  if (!openui) {
+    return (
+      <View style={styles.loading}>
+        <ActivityIndicator size="small" color="#6366f1" />
+      </View>
+    );
+  }
+
+  return (
+    <View style={styles.wrapper}>
+      <Renderer response={openui} library={library} isStreaming={isStreaming} />
+    </View>
+  );
+}
+
+// ...`,
+        },
       },
     ],
     links: [
