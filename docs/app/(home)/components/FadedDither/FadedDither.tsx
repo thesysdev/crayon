@@ -2,6 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { type CSSProperties, type RefObject, useEffect, useRef, useState } from "react";
+import styles from "./FadedDither.module.css";
 
 /* WebGPU only exists in the browser, so the canvas is loaded on the client and
    never rendered on the server. Use this rather than FadedDitherCanvas. */
@@ -52,6 +53,22 @@ function useDeferredShader(ref: RefObject<HTMLElement | null>) {
    that every shader on a given screen reads as the same material. */
 const COMPACT_QUERY = "(max-width: 767px)";
 
+/* Stills of the shader, smoothed, one per tone and width mode. One shows as soon
+   as the page renders and stays underneath; the live canvas fades in over it on
+   its first frame, so the texture never pops in from a flat fill. Browsers
+   without WebGPU keep the still. Regenerate them whenever TONES or WAVE in
+   FadedDitherCanvas.tsx change. */
+const STILLS = {
+  light: {
+    wide: "/shaders/faded-dither-light-wide.webp",
+    compact: "/shaders/faded-dither-light-compact.webp",
+  },
+  dark: {
+    wide: "/shaders/faded-dither-dark-wide.webp",
+    compact: "/shaders/faded-dither-dark-compact.webp",
+  },
+} as const;
+
 /* The page theme, watched rather than read once: the site can change it after
    mount, and this component has to follow. */
 function usePageTheme() {
@@ -87,6 +104,7 @@ export function FadedDither({
   const theme = usePageTheme();
   const rootRef = useRef<HTMLDivElement>(null);
   const showShader = useDeferredShader(rootRef);
+  const [shaderReady, setShaderReady] = useState(false);
   const [compact, setCompact] = useState(false);
 
   useEffect(() => {
@@ -112,7 +130,20 @@ export function FadedDither({
       data-tone={tone}
       style={style}
     >
-      {showShader && <FadedDitherCanvas compact={compact} tone={tone} />}
+      {/* The still picks its width mode by media query rather than from
+          `compact`, so it is already right before hydration. */}
+      <picture className={styles.still}>
+        <source media={COMPACT_QUERY} srcSet={STILLS[tone].compact} />
+        <img src={STILLS[tone].wide} alt="" loading="lazy" decoding="async" />
+      </picture>
+      {showShader && (
+        <FadedDitherCanvas
+          className={`${styles.live} ${shaderReady ? styles.liveReady : ""}`.trim()}
+          compact={compact}
+          onReady={() => setShaderReady(true)}
+          tone={tone}
+        />
+      )}
     </div>
   );
 }
