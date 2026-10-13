@@ -63,7 +63,7 @@ export async function syncLocalEnvToVercelProject(opts: {
     console.info(
       opts.yes || canPromptInteractive(opts.noInteractive)
         ? "Skipping project env save — using deployment-only env for this run.\n"
-        : "Non-interactive run — not saving env to the Vercel project (pass --yes to save).\n",
+        : "No TTY — not saving env to the Vercel project (pass --yes to save).\n",
     );
     return 0;
   }

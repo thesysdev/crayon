@@ -8,8 +8,7 @@ export function canPromptInteractive(noInteractive = false): boolean {
 
 /**
  * Confirm with default yes when a TTY is available. `--yes` accepts without
- * asking. No TTY (or an agent run) without `--yes` returns false so secrets are
- * not written remotely.
+ * asking. No TTY and no `--yes` returns false so secrets are not written remotely.
  */
 export async function confirmOrDefault(
   message: string,
