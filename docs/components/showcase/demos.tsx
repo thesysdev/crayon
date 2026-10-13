@@ -1,47 +1,65 @@
 import { EXAMPLES_REPO_URL } from "@/lib/examples-catalog";
 import { labProjects } from "@/lib/lab-projects";
-import { LinkCardGrid, ShowcaseGrid, type ShowcaseItem } from "./cards";
+import { LinkCardGrid, ShowcaseGrid, type LinkCardItem, type ShowcaseItem } from "./cards";
 
-const DEMOS: ShowcaseItem[] = [
+const PLAYGROUND: LinkCardItem[] = [
   {
     name: "OpenUI Chat",
-    tagline: "Chat assistant",
+    tag: "Chat assistant",
     description:
       "A ChatGPT-like assistant powered by OpenUI Cloud. Start a live conversation or replay a curated one.",
-    image: { light: "/nav/chat-light.webp", dark: "/nav/chat-dark.webp" },
     links: [{ label: "Open demo", href: "/chat" }],
   },
   {
     name: "AI Dashboards",
-    tagline: "Live GitHub data",
+    tag: "Live GitHub data",
     description:
       "Enter a GitHub username and ask questions about their activity. Each answer is an interactive dashboard.",
-    image: { light: "/nav/dashboard-light.webp", dark: "/nav/dashboard-dark.webp" },
     links: [{ label: "Open demo", href: "/demo/github" }],
   },
   {
     name: "Compare",
-    tagline: "Side by side",
+    tag: "Side by side",
     description:
       "See the same answers rendered as Markdown, with OpenUI OSS, and with OpenUI Cloud, side by side.",
-    image: { light: "/nav/compare-light.webp", dark: "/nav/compare-dark.webp" },
     links: [{ label: "Open demo", href: "/compare" }],
   },
   {
     name: "OpenUI vs JSON",
-    tagline: "Playground",
+    tag: "Tokens",
     description:
       "Generate UI from a prompt and watch OpenUI Lang stream against JSON, with up to 67% fewer tokens.",
-    image: { light: "/nav/vsjson-light.webp", dark: "/nav/vsjson-dark.webp" },
     links: [{ label: "Open demo", href: "/openui-vs-json" }],
   },
 ];
 
-export function Demos() {
-  return <ShowcaseGrid items={DEMOS} />;
+export function Playground() {
+  return <LinkCardGrid items={PLAYGROUND} />;
 }
 
 const FEATURED_PROJECTS: ShowcaseItem[] = [
+  {
+    name: "F1 Dashboard",
+    tagline: "Live race data",
+    description:
+      "Ask about any race, driver or team and get charts, tables and timing from OpenF1, next to live standings dashboards.",
+    image: { light: "/nav/f1-dashboard-light.webp", dark: "/nav/f1-dashboard-dark.webp" },
+    links: [
+      { label: "Open demo", href: "/demo/f1-dashboard", reloadDocument: true },
+      { label: "GitHub", href: "https://github.com/thesysdev/openui-f1-dashboard", external: true },
+    ],
+  },
+  {
+    name: "Trip Planner",
+    tagline: "Travel agent",
+    description:
+      "Plan a trip as visual spreads, a day-by-day itinerary on a map, a moodboard and a journal, with live hotel prices from trivago.",
+    image: { light: "/nav/trip-planner-light.webp", dark: "/nav/trip-planner-dark.webp" },
+    links: [
+      { label: "Open demo", href: "/demo/trip-planner", reloadDocument: true },
+      { label: "GitHub", href: "https://github.com/thesysdev/openui-trip-planner", external: true },
+    ],
+  },
   {
     name: "OpenClaw OS",
     tagline: "Agent workspace",
