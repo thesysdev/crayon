@@ -441,7 +441,106 @@
   padding-bottom: 5rem;
 }
 
+/* ---- Example ----
+   Same two columns as the steps: what the app does on the left, a screenshot of
+   it answering the prompt on the right. */
+.exampleSection {
+  max-width: var(--home-container-max);
+  margin-inline: auto;
+  padding-inline: var(--home-section-padding-inline);
+  padding-bottom: 4.5rem;
+}
+
+.exampleSection > h2 {
+  margin: 0;
+  font-family: var(--home-font-display);
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-weight: 500;
+  letter-spacing: -0.035em;
+  line-height: 1.2;
+}
+
+.exampleLayout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 2rem;
+  margin-top: 1.75rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--home-hairline);
+}
+
+.exampleText {
+  display: grid;
+  /* An explicit track, so the run-it code block scrolls instead of widening the column. */
+  grid-template-columns: minmax(0, 1fr);
+  align-content: start;
+  gap: 1.5rem;
+  min-width: 0;
+}
+
+.exampleText > p {
+  margin: 0;
+  color: var(--openui-text-neutral-secondary);
+  font-size: 0.9375rem;
+  line-height: 1.65;
+}
+
+.exampleLabel {
+  margin: 0 0 0.5rem;
+  color: var(--openui-text-neutral-tertiary);
+  font-family: var(--home-font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.examplePrompt {
+  margin: 0;
+  border-left: 2px solid var(--openui-border-default);
+  padding-left: 0.875rem;
+  color: var(--openui-text-neutral-primary);
+  font-size: 0.9375rem;
+  line-height: 1.6;
+}
+
+.exampleMedia {
+  display: grid;
+  gap: 1.5rem;
+  min-width: 0;
+}
+
+.exampleShot {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--home-hairline);
+  border-radius: 1rem;
+  background: var(--openui-sunk-light);
+}
+
+.exampleShot img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.exampleShot .exampleShotDark,
+[data-theme="dark"] .exampleShot .exampleShotLight {
+  display: none;
+}
+
+[data-theme="dark"] .exampleShot .exampleShotDark {
+  display: block;
+}
+
+@media (min-width: 1024px) {
+  .exampleLayout {
+    grid-template-columns: minmax(0, 20rem) minmax(0, 1fr);
+    gap: 3rem;
+  }
+}
+
 .flowList {
+  counter-reset: step;
   display: grid;
   /* Without an explicit track the column grows to the longest code line. */
   grid-template-columns: minmax(0, 1fr);
@@ -453,6 +552,7 @@
 /* Stacked on narrow screens; from 1024px the step's text sits beside its code
    and stays in view while the code scrolls past. */
 .flowList li {
+  counter-increment: step;
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: 1.25rem;
@@ -480,6 +580,28 @@
   font-family: var(--home-font-mono);
   font-size: 0.6875rem;
   font-weight: 500;
+}
+
+.flowNumber::before {
+  content: counter(step);
+}
+
+/* Inline code and links in the guide prose (content/integrations/*.mdx). */
+.flowText :not(pre) > code,
+.exampleText :not(pre) > code {
+  border-radius: 0.3rem;
+  padding: 0.1em 0.35em;
+  background: var(--openui-highlight-subtle);
+  color: var(--openui-text-neutral-primary);
+  font-family: var(--home-font-mono);
+  font-size: 0.85em;
+}
+
+.flowText p a,
+.exampleText p a {
+  color: var(--openui-text-neutral-primary);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
 }
 
 .flowList h3 {

@@ -1,5 +1,6 @@
 import { Footer } from "@/app/(home)/sections/Footer/Footer";
 import { createPageMetadata } from "@/lib/page-metadata";
+import { integrationGuide } from "@/lib/source";
 import { ArrowLeft, ArrowRight, ArrowUpRight } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -12,7 +13,7 @@ import {
   integrationBySlug,
   integrations,
 } from "../data";
-import { IntegrationCode } from "../integration-code";
+import { guideComponents } from "../guide-components";
 import { IntegrationLogo } from "../integration-logo";
 import styles from "../page.module.css";
 
@@ -41,6 +42,7 @@ export default async function IntegrationDetailPage(props: { params: Promise<{ s
 
   const category = getIntegrationCategory(integration.category);
   const related = getRelatedIntegrations(integration);
+  const Guide = integrationGuide.getPage([slug])?.data.body;
 
   return (
     <main className={styles.detailPage}>
@@ -136,24 +138,9 @@ export default async function IntegrationDetailPage(props: { params: Promise<{ s
           </aside>
         </div>
 
-        {/* Full width, outside the sidebar grid, so each step's text can sit beside its code. */}
-        <section className={styles.stepsSection}>
-          <h2>Integration steps</h2>
-          <ol className={styles.flowList}>
-            {integration.steps.map((step, index) => (
-              <li key={step.title}>
-                <div className={styles.flowText}>
-                  <span className={styles.flowNumber}>{index + 1}</span>
-                  <div>
-                    <h3>{step.title}</h3>
-                    <p>{step.description}</p>
-                  </div>
-                </div>
-                {step.code ? <IntegrationCode code={step.code} /> : null}
-              </li>
-            ))}
-          </ol>
-        </section>
+        {/* Example and steps from content/integrations/<slug>.mdx, full width below the
+            sidebar grid so each step's text can sit beside its code. */}
+        {Guide ? <Guide components={guideComponents} /> : null}
 
         <div className={styles.detailBackRow}>
           <Link href={`/integrations#${category.id}`}>
