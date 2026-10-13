@@ -14,6 +14,8 @@ export interface IntegrationCode {
   filename: string;
   lang: "ts" | "tsx" | "js" | "vue" | "svelte" | "python" | "bash" | "json" | "html";
   code: string;
+  /** The complete file the snippet is trimmed from, linked under the block. */
+  source?: string;
 }
 
 export interface IntegrationStep {
@@ -782,75 +784,81 @@ export default function Page() {
         code: {
           filename: "src/agent.ts",
           lang: "ts",
-          code: `import { cloudInstructions } from "@/lib/cloud-prompt";
-import { Agent, FunctionTool } from "@google/adk";
+          code: `import { Agent, FunctionTool } from "@google/adk";
 import { Custom } from "adk-llm-bridge";
 import { z } from "zod";
+// Builds the OpenUI system prompt from your component library.
+import { cloudInstructions } from "@/lib/cloud-prompt";
 
-export const getWeather = new FunctionTool({
+const getWeather = new FunctionTool({
   name: "get_weather",
   description: "Get the current weather for a given city.",
-  parameters: z.object({
-    city: z.string().describe('The city to get the weather for, e.g. "Tokyo".'),
-  }),
+  parameters: z.object({ city: z.string() }),
   execute: ({ city }) => {
-    // ...
+    // Call your weather API here.
   },
 });
 
 export function createAgent() {
-  const apiKey = process.env.THESYS_API_KEY;
-  if (!apiKey) throw new Error("Missing required env var: THESYS_API_KEY");
   return new Agent({
     name: "openui-adk-agent",
     model: Custom("google/gemini-3.6-flash-free", {
       name: "openui-adk-agent",
       baseURL: "https://api.thesys.dev/v1/embed",
-      apiKey,
+      apiKey: process.env.THESYS_API_KEY,
     }),
     instruction: cloudInstructions(),
     tools: [getWeather],
   });
 }`,
+          source:
+            "https://github.com/thesysdev/openui/blob/main/examples/agent-frameworks/google-adk/src/agent.ts",
         },
       },
       {
         title: "Bridge events to AG-UI",
         description:
-          "Run the agent with a Runner whose sessions are keyed by chat thread, and map text, functionCall, and functionResponse parts to AG-UI text and tool events.",
+          "Run the agent with a Runner and pass its events through the example's adkToAguiEvents() helper, which turns ADK text, functionCall and functionResponse parts into AG-UI events. Stream them to the browser as server-sent events.",
         code: {
           filename: "src/app/api/chat/route.ts",
           lang: "ts",
-          code: `import { createAgent } from "@/agent";
+          code: `import { InMemorySessionService, Runner, StreamingMode } from "@google/adk";
+import { createAgent } from "@/agent";
+// Maps ADK events to AG-UI events. Copy src/lib/adk-to-agui.ts from the example.
 import { adkToAguiEvents } from "@/lib/adk-to-agui";
-import { Runner, StreamingMode } from "@google/adk";
-import { NextRequest } from "next/server";
-// ...
-function getRunner(): Runner {
-  runner ??= new Runner({
-    appName: APP_NAME,
-    agent: createAgent(),
-    sessionService,
+
+const runner = new Runner({
+  appName: "openui-adk-chat",
+  agent: createAgent(),
+  sessionService: new InMemorySessionService(),
+});
+
+export async function POST(req: Request) {
+  // Read the last user message into \`prompt\`, and find or create the ADK
+  // session (\`sessionId\`) for this chat's \`threadId\`.
+
+  const events = runner.runAsync({
+    userId: "demo-user",
+    sessionId,
+    newMessage: { parts: [{ text: prompt }] },
+    runConfig: { streamingMode: StreamingMode.SSE },
   });
-  return runner;
-}
-// ...
-export async function POST(req: NextRequest) {
-  // ...
-  for await (const event of adkToAguiEvents(
-    getRunner().runAsync({
-      userId: USER_ID,
-      sessionId,
-      newMessage: { parts: [{ text: prompt }] },
-      runConfig: { streamingMode: StreamingMode.SSE },
-      abortSignal: req.signal,
-    }),
-    { threadId: resolvedThreadId, runId },
-  )) {
-    enqueue(event);
-  }
-  // ...
+
+  const encoder = new TextEncoder();
+  const stream = new ReadableStream({
+    async start(controller) {
+      const runId = crypto.randomUUID();
+      for await (const event of adkToAguiEvents(events, { threadId, runId })) {
+        controller.enqueue(encoder.encode(\`data: \${JSON.stringify(event)}\\n\\n\`));
+      }
+      controller.close();
+    },
+  });
+
+  return new Response(stream, { headers: { "Content-Type": "text/event-stream" } });
 }`,
+          source:
+            "https://github.com/thesysdev/openui/blob/main/examples/agent-frameworks/google-adk/src/app/api/chat/route.ts",
         },
       },
       {
@@ -862,33 +870,16 @@ export async function POST(req: NextRequest) {
           lang: "tsx",
           code: `"use client";
 
-import { AgentInterface, agUIAdapter, fetchLLM, useSystemThemeMode } from "@openuidev/react-ui";
+import { AgentInterface, agUIAdapter, fetchLLM } from "@openuidev/react-ui";
 import { openuiLibrary } from "@openuidev/react-ui/genui-lib";
-import { useMemo } from "react";
+
+const llm = fetchLLM({ url: "/api/chat", streamAdapter: agUIAdapter() });
 
 export default function Page() {
-  const mode = useSystemThemeMode();
-  const llm = useMemo(
-    () =>
-      fetchLLM({
-        url: "/api/chat",
-        streamAdapter: agUIAdapter(),
-      }),
-    [],
-  );
-
-  return (
-    <div className="app-shell">
-      <AgentInterface
-        llm={llm}
-        componentLibrary={openuiLibrary}
-        agentName="OpenUI + Google ADK Chat"
-        theme={{ mode }}
-        // ...
-      />
-    </div>
-  );
+  return <AgentInterface llm={llm} componentLibrary={openuiLibrary} />;
 }`,
+          source:
+            "https://github.com/thesysdev/openui/blob/main/examples/agent-frameworks/google-adk/src/app/page.tsx",
         },
       },
     ],

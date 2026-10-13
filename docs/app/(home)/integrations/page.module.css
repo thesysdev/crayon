@@ -323,6 +323,7 @@
 
 .detailHeroInner,
 .detailLayout,
+.stepsSection,
 .detailBackRow {
   max-width: var(--home-container-max);
   margin-inline: auto;
@@ -405,7 +406,7 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(17rem, 20rem);
   gap: clamp(3rem, 8vw, 7rem);
-  padding-block: 5rem 7rem;
+  padding-block: 5rem 4.5rem;
 }
 
 .detailArticle {
@@ -415,7 +416,8 @@
 }
 
 .detailArticle section > h2,
-.installSection h2 {
+.installSection h2,
+.stepsSection > h2 {
   max-width: 42rem;
   margin: 0;
   font-family: var(--home-font-display);
@@ -433,20 +435,34 @@
   line-height: 1.75;
 }
 
+.stepsSection {
+  padding-bottom: 5rem;
+}
+
 .flowList {
   display: grid;
-  gap: 0;
+  /* Without an explicit track the column grows to the longest code line. */
+  grid-template-columns: minmax(0, 1fr);
   margin: 1.75rem 0 0;
   padding: 0;
   list-style: none;
 }
 
+/* Stacked on narrow screens; from 1024px the step's text sits beside its code
+   and stays in view while the code scrolls past. */
 .flowList li {
-  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1.25rem;
+  padding-block: 2rem;
+  border-top: 1px solid var(--home-hairline);
+}
+
+.flowText {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
   gap: 1rem;
-  padding: 0 0 1.75rem;
+  align-self: start;
 }
 
 .flowNumber {
@@ -465,25 +481,46 @@
 }
 
 .flowList h3 {
-  margin: 0.15rem 0 0;
-  font-size: 0.9375rem;
+  margin: 0.2rem 0 0;
+  font-size: 1.0625rem;
   font-weight: 500;
 }
 
 .flowList p {
-  margin: 0.45rem 0 0;
+  margin: 0.5rem 0 0;
   color: var(--openui-text-neutral-secondary);
-  font-size: 0.875rem;
-  line-height: 1.6;
-}
-
-/* The step's text column, which also holds its code block. */
-.flowStep {
-  min-width: 0;
+  font-size: 0.9375rem;
+  line-height: 1.65;
 }
 
 .stepCode {
-  margin-top: 1rem;
+  min-width: 0;
+}
+
+.stepCodeSource {
+  display: inline-flex;
+  gap: 0.3rem;
+  align-items: center;
+  margin-top: 0.625rem;
+  color: var(--openui-text-neutral-secondary);
+  font-size: 0.8125rem;
+}
+
+.stepCodeSource:hover,
+.stepCodeSource:focus-visible {
+  color: var(--openui-text-neutral-primary);
+}
+
+@media (min-width: 1024px) {
+  .flowList li {
+    grid-template-columns: minmax(0, 20rem) minmax(0, 1fr);
+    gap: 3rem;
+  }
+
+  .flowText {
+    position: sticky;
+    top: 6rem;
+  }
 }
 
 .installSection {
@@ -509,7 +546,9 @@
   overflow-x: auto;
   font-family: var(--home-font-mono);
   font-size: 0.8125rem;
-  white-space: nowrap;
+  /* Long install commands wrap rather than hide behind a scrollbar. */
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 
 .copyCommand {

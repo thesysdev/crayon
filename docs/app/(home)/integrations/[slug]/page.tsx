@@ -81,22 +81,6 @@ export default async function IntegrationDetailPage(props: { params: Promise<{ s
                 </div>
               </section>
             ) : null}
-
-            <section className={styles.flowSection}>
-              <h2>Integration steps</h2>
-              <ol className={styles.flowList}>
-                {integration.steps.map((step, index) => (
-                  <li key={step.title}>
-                    <span className={styles.flowNumber}>{index + 1}</span>
-                    <div className={styles.flowStep}>
-                      <h3>{step.title}</h3>
-                      <p>{step.description}</p>
-                      {step.code ? <IntegrationCode code={step.code} /> : null}
-                    </div>
-                  </li>
-                ))}
-              </ol>
-            </section>
           </article>
 
           <aside className={styles.resourceSidebar}>
@@ -151,6 +135,25 @@ export default async function IntegrationDetailPage(props: { params: Promise<{ s
             </div>
           </aside>
         </div>
+
+        {/* Full width, outside the sidebar grid, so each step's text can sit beside its code. */}
+        <section className={styles.stepsSection}>
+          <h2>Integration steps</h2>
+          <ol className={styles.flowList}>
+            {integration.steps.map((step, index) => (
+              <li key={step.title}>
+                <div className={styles.flowText}>
+                  <span className={styles.flowNumber}>{index + 1}</span>
+                  <div>
+                    <h3>{step.title}</h3>
+                    <p>{step.description}</p>
+                  </div>
+                </div>
+                {step.code ? <IntegrationCode code={step.code} /> : null}
+              </li>
+            ))}
+          </ol>
+        </section>
 
         <div className={styles.detailBackRow}>
           <Link href={`/integrations#${category.id}`}>
