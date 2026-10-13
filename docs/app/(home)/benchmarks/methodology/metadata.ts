@@ -1,3 +1,4 @@
+import { METHODOLOGY_UPDATED_ISO } from "@/lib/benchmark-agent-data";
 import type { PageMetadataInput } from "@/lib/page-metadata";
 
 export default {
@@ -9,4 +10,5 @@ export default {
     title: "Benchmark methodology",
     description: "A concise explanation of how the benchmark is generated and scored.",
   },
+  updatedAt: METHODOLOGY_UPDATED_ISO,
 } satisfies PageMetadataInput;

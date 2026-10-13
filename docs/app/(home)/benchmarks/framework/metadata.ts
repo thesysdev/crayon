@@ -1,3 +1,4 @@
+import { BENCHMARK_UPDATED_ISO } from "@/lib/benchmark-agent-data";
 import type { PageMetadataInput } from "@/lib/page-metadata";
 
 export default {
@@ -9,4 +10,5 @@ export default {
     title: "Framework benchmark",
     description: "OpenUI versus Google A2UI versus Vercel json-render under one condition.",
   },
+  updatedAt: BENCHMARK_UPDATED_ISO,
 } satisfies PageMetadataInput;

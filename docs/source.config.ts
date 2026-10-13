@@ -1,8 +1,6 @@
 import { metaSchema, pageSchema } from "fumadocs-core/source/schema";
 import { defineCollections, defineConfig, defineDocs } from "fumadocs-mdx/config";
-import lastModified from "fumadocs-mdx/plugins/last-modified";
 import { z } from "zod";
-import { getGitLastModified } from "./lib/git-last-modified";
 
 const docsPageSchema = pageSchema.extend({
   customHeader: z.boolean().optional().default(false),
@@ -12,6 +10,9 @@ const docsPageSchema = pageSchema.extend({
   sidebar: z.boolean().optional().default(true),
   // Hides Copy Markdown and Open, for pages whose Markdown is mostly component tags.
   pageActions: z.boolean().optional().default(true),
+  // Day the content last changed, used as the sitemap `lastmod`. Bump it when readers would
+  // notice the edit; CI (docs/scripts/check-updated-at.mjs) checks this.
+  updatedAt: z.string().date().or(z.date()).optional(),
 });
 
 // You can customise Zod schemas for frontmatter and `meta.json` here
@@ -47,11 +48,4 @@ export const blogPosts = defineCollections({
   }),
 });
 
-export default defineConfig({
-  plugins: [
-    lastModified({
-      filter: (collection) => collection === "docs",
-      versionControl: async (filePath) => getGitLastModified(filePath),
-    }),
-  ],
-});
+export default defineConfig();

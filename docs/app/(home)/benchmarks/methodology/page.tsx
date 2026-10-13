@@ -1,5 +1,5 @@
 import { Footer } from "@/app/(home)/sections/Footer/Footer";
-import { BENCHMARK_CANONICAL_URL } from "@/lib/benchmark-agent-data";
+import { BENCHMARK_CANONICAL_URL, METHODOLOGY_UPDATED_ISO } from "@/lib/benchmark-agent-data";
 import {
   BRIEFS,
   CATALOG_COMPONENTS,
@@ -34,7 +34,7 @@ const structuredData = {
   headline: "Generative UI benchmark methodology",
   description: "How the OpenUI generative UI benchmark is generated, scored, and reproduced.",
   url: `${BENCHMARK_CANONICAL_URL}/methodology`,
-  dateModified: "2026-08-26",
+  dateModified: METHODOLOGY_UPDATED_ISO,
   author: { "@type": "Organization", name: "OpenUI by Thesys" },
   isPartOf: { "@id": `${BENCHMARK_CANONICAL_URL}#dataset` },
   codeRepository: REPO_ROOT,

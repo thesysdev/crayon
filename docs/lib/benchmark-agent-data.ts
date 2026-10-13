@@ -34,6 +34,7 @@ export const LANGUAGE_BENCHMARK_URL = `${BENCHMARK_CANONICAL_URL}/language`;
 export const FRAMEWORK_BENCHMARK_URL = `${BENCHMARK_CANONICAL_URL}/framework`;
 export const MODEL_BOARD_UPDATED_ISO = "2026-08-25";
 export const BENCHMARK_UPDATED_ISO = "2026-08-18";
+export const METHODOLOGY_UPDATED_ISO = "2026-08-26";
 
 const frontierIds = new Set(modelBoardFrontier().map((point) => point.id));
 

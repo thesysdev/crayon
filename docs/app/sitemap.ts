@@ -1,8 +1,10 @@
-import { getGitLastModified } from "@/lib/git-last-modified";
+import { ogPages } from "@/generated/og-pages";
 import { BASE_URL, blog, source } from "@/lib/source";
+import type { MetadataRoute } from "next";
 import { integrations } from "./(home)/integrations/data";
 
-const PAGE_PATHS = [
+// Listed without a `lastmod` until their `metadata.ts` sets `updatedAt`.
+const STATIC_PATHS = [
   "/",
   "/openui-vs-json",
   "/compare",
@@ -10,9 +12,6 @@ const PAGE_PATHS = [
   "/chat",
   "/demo/f1-dashboard",
   "/demo/trip-planner",
-];
-
-const BENCHMARK_PATHS = [
   "/benchmarks",
   "/benchmarks/language",
   "/benchmarks/language/agent.md",
@@ -29,43 +28,42 @@ const BENCHMARK_PATHS = [
   "/benchmarks/data.csv",
 ];
 
-export default async function sitemap() {
-  const route = (path: string, lastModified?: Date) => ({
+/** The page's `updatedAt`; data files like `agent.md` and `data.json` share their page's. */
+function staticPageDate(path: string) {
+  return (ogPages[path] ?? ogPages[path.replace(/\/[^/]+\.\w+$/, "")])?.updatedAt;
+}
+
+/**
+ * Every `lastmod` is the date a page's content last changed, set by hand next to the content
+ * (frontmatter, `metadata.ts`, integration data), never the build time.
+ */
+export default function sitemap(): MetadataRoute.Sitemap {
+  const route = (path: string, updatedAt?: string | Date) => ({
     url: `${BASE_URL}${path}`,
-    lastModified,
+    lastModified:
+      updatedAt === undefined ? undefined : new Date(updatedAt).toISOString().slice(0, 10),
     changeFrequency: "weekly" as const,
   });
+  const latest = (routes: { lastModified?: string }[]) =>
+    routes
+      .map((r) => r.lastModified)
+      .filter((date) => date !== undefined)
+      .sort()
+      .at(-1);
 
-  const pageRoutes = PAGE_PATHS.map((path) => route(path));
-
-  const benchmarksLastModified = getGitLastModified("app/(home)/benchmarks", "lib/benchmark-*");
-  const benchmarkRoutes = BENCHMARK_PATHS.map((path) => route(path, benchmarksLastModified));
-
-  const integrationsLastModified = getGitLastModified(
-    "app/(home)/integrations/data.ts",
-    "app/(home)/integrations/[slug]/page.tsx",
+  const integrationRoutes = integrations.map((integration) =>
+    route(`/integrations/${integration.slug}`, integration.updatedAt),
   );
-  const integrationRoutes = [
-    route("/integrations", integrationsLastModified),
-    ...integrations.map((integration) =>
-      route(`/integrations/${integration.slug}`, integrationsLastModified),
-    ),
-  ];
-
-  const docsRoutes = source.getPages().map((page) => route(page.url, page.data.lastModified));
-
   const blogRoutes = blog
     .getPages()
-    .map((page) => route(page.url, new Date(page.data.updatedAt ?? page.data.date)));
-  const latestBlogTime = Math.max(...blogRoutes.map((r) => r.lastModified?.getTime() ?? 0));
-  const blogIndexLastModified = latestBlogTime > 0 ? new Date(latestBlogTime) : undefined;
+    .map((page) => route(page.url, page.data.updatedAt ?? page.data.date));
 
   return [
-    ...pageRoutes,
-    ...benchmarkRoutes,
+    ...STATIC_PATHS.map((path) => route(path, staticPageDate(path))),
+    route("/integrations", latest(integrationRoutes)),
     ...integrationRoutes,
-    ...docsRoutes,
-    route("/blog", blogIndexLastModified),
+    ...source.getPages().map((page) => route(page.url, page.data.updatedAt)),
+    route("/blog", latest(blogRoutes)),
     ...blogRoutes,
   ];
 }

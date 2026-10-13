@@ -1,3 +1,4 @@
+import { MODEL_BOARD_UPDATED_ISO } from "@/lib/benchmark-agent-data";
 import { MODEL_BOARD_SIZE } from "@/lib/benchmark-data";
 import type { PageMetadataInput } from "@/lib/page-metadata";
 
@@ -9,4 +10,5 @@ export default {
     title: "Language and model benchmark",
     description: `Structural validity and cost across ${MODEL_BOARD_SIZE} models generating OpenUI.`,
   },
+  updatedAt: MODEL_BOARD_UPDATED_ISO,
 } satisfies PageMetadataInput;
