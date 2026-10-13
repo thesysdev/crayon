@@ -956,22 +956,102 @@ export default function Page() {
     summary:
       "To build a UI for Grok Build, use OpenUI as a generative UI frontend for persistent Grok Build coding-agent sessions.",
     howItWorks:
-      "The maintained local harness talks to Grok Build through its official Agent Client Protocol stdio mode, injects the generated OpenUI rules, and maps reasoning, text, tools, and interactions into AG-UI events for AgentInterface. As shipped, it is an unauthenticated single-user harness and needs authentication, sandboxing, and a stricter permission policy before networked deployment.",
+      "The maintained local harness talks to Grok Build through its official Agent Client Protocol stdio mode, injects the generated OpenUI rules, and maps reasoning, text, and tools into AG-UI events for AgentInterface. Grok's questions and plan approvals reach the browser over a separate interactions route and open as dialogs. As shipped, it is an unauthenticated single-user harness and needs authentication, sandboxing, and a stricter permission policy before networked deployment.",
     steps: [
       {
         title: "Install and sign in to Grok Build",
         description:
           "Put the grok CLI on your PATH and run grok login. In non-interactive environments, set XAI_API_KEY instead.",
+        code: {
+          filename: "Terminal",
+          lang: "bash",
+          code: `grok login
+grok --version
+# For a non-interactive environment, set XAI_API_KEY instead.
+
+cd examples/harnesses/grok-build
+pnpm install --ignore-workspace
+cp .env.example .env.local
+pnpm dev -- /absolute/path/to/your/project`,
+        },
       },
       {
         title: "Start the harness on a workspace",
         description:
           "Launch the example with the project directory Grok Build should work in. It runs one grok agent stdio process and opens a separate ACP session for each OpenUI thread, with the OpenUI prompt added as session rules.",
+        code: {
+          filename: "src/lib/grok-build-acp.ts",
+          lang: "ts",
+          code: `import { localSystemPrompt } from "./openui-prompt";
+const OPENUI_RULES = localSystemPrompt();
+// ...
+/** A single long-lived Grok ACP process that can host multiple OpenUI sessions. */
+class GrokBuildACPClient {
+  // ...
+  private constructor(config: GrokBuildConfig) {
+    // ...
+    const args = ["agent"];
+    // ...
+    args.push("--no-leader", "stdio");
+    // ...
+  }
+  // ...
+  private async createSession(sessionId: string): Promise<void> {
+    await this.request("Creating the Grok Build session", () =>
+      this.connection.newSession({
+        cwd: this.config.cwd,
+        mcpServers: [],
+        _meta: {
+          clientIdentifier: "openui-grok-build-harness",
+          rules: OPENUI_RULES,
+          sessionId,
+          yoloMode: this.config.alwaysApprove,
+        },
+      }),
+    );
+  }
+  // ...
+}`,
+        },
       },
       {
         title: "Answer questions and approve plans in the browser",
         description:
           "Grok's clarifying questions and plan approvals appear as browser dialogs, and your answers go back over ACP so the same turn can continue.",
+        code: {
+          filename: "src/lib/grok-build-acp.ts",
+          lang: "ts",
+          code: `import { ClientSideConnection, RequestError, type Client } from "@agentclientprotocol/sdk";
+// ...
+import { requestGrokBuildInteraction } from "./grok-build-interactions";
+// ...
+class GrokBuildACPClient {
+  // ...
+  private constructor(config: GrokBuildConfig) {
+    // ...
+    const client: Client = {
+      requestPermission: (request) => this.requestPermission(request),
+      sessionUpdate: (notification) => this.sessionUpdate(notification),
+      extMethod: (method, params) => this.extensionRequest(method, params),
+      extNotification: (method, params) => this.extensionNotification(method, params),
+    };
+    this.connection = new ClientSideConnection(() => client, stream);
+  }
+  // ...
+  private async extensionRequest(
+    method: string,
+    params: Record<string, unknown>,
+  ): Promise<Record<string, unknown>> {
+    // These blocking reverse-requests are answered through the web harness's
+    // interaction route. The browser polls while the main AG-UI stream remains
+    // open, then its response resolves this ACP method and resumes the turn.
+    const interaction = requestGrokBuildInteraction(method, params);
+    if (interaction) return interaction;
+    throw RequestError.methodNotFound(method);
+  }
+  // ...
+}`,
+        },
       },
     ],
     links: [
@@ -995,16 +1075,74 @@ export default function Page() {
         title: "Add the OpenUI instructions",
         description:
           "Add an Eve instruction that injects the generated OpenUI Lang prompt when each session starts, alongside the agent's own identity and tools.",
+        code: {
+          filename: "agent/instructions/openui.ts",
+          lang: "ts",
+          code: `import { cloudInstructions } from "../../src/lib/cloud-prompt";
+import { defineDynamic, defineInstructions } from "eve/instructions";
+
+export default defineDynamic({
+  events: {
+    "session.started": () =>
+      defineInstructions({
+        markdown: cloudInstructions(),
+      }),
+  },
+});`,
+        },
       },
       {
         title: "Deliver turns over Eve's session protocol",
         description:
           "Send each turn through Eve's HTTP channel and store the session cursor per OpenUI thread, so the NDJSON event stream can resume where it stopped.",
+        code: {
+          filename: "src/eve-chat.ts",
+          lang: "ts",
+          code: `const delivered = await fetch(
+  state.sessionId ? \`/eve/v1/session/\${state.sessionId}\` : "/eve/v1/session",
+  {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ message, continuationToken: state.continuationToken }),
+  },
+);
+
+const streamed = await fetch(\`/eve/v1/session/\${sessionId}/stream?startIndex=\${state.streamIndex}\`);`,
+        },
       },
       {
         title: "Map events with eveAdapter()",
         description:
           "Use eveAdapter() from @openuidev/react-headless as the llm's stream protocol. It converts Eve text, tool call, and failure events into AG-UI for AgentInterface or your own UI built on ChatProvider.",
+        code: {
+          filename: "src/eve-chat.ts",
+          lang: "ts",
+          code: `import { eveAdapter, type ChatLLM, type ChatStorage } from "@openuidev/react-headless";
+import type { HandleMessageStreamEvent } from "eve/client";
+// ...
+export function createEveChatProps(
+  // ...
+): { llm: ChatLLM; storage: ChatStorage } {
+  // ...
+  return {
+    llm: {
+      send,
+      streamProtocol: eveAdapter({
+        onEvent: (event: HandleMessageStreamEvent) => {
+          if (!active) return;
+          active.index += 1;
+          // ...
+          if (event.type === "session.completed") persistTurn(true);
+          else if (event.type === "session.waiting" || event.type === "session.failed") {
+            persistTurn(false);
+          }
+        },
+      }),
+    },
+    // ...
+  };
+}`,
+        },
       },
     ],
     links: [
@@ -1033,16 +1171,116 @@ export default function Page() {
         title: "Embed the Pi SDK",
         description:
           "Create one Pi AgentSession per chat thread with createAgentSession in a Node.js route. Point its model at OpenUI Cloud and append the generated OpenUI prompt.",
+        code: {
+          filename: "src/lib/pi-session.ts",
+          lang: "ts",
+          code: `import { cloudInstructions } from "./cloud-prompt";
+// ...
+type PiSdk = typeof import("@earendil-works/pi-coding-agent");
+// ...
+async function createSession(cwd: string): Promise<PiSessionEntry> {
+  const apiKey = process.env.THESYS_API_KEY?.trim();
+  // ...
+  const {
+    AuthStorage,
+    createAgentSession,
+    DefaultResourceLoader,
+    getAgentDir,
+    ModelRegistry,
+    SettingsManager,
+  } = await loadSdk();
+  // ...
+  const agentDir = getAgentDir();
+  const settingsManager = SettingsManager.create(cwd, agentDir);
+  const authStorage = AuthStorage.inMemory();
+  authStorage.setRuntimeApiKey("openui-cloud", apiKey);
+  const modelRegistry = ModelRegistry.create(authStorage, MODELS_PATH);
+  const modelId = process.env.OPENUI_MODEL?.trim() || DEFAULT_MODEL;
+  const model = modelRegistry.find("openui-cloud", modelId);
+  // ...
+  const resourceLoader = new DefaultResourceLoader({
+    cwd,
+    agentDir,
+    settingsManager,
+    appendSystemPrompt: [cloudInstructions(OPENUI_INSTRUCTIONS)],
+  });
+  await resourceLoader.reload();
+
+  const { session, modelFallbackMessage } = await createAgentSession({
+    cwd,
+    agentDir,
+    settingsManager,
+    resourceLoader,
+    authStorage,
+    modelRegistry,
+    model,
+    ...toolOptions(),
+  });
+  // ...
+}`,
+        },
       },
       {
         title: "Translate Pi events",
         description:
           "Write Pi text deltas to delta.content and its reasoning and tool executions to delta.tool_calls, one OpenAI chat.completion.chunk per NDJSON line.",
+        code: {
+          filename: "src/app/api/chat/route.ts",
+          lang: "ts",
+          code: `function ndjsonChunk(delta: Record<string, unknown>, finishReason: string | null = null): string {
+  return \`\${JSON.stringify({
+    id: "pi-chat",
+    object: "chat.completion.chunk",
+    choices: [{ index: 0, delta, finish_reason: finishReason }],
+  })}\\n\`;
+}
+// ...
+const unsubscribe = session.subscribe((event) => {
+  if (event.type === "message_update") {
+    const ame = event.assistantMessageEvent;
+    if (ame.type === "text_delta" && ame.delta) {
+      enqueue(ndjsonChunk({ content: ame.delta }));
+    } else if (ame.type === "thinking_delta" && ame.delta) {
+      // Stream the model's reasoning into a single "Thinking" card.
+      // ...
+    }
+  } else if (event.type === "tool_execution_start") {
+    // Show each tool run (read/bash/edit/write …) and its input.
+    enqueue(
+      toolStartChunk(
+        indexFor(event.toolCallId),
+        event.toolCallId,
+        event.toolName,
+        safeArgs(event.args),
+      ),
+    );
+  }
+});`,
+        },
       },
       {
         title: "Render with the NDJSON adapter",
         description:
           "Parse the stream with openAIReadableStreamAdapter(), then render the answers, reasoning, and tool activity with AgentInterface or your own UI built on ChatProvider.",
+        code: {
+          filename: "src/app/page.tsx",
+          lang: "tsx",
+          code: `import {
+  AgentInterface,
+  fetchLLM,
+  openAIMessageFormat,
+  openAIReadableStreamAdapter,
+} from "@openuidev/react-ui";
+import { openuiLibrary } from "@openuidev/react-ui/genui-lib";
+
+const llm = fetchLLM({
+  url: "/api/chat",
+  streamAdapter: openAIReadableStreamAdapter(),
+  messageFormat: openAIMessageFormat,
+});
+
+<AgentInterface llm={llm} componentLibrary={openuiLibrary} agentName="OpenUI Agent Harness" />;`,
+        },
       },
     ],
     links: [
