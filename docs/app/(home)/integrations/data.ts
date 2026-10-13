@@ -341,21 +341,124 @@ const integrationCatalog: Integration[] = [
       "To give a Google ADK agent a UI, run it in a server route that maps ADK run events to AG-UI, then render the stream with OpenUI. The example uses ADK for TypeScript with tools and multi-turn sessions.",
     howItWorks:
       "A Google ADK Agent and FunctionTool run in a Next.js route. The route maps ADK runAsync events to AG-UI SSE, which agUIAdapter() parses on the client.",
+    install:
+      "npm install @google/adk adk-llm-bridge @openuidev/react-ui @openuidev/react-headless @openuidev/react-lang @openuidev/lang-core zod",
     steps: [
       {
         title: "Define the agent",
         description:
           "Create an ADK Agent with FunctionTool tools and use the generated OpenUI system prompt as its instruction. The example calls OpenUI Cloud through adk-llm-bridge's Custom() model adapter.",
+        code: {
+          filename: "src/agent.ts",
+          lang: "ts",
+          code: `import { cloudInstructions } from "@/lib/cloud-prompt";
+import { Agent, FunctionTool } from "@google/adk";
+import { Custom } from "adk-llm-bridge";
+import { z } from "zod";
+
+export const getWeather = new FunctionTool({
+  name: "get_weather",
+  description: "Get the current weather for a given city.",
+  parameters: z.object({
+    city: z.string().describe('The city to get the weather for, e.g. "Tokyo".'),
+  }),
+  execute: ({ city }) => {
+    // ...
+  },
+});
+
+export function createAgent() {
+  const apiKey = process.env.THESYS_API_KEY;
+  if (!apiKey) throw new Error("Missing required env var: THESYS_API_KEY");
+  return new Agent({
+    name: "openui-adk-agent",
+    model: Custom("google/gemini-3.6-flash-free", {
+      name: "openui-adk-agent",
+      baseURL: "https://api.thesys.dev/v1/embed",
+      apiKey,
+    }),
+    instruction: cloudInstructions(),
+    tools: [getWeather],
+  });
+}`,
+        },
       },
       {
         title: "Bridge events to AG-UI",
         description:
           "Run the agent with a Runner whose sessions are keyed by chat thread, and map text, functionCall, and functionResponse parts to AG-UI text and tool events.",
+        code: {
+          filename: "src/app/api/chat/route.ts",
+          lang: "ts",
+          code: `import { createAgent } from "@/agent";
+import { adkToAguiEvents } from "@/lib/adk-to-agui";
+import { Runner, StreamingMode } from "@google/adk";
+import { NextRequest } from "next/server";
+// ...
+function getRunner(): Runner {
+  runner ??= new Runner({
+    appName: APP_NAME,
+    agent: createAgent(),
+    sessionService,
+  });
+  return runner;
+}
+// ...
+export async function POST(req: NextRequest) {
+  // ...
+  for await (const event of adkToAguiEvents(
+    getRunner().runAsync({
+      userId: USER_ID,
+      sessionId,
+      newMessage: { parts: [{ text: prompt }] },
+      runConfig: { streamingMode: StreamingMode.SSE },
+      abortSignal: req.signal,
+    }),
+    { threadId: resolvedThreadId, runId },
+  )) {
+    enqueue(event);
+  }
+  // ...
+}`,
+        },
       },
       {
         title: "Connect your chat UI",
         description:
           "Create an llm with fetchLLM and agUIAdapter(), then pass it to AgentInterface for a ready-made chat app or to ChatProvider from @openuidev/react-headless for your own UI.",
+        code: {
+          filename: "src/app/page.tsx",
+          lang: "tsx",
+          code: `"use client";
+
+import { AgentInterface, agUIAdapter, fetchLLM, useSystemThemeMode } from "@openuidev/react-ui";
+import { openuiLibrary } from "@openuidev/react-ui/genui-lib";
+import { useMemo } from "react";
+
+export default function Page() {
+  const mode = useSystemThemeMode();
+  const llm = useMemo(
+    () =>
+      fetchLLM({
+        url: "/api/chat",
+        streamAdapter: agUIAdapter(),
+      }),
+    [],
+  );
+
+  return (
+    <div className="app-shell">
+      <AgentInterface
+        llm={llm}
+        componentLibrary={openuiLibrary}
+        agentName="OpenUI + Google ADK Chat"
+        theme={{ mode }}
+        // ...
+      />
+    </div>
+  );
+}`,
+        },
       },
     ],
     links: [
@@ -374,21 +477,119 @@ const integrationCatalog: Integration[] = [
       "To build a UI for a Mastra agent, connect it to OpenUI over AG-UI and render its streamed output as typed interfaces.",
     howItWorks:
       "Mastra owns the agent and tools, the AG-UI transport serializes the run as SSE, and OpenUI's agUIAdapter drives the chat state and component renderer on the client.",
+    install:
+      "npm install @mastra/core @ag-ui/mastra @ag-ui/core @openuidev/react-ui @openuidev/react-lang @openuidev/lang-core zod",
     steps: [
       {
         title: "Build the Mastra agent",
         description:
           "Define the Agent with createTool tools and the generated OpenUI instructions. The example registers a custom Mastra gateway that routes model calls through OpenUI Cloud.",
+        code: {
+          filename: "src/mastra.ts",
+          lang: "ts",
+          code: `import { cloudInstructions } from "@/lib/cloud-prompt";
+import { OpenUICloudGateway, openuiCloudModelId } from "@/openui-cloud-gateway";
+import { getStockPrice, getWeather } from "@/tools";
+import { Agent } from "@mastra/core/agent";
+import { Mastra } from "@mastra/core";
+
+export const openuiAgent = new Agent({
+  id: "openui-mastra-agent",
+  name: "OpenUI x Mastra Agent",
+  instructions: cloudInstructions(
+    "You are a helpful assistant. Use tools when relevant and help the user with their requests. Always format your responses cleanly.",
+  ),
+  model: { id: openuiCloudModelId },
+  tools: { getWeather, getStockPrice },
+});
+
+export const mastra = new Mastra({
+  gateways: {
+    openuiCloud: new OpenUICloudGateway(),
+  },
+  agents: {
+    openui: openuiAgent,
+  },
+});`,
+        },
       },
       {
         title: "Stream AG-UI events",
         description:
           "Wrap the agent with MastraAgent from @ag-ui/mastra in a server route and stream its AG-UI events to the browser as SSE.",
+        code: {
+          filename: "src/app/api/chat/route.ts",
+          lang: "ts",
+          code: `import { MastraAgent } from "@ag-ui/mastra";
+import type { Message } from "@ag-ui/core";
+import { NextRequest } from "next/server";
+import { openuiAgent } from "@/mastra";
+
+const agent = new MastraAgent({
+  agent: openuiAgent,
+  resourceId: "chat-user",
+});
+
+export async function POST(req: NextRequest) {
+  // ...
+  const { messages, threadId }: { messages: Message[]; threadId: string } = await req.json();
+  // ...
+  const subscription = agent
+    .run({
+      messages,
+      threadId,
+      runId: crypto.randomUUID(),
+      tools: [],
+      context: [],
+    })
+    .subscribe({
+      next: (event) => {
+        controller.enqueue(encoder.encode(\`data: \${JSON.stringify(event)}\\n\\n\`));
+      },
+      // ...
+    });
+  // ...
+}`,
+        },
       },
       {
         title: "Connect your chat UI",
         description:
           "Create an llm with fetchLLM and agUIAdapter(), then pass it to AgentInterface for a ready-made chat app or to ChatProvider from @openuidev/react-headless for your own UI.",
+        code: {
+          filename: "src/app/page.tsx",
+          lang: "tsx",
+          code: `"use client";
+
+import { AgentInterface, agUIAdapter, fetchLLM } from "@openuidev/react-ui";
+import { openuiLibrary } from "@openuidev/react-ui/genui-lib";
+import { useMemo } from "react";
+
+export default function Page() {
+  // ...
+  // fetchLLM's default message format POSTs { messages, threadId, ... } —
+  // exactly what the Mastra route expects. Storage is omitted, so
+  // AgentInterface uses its built-in in-memory default (wiped on reload).
+  const llm = useMemo(
+    () =>
+      fetchLLM({
+        url: "/api/chat",
+        streamAdapter: agUIAdapter(),
+      }),
+    [],
+  );
+  return (
+    <div className="app-shell">
+      <AgentInterface
+        llm={llm}
+        componentLibrary={openuiLibrary}
+        agentName="OpenUI + Mastra Chat"
+        // ...
+      />
+    </div>
+  );
+}`,
+        },
       },
     ],
     links: [
@@ -418,16 +619,86 @@ const integrationCatalog: Integration[] = [
         title: "Register the OpenUI toolkit",
         description:
           "Inside AssistantRuntimeProvider, add openuiIntegration.toolkit through AuiConfig and pass openuiIntegration.instructions to useAssistantInstructions.",
+        code: {
+          filename: "src/components/openui-runtime-provider.tsx",
+          lang: "tsx",
+          code: `"use client";
+
+import {
+  AuiConfig,
+  AuiProvider,
+  Tools,
+  useAui,
+  useAssistantInstructions,
+} from "@assistant-ui/react";
+import { openuiIntegration } from "@openuidev/assistant-ui";
+
+function OpenUIModelInstructions() {
+  useAssistantInstructions(openuiIntegration.instructions);
+  return null;
+}
+
+function OpenUIConfigProvider({ children }: { children: React.ReactNode }) {
+  const aui = useAui();
+  const config = AuiConfig({
+    tools: Tools({ toolkit: openuiIntegration.toolkit }),
+  });
+
+  return (
+    <AuiProvider extends={aui} config={config}>
+      <OpenUIModelInstructions />
+      {children}
+    </AuiProvider>
+  );
+}`,
+        },
       },
       {
         title: "Let the model call the OpenUI tools",
         description:
-          "present_openui renders complete cards, tables, and charts. prompt_openui renders forms and choices, and completes only when the user submits a result.",
+          "present_openui renders complete cards, tables, and charts. prompt_openui renders forms and choices, and completes only when the user submits a result. With an AI SDK runtime, shouldContinueAfterOpenUIPrompt starts the next model step only after a prompt_openui result.",
+        code: {
+          filename: "src/components/openui-runtime-provider.tsx",
+          lang: "tsx",
+          code: `import { AssistantRuntimeProvider } from "@assistant-ui/react";
+import { useChatRuntime } from "@assistant-ui/react-ai-sdk";
+import { shouldContinueAfterOpenUIPrompt } from "@openuidev/assistant-ui/ai-sdk";
+
+// ...
+
+export function OpenUIRuntimeProvider({ children }: { children: React.ReactNode }) {
+  const runtime = useChatRuntime({
+    sendAutomaticallyWhen: shouldContinueAfterOpenUIPrompt,
+  });
+
+  return (
+    <AssistantRuntimeProvider runtime={runtime}>
+      <OpenUIConfigProvider>{children}</OpenUIConfigProvider>
+    </AssistantRuntimeProvider>
+  );
+}`,
+        },
       },
       {
         title: "Bring your own components",
         description:
           "Call createOpenUIIntegration with your own library so the tool schemas, model instructions, and renderers share one component vocabulary.",
+        code: {
+          filename: "src/lib/openui-integration.ts",
+          lang: "ts",
+          code: `import { createOpenUIIntegration } from "@openuidev/assistant-ui";
+import { createShouldContinueAfterOpenUIPrompt } from "@openuidev/assistant-ui/ai-sdk";
+import { library } from "./library";
+
+const openui = createOpenUIIntegration({
+  library,
+  presentToolName: "show_panel",
+  promptToolName: "ask_panel",
+});
+const shouldContinue = createShouldContinueAfterOpenUIPrompt({
+  promptToolName: openui.toolNames.prompt,
+});`,
+        },
       },
     ],
     links: [
@@ -604,22 +875,78 @@ const integrationCatalog: Integration[] = [
     summary:
       "To add generative UI to Open WebUI, install the OpenUI plugin to render charts, forms, tables, cards, and follow-ups directly inside Open WebUI conversations.",
     howItWorks:
-      "The plugin gives the model a render_openui tool and returns a self-contained HTML response. A sandboxed iframe loads the OpenUI browser bundle and renders the generated program inline.",
+      "The plugin gives the model a render_openui tool and returns a self-contained HTML response. Open WebUI shows it as an inline iframe embed, which loads the OpenUI browser bundle and renders the generated program.",
     steps: [
       {
         title: "Install the tool",
         description:
           "Import the plugin from the Open WebUI community site, or create a tool in Admin > Tools and paste in the plugin's tool.py.",
+        code: {
+          filename: "tool.py",
+          lang: "python",
+          code: `"""
+title: OpenUI - Generative UI
+author: thesysdev/vishxrad
+version: 0.5.0
+description: Renders interactive generative UI components (charts, forms, tables, cards, follow-ups) in chat using OpenUI Lang.
+"""`,
+        },
       },
       {
         title: "Enable it for a model",
         description:
           "Turn the tool on for the models or chats that should render UI. The model calls render_openui when an answer needs a chart, form, table, or card.",
+        code: {
+          filename: "tool.py",
+          lang: "python",
+          code: `from starlette.responses import HTMLResponse
+# ...
+class Tools:
+    # ...
+    async def render_openui(
+        self,
+        openui_lang_code: str,
+        title: str = "Response",
+        __event_emitter__=None,
+        __event_call__=None,
+    ) -> tuple:
+        """
+        Render interactive UI components inline in the chat using OpenUI Lang.
+        Use this tool whenever a visual response would be helpful: tables, charts,
+        forms, lists, cards, step guides, follow-up suggestions, etc.
+        ...
+        """
+        # ...
+        theme = await _get_openwebui_theme(__event_call__)
+        response = HTMLResponse(
+            content=_build_openui_html(openui_lang_code, title, self.valves.cdn_base_url, theme),
+            headers={"Content-Disposition": "inline"},
+        )
+        # ...
+        return response, result_context`,
+        },
       },
       {
         title: "Choose where the bundle loads from",
         description:
           "The cdn_base_url valve sets where the OpenUI browser bundle loads from. By default it is the latest @openuidev/browser-bundle on jsDelivr.",
+        code: {
+          filename: "tool.py",
+          lang: "python",
+          code: `from pydantic import BaseModel, Field
+# ...
+_CDN_BASE = "https://cdn.jsdelivr.net/npm/@openuidev/browser-bundle@latest"
+# ...
+class Tools:
+    # ...
+    class Valves(BaseModel):
+        cdn_base_url: str = Field(
+            default=_CDN_BASE,
+            description="Base CDN URL for the OpenUI bundle. Change if self-hosting or using a different version.",
+        )
+    def __init__(self):
+        self.valves = self.Valves()`,
+        },
       },
     ],
     links: [
