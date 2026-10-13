@@ -28,9 +28,15 @@ concurrency:
 
 jobs:
   lighthouse:
-    name: Lighthouse (docs site)
+    # Mobile and desktop run as separate jobs so the two passes over every page
+    # happen in parallel; each job builds the site itself.
+    name: Lighthouse (${{ matrix.form-factor }})
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        form-factor: [mobile, desktop]
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v6
@@ -55,23 +61,14 @@ jobs:
           NODE_OPTIONS: --max-old-space-size=6144
           NEXT_TELEMETRY_DISABLED: "1"
 
-      # Each run serves the production build with `next start` and audits the
-      # pages in docs/lighthouserc.cjs. Accessibility, best practices and SEO
-      # fail the job when they drop below their floor; performance only warns.
-      - name: Lighthouse (mobile)
-        id: mobile
+      # Serves the production build with `next start` and audits the pages in
+      # docs/lighthouserc.cjs. Accessibility, best practices and SEO fail the
+      # job when they drop below their floor; performance only warns.
+      - name: Lighthouse
         working-directory: docs
         run: npx --yes @lhci/cli@0.15.1 autorun
         env:
-          LHCI_FORM_FACTOR: mobile
-
-      - name: Lighthouse (desktop)
-        id: desktop
-        if: ${{ !cancelled() }}
-        working-directory: docs
-        run: npx --yes @lhci/cli@0.15.1 autorun
-        env:
-          LHCI_FORM_FACTOR: desktop
+          LHCI_FORM_FACTOR: ${{ matrix.form-factor }}
 
       - name: Summarize scores
         if: ${{ !cancelled() }}
@@ -82,7 +79,7 @@ jobs:
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v4
         with:
-          name: lighthouse-reports
+          name: lighthouse-reports-${{ matrix.form-factor }}
           path: docs/lighthouse-reports
           if-no-files-found: ignore
           retention-days: 14
