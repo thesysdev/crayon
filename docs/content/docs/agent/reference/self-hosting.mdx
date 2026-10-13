@@ -137,9 +137,12 @@ export async function POST(req: Request) {
       const messageId = crypto.randomUUID();
 
       try {
-        const anthropicStream = anthropic.messages.stream({
-          model: "claude-3-5-sonnet-latest",
-          max_tokens: 1024,
+        const anthropicStream = anthropic.beta.messages.stream({
+          model: "claude-opus-5-5",
+          max_tokens: 64000,
+          // If the model declines, Anthropic re-runs the request on a fallback model.
+          betas: ["server-side-fallback-2026-07-01"],
+          fallbacks: "default",
           system: system || undefined,
           messages: turns,
         });
