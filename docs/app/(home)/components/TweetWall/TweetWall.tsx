@@ -72,10 +72,7 @@ export function TweetWall() {
                       <div
                         key={`${columnIndex}-${index}-${copy}`}
                         className={styles.slot}
-                        // The second copy only exists to make the loop seamless:
-                        // inert keeps its links out of the tab order too.
                         aria-hidden={copy === 1 || undefined}
-                        inert={copy === 1}
                       >
                         <StaticTweetCard tweet={tweet} />
                       </div>

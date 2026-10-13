@@ -148,12 +148,7 @@ export function DocsRouteLayout({ tree, noSidebarUrls, children }: DocsRouteLayo
       <DocsLayout
         tree={activeTree}
         {...baseOptions()}
-        nav={{
-          component: <DocsNavbar showSidebarTrigger={hasSidebar} />,
-          // DocsNavbar carries the brand, so the sidebar header gets no title
-          // link; Fumadocs would otherwise render an empty, unlabeled one.
-          title: () => null,
-        }}
+        nav={{ component: <DocsNavbar showSidebarTrigger={hasSidebar} /> }}
         sidebar={{
           enabled: hasSidebar,
           tabs: false,

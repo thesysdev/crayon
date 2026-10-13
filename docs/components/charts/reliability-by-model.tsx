@@ -712,9 +712,6 @@ export function ReliabilityByModel({
               const py = boardY(point.score);
               return (
                 <g key={point.id}>
-                  {/* No per-mark labels: the svg is one labelled image, so screen
-                      readers never reach its marks. Exact values are in the
-                      data table below. */}
                   <circle
                     className={`${s.pt} ${s.providerHue}`}
                     cx={px}
@@ -723,6 +720,7 @@ export function ReliabilityByModel({
                     fill={PROVIDER_HUE[point.provider]}
                     stroke="var(--surface)"
                     strokeWidth={2}
+                    aria-label={`${point.label}, ${point.provider}: ${point.score.toFixed(1)}% valid, ${"unpriced" in point ? "self-hosted, cost not comparable" : `$${modelBoardCostPerTask(point).toFixed(4)} per task`}`}
                     style={{ cursor: "default", "--d": `${300 + index * 18}ms` } as CSSProperties}
                     onMouseEnter={() => setBoardHover(point.id)}
                     onMouseLeave={() => setBoardHover(null)}
@@ -868,6 +866,7 @@ export function ReliabilityByModel({
                         fill={ours ? "var(--surface)" : stroke}
                         stroke={stroke}
                         strokeWidth={ours ? 2.5 : 0}
+                        aria-label={`${formatLabel(format)}, ${MODEL_NAME[point.model]}: ${point.score.toFixed(1)}% valid, $${point.cost.toFixed(2)} per pass`}
                         style={
                           { cursor: "default", "--d": `${350 + index * 45}ms` } as CSSProperties
                         }

@@ -44,7 +44,6 @@ export function AutofixSection({
                     className={styles.providerLogo}
                     key={provider.name}
                     data-tooltip={provider.name}
-                    role="img"
                     aria-label={provider.name}
                     tabIndex={0}
                   >

@@ -43,7 +43,6 @@ export function ThesysLogo({
       href="https://thesys.dev"
       target="_blank"
       rel="noopener noreferrer"
-      aria-label="Thesys"
       className="relative shrink-0 size-6 cursor-pointer"
       onMouseEnter={() => onHoverChange(true)}
       onMouseLeave={() => onHoverChange(false)}

@@ -78,10 +78,6 @@ export type ProductSectionProps = {
   stageAspectRatio?: string;
   stageMobileAspectRatio?: string;
   cards: ProductCard[];
-  /* The headline's level in the page outline: 3 under a section title (the
-     Cloud band), 2 where the band opens a section itself. Card titles sit one
-     level below. */
-  headingLevel?: 2 | 3;
 };
 
 /* One product band: a split lockup, two calls to action, a wide visual, then
@@ -105,10 +101,7 @@ export function ProductSection({
   stageAspectRatio,
   stageMobileAspectRatio,
   cards,
-  headingLevel = 3,
 }: ProductSectionProps) {
-  const Headline = headingLevel === 2 ? "h2" : "h3";
-  const CardTitle = headingLevel === 2 ? "h3" : "h4";
   const primaryVariant = tone === "dark" ? "light" : "primary";
   const secondaryVariant = tone === "dark" ? "dark" : "secondary";
 
@@ -117,7 +110,7 @@ export function ProductSection({
       <div className={styles.lockup}>
         <div className={styles.lead}>
           <ProductLabel name={name} tag={tag} />
-          <Headline className={styles.headline}>{headline}</Headline>
+          <h3 className={styles.headline}>{headline}</h3>
           <div className={styles.ctas}>
             {primaryCta && (
               <BevelButton
@@ -232,7 +225,7 @@ export function ProductSection({
                   <CardIcon size={20} weight="light" />
                 </span>
                 <div className={styles.cardCopy}>
-                  <CardTitle className={styles.cardTitle}>{title}</CardTitle>
+                  <h4 className={styles.cardTitle}>{title}</h4>
                   <p className={styles.cardDescription}>{cardCopy}</p>
                 </div>
               </div>
