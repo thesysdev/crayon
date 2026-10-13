@@ -11,12 +11,12 @@ Vue 3 bindings for OpenUI Lang. Define model-renderable Vue components, generate
 ## Install
 
 ```bash
-npm install @openuidev/vue-lang
+npm install @openuidev/vue-lang zod
 # or
-pnpm add @openuidev/vue-lang
+pnpm add @openuidev/vue-lang zod
 ```
 
-**Peer dependencies:** `vue >=3.5.0`
+**Peer dependencies:** `vue >=3.5.0`, `zod ^3.25.0 || ^4.0.0`
 
 ## Overview
 
