@@ -2,7 +2,6 @@ import { THESYS_KEYS_URL } from "../../../lib/auth/mint";
 import { DEFAULT_ENV_FILE } from "../../../lib/env";
 import type { TemplateName } from "./create-types";
 
-/** Shown when create finished without an OpenUI Cloud key (skipped, agent, or failed sign-in). */
 export function missingCloudKeyNote(
   projectDir: string,
   dlxCmd: string,

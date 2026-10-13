@@ -29,18 +29,12 @@ export function detectAgent(env: NodeJS.ProcessEnv = process.env): DetectedAgent
   if (isPresent(env["FACTORY_PROJECT_DIR"])) matches.add("factory-droid");
   if (isTruthyEnv(env["PI_CODING_AGENT"])) matches.add("pi");
 
-  // Generic cross-vendor marker (free-form value): only a fallback, so a
-  // known agent that also sets it isn't reported as ambiguous.
+  // AI_AGENT is only a fallback, so known agents that also set it aren't "ambiguous".
   if (matches.size === 0) return isPresent(env["AI_AGENT"]) ? "other" : UNKNOWN_AGENT_NAME;
   if (matches.size > 1) return "ambiguous";
   return [...matches][0] ?? UNKNOWN_AGENT_NAME;
 }
 
-/**
- * The coding agent driving the CLI, or undefined for a human. Prefers the name
- * declared with `--agent-name`; agents often skip the flag, so falls back to
- * the env markers their harness sets.
- */
 export function resolveAgent(
   declaredName: string = UNKNOWN_AGENT_NAME,
   env: NodeJS.ProcessEnv = process.env,

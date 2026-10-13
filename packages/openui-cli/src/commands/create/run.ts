@@ -33,8 +33,6 @@ import { findCatalogOverlay } from "./lib/templates-catalog";
 
 export async function runCreateApp(options: CreateAppOptions, ctx: CliContext): Promise<void> {
   const tel = new CreateTelemetryClient(ctx.telemetry);
-  // Prompt only when someone can answer: not --no-interactive, not an agent,
-  // and a terminal on both ends. Otherwise every step takes its default.
   const interactive = !options.noInteractive && !ctx.agent && isInteractiveTerminal();
   const packageManager = resolveInstallPackageManager();
   const t0 = Date.now();

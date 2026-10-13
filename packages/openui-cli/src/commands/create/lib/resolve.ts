@@ -73,8 +73,6 @@ export async function loadCreateCatalog(params: {
     return { examples, template, templateEntry };
   }
 
-  // Without --template every run scaffolds the Cloud backend; openui-self-hosted
-  // is only used when requested explicitly.
   const catalog = await loadTemplatesCatalog({ onRetry });
   const template = requestedTemplate ?? DEFAULT_TEMPLATE_KEY;
   const templateEntry = findCatalogTemplate(catalog, template);
@@ -89,8 +87,6 @@ export async function resolveProjectIdentity(
   interactive: boolean,
   tel: CreateTelemetryClient,
 ): Promise<{ name: string; targetDir: string }> {
-  // Nothing to ask: take the default, stepping past existing directories so a
-  // repeat run still succeeds. An explicit --name is never renamed.
   if (!requestedName && !interactive) {
     return resolveAvailableTarget(firstAvailableName(DEFAULT_PROJECT_NAME), interactive, tel);
   }

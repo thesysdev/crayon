@@ -97,10 +97,6 @@ export async function resolveCloudEnv(
   tel: CreateTelemetryClient,
 ): Promise<EnvResult> {
   const envFile = options.envFile ?? DEFAULT_ENV_FILE;
-  // Sign-in needs a human at a terminal: without one (agent, no TTY, or
-  // --no-interactive) the method prompt and browser flow would cancel or hang.
-  // Skip unless a method was asked for explicitly; the closing message points
-  // at `generate-api-key` instead.
   const skipSignIn = !interactive && !options.auth && !options.apiKey;
   const auth = skipSignIn ? "skip" : options.auth;
   if (skipSignIn) {
