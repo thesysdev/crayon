@@ -8,4 +8,4 @@ The hand-written `ChatLLM` in `src/eve-chat.ts` is an intentional exception to t
 
 ## OpenUI skill
 
-For OpenUI itself, read the maintained OpenUI skill for coding agents published at [thesysdev/skills](https://raw.githubusercontent.com/thesysdev/skills/refs/heads/main/skills/openui/SKILL.md). To install it locally, run `npx skills add thesysdev/skills --skill openui`.
+For OpenUI itself, read the maintained OpenUI skill for coding agents published at [thesysdev/skills](https://raw.githubusercontent.com/thesysdev/skills/refs/heads/main/skills/openui/SKILL.md).
