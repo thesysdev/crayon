@@ -1,6 +1,8 @@
 import { SCATTER } from "@/lib/diffusion-blog-data";
-import type { ReactNode } from "react";
-import { FadedDither } from "../components/FadedDither/FadedDither";
+import {
+  IllustratedFeature,
+  IllustratedFeatures,
+} from "../components/IllustratedFeatures/IllustratedFeatures";
 import { DeviceScene, RevenueCard } from "./OuiDeviceScene";
 import styles from "./OuiFeatures.module.css";
 
@@ -134,73 +136,47 @@ function HardwareIllustration() {
   );
 }
 
-function Feature({
-  span,
-  shader = true,
-  title,
-  description,
-  children,
-}: {
-  span: "half" | "full" | "third";
-  /* false leaves the stage a flat fill in the shader's base tone */
-  shader?: boolean;
-  title: string;
-  description: string;
-  children: ReactNode;
-}) {
-  return (
-    <article className={styles.feature} data-span={span}>
-      <div className={styles.stage} data-flat={shader ? undefined : true}>
-        {shader && <FadedDither band="light" className={styles.stageShader} />}
-        <div className={styles.stageArt}>{children}</div>
-      </div>
-      <h3 className={styles.title}>{title}</h3>
-      <p className={styles.description}>{description}</p>
-    </article>
-  );
-}
-
 export function OuiFeatures() {
   return (
-    <div className={styles.features}>
-      <Feature
+    <IllustratedFeatures>
+      <IllustratedFeature
         span="half"
         title="Streams as it generates"
         description="Screens start appearing before generation finishes."
       >
         <DeviceScene />
-      </Feature>
-      <Feature
+      </IllustratedFeature>
+      <IllustratedFeature
         span="half"
         title="Up to 500 tokens/sec"
         description="Ultra-fast generation for responsive interfaces."
       >
         <PipelineIllustration />
-      </Feature>
-      <Feature
+      </IllustratedFeature>
+      <IllustratedFeature
         span="third"
         shader={false}
         title="71.7% benchmark score"
         description="5.5× its base model’s score on the Generative UI Benchmark."
       >
         <BenchmarkChart />
-      </Feature>
-      <Feature
+      </IllustratedFeature>
+      <IllustratedFeature
         span="third"
         shader={false}
         title="4B active parameters"
         description="A compact model purpose-built for Generative UI."
       >
         <ParamsIllustration />
-      </Feature>
-      <Feature
+      </IllustratedFeature>
+      <IllustratedFeature
         span="third"
         shader={false}
         title="Runs on consumer hardware"
         description="Bring interface generation onto your own hardware."
       >
         <HardwareIllustration />
-      </Feature>
-    </div>
+      </IllustratedFeature>
+    </IllustratedFeatures>
   );
 }

@@ -278,6 +278,29 @@ function DemoNode({
   }
 }
 
+// What each top-level block is called in the timeline. A list or key-value
+// block is named after its own header when it has one.
+const blockNames: Record<string, string> = {
+  CardHeader: "Header",
+  TextContent: "Section title",
+  ListBlock: "List",
+  KVList: "Summary",
+  ImageBlock: "Photo",
+  ProductDetails: "Product details",
+  ProductItem: "Cart item",
+  DeliveryMap: "Delivery map",
+  Chips: "Filter chips",
+  Button: "Button",
+  Buttons: "Actions",
+};
+function blockName(node: ElementNode) {
+  const header = str(node.props.header).toLowerCase();
+  if (header) return header.charAt(0).toUpperCase() + header.slice(1);
+  return blockNames[node.typeName] ?? node.typeName;
+}
+// Seconds of replay per source line: four 40ms ticks.
+const SECONDS_PER_LINE = 0.16;
+
 function CodeLine({ value }: { value: string }) {
   return (
     <>
@@ -322,6 +345,40 @@ export function AppLessDemo() {
   const current = useMemo(
     () => nodes(parse(lines.slice(0, count).join("\n")).root?.props.children),
     [lines, count],
+  );
+
+  // The replay as a list of plain-language events. Each is done once the line
+  // that causes it has been written, so the list moves in step with the phone.
+  const events = useMemo(() => {
+    const lineOf = (id: string) => lines.findIndex((line) => line.startsWith(`${id} = `)) + 1;
+    const rootLine = lineOf("root");
+    return [
+      { key: "asked", label: "User asked a query", detail: scene.request, atLine: 0 },
+      { key: "writing", label: "OUI-1 started writing OpenUI Lang", atLine: 1 },
+      ...settled.map((node, index) => ({
+        key: node.statementId ?? String(index),
+        label: `${blockName(node)} rendered`,
+        atLine: Math.max(rootLine, lineOf(node.statementId ?? "")),
+      })),
+      { key: "ready", label: "Interface ready", atLine: lines.length },
+    ];
+  }, [lines, scene, settled]);
+  const timer = (
+    <div
+      className={`${styles.timer} ${complete ? styles.timerDone : ""}`}
+      title="Elapsed time of the scripted browser replay, not model inference latency"
+    >
+      {reduced ? (
+        <small>Static preview</small>
+      ) : (
+        <strong>
+          <time>
+            {elapsed}
+            <span>s</span>
+          </time>
+        </strong>
+      )}
+    </div>
   );
 
   useEffect(() => {
@@ -384,24 +441,8 @@ export function AppLessDemo() {
       data-demo-complete={complete}
     >
       <div className={styles.codePanel} inert={compact}>
-        <div className={styles.panelHeader}>
-          <span>OpenUI Lang</span>
-          <div
-            className={`${styles.timer} ${complete ? styles.timerDone : ""}`}
-            title="Elapsed time of the scripted browser replay, not model inference latency"
-          >
-            {reduced ? (
-              <small>Static preview</small>
-            ) : (
-              <strong>
-                <time>
-                  {elapsed}
-                  <span>s</span>
-                </time>
-              </strong>
-            )}
-          </div>
-        </div>
+        {/* Narrow screens have no timeline, so the timer and request stay here. */}
+        <div className={styles.panelHeader}>{timer}</div>
         <p className={styles.request}>{scene.request}</p>
         <pre
           className={styles.code}
@@ -459,6 +500,26 @@ export function AppLessDemo() {
           </div>
           <span className={styles.homeIndicator} aria-hidden="true" />
         </div>
+      </div>
+      {/* Wide screens only: the replay told as events, right of the phone. */}
+      <div className={styles.timeline}>
+        <span className={styles.timerLabel}>Time to render</span>
+        {timer}
+        <ol className={styles.events} aria-label="Replay timeline">
+          {events.map((event) => (
+            <li key={event.key} className={styles.event} data-done={count >= event.atLine}>
+              {/* always present, so the rail keeps its place in a static preview */}
+              <span className={styles.eventTime}>
+                {reduced ? "" : `${(event.atLine * SECONDS_PER_LINE).toFixed(2)}s`}
+              </span>
+              <i className={styles.eventDot} aria-hidden="true" />
+              <span className={styles.eventCopy}>
+                {event.label}
+                {"detail" in event && event.detail ? <small>{event.detail}</small> : null}
+              </span>
+            </li>
+          ))}
+        </ol>
       </div>
       <div className={styles.controls}>
         <div>
