@@ -10,7 +10,7 @@ const withMDX = createMDX();
 // NEXT_PUBLIC_BASE_PATH to the same path, so its pages, assets and API routes all live under it.
 const proxiedDemos = {
   "f1-dashboard": "https://openui-f1-dashboard.vercel.app",
-  "trip-planner": "https://openui-travel-planner-agent.vercel.app",
+  "trip-planner": "https://openui-trip-planner.vercel.app",
 };
 
 /** @type {import('next').NextConfig} */
