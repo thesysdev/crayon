@@ -49,7 +49,7 @@ const FEATURED_PROJECTS: ShowcaseItem[] = [
       "Ask about any race, driver or team and get charts, tables and timing from OpenF1, next to live standings dashboards.",
     image: { light: "/nav/f1-dashboard-light.webp", dark: "/nav/f1-dashboard-dark.webp" },
     links: [
-      { label: "Open demo", href: "/demo/f1-dashboard", reloadDocument: true },
+      { label: "Open demo", href: "/demo/f1-dashboard" },
       { label: "GitHub", href: "https://github.com/thesysdev/openui-f1-dashboard", external: true },
     ],
   },
@@ -60,7 +60,7 @@ const FEATURED_PROJECTS: ShowcaseItem[] = [
       "Plan a trip as visual spreads, a day-by-day itinerary on a map, a moodboard and a journal, with live hotel prices from trivago.",
     image: { light: "/nav/trip-planner-light.webp", dark: "/nav/trip-planner-dark.webp" },
     links: [
-      { label: "Open demo", href: "/demo/trip-planner", reloadDocument: true },
+      { label: "Open demo", href: "/demo/trip-planner" },
       { label: "GitHub", href: "https://github.com/thesysdev/openui-trip-planner", external: true },
     ],
   },
