@@ -10,6 +10,8 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { BlogFaq } from "../components/BlogFaq";
 
+const isoDay = (date: string | Date) => new Date(date).toISOString().slice(0, 10);
+
 export default async function BlogPostPage(props: { params: Promise<{ slug: string }> }) {
   const params = await props.params;
   const page = blog.getPage([params.slug]);
@@ -51,7 +53,20 @@ export default async function BlogPostPage(props: { params: Promise<{ slug: stri
             <div className="flex items-center gap-3 border-b border-[color:var(--home-hairline)] pb-6 text-[length:var(--home-body-size)] font-[family-name:var(--home-font-text)] text-[color:var(--openui-text-neutral-tertiary)]">
               <span>{page.data.author}</span>
               <span>&middot;</span>
-              <time>{new Date(page.data.date).toDateString()}</time>
+              <time dateTime={isoDay(page.data.date)}>
+                {new Date(page.data.date).toDateString()}
+              </time>
+              {page.data.updatedAt ? (
+                <>
+                  <span>&middot;</span>
+                  <span>
+                    Updated{" "}
+                    <time dateTime={isoDay(page.data.updatedAt)}>
+                      {new Date(page.data.updatedAt).toDateString()}
+                    </time>
+                  </span>
+                </>
+              ) : null}
             </div>
             <article className="prose mt-8 min-w-0">
               <Mdx components={getMDXComponents()} />
@@ -82,6 +97,12 @@ export async function generateMetadata(props: {
       description: page.data.description,
       alternates: {
         canonical: page.url,
+      },
+      openGraph: {
+        type: "article",
+        publishedTime: new Date(page.data.date).toISOString(),
+        modifiedTime: new Date(page.data.updatedAt ?? page.data.date).toISOString(),
+        authors: [page.data.author],
       },
     },
     blogOgImage(page),
