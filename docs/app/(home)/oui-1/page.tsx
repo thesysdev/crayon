@@ -7,6 +7,7 @@ import styles from "../components/ProductLanding.module.css";
 import homeStyles from "../page.module.css";
 import { Footer } from "../sections/Footer/Footer";
 import { HeroSection } from "../sections/HeroSection/HeroSection";
+import { FaqSection } from "./FaqSection";
 import { OuiFeatures } from "./OuiFeatures";
 
 export const metadata: Metadata = {
@@ -24,21 +25,31 @@ export const metadata: Metadata = {
 };
 const model = "https://huggingface.co/thesysdev/OUI-1";
 const research = "/blog/oui-1";
-// PLACEHOLDER: there is no OUI-1 integration guide in the docs yet, so the
-// how-to CTA points at the model card. Swap in the guide's URL when it exists.
-const guide = model;
+const guide = "/docs/build-agents/ui-generation";
 const steps = [
   {
-    title: "Run OUI-1 locally",
-    description: "Download the model and serve it on your GPU using vLLM.",
+    title: "Run OUI-1",
+    description: "Serve OUI-1 on your GPU with ",
+    descriptionEnd: ".",
+    link: model + "#vllm-recommended",
+    linkLabel: "vLLM",
+    external: true,
   },
   {
-    title: "Bring your own components",
-    description: "Connect your component library using OpenUI Lang.",
+    title: "Define your components",
+    description: "Define your ",
+    descriptionEnd: ", then generate its system prompt.",
+    link: "/docs/openui-lang/defining-components",
+    linkLabel: "component library",
+    external: false,
   },
   {
-    title: "Generate your first interface",
-    description: "Describe what you need. OUI-1 generates a streaming, interactive UI.",
+    title: "Render the interface",
+    description: "Send a request to OUI-1 and stream its response into the ",
+    descriptionEnd: ".",
+    link: "/docs/openui-lang/renderer",
+    linkLabel: "Renderer",
+    external: false,
   },
 ];
 /* One half of a laurel: leaf pairs set along an arc, outer and inner. */
@@ -160,15 +171,16 @@ export default function OuiOnePage() {
             <OuiFeatures />
           </div>
         </div>
-        <section className={styles.howBand}>
+        <section className={styles.howBand} aria-labelledby="oui-how-title">
           <div className={styles.howInner}>
             <div className={styles.howHead}>
-              <h2 className={styles.howTitle}>Build your GenUI agent in minutes.</h2>
+              <h2 id="oui-how-title" className={styles.howTitle}>
+                Build with OUI-1.
+              </h2>
               <BevelButton
                 href={guide}
-                external
                 variant="secondary"
-                label="Read integration guide"
+                label="Read setup docs"
                 badge={<ArrowRight size={16} strokeWidth={2.25} />}
               />
             </div>
@@ -177,12 +189,25 @@ export default function OuiOnePage() {
                 <li key={step.title} className={styles.step}>
                   <span className={styles.stepBadge}>{index + 1}</span>
                   <h3 className={styles.stepTitle}>{step.title}</h3>
-                  <p className={styles.stepDescription}>{step.description}</p>
+                  <p className={styles.stepDescription}>
+                    {step.description}
+                    <a
+                      href={step.link}
+                      className={styles.stepInlineLink}
+                      {...(step.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                    >
+                      {step.linkLabel}
+                    </a>
+                    {step.descriptionEnd}
+                  </p>
                 </li>
               ))}
             </ol>
           </div>
         </section>
+        <div className={styles.productFaqBand}>
+          <FaqSection />
+        </div>
         <div className={`${styles.statementBand} ${styles.closingBand}`}>
           <div className={styles.openBadge}>
             <LaurelBranch />

@@ -600,26 +600,6 @@
     line-height: 25px;
     white-space: nowrap;
   }
-  .notch.l { left: 25%; }
-  .notch.r { left: 75%; }
-  .split {
-    flex: 1;
-    min-height: 0;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-  }
-  .split > .app { min-height: 0; height: 100%; padding: 6px 30px 15px; }   /* more air either side of the divider */
-  /* the divider runs the full height of the screen, through the status bar */
-  .sep {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 50%;
-    width: 1px;
-    transform: translateX(-50%);
-    background: rgb(0 0 0 / .09);
-    z-index: 1;
-  }
 
   /* ---------- the text-only answer ---------- */
   .t-row, .t-ans {
@@ -719,9 +699,39 @@
     } catch (e) {}
   })();
 </script>
+<style>
+  .external-switch { display: none; }
+  /* Compact layout: one full-width device with its selector above the frame. */
+  [data-layout="compact"] body { touch-action: pan-y; }
+  [data-layout="compact"] .viz { width: 860px; height: 1100px; padding: 0; cursor: default; }
+  [data-layout="compact"] .device { top: calc(60px / var(--hero-scale)); left: 38px; }
+  [data-layout="compact"][data-mobile-model="oui"] .device.back,
+  [data-layout="compact"][data-mobile-model="general"] .device.front { display: none; }
+  [data-layout="compact"] .device.back::after,
+  [data-layout="compact"] .notch { display: none; }
+  [data-layout="compact"] .status { height: 44px; align-items: flex-end; padding-bottom: 8px; }
+  [data-layout="compact"] .t-body { max-width: none; font-size: 24px; line-height: 1.55; }
+  [data-layout="compact"] .t-body h5 { font-size: 24px; }
+  [data-layout="compact"] .external-switch {
+    position: absolute; z-index: 10; top: 12px; left: 50%; transform: translateX(-50%);
+    display: flex; padding: 3px; gap: 3px; border-radius: 999px;
+    background: var(--lav); border: 1px solid color-mix(in srgb, var(--app-ink) 12%, transparent);
+  }
+  .external-switch button {
+    min-height: 30px; padding: 0 13px; border: 0; border-radius: 999px;
+    background: transparent; color: var(--app-ink); font: 600 12px/1.2 Inter, sans-serif;
+    white-space: nowrap; cursor: pointer; touch-action: manipulation;
+  }
+  .external-switch button[aria-pressed="true"] { background: var(--app-ink); color: var(--lav); }
+  .external-switch button:focus-visible { outline: 2px solid #8fa0ff; outline-offset: -3px; }
+
+</style>
 </head>
 <body>
-
+<div class="model-switch external-switch" role="group" aria-label="Compare model responses">
+  <button type="button" data-model="oui" aria-pressed="true">OUI-1</button>
+  <button type="button" data-model="general" aria-pressed="false">General-purpose</button>
+</div>
 <div class="fitbox" id="fitbox">
 <figure class="viz">
 
@@ -729,7 +739,9 @@
    <!-- behind: the same question answered in text -->
    <div class="device back">
     <div class="screen">
-      <div class="notch">General-purpose models</div>
+      <div class="notch">
+        <span class="desktop-model-label">General-purpose models</span>
+      </div>
 
       <div class="status">
         <span class="time">9:41</span>
@@ -776,7 +788,9 @@
    <!-- in front: the answer OUI-1 renders -->
    <div class="device front">
     <div class="screen">
-      <div class="notch">OUI-1</div>
+      <div class="notch">
+        <span class="desktop-model-label">OUI-1</span>
+      </div>
 
       <div class="status">
         <span class="time">9:41</span>
@@ -1510,15 +1524,49 @@ function playText() {
   });
 }
 
-// fit the wide composition to the width of the frame it is embedded in; a
-// frame shorter than 16:9 crops the bottom
+document.documentElement.dataset.mobileModel = 'oui';
+
+function selectMobileModel(model) {
+  document.documentElement.dataset.mobileModel = model;
+  document.querySelectorAll('.model-switch button').forEach(button => {
+    button.setAttribute('aria-pressed', String(button.dataset.model === model));
+  });
+  if (model === 'general') {
+    timers.forEach(clearTimeout);
+    timers = [];
+    if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+    playText();
+  } else {
+    play();
+  }
+  const controls = document.querySelector('.external-switch');
+  controls.querySelector(`[data-model="${model}"]`).focus({ preventScroll: true });
+}
+
+document.querySelectorAll('.model-switch button').forEach(button => {
+  button.addEventListener('click', event => {
+    event.stopPropagation();
+    selectMobileModel(button.dataset.model);
+  });
+});
+
+// Fit the desktop pair or the single mobile device to its host frame.
 function fit() {
   const box = document.getElementById('fitbox');
-  const k = window.innerWidth / 1584;
-  box.style.width = 1584 * k + 'px';
-  box.style.height = 891 * k + 'px';
-  box.style.left = (window.innerWidth - 1584 * k) / 2 + 'px';
+  let hostWidth = window.innerWidth;
+  try { hostWidth = window.parent.innerWidth; } catch (e) {}
+  const compact = hostWidth < 900;
+  const previousLayout = document.documentElement.dataset.layout;
+  document.documentElement.dataset.layout = compact ? 'compact' : 'wide';
+  const width = compact ? 860 : 1584;
+  const height = compact ? 1100 : 891;
+  const k = window.innerWidth / width;
+  document.documentElement.style.setProperty('--hero-scale', k);
+  box.style.width = width * k + 'px';
+  box.style.height = height * k + 'px';
+  box.style.left = '0px';
   box.firstElementChild.style.transform = `scale(${k})`;
+  if (!compact && previousLayout === 'compact') { play(); playText(); }
 }
 fit();
 window.addEventListener('resize', fit);

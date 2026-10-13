@@ -1,5 +1,6 @@
 .demo {
   --demo-panel: var(--openui-foreground);
+  --demo-surface: #f8f8f8;
   --demo-ink: var(--openui-text-neutral-primary);
   --demo-muted: var(--openui-text-neutral-secondary);
   --demo-line: var(--home-hairline);
@@ -22,6 +23,7 @@
   font-family: var(--home-font-display);
 }
 [data-theme="dark"] .demo {
+  --demo-surface: #0e0e0e;
   --demo-blue: #8db9ee;
   --demo-green: #96c6a2;
   --demo-purple: #c4a2dd;
@@ -74,69 +76,11 @@
   font-size: 16px;
   margin-left: 3px;
 }
-.timerSignal {
-  width: 22px;
-  display: inline-flex;
-  align-items: center;
-}
 .timerDone strong {
   color: #128357;
 }
 [data-theme="dark"] .timerDone strong {
   color: #63dca5;
-}
-.timerDone .timerSignal {
-  animation: completePulse 600ms ease-out;
-}
-.dots {
-  display: flex;
-  gap: 3px;
-}
-.dots i {
-  width: 4px;
-  height: 4px;
-  background: currentColor;
-  border-radius: 50%;
-  animation: thinking 900ms ease-in-out infinite;
-}
-.dots i:nth-child(2) {
-  animation-delay: 150ms;
-}
-.dots i:nth-child(3) {
-  animation-delay: 300ms;
-}
-@keyframes thinking {
-  0%,
-  80%,
-  100% {
-    opacity: 0.3;
-    transform: translateY(0);
-  }
-  40% {
-    opacity: 1;
-    transform: translateY(-3px);
-  }
-}
-@keyframes completePulse {
-  0% {
-    transform: scale(0.7);
-    opacity: 0.3;
-  }
-  70% {
-    transform: scale(1.2);
-  }
-  100% {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
-.request {
-  flex: none;
-  margin: 0;
-  padding: 16px 20px;
-  font-size: 13px;
-  line-height: 1.4;
-  color: var(--demo-muted);
 }
 .code {
   flex: 1;
@@ -255,8 +199,7 @@
 }
 /* On wide screens the timeline carries the timer and the request. */
 @media (min-width: 1100.02px) {
-  .codePanel .panelHeader,
-  .codePanel .request {
+  .codePanel .panelHeader {
     display: none;
   }
   /* The phone stays centred, so the code gains width by reaching into the
@@ -641,10 +584,6 @@ button.row:hover {
   .timer strong {
     font-size: 24px;
   }
-  .request {
-    padding: 10px 16px;
-    font-size: 12px;
-  }
 }
 @media (max-width: 500px) {
   .demo {
@@ -679,9 +618,6 @@ button.row:hover {
   .codeLine {
     gap: 8px;
   }
-  .request {
-    padding: 10px 12px;
-  }
   .screen {
     padding-inline: 13px;
   }
@@ -699,12 +635,6 @@ button.row:hover {
   .controls {
     right: 16px;
     bottom: 10px;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .dots i,
-  .timerDone .timerSignal {
-    animation: none;
   }
 }
 @media (max-width: 360px) {
@@ -953,4 +883,440 @@ button.row:hover {
   .demo {
     touch-action: pan-y;
   }
+}
+@media (min-width: 768px) and (max-width: 1100px) {
+  .demo {
+    grid-template-columns: minmax(0, 1fr) 300px;
+    grid-template-rows: minmax(0, 1fr);
+    gap: 28px;
+    padding: 40px 32px 64px;
+  }
+  .phone {
+    width: 300px;
+  }
+}
+@media (max-width: 767px) {
+  .demo {
+    grid-template-rows: 132px minmax(0, 1fr);
+    gap: 20px;
+    padding: 20px 18px 52px;
+  }
+  .phone {
+    width: min(272px, 100%);
+    max-height: none;
+  }
+  .panelHeader {
+    min-height: 32px;
+    padding: 0 0 6px;
+    justify-content: space-between;
+  }
+  .codeLabel {
+    color: var(--demo-muted);
+    font-size: 12px;
+  }
+  .code {
+    padding: 0;
+    font-size: 10px;
+    line-height: 1.5;
+  }
+  .phoneSide {
+    align-items: flex-start;
+    padding-top: 4px;
+  }
+  .controls {
+    right: 18px;
+    bottom: 12px;
+  }
+}
+
+/* One shared workspace gives source, output and timing a common structure. */
+.demo {
+  grid-template-columns: minmax(0, 1fr) 366px minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
+  gap: 0;
+  height: 722px;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--demo-line);
+  border-radius: 24px;
+  overflow: hidden;
+  background: var(--demo-surface);
+}
+.demo .panelHeader {
+  min-height: 48px;
+  padding: 8px 18px;
+  background: var(--demo-panel);
+  justify-content: space-between;
+  border-bottom: 1px solid var(--demo-line);
+  font: 11px/20px var(--home-font-code, ui-monospace, monospace);
+}
+.panelMeta {
+  color: var(--demo-muted);
+  font-size: 10px;
+}
+.compactTimer {
+  display: none;
+}
+.demo .codePanel {
+  margin: 0;
+  opacity: 1;
+}
+.demo .codePanel .panelHeader {
+  display: flex;
+}
+.demo .code {
+  padding: 18px 16px 24px 10px;
+  font-size: 11px;
+  line-height: 1.85;
+}
+.codeLine {
+  grid-template-columns: 20px minmax(0, 1fr);
+  gap: 10px;
+}
+.lineNumber {
+  opacity: 0.55;
+}
+.previewPanel {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+  border-inline: 1px solid var(--demo-line);
+}
+.phoneSide {
+  flex: 1;
+  padding: 35px 24px;
+  background: transparent;
+}
+.demo .phone {
+  width: 326px;
+  max-height: none;
+  zoom: 0.9;
+}
+.demo .timeline {
+  padding: 0;
+  opacity: 1;
+}
+.traceSummary {
+  padding: 22px 20px 20px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+}
+.traceSummary > .timer {
+  justify-content: flex-end;
+}
+.traceSummary > .progressTrack {
+  grid-column: 1 / -1;
+}
+.timerLabel {
+  display: block;
+  font-size: 11px;
+}
+.timeline .timer strong {
+  font-size: 30px;
+  line-height: 1.5;
+}
+.timeline .timer time span {
+  font-size: 14px;
+  margin-left: 4px;
+}
+.progressTrack {
+  height: 3px;
+  margin-top: 14px;
+  background: var(--demo-line);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.progressTrack span {
+  display: block;
+  height: 100%;
+  background: var(--demo-green);
+  transition: width 160ms linear;
+}
+.events {
+  margin: 0 20px;
+  padding: 12px 0 20px;
+  border-top: 1px solid var(--demo-line);
+}
+.events::before {
+  left: 2px;
+  top: 27px;
+  bottom: 38px;
+}
+.event {
+  grid-template-columns: 5px minmax(0, 1fr) 44px;
+  padding-block: 9px;
+  font-size: 11px;
+  line-height: 17px;
+}
+.eventCopy small {
+  font-size: 11px;
+  margin-top: 3px;
+}
+.eventTime {
+  grid-column: 3;
+  grid-row: 1;
+  font-size: inherit;
+}
+.eventDot {
+  grid-column: 1;
+  grid-row: 1;
+}
+.eventCopy {
+  grid-column: 2;
+  grid-row: 1;
+}
+.event[data-done="true"] .eventDot {
+  color: var(--demo-green);
+}
+.demo .controls {
+  position: static;
+  flex: none;
+}
+.controls > div {
+  gap: 6px;
+}
+.controls button {
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--demo-line);
+  background: transparent;
+  color: var(--demo-muted);
+  box-shadow: none;
+}
+.controls button:hover,
+.controls button:focus-visible {
+  background: color-mix(in srgb, var(--demo-ink) 5%, transparent);
+}
+@media (max-width: 1100px) {
+  .demo {
+    margin: 0;
+    height: auto;
+    border-radius: 24px;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: 100px auto;
+    gap: 0;
+    padding: 0;
+  }
+  .controls button {
+    width: 32px;
+    height: 32px;
+  }
+  .demo .panelHeader {
+    min-height: 44px;
+    padding: 6px 12px;
+    font-size: 10px;
+  }
+  .demo .code {
+    padding: 8px 12px;
+    font-size: 9px;
+    line-height: 1.6;
+  }
+  .codePanel .panelMeta {
+    display: none;
+  }
+  .compactTimer {
+    display: block;
+  }
+  .compactTimer .timer strong {
+    font-size: 15px;
+  }
+  .compactTimer .timer time {
+    min-width: 0;
+  }
+  .compactTimer .timer time span {
+    font-size: 11px;
+  }
+  .previewPanel {
+    border-inline: 0;
+    border-top: 1px solid var(--demo-line);
+  }
+  .phoneSide {
+    align-items: center;
+    padding: 32px 16px;
+    overflow: hidden;
+  }
+  .demo .phone {
+    width: 326px;
+    zoom: 0.74;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .progressTrack span {
+    transition: none;
+  }
+}
+
+@media (max-width: 360px) {
+  .demo .phone {
+    zoom: 0.64;
+  }
+}
+
+@media (max-width: 1100px) {
+  .demo {
+    --mobile-phone-scale: 0.74;
+  }
+  .previewPanel {
+    container-type: inline-size;
+  }
+  .demo .phoneSide {
+    padding-block: max(16px, calc((100cqw - 326px * var(--mobile-phone-scale)) / 2));
+  }
+}
+@media (max-width: 360px) {
+  .demo {
+    --mobile-phone-scale: 0.64;
+  }
+}
+
+/* A clean preview surface and quieter supporting details. */
+.demo .phoneSide {
+  background: transparent;
+}
+.demo .phone {
+  box-shadow:
+    0 0 0 1px #777,
+    0 0 0 3px #b3b3b3,
+    0 14px 24px -18px #0006;
+}
+[data-theme="dark"] .demo .phone {
+  box-shadow:
+    0 0 0 1px #777,
+    0 0 0 3px #424242,
+    0 14px 24px -18px #0009;
+}
+.demo .traceSummary {
+  padding-bottom: 16px;
+}
+.demo .timeline .timer strong {
+  font-size: 26px;
+}
+.demo .progressTrack {
+  height: 4px;
+}
+.demo .events {
+  border-top: 0;
+}
+.demo .eventTime {
+  font-family: var(--home-font-code, ui-monospace, monospace);
+  font-style: normal;
+  opacity: 0.85;
+}
+
+.demo .timerLabel {
+  font-size: 14px;
+  line-height: 20px;
+}
+.mobileRequest {
+  display: none;
+}
+.previewLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+@media (max-width: 1100px) {
+  .demo {
+    grid-template-rows: auto auto;
+  }
+  .demo .codePanel {
+    display: none;
+  }
+  .mobileRequest {
+    display: block;
+  }
+  .mobileRequestText {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 16px;
+    font-size: 14px;
+    line-height: 20px;
+    text-wrap: pretty;
+  }
+  .mobileRequestLabel {
+    display: block;
+    color: var(--demo-muted);
+    font-size: 11px;
+    line-height: 16px;
+  }
+  .mobileTiming {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 10px 16px;
+    border-top: 1px solid var(--demo-line);
+  }
+  .mobileTiming > .mobileRequestLabel {
+    font-size: 13px;
+  }
+  .mobileTiming .timer {
+    justify-content: flex-end;
+    margin-top: 0;
+  }
+  .mobileTiming .timer strong {
+    font-size: 24px;
+    line-height: 28px;
+  }
+  .mobileTiming .timer time {
+    min-width: 0;
+  }
+  .mobileTiming .timer time span {
+    font-size: 12px;
+  }
+  .demo .previewPanel > .panelHeader {
+    display: contents;
+  }
+  .previewLabel {
+    display: none;
+  }
+  .demo .previewPanel .controls {
+    order: 2;
+    align-self: flex-end;
+    margin: 0 16px 16px;
+  }
+  .demo .phoneSide {
+    order: 1;
+  }
+}
+
+/* One compact layout across phones and tablets, scaled to its own panel. */
+@media (max-width: 1100px) {
+  .demo .phone {
+    zoom: clamp(0.64, tan(atan2(78cqw, 326px)), 1.35);
+  }
+  .demo .phoneSide {
+    padding: clamp(24px, 11cqw, 48px) 16px;
+    pointer-events: none;
+    user-select: none;
+  }
+  .demo .screen {
+    overflow: hidden;
+  }
+  .demo {
+    touch-action: pan-y;
+  }
+}
+
+/* Let this interactive preview fill the mobile hero instead of the image-sized slot. */
+@media (max-width: 899px) {
+  .responsiveHero div:has(> [data-demo-scene]) {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.mobileQueryAvatar {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--demo-ink);
+  color: var(--demo-panel);
 }
