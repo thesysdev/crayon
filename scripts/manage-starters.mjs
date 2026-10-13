@@ -16,12 +16,6 @@ const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const examplesRoot = resolve(repoRoot, "examples");
 const templatesRoot = resolve(repoRoot, "templates");
 const dependencyFields = ["dependencies", "devDependencies"];
-// These renderers stay on lang-core 0.4, so their apps are not bumped to latest.
-const nonReactRenderers = [
-  "@openuidev/vue-lang",
-  "@openuidev/svelte-lang",
-  "@openuidev/angular-lang",
-];
 const [target, command] = process.argv.slice(2);
 
 const commandsByTarget = {
@@ -76,10 +70,6 @@ function openUIDependencyNames(manifest) {
   );
 }
 
-function usesNonReactRenderer(manifest) {
-  return openUIDependencyNames(manifest).some((name) => nonReactRenderers.includes(name));
-}
-
 function runCommand(command, args, options) {
   const result = spawnSync(command, args, { stdio: "inherit", ...options });
 
@@ -88,7 +78,11 @@ function runCommand(command, args, options) {
 }
 
 function latestVersion(name) {
-  const result = spawnSync("pnpm", ["view", name, "version", "--json"], {
+  return registryVersion(name, name);
+}
+
+function registryVersion(name, spec) {
+  const result = spawnSync("pnpm", ["view", spec, "version", "--json"], {
     cwd: repoRoot,
     encoding: "utf8",
   });
@@ -107,7 +101,7 @@ function latestVersion(name) {
   }
 
   const version = Array.isArray(response)
-    ? response.find((value) => typeof value === "string")
+    ? response.findLast((value) => typeof value === "string")
     : response;
   if (typeof version !== "string") {
     throw new Error(`Could not resolve the latest version of ${name}: ${result.stdout.trim()}`);
@@ -122,6 +116,44 @@ function latestOpenUIVersions(manifests) {
       .sort()
       .map((name) => [name, latestVersion(name)]),
   );
+}
+
+function registryDependencies(name, version) {
+  const result = spawnSync("pnpm", ["view", `${name}@${version}`, "dependencies", "--json"], {
+    cwd: repoRoot,
+    encoding: "utf8",
+  });
+
+  if (result.error) throw result.error;
+  if (result.status !== 0) {
+    process.stderr.write(result.stderr);
+    process.exit(result.status ?? 1);
+  }
+
+  return result.stdout.trim() ? JSON.parse(result.stdout) : {};
+}
+
+// Keep each OpenUI package inside the ranges the app's other OpenUI packages
+// declare, so an app follows the lang-core its renderer was built for.
+function applicationOpenUIVersions(manifest, latestVersions) {
+  const names = openUIDependencyNames(manifest);
+  const ranges = new Map();
+
+  for (const name of names) {
+    const dependencies = registryDependencies(name, latestVersions.get(name));
+    for (const [dependency, range] of Object.entries(dependencies)) {
+      if (names.includes(dependency)) {
+        ranges.set(dependency, [...(ranges.get(dependency) ?? []), range]);
+      }
+    }
+  }
+
+  const versions = new Map(latestVersions);
+  for (const [name, nameRanges] of ranges) {
+    versions.set(name, registryVersion(name, `${name}@${nameRanges.join(" ")}`));
+  }
+
+  return versions;
 }
 
 function pinOpenUIDependencyVersions(manifest, latestVersions, { preserveRange = false } = {}) {
@@ -250,14 +282,7 @@ function manageExamples() {
   const applications = findManifests(examplesRoot)
     .map(applicationFromManifest)
     .sort((left, right) => left.path.localeCompare(right.path));
-  const versions =
-    command === "update"
-      ? latestOpenUIVersions(
-          applications
-            .map(({ manifest }) => manifest)
-            .filter((manifest) => !usesNonReactRenderer(manifest)),
-        )
-      : new Map();
+  const versions = command === "update" ? latestOpenUIVersions(applications.map(({ manifest }) => manifest)) : new Map();
 
   for (const application of applications) {
     if (command === "install") {
@@ -267,12 +292,8 @@ function manageExamples() {
 
     if (command === "update") {
       const manifest = readJson(application.manifestPath);
-      if (usesNonReactRenderer(manifest)) {
-        console.log(`\n==> ${application.path} skipped (non-React renderer)`);
-        continue;
-      }
       if (openUIDependencyNames(manifest).length > 0) {
-        if (pinOpenUIDependencyVersions(manifest, versions)) {
+        if (pinOpenUIDependencyVersions(manifest, applicationOpenUIVersions(manifest, versions))) {
           writeJson(application.manifestPath, manifest);
         }
         runPnpm(application, ["install", "--lockfile-only", "--fix-lockfile"]);
