@@ -4,6 +4,8 @@ import lastModified from "fumadocs-mdx/plugins/last-modified";
 import { z } from "zod";
 
 const docsPageSchema = pageSchema.extend({
+  // Search title for <title>; the H1 and sidebar keep `title`.
+  seoTitle: z.string().optional(),
   customHeader: z.boolean().optional().default(false),
   // Hides the previous/next page links at the bottom of the page.
   hideFooter: z.boolean().optional().default(false),

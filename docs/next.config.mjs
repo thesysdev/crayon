@@ -6,6 +6,13 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const withMDX = createMDX();
 
+// Demos deployed as their own Vercel projects, served under openui.com/demo/<path>. Each app sets
+// NEXT_PUBLIC_BASE_PATH to the same path, so its pages, assets and API routes all live under it.
+const proxiedDemos = {
+  "f1-dashboard": "https://openui-f1-dashboard.vercel.app",
+  "trip-planner": "https://openui-trip-planner.vercel.app",
+};
+
 /** @type {import('next').NextConfig} */
 const config = {
   serverExternalPackages: ["@takumi-rs/image-response"],
@@ -372,6 +379,10 @@ const config = {
   },
   async rewrites() {
     return [
+      ...Object.entries(proxiedDemos).flatMap(([path, origin]) => [
+        { source: `/demo/${path}`, destination: `${origin}/demo/${path}` },
+        { source: `/demo/${path}/:rest*`, destination: `${origin}/demo/${path}/:rest*` },
+      ]),
       {
         source: "/docs/:path*.mdx",
         destination: "/llms.mdx/docs/:path*",
