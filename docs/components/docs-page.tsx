@@ -1,5 +1,6 @@
 import { LLMCopyButton, ViewOptions } from "@/components/ai/page-actions";
 import { JsonLd } from "@/components/seo/JsonLd";
+import { toDay } from "@/lib/content-dates";
 import { gitConfig } from "@/lib/layout.shared";
 import { docsOgImage } from "@/lib/og/content";
 import { ogImageUrl } from "@/lib/og/images";
@@ -71,7 +72,7 @@ function docsStructuredData(page: DocsSourcePage) {
     description: page.data.description,
     image: `${BASE_URL}${ogImageUrl(docsOgImage(page))}`,
     ...(page.data.updatedAt && {
-      dateModified: new Date(page.data.updatedAt).toISOString(),
+      dateModified: toDay(page.data.updatedAt),
     }),
     publisher: {
       "@type": "Organization",

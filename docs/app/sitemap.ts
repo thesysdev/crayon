@@ -1,4 +1,5 @@
 import { ogPages } from "@/generated/og-pages";
+import { postDates, toDay } from "@/lib/content-dates";
 import { BASE_URL, blog, source } from "@/lib/source";
 import type { MetadataRoute } from "next";
 import { integrations } from "./(home)/integrations/data";
@@ -47,8 +48,7 @@ function staticPageDate(path: string) {
 export default function sitemap(): MetadataRoute.Sitemap {
   const route = (path: string, updatedAt?: string | Date) => ({
     url: `${BASE_URL}${path}`,
-    lastModified:
-      updatedAt === undefined ? undefined : new Date(updatedAt).toISOString().slice(0, 10),
+    lastModified: updatedAt === undefined ? undefined : toDay(updatedAt),
     changeFrequency: "weekly" as const,
   });
   const latest = (routes: { lastModified?: string }[]) =>
@@ -61,9 +61,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const integrationRoutes = integrations.map((integration) =>
     route(`/integrations/${integration.slug}`, integration.updatedAt),
   );
-  const blogRoutes = blog
-    .getPages()
-    .map((page) => route(page.url, page.data.updatedAt ?? page.data.date));
+  const blogRoutes = blog.getPages().map((page) => route(page.url, postDates(page.data).modified));
 
   return [
     ...STATIC_PATHS.map((path) => route(path, staticPageDate(path))),
