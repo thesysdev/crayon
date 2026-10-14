@@ -285,20 +285,201 @@
   color: var(--kit-ink-3);
   letter-spacing: 0;
 }
-.kit-alert__meter {
+// Days of cover on a timeline: today at the left edge, the reorder point as a
+// tick, the day an open order lands as a marker, and any gap hatched.
+.kit-alert__timeline {
+  position: relative;
   display: block;
-  height: 6px;
+  height: 10px;
   border-radius: 999px;
-  background: var(--kit-warn-bg);
-  overflow: hidden;
+  background: var(--kit-neutral-bg);
 }
 .kit-alert__fill {
-  display: block;
-  height: 100%;
+  position: absolute;
+  inset: 0 auto 0 0;
   border-radius: inherit;
   background: var(--kit-warn);
+  transition: width 0.4s cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 .kit-alert__fill--critical,
 .kit-alert__fill--out {
   background: var(--kit-bad);
 }
+.kit-alert__gap {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background: repeating-linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--kit-bad) 45%, transparent) 0 2px,
+    transparent 2px 5px
+  );
+}
+.kit-alert__tick {
+  position: absolute;
+  top: -3px;
+  bottom: -3px;
+  width: 2px;
+  margin-left: -1px;
+  background: var(--kit-ink-2);
+  border-radius: 1px;
+}
+.kit-alert__po {
+  position: absolute;
+  top: 50%;
+  width: 10px;
+  height: 10px;
+  margin: -5px 0 0 -5px;
+  transform: rotate(45deg);
+  border-radius: 2px;
+  background: var(--kit-card);
+  border: 2px solid var(--kit-s1);
+}
+
+// Store orders against ad-platform claims.
+.kit-recon {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  font: var(--kit-body);
+}
+.kit-recon__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.kit-recon__row {
+  display: grid;
+  grid-template-columns: minmax(84px, auto) minmax(0, 1fr);
+  gap: 4px 12px;
+  align-items: center;
+}
+.kit-recon__name {
+  font-weight: 600;
+  color: var(--kit-ink);
+}
+.kit-recon__bars {
+  position: relative;
+  height: 14px;
+}
+.kit-recon__claimed,
+.kit-recon__store {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.4s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.kit-recon__claimed,
+.kit-recon__key--claimed {
+  border: 1.5px dashed var(--kit-ink-3);
+  background: transparent;
+}
+.kit-recon__store,
+.kit-recon__key--store {
+  background: var(--kit-s1);
+}
+.kit-recon__figures {
+  grid-column: 2;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 2px 12px;
+  font: 400 12px/1.4 var(--kit-font);
+  font-variant-numeric: tabular-nums;
+  color: var(--kit-ink-2);
+}
+.kit-recon__legend {
+  display: flex;
+  gap: 16px;
+  font: 500 11.5px var(--kit-font);
+  color: var(--kit-ink-3);
+}
+.kit-recon__key {
+  display: inline-block;
+  width: 12px;
+  height: 9px;
+  margin-right: 4px;
+  border-radius: 2px;
+  vertical-align: -1px;
+}
+.kit-recon__summary {
+  margin: 0;
+  color: var(--kit-ink-2);
+  text-wrap: pretty;
+}
+
+// Size exchanges: ordered size against the size swapped to.
+.kit-exchange {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font: var(--kit-body);
+  min-width: 0;
+}
+.kit-exchange__lead {
+  margin: 0;
+  color: var(--kit-ink-2);
+}
+.kit-exchange__scroll {
+  overflow-x: auto;
+}
+.kit-exchange__table {
+  border-collapse: separate;
+  border-spacing: 3px;
+  width: 100%;
+  font: 500 12px var(--kit-font);
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+.kit-exchange__table th {
+  font-weight: 600;
+  color: var(--kit-ink-3);
+  padding: 4px;
+}
+.kit-exchange__corner {
+  text-align: left;
+  font-weight: 500 !important;
+  white-space: nowrap;
+}
+.kit-exchange__cell {
+  height: 30px;
+  min-width: 34px;
+  border-radius: 5px;
+  background: var(--kit-sunk);
+  color: var(--kit-ink);
+}
+.kit-exchange__cell--same {
+  box-shadow: inset 0 0 0 1.5px var(--kit-ink-3);
+}
+
+// Ad creatives: hook and hold as small meters.
+.kit-creatives td {
+  vertical-align: middle;
+}
+.kit-creative__rate {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-variant-numeric: tabular-nums;
+}
+.kit-creative__meter {
+  display: inline-block;
+  width: 42px;
+  height: 5px;
+  border-radius: 3px;
+  background: var(--kit-neutral-bg);
+  overflow: hidden;
+
+  span {
+    display: block;
+    height: 100%;
+    background: var(--kit-s1);
+  }
+}
+
+// Recommended actions with approve and dismiss, and the decision log.

@@ -1,0 +1,60 @@
+// A metric's definition, shown beside a KPI tile or the hero label on hover or focus.
+
+.kit-def-host {
+  position: relative;
+  min-width: 0;
+}
+.kit-def {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 6px);
+  left: 0;
+  width: max-content;
+  max-width: min(320px, 90vw);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--kit-card);
+  border: 1px solid var(--kit-border);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.14);
+  font: 400 12px/1.45 var(--kit-font);
+  color: var(--kit-ink-2);
+  text-align: left;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-2px);
+  transition:
+    opacity 0.14s ease,
+    transform 0.14s ease,
+    visibility 0s linear 0.14s;
+}
+// A short delay before showing, so a click on a tile doesn't flash it.
+.kit-def-host:hover > .kit-def,
+.kit-def-host:focus-within > .kit-def {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  transition-delay: 0.35s, 0.35s, 0s;
+}
+.kit-def__formula {
+  font-weight: 600;
+  color: var(--kit-ink);
+}
+.kit-def__key {
+  font-weight: 600;
+  color: var(--kit-ink-3);
+}
+// The dotted underline that says a label has a definition.
+.kit-def-label {
+  text-decoration: underline dotted color-mix(in srgb, var(--kit-ink-3) 70%, transparent);
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .kit-def {
+    transform: none;
+  }
+}

@@ -19,13 +19,29 @@ export function defineTool<const N extends string, I extends z.ZodObject, O exte
   return tool;
 }
 
+/**
+ * Replaces every subschema marked `.meta({ opaque })` with a bare object. Shapes
+ * only components read, such as a KPI's own trend, would otherwise be spelled
+ * out in full each time a tool returns them.
+ */
+function collapseOpaque(schema: unknown): unknown {
+  if (Array.isArray(schema)) return schema.map(collapseOpaque);
+  if (!schema || typeof schema !== "object") return schema;
+  const node = schema as Record<string, unknown>;
+  if (typeof node.opaque === "string") return { type: "object" };
+  // A dashboard filter's argument: its values are listed once in the kit's
+  // Filters rule, not in every tool that takes it.
+  if (typeof node.filter === "string") return { type: "string" };
+  return Object.fromEntries(Object.entries(node).map(([k, v]) => [k, collapseOpaque(v)]));
+}
+
 /** The tool as the prompt describes it (MCP-style input and output JSON Schema). */
 export function toToolSpec(tool: KitTool): ToolSpec {
   return {
     name: tool.name,
     description: tool.description,
-    inputSchema: z.toJSONSchema(tool.input) as Record<string, unknown>,
-    outputSchema: z.toJSONSchema(tool.output) as Record<string, unknown>,
+    inputSchema: collapseOpaque(z.toJSONSchema(tool.input)) as Record<string, unknown>,
+    outputSchema: collapseOpaque(z.toJSONSchema(tool.output)) as Record<string, unknown>,
     annotations: { readOnlyHint: true },
   };
 }
@@ -34,6 +50,12 @@ export interface GalleryDashboard {
   title: string;
   description: string;
   program: string;
+  /**
+   * Include the program in the system prompt as a worked example (default).
+   * Every example is paid for on each generation, so a kit keeps the ones
+   * that teach something its tool descriptions can't.
+   */
+  example?: boolean;
 }
 
 /**

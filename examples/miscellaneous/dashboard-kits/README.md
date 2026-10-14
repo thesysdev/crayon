@@ -1,20 +1,32 @@
 # Dashboard kits
 
-Two kits for the OpenUI dashboard artifact. A kit is everything a model needs to build dashboards for one domain: the dashboard artifact's base components plus the kit's own components, read-only data tools, prompt rules, and worked examples. Both kits are modeled on the dashboards teams already use, with the same metric names and definitions.
+Three kits for the OpenUI dashboard artifact. A kit is everything a model needs to build dashboards for one domain: the dashboard artifact's base components plus the kit's own components, read-only data tools, prompt rules, and worked examples. All three are modeled on the dashboards teams already use, with the same metric names and definitions.
 
 - **E-commerce**, for Sundial Goods, a direct-to-consumer brand. It is modeled on Shopify, Triple Whale, and GA4, and covers:
-  - sales and the total sales breakdown;
-  - marketing efficiency (blended ROAS, MER, new-customer CPA) by channel;
-  - contribution profit;
-  - first-order LTV cohorts and RFM segments;
-  - product performance, inventory, and the purchase and checkout journeys.
+  - sales, the total sales breakdown, and contribution profit as the main number (CM1–CM3 and break-even ROAS);
+  - why a number moved: a variance walk and ranked drivers, each with a confidence;
+  - marketing efficiency by channel, with attribution models side by side and platform-reported against store-recorded orders;
+  - promotions (lift, pull-forward, net profit), targets and pacing, and a live view;
+  - first-order LTV cohorts, RFM segments and how customers move between them;
+  - product performance, inventory and restock dates, returns and exchanges, ad creatives, and the Black Friday plan;
+  - recommended actions to approve or dismiss.
 - **Product analytics**, for Relay, a team workspace app. It is modeled on PostHog, Amplitude, and Mixpanel, and covers:
-  - active users and lifecycle;
-  - activation funnel, retention cohorts, and curves by plan;
-  - the power user curve, the engagement matrix, and activity by hour;
-  - first-session paths, A/B test results, and paying-account health.
+  - active users and lifecycle states, with the active rule visible and comparison with the prior period, last year, or plan;
+  - why a number moved, with data-status checks (restatements, tracking breaks);
+  - the activation funnel and the activation moment, and retention as exact weeks, that week or later, or brackets, for users or workspaces, with where each curve flattens;
+  - the feature value and engagement matrices, and activity by hour;
+  - A/B test scorecards (intervals, split check, guardrails, a recommendation);
+  - paying-workspace health, MRR movements, and net revenue retention by start month against its benchmark;
+  - free to paid: the product-qualified funnel, Free plan limits, Business trials, and AI credit commits with their burn-down;
+  - a 6-12 weekly business review, recommended actions to approve, and an alert back-test with N-of-M confirmation and quiet weekends.
 
-Each kit has four dashboards, 16–19 data tools, and its own components. Both share a chart family (`HeroMetric`, `TrendChart`, `ColumnChart`, `BarList`, `ShareBar`, `GoalPace`) and five blocks: `KpiStrip`, `InsightList`, `ConversionFunnel`, `CohortGrid`, and `Tracker`.
+- **Workspace usage**, for the admins of a Relay customer (Brightline Health, 180 seats, renewing in 41 days; Kestrel Labs and Bluefin Studio for contrast). It is modeled on the admin analytics of Slack, GitHub Copilot, Microsoft 365, Gemini, Atlassian, and Notion, and covers:
+  - seat utilization and every seat's state, the seats to reclaim (remind at 30 days inactive, reclaim at 60) and the forecast at renewal;
+  - active members, adoption by team with groups under 5 hidden, how teams work together, champions (opt-out, names hidden by default), and the member directory with search, sorting, CSV export, and a names toggle;
+  - AI adoption by intensity and feature, and the credit pool against its pace with 75/90/100% alerts;
+  - estimated hours saved with its formula and editable inputs, benchmarks against Relay workspaces of the same size, and security coverage with admin events.
+
+The e-commerce kit has 10 dashboards and 30 data tools, the analytics kit 9 and 27, and the usage kit 7 and 16. They share a chart family (`HeroMetric`, `TrendChart`, `ColumnChart`, `BarList`, `ShareBar`, `GoalPace`, `VarianceWalk`) and blocks: `KpiStrip`, `InsightList`, `ConversionFunnel`, `CohortGrid`, `Tracker`, `DriverCards`, `RuleChips`, `DataStatus`, `BulletList`, and `ActionCards`.
 
 The kits themselves live in the [`@openuidev/dashboard-kits`](../../../packages/dashboard-kits) package. This app is the playground: it installs the package, renders its galleries, and serves its prompts and tools.
 
@@ -43,6 +55,8 @@ Open http://localhost:3000. The gallery and the Prompt view work without credent
 - `OPENAI_API_KEY`: any OpenAI-compatible key; set `OPENAI_BASE_URL` for another provider
 
 `OPENUI_MODEL` optionally picks the model. The defaults are `openai/gpt-5.5` on Gateway and `gpt-5.5` on OpenAI.
+
+`npm run eval` asks the model for a dashboard for each case in `scripts/eval/cases.ts` and scores the result offline: it parses, calls only known tools, calls the tools the question needs, and types no figures of its own. It needs the same key; results go to `eval-results/`, which git ignores.
 
 ## How it works
 
@@ -75,11 +89,11 @@ The kits, their components, charts, prompts, tools, sample data, and styles are 
 npm run verify
 ```
 
-This runs the kit contract check, then a production build. The check parses every gallery dashboard against its kit's library, rejects Queries to unknown tools, calls every tool with every value of every enum argument and validates each result, and builds every prompt. Run the check alone with `npm run check`.
+This runs the kit contract check, then a production build. The check parses every gallery dashboard against its kit's library, rejects Queries to unknown tools, calls every tool with every value of every enum argument and validates each result, and builds every prompt within its size budget (64,000 characters for each kit). Run the check alone with `npm run check`.
 
 ## Notes
 
-- The app uses `@openuidev/react-ui` and `@openuidev/react-headless` 0.17.1. `@openuidev/thesys` 0.14.0 asks for ^0.14, so `overrides` in `package.json` points it at 0.17.1; all eight dashboards render with no errors. See finding 9 in DESIGN.md.
+- The app uses `@openuidev/react-ui` and `@openuidev/react-headless` 0.17.1. `@openuidev/thesys` 0.14.0 asks for ^0.14, so `overrides` in `package.json` points it at 0.17.1; all 26 dashboards render with no errors. See finding 9 in DESIGN.md.
 - `next.config.ts` turns off Turbopack minification: re-minifying the `@openuidev/thesys` bundle produces invalid JavaScript. See finding 6 in DESIGN.md.
 - The package's theme lets the base `FilterBar` wrap on phones. See finding 4 in DESIGN.md.
 - The kits use react-ui's `BarChart`, `HeatmapChart`, and `SegmentedBar` where they fit, and draw the charts react-ui lacks. See "Visual design" in DESIGN.md.

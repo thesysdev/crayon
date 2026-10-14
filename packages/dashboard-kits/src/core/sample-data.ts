@@ -1,5 +1,5 @@
 import { formatChange } from "./format";
-import type { Band, ChartEvent, Kpi, Range, Target, ValueFormat } from "./schemas";
+import type { Band, ChartEvent, Definition, Kpi, Range, Target, ValueFormat } from "./schemas";
 
 export { formatCurrency, formatNumber, formatPercent } from "./format";
 
@@ -11,7 +11,8 @@ export const TODAY = Date.UTC(2026, 9, 10);
 export const AS_OF = "Oct 10, 3:48 PM";
 const DAY = 86_400_000;
 
-export const RANGE_DAYS: Record<Range, number> = { "7d": 7, "30d": 30, "90d": 90 };
+/** Days in each period; this month to date is Oct 1–10. */
+export const RANGE_DAYS: Record<Range, number> = { "7d": 7, "30d": 30, "90d": 90, mtd: 10 };
 
 function hash(text: string): number {
   let h = 2166136261;
@@ -74,10 +75,10 @@ export function dayLabels(days: number): string[] {
   return Array.from({ length: days }, (_, i) => dateLabel(days - 1 - i));
 }
 
-/** "Sep 11 – Oct 10, 2026 vs prior 30 days" */
-export function periodLabel(range: Range): string {
+/** "Sep 11 – Oct 10, 2026 vs prior 30 days", or vs whatever `against` names. */
+export function periodLabel(range: Range, against?: string): string {
   const days = RANGE_DAYS[range];
-  return `${dateLabel(days - 1)} – ${dateLabel(0, true)} vs prior ${days} days`;
+  return `${dateLabel(days - 1)} – ${dateLabel(0, true)} vs ${against ?? `prior ${days} days`}`;
 }
 
 /** Sums a daily series into weeks for 90-day views, which are too noisy day by day. */
@@ -132,21 +133,6 @@ export function downsample(values: number[], points = 15): number[] {
   );
 }
 
-/** A gentle walk from the prior value to the current one, for KPIs with no daily source. */
-export function drift(
-  seed: string,
-  from: number,
-  to: number,
-  points = 15,
-  noise = 0.035,
-): number[] {
-  const next = random(`drift:${seed}`);
-  return Array.from({ length: points }, (_, i) => {
-    const v = from + ((to - from) * i) / (points - 1);
-    return i === points - 1 ? to : v * (1 - noise / 2 + next() * noise);
-  });
-}
-
 export function kpi(
   label: string,
   current: number,
@@ -155,10 +141,14 @@ export function kpi(
   options: {
     /** Daily values for the period, oldest first; also the sparkline. */
     series?: number[];
-    /** Daily values for the previous period, for the trend's comparison line. */
+    /** Daily values for the comparison (previous period, last year, or plan). */
     previousSeries?: number[];
+    /** What the comparison is, e.g. "Plan"; the trend says "Prior period" without it. */
+    comparisonLabel?: string;
     goodDirection?: "up" | "down" | "neutral";
     hint?: string;
+    /** How the metric is calculated, shown when hovering its value. */
+    definition?: Definition;
     /** With a chart format, the KPI carries a full trend HeroMetric can show. */
     range?: Range;
     chart?: ValueFormat;
@@ -177,50 +167,48 @@ export function kpi(
     previous: format(previous),
     change: round(change),
     ...(options.goodDirection ? { goodDirection: options.goodDirection } : {}),
-    series: downsample(options.series ?? drift(`${label}:${current}`, previous, current)),
+    // Only real values: a KPI without a series has no sparkline.
+    ...(options.series ? { series: downsample(options.series) } : {}),
     ...(options.hint ? { hint: options.hint } : {}),
-    ...(options.range && options.chart
-      ? { trend: kpiTrend(label, current, previous, options.range, options.chart, options) }
+    ...(options.definition ? { definition: options.definition } : {}),
+    // A trend needs a value for every day of the period, so it is never invented.
+    ...(options.range && options.chart && options.series?.length === RANGE_DAYS[options.range]
+      ? { trend: kpiTrend(options.range, options.chart, options) }
       : {}),
   };
 }
 
 /**
- * A KPI's trend against the previous period. Daily values when the KPI has
- * them; otherwise a walk that ends at the period's value, for metrics such as
- * LTV that have no daily source.
+ * A KPI's trend against its comparison, from the KPI's daily values. Metrics
+ * with no daily source, such as LTV, have no trend.
  */
 function kpiTrend(
-  label: string,
-  current: number,
-  previous: number,
   range: Range,
   format: ValueFormat,
   options: {
     series?: number[];
     previousSeries?: number[];
+    comparisonLabel?: string;
     total?: boolean;
     target?: Target;
     band?: Band;
   },
 ) {
   const days = RANGE_DAYS[range];
-  const span = Math.abs(current - previous) || Math.abs(current) * 0.04;
-  const daily = (values: number[] | undefined, seed: string, end: number) =>
-    values && values.length === days ? values : drift(seed, end - span * 0.6, end, days, 0.06);
+  // kpi() only asks for a trend when the series has a value for every day; the
+  // comparison line is drawn only when it does too.
+  const comparison = options.previousSeries?.length === days ? options.previousSeries : undefined;
   const { labels, values } = bucket(
     dayLabels(days),
-    [
-      daily(options.series, `${label}:trend`, current),
-      daily(options.previousSeries, `${label}:prior`, previous),
-    ],
+    comparison ? [options.series!, comparison] : [options.series!],
     range,
     !options.total,
   );
   return {
     labels,
-    current: values[0].map((v) => round(v, 2)),
-    previous: values[1].map((v) => round(v, 2)),
+    current: values[0]!.map((v) => round(v, 2)),
+    ...(values[1] ? { previous: values[1].map((v) => round(v, 2)) } : {}),
+    ...(options.comparisonLabel ? { comparisonLabel: options.comparisonLabel } : {}),
     format,
     // Every KPI trend ends today, which is still in progress.
     partial: true,

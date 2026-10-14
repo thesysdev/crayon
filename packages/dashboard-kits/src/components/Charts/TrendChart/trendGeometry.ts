@@ -79,3 +79,43 @@ export function spreadLabels(
   if (overflow > 0) sorted.forEach((item) => (item.y = Math.max(top, item.y - overflow)));
   return new Map(sorted.map((item) => [item.key, item.y]));
 }
+
+/** An event label to place: where it starts, its text, and the row it would like. */
+export interface EventLabelInput {
+  x: number;
+  text: string;
+  /** Rows below this are taken by span labels; markers start at their own row. */
+  minRow: number;
+  /** Right-aligned at x (a marker near the right edge), instead of starting there. */
+  end?: boolean;
+}
+
+/**
+ * Rows for event labels: each takes the first row from its minimum where it
+ * clears the labels already there and stays between `left` and `right`; one
+ * that fits nowhere within `rows` gets no label (the shading and the tooltip
+ * still show the event). About 6.4px a character at the label's 11px weight.
+ */
+export function placeEventLabels(
+  items: EventLabelInput[],
+  left: number,
+  right: number,
+  rows = 3,
+  charWidth = 6.4,
+): (number | undefined)[] {
+  const taken: [number, number][][] = Array.from({ length: rows + 1 }, () => []);
+  return items.map((item) => {
+    const width = item.text.length * charWidth;
+    const from = item.end ? item.x - width : item.x;
+    const to = from + width;
+    if (from < left - 2 || to > right + 2) return undefined;
+    for (let row = item.minRow; row <= rows; row++) {
+      const clear = taken[row]!.every(([a, b]) => to + 8 <= a || from >= b + 8);
+      if (clear) {
+        taken[row]!.push([from, to]);
+        return row;
+      }
+    }
+    return undefined;
+  });
+}

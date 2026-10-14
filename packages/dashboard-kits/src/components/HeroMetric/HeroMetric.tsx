@@ -1,12 +1,15 @@
+import { useId } from "react";
 import type { Kpi, Trend } from "../../core/schemas";
 import { TrendChart } from "../Charts/TrendChart";
+import { DefinitionTip } from "../DefinitionTip";
 import { DeltaPill } from "../DeltaPill";
+import { UsualNote } from "../KpiStrip/KpiStrip";
 import { RollingNumber } from "../RollingNumber";
 
 export interface HeroMetricProps {
   /** The headline metric. */
   metric: Kpi;
-  /** Its trend against the prior period. */
+  /** Its trend against the prior period, last year, or the plan. */
   trend?: Trend;
   /** The supporting KPIs, each with its own trend, that a tile can switch to. */
   metrics?: Kpi[];
@@ -33,11 +36,22 @@ export function HeroMetric({
   const m = picked ?? hero;
   const t = picked?.trend ?? trend;
   const asOf = trend?.asOf;
+  const against = t?.comparisonLabel ?? trend?.comparisonLabel ?? "Prior period";
+  const tipId = `hero-def-${useId().replace(/[^a-zA-Z0-9]/g, "")}`;
   return (
     <div className="kit-hero">
       <div className="kit-hero__head">
         <div className="kit-hero__top">
-          <span className="kit-hero__label">{m.label}</span>
+          {m.definition ? (
+            <span className="kit-def-host">
+              <span className="kit-hero__label kit-def-label" tabIndex={0} aria-describedby={tipId}>
+                {m.label}
+              </span>
+              <DefinitionTip id={tipId} definition={m.definition} />
+            </span>
+          ) : (
+            <span className="kit-hero__label">{m.label}</span>
+          )}
           {picked && onSelect && (
             <button type="button" className="kit-hero__back" onClick={() => onSelect("")}>
               <svg viewBox="0 0 12 12" aria-hidden>
@@ -56,9 +70,19 @@ export function HeroMetric({
         <div className="kit-hero__line">
           <RollingNumber value={m.value} className="kit-hero__value" />
           <DeltaPill change={m.change} goodDirection={m.goodDirection} />
-          {m.previous && <span className="kit-hero__previous">vs {m.previous} prior period</span>}
+          {m.previous && (
+            <span className="kit-hero__previous">
+              vs {m.previous} {against.toLowerCase()}
+            </span>
+          )}
         </div>
-        {m.hint && <span className="kit-hero__hint">{m.hint}</span>}
+        {m.usual && m.usual.status !== "within" ? (
+          <span className="kit-hero__hint">
+            <UsualNote kpi={m} />
+          </span>
+        ) : (
+          m.hint && <span className="kit-hero__hint">{m.hint}</span>
+        )}
       </div>
       {t && t.labels.length > 0 && (
         <TrendChart
@@ -74,7 +98,7 @@ export function HeroMetric({
           series={[
             { name: "This period", values: t.current, emphasis: "primary" },
             ...(t.previous
-              ? [{ name: "Prior period", values: t.previous, emphasis: "muted" as const }]
+              ? [{ name: against, values: t.previous, emphasis: "muted" as const }]
               : []),
           ]}
         />

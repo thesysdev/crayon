@@ -2,20 +2,36 @@
 
 import { defineComponent } from "@openuidev/react-lang";
 import { BarChart, HeatmapChart, useTheme } from "@openuidev/react-ui";
-import { Fragment } from "react";
+import { Fragment, useState } from "react";
 import { z } from "zod/v4";
+import { BurnDown } from "../components/Charts/BurnDown";
+import { QuadrantChart } from "../components/Charts/QuadrantChart";
+import { SixTwelve } from "../components/Charts/SixTwelve";
+import { Sparkline } from "../components/Charts/Sparkline";
 import { MUTED_COLOR, SERIES_COLORS } from "../components/Charts/utils/constants";
 import { paletteInOrder } from "../components/Charts/utils/palette";
 import { formatChange, formatCurrency, formatNumber, formatPoints } from "../core/format";
+import { passed } from "../core/schemas";
 import { Pending } from "../genui-lib/Pending";
-import { EngagementMatrix as EngagementMatrixView } from "./charts/EngagementMatrix";
-import {
+import type {
   accountSchema,
+  commitSchema,
   experimentSchema,
   featureSchema,
   pathSchema,
+  paywallSchema,
+  reviewMetricSchema,
   trackedEventSchema,
 } from "./tools";
+
+type Feature = z.infer<typeof featureSchema>;
+type TrackedEvent = z.infer<typeof trackedEventSchema>;
+type UserPath = z.infer<typeof pathSchema>;
+type Experiment = z.infer<typeof experimentSchema>;
+type Account = z.infer<typeof accountSchema>;
+type Paywall = z.infer<typeof paywallSchema>;
+type Commit = z.infer<typeof commitSchema>;
+type ReviewMetric = z.infer<typeof reviewMetricSchema>;
 
 // Props reuse the tool schemas, so a Query result plugs in without reshaping:
 // LifecycleChart(life.labels, life.newUsers, life.returning, life.resurrecting, life.dormant, life.quickRatio).
@@ -168,12 +184,110 @@ export const EngagementMatrix = defineComponent({
   description:
     "Feature engagement matrix: each feature a bubble placed by breadth (percent of monthly active users) and frequency (days used per week), sized by users, split at the medians into Core, Power, Broad but infrequent, and Review or retire. Pass get_feature_engagement's features directly.",
   props: z.object({
-    features: z.array(featureSchema).default([]),
+    features: z.array(passed("A feature from get_feature_engagement")).default([]),
   }),
   component: ({ props }) => {
-    const features = props.features ?? [];
+    const features = (props.features ?? []) as unknown as Feature[];
     if (features.length === 0) return <Pending kind="trend" />;
-    return <EngagementMatrixView features={features} />;
+    const maxFrequency = Math.ceil(Math.max(...features.map((f) => f.frequency)) + 0.5);
+    return (
+      <QuadrantChart
+        points={features.map((f) => ({
+          name: f.name,
+          x: f.breadth,
+          y: f.frequency,
+          size: f.users,
+          change: { text: formatPoints(f.change), good: f.change >= 0 },
+        }))}
+        x={{
+          title: "Breadth: % of monthly active users",
+          domain: [0, 100],
+          ticks: [0, 25, 50, 75, 100],
+          format: (t) => `${t}%`,
+        }}
+        y={{
+          title: "Frequency: days per week",
+          domain: [0, maxFrequency],
+          ticks: Array.from({ length: maxFrequency + 1 }, (_, t) => t),
+          format: (t) => `${t}d`,
+        }}
+        quadrants={{
+          highHigh: "Core",
+          lowHigh: "Power",
+          highLow: "Broad, infrequent",
+          lowLow: "Review or retire",
+        }}
+        describe={(p) => [
+          { name: "of monthly users", value: `${p.x}%` },
+          { name: "days per week", value: `${p.y}` },
+          { name: "users", value: formatNumber(p.size) },
+        ]}
+      />
+    );
+  },
+});
+
+/** Our rule: 30% of monthly users is broad; 5 points of retention among activated users matters. */
+const VALUE_SPLIT = { x: 30, y: 5 };
+
+export const FeatureValue = defineComponent({
+  name: "FeatureValue",
+  description:
+    "Feature value matrix: breadth against retention gap among activated users, in Protect, Promote, Don't gate, and Review quadrants, sized by days a week. Pass get_feature_engagement's features directly.",
+  props: z.object({
+    features: z.array(passed("A feature from get_feature_engagement")).default([]),
+  }),
+  component: ({ props }) => {
+    const features = (props.features ?? []) as unknown as Feature[];
+    if (features.length === 0 || features[0]!.adjustedGap == null) return <Pending kind="trend" />;
+    const top = Math.ceil(Math.max(...features.map((f) => f.adjustedGap)) / 2) * 2 + 2;
+    return (
+      <div className="kit-feature-value">
+        <QuadrantChart
+          points={features.map((f) => ({
+            name: f.name,
+            x: f.breadth,
+            y: f.adjustedGap,
+            size: f.frequency,
+          }))}
+          x={{
+            title: "Breadth: % of monthly active users",
+            domain: [0, 100],
+            ticks: [0, 25, 50, 75, 100],
+            format: (t) => `${t}%`,
+          }}
+          y={{
+            title: "Retention gap among activated users, points",
+            domain: [0, top],
+            ticks: Array.from({ length: top / 2 + 1 }, (_, t) => t * 2),
+            format: (t) => `+${t}`,
+          }}
+          split={VALUE_SPLIT}
+          sizeLabel="Bubble size: days a week its users use it"
+          quadrants={{
+            highHigh: "Protect",
+            lowHigh: "Promote",
+            highLow: "Don't gate",
+            lowLow: "Review",
+          }}
+          describe={(p) => {
+            const f = features.find((x) => x.name === p.name)!;
+            return [
+              { name: "of monthly users", value: `${p.x}%` },
+              { name: "retention gap, activated", value: formatPoints(f.adjustedGap) },
+              { name: "retention gap, everyone", value: formatPoints(f.retentionGap) },
+              { name: "days a week", value: `${p.size}` },
+              { name: "users", value: formatNumber(f.users) },
+            ];
+          }}
+        />
+        <p className="kit-footnote">
+          Week-4 retention of users who used a feature in their first 14 days, minus those who
+          didn't, counted among activated users so that busy users using everything don't inflate
+          it. A gap, not proof the feature causes it.
+        </p>
+      </div>
+    );
   },
 });
 
@@ -182,11 +296,11 @@ export const FeatureAdoption = defineComponent({
   description:
     "Feature adoption as ranked bars: percent of monthly active users who used each feature, with user counts, days per week, and the change in percentage points. Pass get_feature_engagement's features directly.",
   props: z.object({
-    features: z.array(featureSchema).default([]),
+    features: z.array(passed("A feature from get_feature_engagement")).default([]),
     limit: z.number().optional(),
   }),
   component: ({ props }) => {
-    const features = (props.features ?? []).slice(0, props.limit ?? 20);
+    const features = ((props.features ?? []) as unknown as Feature[]).slice(0, props.limit ?? 20);
     if (features.length === 0) return <Pending kind="list" rows={8} />;
     return (
       <ul className="kit-barlist">
@@ -221,10 +335,10 @@ export const EventTable = defineComponent({
   description:
     "Top tracked events as a table: event name, volume with a bar against the largest, unique users, events per user, and change against the prior period. Pass get_top_events' events directly.",
   props: z.object({
-    events: z.array(trackedEventSchema).default([]),
+    events: z.array(passed("An event from get_top_events")).default([]),
   }),
   component: ({ props }) => {
-    const events = props.events ?? [];
+    const events = (props.events ?? []) as unknown as TrackedEvent[];
     if (events.length === 0) return <Pending kind="table" rows={8} />;
     const max = Math.max(1, ...events.map((e) => e.count));
     return (
@@ -329,10 +443,10 @@ export const UserPaths = defineComponent({
   props: z.object({
     start: z.string().optional(),
     totalUsers: z.number().optional(),
-    paths: z.array(pathSchema).default([]),
+    paths: z.array(passed("A path from get_user_paths")).default([]),
   }),
   component: ({ props }) => {
-    const paths = props.paths ?? [];
+    const paths = (props.paths ?? []) as unknown as UserPath[];
     if (paths.length === 0) return <Pending kind="list" rows={6} />;
     const top = Math.max(...paths.map((p) => p.share), 0.01);
     const activated = paths
@@ -393,27 +507,44 @@ export const UserPaths = defineComponent({
   },
 });
 
-const STATUS = {
-  won: { label: "Significant win", tone: "positive" },
-  lost: { label: "Significant loss", tone: "negative" },
-  inconclusive: { label: "Inconclusive", tone: "neutral" },
-  running: { label: "Running", tone: "info" },
+/** The badge: finished tests say how they ended; running ones say what to do next. */
+const BADGE = {
+  won: { label: "Shipped: significant win", tone: "positive" },
+  lost: { label: "Rolled back: significant loss", tone: "negative" },
+  ship: { label: "Ready to ship", tone: "positive" },
+  dont_ship: { label: "Don't ship", tone: "negative" },
+  fix_split: { label: "Split mismatch", tone: "negative" },
+  discuss: { label: "Needs a call", tone: "warning" },
+  extend: { label: "Too early to call", tone: "info" },
 } as const;
+
+const LIGHT = {
+  grey: { label: "Within limit", tone: "neutral" },
+  yellow: { label: "Could pass limit", tone: "warning" },
+  red: { label: "Past limit", tone: "negative" },
+} as const;
+
+const significanceText = (s: number) =>
+  s >= 0.999 ? "p < 0.001" : `p = ${(1 - s).toFixed(s >= 0.99 ? 3 : 2)}`;
 
 export const ExperimentResults = defineComponent({
   name: "ExperimentResults",
   description:
-    "A/B test results: for each experiment its hypothesis, metric, and status, and for each variant the exposures, metric value, relative lift against control with its 95% confidence interval drawn around zero, the significance, and the decision. Pass get_experiments's experiments directly.",
+    "A/B test scorecards: each variant's lift with its 95% interval, a split warning, guardrail lights, and the decision. Pass get_experiments's experiments directly.",
   props: z.object({
-    experiments: z.array(experimentSchema).default([]),
+    experiments: z.array(passed("An experiment from get_experiments")).default([]),
   }),
   component: ({ props }) => {
-    const experiments = props.experiments ?? [];
+    const experiments = (props.experiments ?? []) as unknown as Experiment[];
     if (experiments.length === 0) return <Pending kind="table" rows={6} />;
     return (
       <div className="kit-experiments">
         {experiments.map((e) => {
-          const status = STATUS[e.status] ?? STATUS.running;
+          const badge =
+            e.recommendation === "done"
+              ? BADGE[e.status === "lost" ? "lost" : "won"]
+              : BADGE[e.recommendation];
+          const unreadable = !e.split.ok;
           const bounds = e.variants.flatMap((v) => [v.ciLow ?? 0, v.ciHigh ?? 0, v.lift ?? 0]);
           const span = Math.max(5, ...bounds.map(Math.abs)) * 1.15;
           const pos = (v: number) => `${((v + span) / (2 * span)) * 100}%`;
@@ -426,13 +557,21 @@ export const ExperimentResults = defineComponent({
                     {e.metric} · {e.daysRunning} days
                   </span>
                 </div>
-                <span className={`kit-status kit-status--${status.tone}`}>
+                <span className={`kit-status kit-status--${badge.tone}`}>
                   <i className="kit-status__dot" />
-                  {status.label}
+                  {badge.label}
                 </span>
               </header>
               <p className="kit-experiment__hypothesis">{e.hypothesis}</p>
-              <div className="kit-experiment__variants">
+              {unreadable && (
+                <p className="kit-experiment__alert" role="note">
+                  <strong>Sample ratio mismatch.</strong> Users split {e.split.observed} against a
+                  planned {e.split.planned}, so the lift below can't be trusted.
+                </p>
+              )}
+              <div
+                className={`kit-experiment__variants${unreadable ? " kit-experiment__variants--muted" : ""}`}
+              >
                 {e.variants.map((v) => {
                   const tone =
                     v.ciLow == null
@@ -480,15 +619,35 @@ export const ExperimentResults = defineComponent({
                       <span
                         className={`kit-variant__sig${(v.significance ?? 0) >= 0.95 ? " kit-variant__sig--strong" : ""}`}
                       >
-                        {v.significance != null
-                          ? `${(v.significance * 100).toFixed(v.significance > 0.99 ? 1 : 0)}% sig.`
-                          : ""}
+                        {v.significance != null ? significanceText(v.significance) : ""}
                       </span>
                     </div>
                   );
                 })}
               </div>
-              <p className="kit-experiment__decision">→ {e.decision}</p>
+              {e.guardrails.length > 0 && (
+                <ul className="kit-guardrails" aria-label="Guardrails">
+                  {e.guardrails.map((g) => {
+                    const light = LIGHT[g.light];
+                    return (
+                      <li key={g.name} className="kit-guardrail">
+                        <span className={`kit-light kit-light--${light.tone}`} aria-hidden />
+                        <span className="kit-guardrail__text">
+                          <span className="kit-guardrail__name">{g.name}</span>
+                          <span className="kit-guardrail__light">{light.label}</span>
+                        </span>
+                        <span className="kit-guardrail__value">
+                          {formatChange(g.change)} ({formatChange(g.ciLow)} to{" "}
+                          {formatChange(g.ciHigh)}) · limit {formatChange(g.allowed)}
+                        </span>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+              <p className={`kit-experiment__decision kit-experiment__decision--${badge.tone}`}>
+                {e.decision}
+              </p>
             </section>
           );
         })}
@@ -498,7 +657,7 @@ export const ExperimentResults = defineComponent({
 });
 
 function HealthRing({ score }: { score: number }) {
-  const tone = score < 40 ? "negative" : score < 60 ? "warning" : "positive";
+  const tone = score < 40 ? "negative" : score < 70 ? "warning" : "positive";
   const c = 2 * Math.PI * 14;
   return (
     <span className={`kit-ring kit-ring--${tone}`} aria-label={`Health ${score}`}>
@@ -517,41 +676,161 @@ function HealthRing({ score }: { score: number }) {
   );
 }
 
-export const AccountHealth = defineComponent({
-  name: "AccountHealth",
+interface Moment {
+  rule: string;
+  count: number;
+  reach: number;
+  precision: number;
+  recall: number;
+  phi: number;
+  retentionByCount: number[];
+  knee: number;
+}
+
+/** Retention for doing a behaviour 1 to 10 times, as small bars with the knee marked. */
+function CountBars({ values, knee, count }: { values: number[]; knee: number; count: number }) {
+  const max = Math.max(...values, 1);
+  return (
+    <span
+      className="kit-moment__bars"
+      role="img"
+      aria-label={`Retention by count: ${values.map((v, i) => `${i + 1} time${i ? "s" : ""} ${v}%`).join(", ")}; knee at ${knee}`}
+    >
+      {values.map((v, i) => (
+        <span
+          key={i}
+          className={`kit-moment__bar${i + 1 === count ? " kit-moment__bar--chosen" : ""}${i + 1 === knee ? " kit-moment__bar--knee" : ""}`}
+          style={{ height: `${Math.max(6, (v / max) * 100)}%` }}
+          title={`${i + 1}+: ${v}% retained`}
+        />
+      ))}
+    </span>
+  );
+}
+
+export const ActivationMoments = defineComponent({
+  name: "ActivationMoments",
   description:
-    "Paying workspace health table: plan, weekly active seats against seats, a health score ring with its 30-day change, MRR, last activity, and a Healthy, Watch, or At risk status. Pass get_account_health's accounts directly.",
+    "Candidate aha moments, best first: each behaviour's rule, a reach bar, week-4 retention of those who did it (precision), recall, phi, and retention by count with the knee marked, under the cohort and its baseline: ActivationMoments(moments). LargeCard only.",
   props: z.object({
-    accounts: z.array(accountSchema).default([]),
+    moments: passed("find_activation_moment's result, passed whole"),
   }),
   component: ({ props }) => {
-    const accounts = props.accounts ?? [];
-    if (accounts.length === 0) return <Pending kind="table" rows={6} />;
+    const m = props.moments as unknown as
+      { cohort: string; baseline: string; candidates: Moment[]; note: string } | undefined;
+    if (!m?.candidates?.length) return <Pending kind="list" rows={5} />;
     return (
-      <div className="kit-scroll">
-        <table className="kit-table">
-          <thead>
-            <tr>
-              <th>Workspace</th>
-              <th>Health</th>
-              <th>Active seats, last 7 days</th>
-              <th className="kit-num">MRR</th>
-              <th>Last active</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {accounts.map((a) => {
-              const status =
-                a.healthScore < 40 ? "At risk" : a.healthScore < 60 ? "Watch" : "Healthy";
-              const tone =
-                a.healthScore < 40 ? "negative" : a.healthScore < 60 ? "warning" : "positive";
-              const utilization = a.activeSeats / (a.seats || 1);
-              return (
-                <tr key={a.name}>
+      <div className="kit-moments">
+        <p className="kit-moments__lead">
+          {m.cohort}. <strong>{m.baseline}</strong> were still active in week 4.
+        </p>
+        <ol className="kit-moments__list">
+          {m.candidates.map((c, i) => (
+            <li key={c.rule} className={`kit-moment${i === 0 ? " kit-moment--best" : ""}`}>
+              <div className="kit-moment__head">
+                <span className="kit-moment__rule">{c.rule}</span>
+                <span className="kit-moment__phi">phi {c.phi.toFixed(2)}</span>
+              </div>
+              <div className="kit-moment__body">
+                <span className="kit-moment__stat">
+                  <span className="kit-moment__reach" aria-hidden>
+                    <span style={{ width: `${c.reach * 100}%` }} />
+                  </span>
+                  {(c.reach * 100).toFixed(0)}% do it
+                </span>
+                <span className="kit-moment__stat">
+                  <strong>{(c.precision * 100).toFixed(0)}%</strong> of them retained
+                </span>
+                <span className="kit-moment__stat kit-muted">
+                  {(c.recall * 100).toFixed(0)}% of retained users did it
+                </span>
+                <CountBars values={c.retentionByCount} knee={c.knee} count={c.count} />
+              </div>
+            </li>
+          ))}
+        </ol>
+        <p className="kit-moments__note">{m.note}</p>
+      </div>
+    );
+  },
+});
+
+const ZONE_TONE = { Healthy: "positive", Watch: "warning", "At risk": "negative" } as const;
+const CATEGORY_LABEL: Record<string, string> = {
+  engagement: "Engagement",
+  seats: "Seats in use",
+  breadth: "Feature breadth",
+  support: "Support",
+  trend: "Trend",
+};
+
+/** One workspace's weighted health: each category's score, its weight, and the 12-week line. */
+function HealthBreakdown({ account }: { account: Account }) {
+  const weights = account.breakdown.reduce((t, b) => t + b.weight, 0) || 1;
+  return (
+    <div className="kit-breakdown">
+      <ul className="kit-breakdown__list">
+        {account.breakdown.map((b) => (
+          <li key={b.category} className="kit-breakdown__row">
+            <span className="kit-breakdown__name">
+              {CATEGORY_LABEL[b.category] ?? b.category}
+              <span className="kit-muted">
+                {" "}
+                · {Math.round((b.weight / weights) * 100)}% of score
+              </span>
+            </span>
+            <span className="kit-meter kit-breakdown__meter">
+              <span style={{ width: `${b.score}%` }} />
+            </span>
+            <span className="kit-num kit-small">{b.score}</span>
+          </li>
+        ))}
+      </ul>
+      <div className="kit-breakdown__history">
+        <span className="kit-small kit-muted">Last 12 weeks</span>
+        <Sparkline values={account.history} tone={account.change >= 0 ? "good" : "bad"} />
+      </div>
+    </div>
+  );
+}
+
+function AccountRows({ accounts }: { accounts: Account[] }) {
+  const [open, setOpen] = useState<string | null>(null);
+  return (
+    <div className="kit-scroll">
+      <table className="kit-table kit-accounts">
+        <thead>
+          <tr>
+            <th>Workspace</th>
+            <th>Health</th>
+            <th>Seats active, last 7 days</th>
+            <th className="kit-num">ARR</th>
+            <th>Renews</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {accounts.map((a) => {
+            const utilization = a.activeSeats / (a.seats || 1);
+            const expanded = open === a.name;
+            return (
+              <Fragment key={a.name}>
+                <tr
+                  className={`kit-accounts__row${expanded ? " kit-accounts__row--open" : ""}`}
+                  tabIndex={0}
+                  aria-expanded={expanded}
+                  onClick={() => setOpen(expanded ? null : a.name)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      setOpen(expanded ? null : a.name);
+                    }
+                  }}
+                >
                   <td>
                     <span className="kit-cell-title">{a.name}</span>
                     <span className="kit-tag">{a.plan}</span>
+                    <span className="kit-accounts__reason">{a.reason}</span>
                   </td>
                   <td>
                     <span className="kit-health">
@@ -575,21 +854,235 @@ export const AccountHealth = defineComponent({
                       </span>
                     </span>
                   </td>
-                  <td className="kit-num kit-strong">{formatCurrency(a.mrr)}</td>
-                  <td className="kit-small">
-                    {a.lastActiveDays === 0 ? "Today" : `${a.lastActiveDays}d ago`}
-                  </td>
+                  <td className="kit-num kit-strong">{formatCurrency(a.arr)}</td>
+                  <td className="kit-small">in {a.renewalInDays}d</td>
                   <td>
-                    <span className={`kit-status kit-status--${tone}`}>
+                    <span className={`kit-status kit-status--${ZONE_TONE[a.zone]}`}>
                       <i className="kit-status__dot" />
-                      {status}
+                      {a.reviewNow ? "Review now" : a.zone}
                     </span>
                   </td>
+                </tr>
+                {expanded && (
+                  <tr className="kit-accounts__detail">
+                    <td colSpan={6}>
+                      <HealthBreakdown account={a} />
+                    </td>
+                  </tr>
+                )}
+              </Fragment>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+export const AccountHealth = defineComponent({
+  name: "AccountHealth",
+  description:
+    "Paying workspaces with why each is listed, a health ring with its 30-day change, seats active, ARR, renewal, and status (Review now after a 15-point drop in 7 days); a row opens to its weighted health breakdown and 12-week line: AccountHealth(accounts.accounts).",
+  props: z.object({
+    accounts: z.array(passed("An account from get_account_health")).default([]),
+  }),
+  component: ({ props }) => {
+    const accounts = (props.accounts ?? []) as unknown as Account[];
+    if (accounts.length === 0)
+      return <Pending kind="table" rows={6} empty="No workspaces on this list." />;
+    return <AccountRows accounts={accounts} />;
+  },
+});
+
+/** Our rule: a limit is busy at 500 hits a week, and converts well at 2% upgrading. */
+const PAYWALL_SPLIT = { x: 500, y: 2 };
+
+export const PaywallMatrix = defineComponent({
+  name: "PaywallMatrix",
+  description:
+    "Free plan limits by weekly hits and the share that upgrade within 14 days, in Working, Show more, Friction, and Rethink quadrants. Pass get_monetization's paywalls directly.",
+  props: z.object({
+    paywalls: z.array(passed("A paywall from get_monetization")).default([]),
+  }),
+  component: ({ props }) => {
+    const paywalls = (props.paywalls ?? []) as unknown as Paywall[];
+    if (paywalls.length === 0) return <Pending kind="trend" />;
+    const top = Math.ceil(Math.max(...paywalls.map((p) => p.upgradeRate)) + 1);
+    const most = Math.ceil(Math.max(...paywalls.map((p) => p.hits)) / 500) * 500;
+    return (
+      <QuadrantChart
+        points={paywalls.map((p) => ({
+          name: p.name,
+          x: p.hits,
+          y: p.upgradeRate,
+          size: (p.hits * p.upgradeRate) / 100,
+        }))}
+        x={{
+          title: "Workspaces hitting it per week",
+          domain: [0, most],
+          ticks: Array.from({ length: most / 500 + 1 }, (_, t) => t * 500),
+          format: (t) => formatNumber(t),
+        }}
+        y={{
+          title: "Upgrade within 14 days",
+          domain: [0, top],
+          ticks: Array.from({ length: top + 1 }, (_, t) => t),
+          format: (t) => `${t}%`,
+        }}
+        split={PAYWALL_SPLIT}
+        quadrants={{
+          highHigh: "Working",
+          lowHigh: "Show more",
+          highLow: "Friction",
+          lowLow: "Rethink",
+        }}
+        sizeLabel="Bubble size: upgrades a week"
+        describe={(p) => [
+          { name: "hits a week", value: formatNumber(p.x) },
+          { name: "upgrade within 14 days", value: `${p.y}%` },
+          { name: "upgrades a week", value: formatNumber(p.size) },
+        ]}
+      />
+    );
+  },
+});
+
+const PACE_LABEL = {
+  under: { text: "Under pace", tone: "warning" },
+  on_track: { text: "On track", tone: "positive" },
+  over: { text: "Over pace", tone: "info" },
+} as const;
+/** The pace bar runs to 150%; 80–110% is on track (our rule). */
+const PACE_MAX = 150;
+
+export const CommitPacing = defineComponent({
+  name: "CommitPacing",
+  description:
+    "AI credit commits: each one's pace against a straight line through its term (80–110% on track), its burn-down with where this pace ends at renewal, and the renewal date. Pass get_usage_commits's commits directly.",
+  props: z.object({
+    commits: z.array(passed("A commit from get_usage_commits")).default([]),
+  }),
+  component: ({ props }) => {
+    const commits = (props.commits ?? []) as unknown as Commit[];
+    if (commits.length === 0) return <Pending kind="table" rows={6} />;
+    const at = (v: number) => `${(Math.min(v, PACE_MAX) / PACE_MAX) * 100}%`;
+    return (
+      <div className="kit-scroll">
+        <table className="kit-table kit-commits">
+          <thead>
+            <tr>
+              <th>Workspace</th>
+              <th>Pace</th>
+              <th>Burn-down</th>
+              <th className="kit-num">By renewal</th>
+              <th className="kit-num">Renews</th>
+            </tr>
+          </thead>
+          <tbody>
+            {commits.map((c) => {
+              const label = PACE_LABEL[c.status];
+              return (
+                <tr key={c.name}>
+                  <th scope="row">
+                    <span className="kit-commits__name">{c.name}</span>
+                    <span className="kit-small kit-muted">
+                      {formatNumber(c.committed)} credits · {formatCurrency(c.value)}
+                    </span>
+                  </th>
+                  <td>
+                    <span className="kit-pace">
+                      <span className="kit-pace__track" aria-hidden>
+                        <i
+                          className="kit-pace__band"
+                          style={{ left: at(80), width: `calc(${at(110)} - ${at(80)})` }}
+                        />
+                        <i
+                          className={`kit-pace__mark kit-pace__mark--${c.status}`}
+                          style={{ left: at(c.pace) }}
+                        />
+                      </span>
+                      <span className={`kit-status kit-status--${label.tone}`}>
+                        {c.pace}% · {label.text}
+                      </span>
+                    </span>
+                  </td>
+                  <td className="kit-commits__burn">
+                    <BurnDown
+                      burn={c.burn}
+                      committed={c.committed}
+                      elapsed={c.elapsed / 100}
+                      projected={c.projected}
+                      status={c.status}
+                    />
+                  </td>
+                  <td className="kit-num">
+                    {Math.round((c.projected / c.committed) * 100)}%
+                    <span className="kit-small kit-muted"> of commit</span>
+                  </td>
+                  <td className="kit-num">{c.renewalInDays} days</td>
                 </tr>
               );
             })}
           </tbody>
         </table>
+      </div>
+    );
+  },
+});
+
+export const WeeklyReview = defineComponent({
+  name: "WeeklyReview",
+  description:
+    "Weekly business review in the 6-12 shape: one row per metric with the last 6 weeks and 12 months, last year faded and the plan dashed, its latest week against plan and last year, and for exceptions the cause or the owner who must find it. Pass get_weekly_review's rows directly.",
+  props: z.object({
+    rows: z.array(passed("A row from get_weekly_review")).default([]),
+  }),
+  component: ({ props }) => {
+    const metrics = (props.rows ?? []) as unknown as ReviewMetric[];
+    if (metrics.length === 0) return <Pending kind="list" rows={5} />;
+    return (
+      <div className="kit-review">
+        <div className="kit-review__key" aria-hidden>
+          <span>
+            <i className="kit-review__swatch kit-review__swatch--current" /> This year
+          </span>
+          <span>
+            <i className="kit-review__swatch kit-review__swatch--year-ago" /> Last year
+          </span>
+          <span>
+            <i className="kit-review__swatch kit-review__swatch--plan" /> Plan
+          </span>
+        </div>
+        {metrics.map((m) => (
+          <section
+            key={m.key}
+            className={`kit-review__row${m.status === "exception" ? " kit-review__row--exception" : ""}`}
+          >
+            <div className="kit-review__head">
+              <span className="kit-review__label">{m.label}</span>
+              <span className="kit-review__value">{m.value}</span>
+              <span className="kit-small kit-muted">{m.vsPlan}</span>
+              <span className="kit-small kit-muted">{m.vsLastYear}</span>
+            </div>
+            <SixTwelve weeks={m.weeks} months={m.months} format={m.format} />
+            <div className="kit-review__note">
+              {m.status === "exception" ? (
+                <>
+                  <span className={`kit-status kit-status--${m.good ? "positive" : "warning"}`}>
+                    <i className="kit-status__dot" />
+                    {m.flag}
+                  </span>
+                  <span className={m.cause === "Cause unknown" ? "kit-review__unknown" : undefined}>
+                    {m.cause}
+                  </span>
+                  <span className="kit-small kit-muted">Owner: {m.owner}</span>
+                </>
+              ) : (
+                <span className="kit-small kit-muted">On plan · {m.owner}</span>
+              )}
+            </div>
+          </section>
+        ))}
       </div>
     );
   },

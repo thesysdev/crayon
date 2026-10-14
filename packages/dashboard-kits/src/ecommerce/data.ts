@@ -1,8 +1,16 @@
 import type { z } from "zod/v4";
-import { formatCurrency, formatNumber } from "../core/format";
+import {
+  confidence,
+  contributions,
+  mixAndRate,
+  walk as walkOf,
+  type RatioSegment,
+  type Segment,
+} from "../core/explain";
+import { formatCurrency, formatNumber, formatPoints } from "../core/format";
+import type { MetricDefinition } from "../core/metrics";
 import {
   AS_OF,
-  RANGE_DAYS,
   between,
   bucket,
   changeText,
@@ -16,10 +24,26 @@ import {
   mean,
   periodLabel,
   random,
+  RANGE_DAYS,
   round,
   sum,
+  TODAY,
 } from "../core/sample-data";
-import type { ChartEvent, Insight, Item, Kpi, Range, ValueFormat } from "../core/schemas";
+import type {
+  ChartEvent,
+  Compare,
+  Driver,
+  Goal,
+  Insight,
+  Item,
+  Kpi,
+  Range,
+  ValueFormat,
+  Why,
+} from "../core/schemas";
+import { normalCdf } from "../core/stats";
+import { demandOn, LAST_YEAR, STORE_EVENTS, trackedSessions } from "./calendar";
+import { definitionOf, METRICS, type MetricId } from "./metrics";
 import { ecommerceTools } from "./tools";
 
 // Sundial Goods: a demo direct-to-consumer brand. Everything derives from one
@@ -33,9 +57,13 @@ type Input<N extends Tools[number]["name"]> = z.output<
 >;
 type Channel = "online" | "app" | "amazon";
 
-const HISTORY = 200;
-/** The Fall sale ran 12–14 days ago (Sep 26–28): more orders at deeper discounts. */
-const SALE_DAYS_AGO = new Set([12, 13, 14]);
+/** Enough days for a 90-day period and the same 90 days a year earlier. */
+/**
+ * A 90-day period and the one before it, plus the same days a year earlier
+ * (for last-year comparisons and for customers lapsing 52 weeks after their
+ * last order).
+ */
+const HISTORY = LAST_YEAR + 182;
 
 const CHANNELS: Record<
   Channel,
@@ -46,6 +74,10 @@ const CHANNELS: Record<
     newShare: number;
     conversion: number;
     returnRate: number;
+    /** Cost of goods as a share of gross sales less returns (returned stock is resold). */
+    costRate: number;
+    /** Pick, pack, and postage per order; Amazon's is the FBA fee. */
+    fulfillment: number;
   }
 > = {
   online: {
@@ -55,6 +87,8 @@ const CHANNELS: Record<
     newShare: 0.68,
     conversion: 0.025,
     returnRate: 0.068,
+    costRate: 0.38,
+    fulfillment: 7.2,
   },
   app: {
     label: "Mobile app",
@@ -63,6 +97,8 @@ const CHANNELS: Record<
     newShare: 0.45,
     conversion: 0.038,
     returnRate: 0.058,
+    costRate: 0.38,
+    fulfillment: 7.2,
   },
   amazon: {
     label: "Amazon",
@@ -71,6 +107,8 @@ const CHANNELS: Record<
     newShare: 0.74,
     conversion: 0,
     returnRate: 0.047,
+    costRate: 0.4,
+    fulfillment: 5.4,
   },
 };
 const STOREFRONT: Channel[] = ["online", "app"];
@@ -88,7 +126,8 @@ type Field =
   | "sessions"
   | "cogs"
   | "fulfillment"
-  | "fees";
+  | "fees"
+  | "returnCosts";
 type Daily = Record<Field, number[]>;
 
 const histories = new Map<Channel, Daily>();
@@ -106,10 +145,12 @@ function history(channel: Channel): Daily {
   const daily = {} as Daily;
   const push = (field: Field, value: number) => (daily[field] ??= []).push(value);
   for (let i = 0; i < HISTORY; i++) {
-    const sale = SALE_DAYS_AGO.has(HISTORY - 1 - i);
-    const orders = Math.round(base[i] * (sale ? 1.65 : 1));
+    const ago = HISTORY - 1 - i;
+    const demand = demandOn(ago);
+    const sale = demand.discountRate != null;
+    const orders = Math.round(base[i] * demand.lift);
     const gross = orders * c.aov * 1.08 * (0.95 + next() * 0.1);
-    const discounts = gross * (sale ? 0.21 : 0.066 + next() * 0.012);
+    const discounts = gross * (demand.discountRate ?? 0.066 + next() * 0.012);
     const returns = gross * c.returnRate * (0.85 + next() * 0.3);
     const net = gross - discounts - returns;
     const shipping = orders * 0.52 * 6.9;
@@ -127,13 +168,19 @@ function history(channel: Channel): Daily {
     push(
       "sessions",
       c.conversion
-        ? orders /
-            (c.conversion * (1 + (0.05 * i) / HISTORY) * (sale ? 1.18 : 1) * (0.93 + next() * 0.14))
+        ? (orders /
+            (c.conversion *
+              (1 + (0.05 * i) / HISTORY) *
+              (sale ? 1.18 : 1) *
+              (0.93 + next() * 0.14))) *
+            trackedSessions(ago)
         : 0,
     );
-    push("cogs", net * 0.41);
-    push("fulfillment", orders * 7.2);
+    push("cogs", (gross - returns) * c.costRate);
+    push("fulfillment", orders * c.fulfillment);
     push("fees", channel === "amazon" ? total * 0.15 : total * 0.029 + orders * 0.3);
+    // A return label and an hour of handling for each returned order.
+    push("returnCosts", (returns / (c.aov * 1.08)) * 11);
   }
   histories.set(channel, daily);
   return daily;
@@ -143,19 +190,69 @@ function channelsFor(channel: string): Channel[] {
   return channel === "all" ? (Object.keys(CHANNELS) as Channel[]) : [channel as Channel];
 }
 
-/** Daily values summed across channels, for the `days` days ending `offset` days ago. */
-function series(channels: Channel[], field: Field, days: number, offset = 0): number[] {
+export type CustomerType = "all" | "new" | "returning";
+
+/**
+ * The data is as of 3:48 PM, when the store has taken this share of a day's
+ * orders. The last day of every window counts only that much, so today is
+ * set against the same hours of each comparison day rather than whole days.
+ */
+const SHARE_OF_DAY_SO_FAR = 0.62;
+let cutLastDay = true;
+
+/** Runs `fn` with every window's last day counted whole, for windows that end before today on purpose. */
+function wholeDays<T>(fn: () => T): T {
+  const was = cutLastDay;
+  cutLastDay = false;
+  try {
+    return fn();
+  } finally {
+    cutLastDay = was;
+  }
+}
+
+/** New customers' orders are 6% smaller than the average order, so returning customers' are larger. */
+const NEW_ORDER_SIZE = 0.94;
+/** Fields that follow the number of orders rather than the money in them. */
+const PER_ORDER = new Set<Field>(["orders", "fulfillment"]);
+
+/**
+ * Daily values summed across channels, for the `days` days ending `offset`
+ * days ago. With a customer type, each channel's day is split by its share of
+ * first orders: counts by that share, money by that share times the smaller
+ * first order. Sessions are not split; the store can't tell who is visiting.
+ */
+function series(
+  channels: Channel[],
+  field: Field,
+  days: number,
+  offset = 0,
+  type: CustomerType = "all",
+): number[] {
   const out = new Array(days).fill(0);
   for (const ch of channels) {
-    const values = history(ch)[field];
-    for (let i = 0; i < days; i++) out[i] += values[HISTORY - offset - days + i];
+    const h = history(ch);
+    const values = h[field];
+    for (let i = 0; i < days; i++) {
+      const d = HISTORY - offset - days + i;
+      if (type === "all" || field === "sessions") {
+        out[i] += values[d];
+        continue;
+      }
+      const firsts = h.newOrders[d] / (h.orders[d] || 1);
+      const share =
+        field === "newOrders" ? 1 : PER_ORDER.has(field) ? firsts : firsts * NEW_ORDER_SIZE;
+      const part = type === "new" ? share : field === "newOrders" ? 0 : 1 - share;
+      out[i] += values[d] * part;
+    }
   }
+  if (days > 0 && cutLastDay) out[days - 1] *= SHARE_OF_DAY_SO_FAR;
   return out;
 }
-const current = (chs: Channel[], field: Field, range: Range) =>
-  series(chs, field, RANGE_DAYS[range]);
-const previous = (chs: Channel[], field: Field, range: Range) =>
-  series(chs, field, RANGE_DAYS[range], RANGE_DAYS[range]);
+const current = (chs: Channel[], field: Field, range: Range, type: CustomerType = "all") =>
+  series(chs, field, RANGE_DAYS[range], 0, type);
+const previous = (chs: Channel[], field: Field, range: Range, type: CustomerType = "all") =>
+  series(chs, field, RANGE_DAYS[range], RANGE_DAYS[range], type);
 const ratio = (a: number[], b: number[]) => a.map((v, i) => (b[i] ? v / b[i] : 0));
 
 // ── Marketing ──────────────────────────────────────────────────────────────
@@ -166,7 +263,7 @@ const MARKETING = [
     label: "Meta Ads",
     type: "paid",
     spend: 3900,
-    share: 0.28,
+    share: 0.33,
     newShare: 0.33,
     growth: 0.25,
   },
@@ -193,7 +290,7 @@ const MARKETING = [
     label: "Email & SMS",
     type: "owned",
     spend: 160,
-    share: 0.15,
+    share: 0.14,
     newShare: 0.04,
     growth: 0,
   },
@@ -202,7 +299,7 @@ const MARKETING = [
     label: "Organic search",
     type: "organic",
     spend: 0,
-    share: 0.1,
+    share: 0.08,
     newShare: 0.12,
     growth: 0,
   },
@@ -211,7 +308,7 @@ const MARKETING = [
     label: "Direct",
     type: "organic",
     spend: 0,
-    share: 0.09,
+    share: 0.08,
     newShare: 0.08,
     growth: 0,
   },
@@ -220,13 +317,12 @@ const MARKETING = [
     label: "Affiliates",
     type: "partner",
     spend: 0,
-    share: 0.05,
+    share: 0.04,
     newShare: 0.08,
     growth: 0,
   },
 ] as const;
 const PAID = new Set(["meta", "google", "tiktok"]);
-const TARGET_ROAS = 2;
 
 function marketingChannel(m: (typeof MARKETING)[number], days: number, offset: number) {
   const next = random(`mkt:${m.key}:${days}:${offset}`);
@@ -245,7 +341,11 @@ function marketingChannel(m: (typeof MARKETING)[number], days: number, offset: n
   const spendDaily = sales.map((v, i) =>
     m.key === "affiliates"
       ? v * m.share * (0.074 + next() * 0.014)
-      : m.spend * (1 + m.growth * ((HISTORY - offset - days + i) / HISTORY)) * (0.9 + next() * 0.2),
+      : m.spend *
+        (1 + m.growth * ((HISTORY - offset - days + i) / HISTORY)) *
+        (0.9 + next() * 0.2) *
+        // Platforms spend through the day, so the last day is cut like sales.
+        (i === days - 1 && cutLastDay ? SHARE_OF_DAY_SO_FAR : 1),
   );
   return {
     revenue,
@@ -257,9 +357,77 @@ function marketingChannel(m: (typeof MARKETING)[number], days: number, offset: n
   };
 }
 
-function marketing(range: Range, offset = 0) {
-  const days = RANGE_DAYS[range];
-  const raw = MARKETING.map((m) => ({ m, ...marketingChannel(m, days, offset) }));
+type Attribution = { model: AttributionModel; window: AttributionWindow };
+type AttributionModel = "last_click" | "first_click" | "linear" | "platform";
+type AttributionWindow = "1d" | "7d" | "28d";
+const LAST_CLICK: Attribution = { model: "last_click", window: "7d" };
+
+/**
+ * How much more (or less) credit each channel gets than under last click with
+ * a 7-day window. First click favours the channels that find new shoppers
+ * (Meta, TikTok); last click favours the ones that close (Google, email,
+ * direct); linear sits between. A shorter window cuts the channels whose
+ * buyers take longer to come back.
+ */
+const MODEL_WEIGHT: Record<"first_click", Record<string, number>> = {
+  first_click: {
+    meta: 1.35,
+    google: 0.85,
+    tiktok: 1.5,
+    email: 0.6,
+    organic: 1.05,
+    direct: 0.7,
+    affiliates: 1.1,
+  },
+};
+const WINDOW_WEIGHT: Record<AttributionWindow, Record<string, number>> = {
+  "1d": {
+    meta: 0.8,
+    google: 0.95,
+    tiktok: 0.75,
+    email: 1.1,
+    organic: 1,
+    direct: 1.1,
+    affiliates: 0.95,
+  },
+  "7d": {},
+  "28d": {
+    meta: 1.15,
+    google: 1.05,
+    tiktok: 1.2,
+    email: 0.95,
+    organic: 1,
+    direct: 0.9,
+    affiliates: 1.05,
+  },
+};
+const creditWeight = (key: string, { model, window }: Attribution) => {
+  const first = MODEL_WEIGHT.first_click[key] ?? 1;
+  const byModel = model === "first_click" ? first : model === "linear" ? (1 + first) / 2 : 1;
+  return byModel * (WINDOW_WEIGHT[window][key] ?? 1);
+};
+
+function marketing(range: Range, offset = 0, attribution: Attribution = LAST_CLICK) {
+  return marketingOver(RANGE_DAYS[range], offset, attribution);
+}
+
+/**
+ * Every marketing channel's spend and attributed results for `days` days
+ * ending `offset` days ago, under an attribution model and window.
+ */
+function marketingOver(days: number, offset = 0, attribution: Attribution = LAST_CLICK) {
+  const raw = MARKETING.map((m) => {
+    const c = marketingChannel(m, days, offset);
+    const w = creditWeight(m.key, attribution);
+    return {
+      m,
+      ...c,
+      revenue: c.revenue * w,
+      revenueDaily: c.revenueDaily.map((v) => v * w),
+      orders: c.orders * w,
+      newCustomers: c.newCustomers * w,
+    };
+  });
   // Attribution reconciles to the store: channel revenue, orders, and new
   // customers add up to the storefront totals for the period.
   const scale = (key: "revenue" | "orders" | "newCustomers", field: Field) =>
@@ -267,16 +435,1022 @@ function marketing(range: Range, offset = 0) {
   const revenueScale = scale("revenue", "total");
   const orderScale = scale("orders", "orders");
   const newScale = scale("newCustomers", "newOrders");
+  // Platform attribution is what each ad platform reports for itself: it
+  // doesn't reconcile, so paid channels claim more than the store sold.
+  const claim = (key: string) =>
+    attribution.model === "platform"
+      ? (PLATFORM_CLAIM[key as keyof typeof PLATFORM_CLAIM] ?? 1)
+      : 1;
   const channels = raw.map((c) => ({
     ...c,
-    revenue: c.revenue * revenueScale,
-    revenueDaily: c.revenueDaily.map((v) => v * revenueScale),
-    orders: c.orders * orderScale,
-    newCustomers: c.newCustomers * newScale,
+    revenue: c.revenue * revenueScale * claim(c.m.key),
+    revenueDaily: c.revenueDaily.map((v) => v * revenueScale * claim(c.m.key)),
+    orders: c.orders * orderScale * claim(c.m.key),
+    newCustomers: c.newCustomers * newScale * claim(c.m.key),
   }));
   const adSpend = sum(channels.filter((c) => PAID.has(c.m.key)).map((c) => c.spend));
   const otherMarketing = sum(channels.filter((c) => !PAID.has(c.m.key)).map((c) => c.spend));
   return { channels, adSpend, otherMarketing };
+}
+
+/** "Meta Ads and Google Ads are above it." for the paid channels that beat break-even. */
+function aboveBreakEven(range: Range, breakEven: number): string {
+  const above = marketing(range)
+    .channels.filter((c) => PAID.has(c.m.key) && c.revenue / c.spend >= breakEven)
+    .map((c) => c.m.label);
+  if (above.length === 0) return "No paid channel is above it.";
+  return `${above.join(" and ")} ${above.length === 1 ? "is" : "are"} above it.`;
+}
+
+/**
+ * What a new customer's first order earns after the ad spend that won them:
+ * first orders' net sales at the store and app's margin before marketing,
+ * less ad spend, per new customer.
+ */
+function firstOrderProfit(days: number, offset: number) {
+  const p = profitDays(STOREFRONT, days, offset);
+  const margin = sum(beforeMarketingOf(p)) / sum(p.net);
+  const firstNet = sum(series(STOREFRONT, "net", days, offset, "new"));
+  const firsts = sum(series(STOREFRONT, "newOrders", days, offset));
+  return (firstNet * margin - sum(p.adSpend)) / firsts;
+}
+
+/**
+ * What a customer acquired in a calendar month cost, fully loaded: that
+ * month's ad spend and other marketing over first orders in the online store
+ * and app, where the marketing sends shoppers.
+ */
+function cohortCac(year: number, month: number) {
+  const start = Math.round((TODAY - Date.UTC(year, month - 1, 1)) / 86_400_000);
+  const end = Math.max(0, Math.round((TODAY - Date.UTC(year, month, 0)) / 86_400_000));
+  const days = start - end + 1;
+  return wholeDays(
+    () =>
+      (sum(adSpendDaily(days, end).paid) + sum(adSpendDaily(days, end).other)) /
+      sum(series(STOREFRONT, "newOrders", days, end)),
+  );
+}
+
+// ── RFM segments and how customers move between them ───────────────────────
+
+const SEGMENTS = [
+  {
+    name: "Champions",
+    tone: "positive",
+    revenueShare: 0.29,
+    avgOrders: 5.8,
+    avgSpend: 612,
+    days: 12,
+    action: "Early access and referral asks; skip discounts",
+  },
+  {
+    name: "Loyal",
+    tone: "positive",
+    revenueShare: 0.24,
+    avgOrders: 3.9,
+    avgSpend: 371,
+    days: 31,
+    action: "Bundles and loyalty perks",
+  },
+  {
+    name: "Promising",
+    tone: "neutral",
+    revenueShare: 0.09,
+    avgOrders: 1.9,
+    avgSpend: 168,
+    days: 24,
+    action: "Introduce a second category",
+  },
+  {
+    name: "New",
+    tone: "neutral",
+    revenueShare: 0.1,
+    avgOrders: 1.0,
+    avgSpend: 96,
+    days: 9,
+    action: "Welcome series aimed at a 2nd order within 60 days",
+  },
+  {
+    name: "Needs attention",
+    tone: "warning",
+    revenueShare: 0.09,
+    avgOrders: 2.2,
+    avgSpend: 187,
+    days: 68,
+    action: "Personalized recommendations",
+  },
+  {
+    name: "At risk",
+    tone: "warning",
+    revenueShare: 0.11,
+    avgOrders: 3.1,
+    avgSpend: 298,
+    days: 132,
+    action: "Win-back offer and a short survey",
+  },
+  {
+    name: "Almost lost",
+    tone: "negative",
+    revenueShare: 0.04,
+    avgOrders: 1.6,
+    avgSpend: 142,
+    days: 210,
+    action: "One last win-back attempt",
+  },
+  {
+    name: "Dormant",
+    tone: "negative",
+    revenueShare: 0.04,
+    avgOrders: 1.1,
+    avgSpend: 88,
+    days: 318,
+    action: "Suppress from paid audiences",
+  },
+] as const;
+
+/** Customers in each segment 90 days ago; "First order" are the customers new since. */
+const SEGMENTS_BEFORE: Record<string, number> = {
+  "First order": 10_400,
+  Champions: 3_500,
+  Loyal: 6_900,
+  Promising: 5_600,
+  New: 10_300,
+  "Needs attention": 8_300,
+  "At risk": 7_200,
+  "Almost lost": 5_400,
+  Dormant: 13_100,
+};
+
+/**
+ * Where each segment's customers were 90 days later: most stay, some move up
+ * a step, more slip down one. Dormant customers past 12 months lapse out.
+ */
+const SEGMENT_MOVES: Record<string, [string, number][]> = {
+  "First order": [["New", 1]],
+  Champions: [
+    ["Champions", 0.78],
+    ["Loyal", 0.16],
+    ["At risk", 0.06],
+  ],
+  Loyal: [
+    ["Champions", 0.12],
+    ["Loyal", 0.66],
+    ["Needs attention", 0.14],
+    ["At risk", 0.08],
+  ],
+  Promising: [
+    ["Loyal", 0.18],
+    ["Promising", 0.52],
+    ["Needs attention", 0.22],
+    ["Almost lost", 0.08],
+  ],
+  New: [
+    ["Promising", 0.28],
+    ["New", 0.12],
+    ["Needs attention", 0.18],
+    ["Almost lost", 0.42],
+  ],
+  "Needs attention": [
+    ["Loyal", 0.1],
+    ["Needs attention", 0.38],
+    ["At risk", 0.3],
+    ["Almost lost", 0.22],
+  ],
+  "At risk": [
+    ["Loyal", 0.09],
+    ["At risk", 0.43],
+    ["Almost lost", 0.2],
+    ["Dormant", 0.28],
+  ],
+  "Almost lost": [
+    ["Promising", 0.05],
+    ["Almost lost", 0.3],
+    ["Dormant", 0.65],
+  ],
+  Dormant: [
+    ["Promising", 0.03],
+    ["Dormant", 0.75],
+    ["Lapsed", 0.22],
+  ],
+};
+
+function segmentMovement() {
+  const scale = activeCustomers() / SEGMENT_BASE;
+  const flows: { from: string; to: string; customers: number }[] = [];
+  const current = new Map<string, number>();
+  for (const [from, moves] of Object.entries(SEGMENT_MOVES)) {
+    for (const [to, share] of moves) {
+      const customers = Math.round(SEGMENTS_BEFORE[from]! * scale * share);
+      flows.push({ from, to, customers });
+      current.set(to, (current.get(to) ?? 0) + customers);
+    }
+  }
+  return { flows, current };
+}
+
+/**
+ * Customers' 1st to 5th orders over the last 182 days against the 182 before:
+ * first orders are the period's new customers; each later step continues at
+ * the repeat rate, rising with every order as loyalty builds (our model);
+ * the median gap before each order comes from the order-gap model.
+ */
+function orderJourney() {
+  const steps = (offset: number) => {
+    const firsts = sum(series(channelsFor("all"), "newOrders", 182, offset));
+    const base = repeatRate(offset) / 100;
+    const out = [firsts];
+    for (const loyalty of ORDER_GAP.loyalty) out.push(out.at(-1)! * Math.min(0.9, base * loyalty));
+    return out;
+  };
+  const now = steps(0);
+  const then = steps(182);
+  const labels = ["1st order", "2nd order", "3rd order", "4th order", "5th order or later"];
+  return labels.map((label, k) => ({
+    label,
+    value: Math.round(now[k]!),
+    previous: Math.round(then[k]!),
+    ...(k ? { medianTime: `${ORDER_GAP.byOrder[k - 1]} days` } : {}),
+  }));
+}
+
+/** Unique buyers per order within a period: some buy twice in it (our model). */
+const BUYERS_PER_ORDER = 0.91;
+
+/** Days between a customer's orders: a lognormal with this median and spread (our model). */
+const ORDER_GAP = {
+  median: 38,
+  spread: 1.2,
+  /** Median days before the 2nd, 3rd, 4th, and 5th order: loyal customers take longer between orders. */
+  byOrder: [38, 52, 61, 66],
+  /** How much likelier each later order is than the 2nd, as loyalty builds. */
+  loyalty: [1, 1.6, 2, 2.2],
+};
+
+/**
+ * Share of customers with 2+ orders in the year to `offset` days ago: the
+ * share of orders that follow an earlier one, times the chance the second
+ * order came before the year ended, from the order-gap model (our model).
+ */
+function repeatRate(offset: number) {
+  const all = channelsFor("all");
+  const followUp =
+    1 - sum(series(all, "newOrders", 364, offset)) / sum(series(all, "orders", 364, offset));
+  // A customer who first ordered d days before the year ended had d days to order again.
+  let reach = 0;
+  for (let d = 1; d <= 364; d++) {
+    reach += normalCdf((Math.log(d) - Math.log(ORDER_GAP.median)) / ORDER_GAP.spread);
+  }
+  return followUp * (reach / 364) * 100;
+}
+
+/**
+ * Expected revenue per customer by month `months` for the cohort acquired `k`
+ * months after January 2026: the cohort grid's curve without its noise.
+ */
+function cohortLtv(k: number, months: number) {
+  const lift = 1 + LTV_CURVE.liftPerCohort * k;
+  let value = LTV_CURVE.first * (1 + LTV_CURVE.firstPerCohort * k);
+  for (let m = 1; m < months; m++) value += LTV_CURVE.month1 * LTV_CURVE.decay ** (m - 1) * lift;
+  return value;
+}
+/** Revenue per customer: the first month, then each month's addition decaying (our model). */
+const LTV_CURVE = {
+  first: 78,
+  firstPerCohort: 0.01,
+  month1: 13.5,
+  decay: 0.82,
+  liftPerCohort: 0.025,
+};
+
+/**
+ * When a customer should count as lapsing: the day by which 80% of second
+ * orders have happened. Gaps between orders follow a lognormal with the
+ * order journey's 38-day median and a spread of 1.2 (our model).
+ */
+function lapsePoint() {
+  const days = Math.round(ORDER_GAP.median * Math.exp(0.8416 * ORDER_GAP.spread));
+  return {
+    days,
+    note: `80% of customers who order again do so within ${days} days of their first order; after that, treat them as at risk and start win-back.`,
+  };
+}
+
+// ── Customer flow ──────────────────────────────────────────────────────────
+
+/** Share of returning orders from customers with no order in the 52 weeks before. */
+const REACTIVATED_SHARE = 0.11;
+/**
+ * Share of a day's orders that turn out to be the customer's last for a year,
+ * so the customer lapses 52 weeks later (our model, tuned so the base grows a
+ * little slower than orders).
+ */
+const LAST_ORDER_SHARE = 0.6;
+/**
+ * Customers with an order in the 52 weeks to `offset` days ago. Each order is
+ * the start of a customer's run of orders (a first order) or follows one, so
+ * the year's customers are its new customers, plus customers who first
+ * ordered in the 90 days before it and came back within it (about half of
+ * those who reorder), plus reactivated customers (our model).
+ */
+export function activeCustomers(offset = 0) {
+  const all = channelsFor("all");
+  const orders = sum(series(all, "orders", 364, offset));
+  const firsts = sum(series(all, "newOrders", 364, offset));
+  const followUp = 1 - firsts / orders;
+  const carried = sum(series(all, "newOrders", 90, offset + 364)) * followUp * 0.5;
+  const reactivated = (orders - firsts) * REACTIVATED_SHARE;
+  return firsts + carried + reactivated;
+}
+/** The RFM segment counts below were sized for this many active customers; they scale with the real base. */
+const SEGMENT_BASE = 61_400;
+
+/** Daily new, reactivated, and lapsed customers for `days` days ending `offset` days ago. */
+function flowDaily(days: number, offset: number) {
+  const all = channelsFor("all");
+  const firsts = series(all, "newOrders", days, offset);
+  const returning = series(all, "orders", days, offset).map((o, i) => o - firsts[i]);
+  const reactivated = returning.map((v) => v * REACTIVATED_SHARE);
+  const lapsed = series(all, "orders", days, offset + LAST_YEAR).map((v) => v * LAST_ORDER_SHARE);
+  return {
+    newCustomers: firsts,
+    reactivated,
+    lapsed,
+    net: firsts.map((v, i) => v + reactivated[i] - lapsed[i]),
+  };
+}
+
+/**
+ * How much each ad platform's own reporting claims against the store's
+ * orders: view-through credit and longer click windows count the same order
+ * on more than one platform.
+ */
+const PLATFORM_CLAIM = { meta: 1.38, google: 1.22, tiktok: 1.65 };
+
+// ── Promotions ───────────────────────────────────────────────────────────────
+
+/** Normal days' discounts, as a share of gross sales. */
+const USUAL_DISCOUNT = 0.072;
+
+/**
+ * A promotion against what the same days would have done without it: the
+ * baseline is each weekday's average over the four weeks before the sale.
+ * Shows the lift during, the dip after (demand pulled forward), and the
+ * lift the deeper discount needed to break even on product margin.
+ */
+function promoImpact(id: Input<"get_promo_impact">["event"]) {
+  // Every window here ends yesterday or earlier, so its days are whole.
+  return wholeDays(() => measurePromo(id));
+}
+
+function measurePromo(id: Input<"get_promo_impact">["event"]) {
+  const e = STORE_EVENTS.find((x) => x.id === id)!;
+  const all = channelsFor("all");
+  const during = e.from - e.to + 1;
+  // Full days only: the window ends yesterday at the latest.
+  const afterDays = Math.min(21, e.to - 1);
+  // The chart runs from two weeks before the sale to three weeks after it.
+  const start = e.from + 14;
+  const end = e.to - afterDays;
+  const n = start - end + 1;
+  const sales = series(all, "total", n, end);
+  const orders = series(all, "orders", n, end);
+  const profit = contributionOf(profitDays(all, n, end));
+  const baselineOf = (field: Field | "profit") => {
+    const before =
+      field === "profit"
+        ? contributionOf(profitDays(all, 28, e.from + 1))
+        : series(all, field, 28, e.from + 1);
+    // 28 days ending the day before the sale: index i is (e.from + 28 − i) days ago.
+    const byWeekday = new Map<number, number[]>();
+    before.forEach((v, i) => {
+      const day = dayOfWeek(e.from + 28 - i);
+      byWeekday.set(day, [...(byWeekday.get(day) ?? []), v]);
+    });
+    return Array.from({ length: n }, (_, i) => mean(byWeekday.get(dayOfWeek(start - i)) ?? [0]));
+  };
+  const base = {
+    sales: baselineOf("total"),
+    orders: baselineOf("orders"),
+    profit: baselineOf("profit"),
+  };
+  const inSale = (i: number) => start - i <= e.from && start - i >= e.to;
+  const afterSale = (i: number) => start - i < e.to;
+  const gap = (actual: number[], baseline: number[], when: (i: number) => boolean) =>
+    sum(actual.map((v, i) => (when(i) ? v - baseline[i] : 0)));
+  const lift = gap(sales, base.sales, inSale);
+  const dip = gap(sales, base.sales, afterSale);
+  const profitNet = gap(profit, base.profit, (i) => inSale(i) || afterSale(i));
+  const orderLift =
+    sum(orders.filter((_, i) => inSale(i))) / sum(base.orders.filter((_, i) => inSale(i))) - 1;
+  // Required lift on product margin: (1 + L)(m − d) = m, so L = d ÷ (m − d).
+  const gross = sum(series(all, "gross", 28, e.from + 1));
+  const margin = 1 - sum(series(all, "cogs", 28, e.from + 1)) / gross;
+  const extra = (e.discountRate ?? USUAL_DISCOUNT) - USUAL_DISCOUNT;
+  const needed = extra / (margin - extra);
+  const signedMoney = (v: number) =>
+    `${v >= 0 ? "+" : "−"}${formatCurrency(Math.round(Math.abs(v)))}`;
+  // Dates outside this year carry the year, on the axis and in the event alike.
+  const day = (ago: number) =>
+    dateLabel(
+      ago,
+      new Date(TODAY - ago * 86_400_000).getUTCFullYear() !== new Date(TODAY).getUTCFullYear(),
+    );
+  const pctText = (v: number) => `${v >= 0 ? "+" : "−"}${Math.abs(v * 100).toFixed(0)}%`;
+  const range = (from: number, to: number) => `${dateLabel(from)}–${day(to)}`;
+  const tile = (id: MetricId, value: string, hint: string) => ({
+    label: METRICS[id].label,
+    value,
+    hint,
+    definition: definitionOf(id),
+  });
+  return {
+    event: e.label,
+    detail: e.detail,
+    labels: Array.from({ length: n }, (_, i) => day(start - i)),
+    actual: sales.map(Math.round),
+    baseline: base.sales.map(Math.round),
+    events: [
+      {
+        label: e.label,
+        start: day(e.from),
+        end: day(e.to),
+        detail: e.detail,
+        kind: "promo" as const,
+      },
+    ],
+    metrics: [
+      tile(
+        "promo_order_lift",
+        pctText(orderLift),
+        `${during} days, against the same weekdays before`,
+      ),
+      tile(
+        "promo_required_lift",
+        pctText(needed),
+        `To cover ${Math.round(extra * 100)} extra points of discount`,
+      ),
+      tile("promo_sales_lift", signedMoney(lift), range(e.from, e.to)),
+      tile("promo_dip", signedMoney(dip), `${afterDays} days after, ${range(e.to - 1, end)}`),
+      tile("promo_net_profit", signedMoney(profitNet), "During and after, after marketing"),
+    ],
+    summary: `${e.label} lifted orders ${pctText(orderLift)} against the ${pctText(needed)} needed to cover the deeper discount. It added ${formatCurrency(Math.round(lift))} of sales during, and in the ${afterDays} days after sales ran ${formatCurrency(Math.round(Math.abs(dip)))} ${dip < 0 ? "below the baseline as the sale pulled demand forward" : "above the baseline"}, for ${signedMoney(lift + dip)} of sales and ${signedMoney(profitNet)} of contribution profit overall.`,
+  };
+}
+
+// ── Returns ──────────────────────────────────────────────────────────────────
+
+/** Share of returned orders the customer swapped for another size or color instead of a refund. */
+const EXCHANGE_SHARE = { all: 0.31, apparel: 0.38, footwear: 0.46, accessories: 0.08, home: 0.05 };
+/** Why customers send things back, by category, as shares of return requests. */
+const RETURN_REASONS: Record<string, [string, number][]> = {
+  apparel: [
+    ["Too small", 0.29],
+    ["Too large", 0.21],
+    ["Changed mind", 0.17],
+    ["Not as pictured", 0.14],
+    ["Damaged", 0.05],
+    ["Arrived late", 0.05],
+    ["Other", 0.09],
+  ],
+  footwear: [
+    ["Too small", 0.41],
+    ["Too large", 0.16],
+    ["Not as pictured", 0.12],
+    ["Changed mind", 0.11],
+    ["Damaged", 0.07],
+    ["Arrived late", 0.05],
+    ["Other", 0.08],
+  ],
+  accessories: [
+    ["Changed mind", 0.34],
+    ["Not as pictured", 0.22],
+    ["Damaged", 0.19],
+    ["Arrived late", 0.12],
+    ["Other", 0.13],
+  ],
+  home: [
+    ["Damaged", 0.38],
+    ["Changed mind", 0.23],
+    ["Not as pictured", 0.2],
+    ["Arrived late", 0.1],
+    ["Other", 0.09],
+  ],
+};
+const SIZES = {
+  footwear: ["7", "8", "9", "10", "11", "12"],
+  apparel: ["XS", "S", "M", "L", "XL", "XXL"],
+};
+
+/**
+ * Size exchanges as ordered size (rows) against exchanged-for size (columns).
+ * Most go one size up: the footwear line runs small.
+ */
+function exchangeMatrix(category: "footwear" | "apparel", exchanges: number) {
+  const sizes = SIZES[category];
+  const up = category === "footwear" ? 0.64 : 0.5;
+  const popularity = [0.08, 0.17, 0.27, 0.25, 0.16, 0.07];
+  const next = random(`exchange:${category}`);
+  const raw = sizes.map((_, r) =>
+    sizes.map((_, c) => {
+      const step = c - r;
+      const weight =
+        step === 1
+          ? up
+          : step === -1
+            ? 0.78 - up
+            : step === 2
+              ? 0.08
+              : step === -2
+                ? 0.04
+                : step === 0
+                  ? 0.1
+                  : 0;
+      return popularity[r]! * weight * (0.85 + next() * 0.3);
+    }),
+  );
+  const scale = exchanges / sum(raw.flat());
+  return { sizes, counts: raw.map((row) => row.map((v) => Math.round(v * scale))) };
+}
+
+const ATTRIBUTION_LABEL: Record<AttributionModel, string> = {
+  last_click: "last click",
+  first_click: "first click",
+  linear: "linear credit",
+  platform: "platform reports",
+};
+
+// ── October: plan and targets ───────────────────────────────────────────────
+
+/** October so far: the 1st to today, the 10th, of a 31-day month. */
+const MONTH_DAYS = 31;
+const MONTH_ELAPSED = 10;
+/** The same weekdays last year for every day of October: 343 to 373 days ago. */
+const MONTH_LAST_YEAR = LAST_YEAR - (MONTH_DAYS - MONTH_ELAPSED);
+
+/** The plan for each whole day of October, from last year's same weekdays. */
+function octoberPlan(
+  chs: Channel[],
+  metric: "total" | "orders" | "newOrders" | "sessions" | "profit" | "adSpend",
+) {
+  const days = wholeDays(() => {
+    if (metric === "profit" || metric === "adSpend") {
+      const plan = planned(profitDays(chs, MONTH_DAYS, MONTH_LAST_YEAR));
+      return metric === "profit" ? contributionOf(plan) : plan.adSpend;
+    }
+    const growth = metric === "sessions" ? PLAN.sessions : PLAN.volume;
+    return series(chs, metric, MONTH_DAYS, MONTH_LAST_YEAR).map((v) => v * growth);
+  });
+  return days;
+}
+
+/** The plan to date: October's first days, with today cut at the same hours as the actual. */
+const planToDate = (plan: number[]) =>
+  sum(plan.slice(0, MONTH_ELAPSED - 1)) + plan[MONTH_ELAPSED - 1]! * SHARE_OF_DAY_SO_FAR;
+
+/** October to date, day by day, cut at the same hours today. */
+function octoberActual(chs: Channel[], metric: Parameters<typeof octoberPlan>[1]) {
+  if (metric === "profit") return contributionOf(profitDays(chs, MONTH_ELAPSED, 0));
+  if (metric === "adSpend") return profitDays(chs, MONTH_ELAPSED, 0).adSpend;
+  return series(chs, metric, MONTH_ELAPSED, 0);
+}
+
+const TARGETS = [
+  { id: "total_sales", metric: "total", format: "currency" },
+  { id: "contribution_profit", metric: "profit", format: "currency" },
+  { id: "orders", metric: "orders", format: "number" },
+  { id: "new_customers", metric: "newOrders", format: "number" },
+  { id: "ad_spend", metric: "adSpend", format: "currency", budget: true },
+] as const;
+
+function monthTarget(chs: Channel[], t: (typeof TARGETS)[number]) {
+  const plan = octoberPlan(chs, t.metric);
+  const actualDays = octoberActual(chs, t.metric);
+  const actual = sum(actualDays);
+  const toDate = planToDate(plan);
+  // The rest of today, and the days after it.
+  const remaining = sum(plan) - toDate;
+  // Pace: each whole day's actual against its plan. The forecast carries the
+  // average pace through the rest of the month, with an 80% range from how
+  // much the daily pace moves.
+  const paces = actualDays.slice(0, -1).map((v, i) => v / (plan[i] || 1));
+  const pace = mean(paces);
+  const sd = Math.sqrt(sum(paces.map((p) => (p - pace) ** 2)) / Math.max(1, paces.length - 1));
+  const spread = (1.28 * sd) / Math.sqrt(paces.length);
+  const ratio = actual / (toDate || 1);
+  const budget = "budget" in t && t.budget;
+  const status =
+    ratio > 1.02
+      ? budget
+        ? "over"
+        : "ahead"
+      : ratio < 0.98
+        ? budget
+          ? "under"
+          : "behind"
+        : "on_pace";
+  return {
+    label: (METRICS[t.id] as MetricDefinition).label + (budget ? " budget" : ""),
+    format: t.format,
+    actual: Math.round(actual),
+    toDate: Math.round(toDate),
+    target: Math.round(sum(plan)),
+    forecast: Math.round(actual + remaining * pace),
+    forecastLow: Math.round(actual + remaining * (pace - spread)),
+    forecastHigh: Math.round(actual + remaining * (pace + spread)),
+    status,
+    goodDirection: budget ? ("down" as const) : ("up" as const),
+  };
+}
+
+// ── Live: the last hour ────────────────────────────────────────────────────
+
+/** Minutes the store has been open today by AS_OF (3:48 PM) and the hour's share of the day's traffic. */
+const MINUTES_SO_FAR = 15 * 60 + 48;
+const AFTERNOON_LIFT = 1.18;
+
+function liveView() {
+  const front = STOREFRONT;
+  const perMinute = (field: Field) =>
+    (series(front, field, 1, 0)[0]! / MINUTES_SO_FAR) * AFTERNOON_LIFT;
+  const next = random("live");
+  // Twelve steps of five minutes from 2:50; the last, now, is 3 minutes in.
+  const steps = [5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 3];
+  const labels = steps.map((_, k) => {
+    const minute = 50 + k * 5;
+    return `${minute >= 60 ? 3 : 2}:${String(minute % 60).padStart(2, "0")}`;
+  });
+  const bucket = (field: Field) =>
+    steps.map((m) => Math.round(perMinute(field) * m * (0.85 + next() * 0.3)));
+  const sessions = bucket("sessions");
+  const orders = bucket("orders");
+  // The same five minutes a week ago, and every step as a rate per 5 minutes
+  // so the step still in progress does not read as a drop.
+  const weekRate = (series(front, "sessions", 1, 7)[0]! / MINUTES_SO_FAR) * AFTERNOON_LIFT * 1.08;
+  const per5 = (values: number[]) => values.map((v, k) => Math.round((v / steps[k]!) * 5));
+  const sessionsWeekAgo = steps.map(() => Math.round(weekRate * 5 * (0.88 + next() * 0.24)));
+  const aov = sum(series(front, "total", 1, 0)) / sum(series(front, "orders", 1, 0));
+  const sales = orders.map((o) => Math.round(o * aov * (0.9 + next() * 0.2)));
+  // The same hour a week ago, for the comparison.
+  const weekAgo = (field: Field) =>
+    (series(front, field, 1, 7)[0]! / (24 * 60)) * AFTERNOON_LIFT * 1.08 * 58;
+  const hour = { sessions: sum(sessions), orders: sum(orders), sales: sum(sales) };
+  const views = Math.round(hour.sessions * 0.57);
+  const carts = Math.round(views * 0.22);
+  const checkouts = Math.round(carts * 0.48);
+  const products = productSales("7d", "all")
+    .map((p) => ({ name: p.name, value: Math.round((p.units / 7 / 24) * (0.6 + next() * 0.8)) }))
+    .sort((a, b) => b.value - a.value)
+    .slice(0, 5);
+  const tile = (
+    id: MetricId,
+    now: number,
+    then: number,
+    format: (v: number) => string,
+    series: number[],
+  ) =>
+    metric(id, now, then, format, {
+      series,
+      hint: "Last 58 minutes, against the same time a week ago",
+    });
+  return {
+    asOf: AS_OF,
+    labels,
+    sessions: per5(sessions),
+    sessionsWeekAgo,
+    orders: per5(orders),
+    sales: per5(sales),
+    visitorsNow: Math.round(perMinute("sessions") * 5 * 1.6),
+    metrics: [
+      tile("live_sessions", hour.sessions, weekAgo("sessions"), formatNumber, per5(sessions)),
+      tile("live_orders", hour.orders, weekAgo("orders"), formatNumber, per5(orders)),
+      tile("live_sales", hour.sales, weekAgo("total"), formatCurrency, per5(sales)),
+      tile(
+        "live_conversion",
+        (hour.orders / hour.sessions) * 100,
+        (weekAgo("orders") / weekAgo("sessions")) * 100,
+        (v) => `${v.toFixed(2)}%`,
+        orders.map((o, i) => (o / (sessions[i] || 1)) * 100),
+      ),
+    ],
+    funnel: [
+      { label: "Sessions", value: hour.sessions },
+      { label: "Viewed a product", value: views },
+      { label: "Added to cart", value: carts },
+      { label: "Began checkout", value: checkouts },
+      { label: "Purchased", value: hour.orders },
+    ],
+    products: products.map((p) => ({ name: p.name, value: p.value })) as Item[],
+  };
+}
+
+// ── Ad creatives ─────────────────────────────────────────────────────────────
+
+const CREATIVES = [
+  {
+    name: "Trail Runner 2: hill sprint",
+    platform: "meta",
+    format: "Video",
+    weight: 0.3,
+    roas: 1.25,
+    hook: 0.34,
+    hold: 0.42,
+    ctr: 0.0142,
+    frequency: 2.1,
+    trend: 0.04,
+  },
+  {
+    name: "Merino layering carousel",
+    platform: "meta",
+    format: "Carousel",
+    weight: 0.24,
+    roas: 1.15,
+    hook: 0,
+    hold: 0,
+    ctr: 0.0118,
+    frequency: 2.6,
+    trend: -0.06,
+  },
+  {
+    name: "Founder story",
+    platform: "meta",
+    format: "Video",
+    weight: 0.26,
+    roas: 0.8,
+    hook: 0.22,
+    hold: 0.31,
+    ctr: 0.0081,
+    frequency: 4.4,
+    trend: -0.31,
+  },
+  {
+    name: "Fall sale static",
+    platform: "meta",
+    format: "Static",
+    weight: 0.2,
+    roas: 0.75,
+    hook: 0,
+    hold: 0,
+    ctr: 0.0072,
+    frequency: 3.9,
+    trend: -0.24,
+  },
+  {
+    name: "Unboxing with a creator",
+    platform: "tiktok",
+    format: "Video",
+    weight: 0.45,
+    roas: 1.3,
+    hook: 0.41,
+    hold: 0.28,
+    ctr: 0.0109,
+    frequency: 1.8,
+    trend: 0.02,
+  },
+  {
+    name: "Trend sound: tote packing",
+    platform: "tiktok",
+    format: "Video",
+    weight: 0.55,
+    roas: 0.75,
+    hook: 0.29,
+    hold: 0.17,
+    ctr: 0.0064,
+    frequency: 3.6,
+    trend: -0.28,
+  },
+  {
+    name: "Search: brand terms",
+    platform: "google",
+    format: "Search",
+    weight: 0.35,
+    roas: 1.6,
+    hook: 0,
+    hold: 0,
+    ctr: 0.081,
+    frequency: 0,
+    trend: 0.01,
+  },
+  {
+    name: "Shopping: footwear",
+    platform: "google",
+    format: "Shopping",
+    weight: 0.4,
+    roas: 0.85,
+    hook: 0,
+    hold: 0,
+    ctr: 0.0124,
+    frequency: 0,
+    trend: -0.03,
+  },
+  {
+    name: "Performance Max",
+    platform: "google",
+    format: "Mixed",
+    weight: 0.25,
+    roas: 0.6,
+    hook: 0,
+    hold: 0,
+    ctr: 0.0091,
+    frequency: 0,
+    trend: -0.09,
+  },
+] as const;
+
+/**
+ * Each ad's share of its platform: spend by weight, revenue by weight times
+ * its relative ROAS, scaled so each platform's ads add up to the platform's
+ * spend and store-attributed revenue.
+ */
+function creatives(range: Range, platform: string) {
+  const days = RANGE_DAYS[range];
+  const breakEven = breakEvenRoas(days);
+  const channels = marketing(range).channels;
+  return CREATIVES.filter((c) => platform === "all" || c.platform === platform).map((c) => {
+    const ch = channels.find((x) => x.m.key === c.platform)!;
+    const peers = CREATIVES.filter((x) => x.platform === c.platform);
+    const spend = ch.spend * c.weight;
+    const revenue = (ch.revenue * c.weight * c.roas) / sum(peers.map((x) => x.weight * x.roas));
+    const roas = revenue / spend;
+    const fatigued = c.frequency > 3.5 && c.trend < -0.2;
+    return {
+      name: c.name,
+      platform: ch.m.label,
+      format: c.format,
+      spend: Math.round(spend),
+      revenue: Math.round(revenue),
+      roas: round(roas, 2),
+      ctr: round(c.ctr, 4),
+      ctrChange: round(c.trend * 100),
+      ...(c.hook ? { hookRate: c.hook, holdRate: c.hold } : {}),
+      ...(c.frequency ? { frequency: c.frequency } : {}),
+      fatigue: fatigued
+        ? ("Fatigued" as const)
+        : c.trend < -0.05
+          ? ("Watch" as const)
+          : ("Fresh" as const),
+      belowBreakEven: roas < breakEven,
+    };
+  });
+}
+
+// ── Recommended actions ──────────────────────────────────────────────────────
+
+/**
+ * What to do next, each computed from the same numbers the dashboards show,
+ * with its expected effect. Approving one in the demo only writes to a log.
+ */
+function recommendedActions(range: Range) {
+  const days = RANGE_DAYS[range];
+  const breakEven = breakEvenRoas(days);
+  const items = inventory();
+  const runner = items.find((i) => i.sku === "FTW-TRL-01")!;
+  const beanie = items.find((i) => i.sku === "ACC-BEA-03")!;
+  const tiktok = marketing(range).channels.find((c) => c.m.key === "tiktok")!;
+  const tiktokRoas = tiktok.revenue / tiktok.spend;
+  // A dollar of ad spend returns ROAS ÷ break-even in profit before marketing.
+  const cut = 0.3 * tiktok.spend;
+  const saved = cut * (1 - tiktokRoas / breakEven);
+  const atRisk = run.segments().find((s) => s.name === "At risk")!;
+  const winBack = atRisk.customers * 0.04 * 82 * 0.46;
+  const boot = productSales(range, "all").find((p) => p.sku === "FTW-DBT-03")!;
+  const extraReturns = boot.revenue * (boot.returnRate - 0.11);
+  const actions = [
+    {
+      id: "reorder-trail-runner",
+      title: `Order ${formatNumber(runner.suggestedOrder ?? 0)} more ${runner.name}`,
+      detail: `It sells ${runner.dailySales.toFixed(0)} a day and runs out in ${runner.daysOfCover.toFixed(0)} days, ${Math.ceil(runner.stockoutGapDays)} days before the open order lands.`,
+      impact: runner.revenueAtRisk,
+      impactText: `${formatCurrency(runner.revenueAtRisk)} of sales protected`,
+      owner: "Merchandising",
+      effort: "Low",
+    },
+    {
+      id: "cut-tiktok",
+      title: "Cut TikTok spend by 30%",
+      detail: `Its ROAS is ${tiktokRoas.toFixed(2)}x against a ${breakEven.toFixed(2)}x break-even, so each dollar loses ${formatCurrency(1 - tiktokRoas / breakEven)} of profit. Keep the unboxing video; pause the trend-sound ad.`,
+      impact: saved,
+      impactText: `${formatCurrency(saved)} more contribution profit per ${days} days`,
+      owner: "Marketing",
+      effort: "Low",
+    },
+    {
+      id: "pause-beanie-ads",
+      title: `Pause ads for ${beanie.name} until stock lands`,
+      detail: `It is out of stock, and ${formatCurrency(beanie.adSpendPerDay)} a day of ads still send shoppers to it. ${formatNumber(beanie.incoming ?? 0)} units land in ${beanie.incomingInDays} days.`,
+      impact: beanie.adSpendPerDay * (beanie.incomingInDays ?? 0),
+      impactText: `${formatCurrency(beanie.adSpendPerDay * (beanie.incomingInDays ?? 0))} of ad spend saved`,
+      owner: "Marketing",
+      effort: "Low",
+    },
+    {
+      id: "win-back-at-risk",
+      title: `Send a win-back offer to ${formatNumber(atRisk.customers)} at-risk customers`,
+      detail: `They last ordered ${atRisk.daysSinceOrder} days ago on average, past the ${lapsePoint().days}-day lapse point. A 4% response at the usual order size and margin pays for a modest offer.`,
+      impact: winBack,
+      impactText: `${formatCurrency(winBack)} of contribution profit if 4% order`,
+      owner: "Retention",
+      effort: "Medium",
+    },
+    {
+      id: "fit-note-desert-boot",
+      title: `Add a fit note to ${boot.name}`,
+      detail: `${Math.round(boot.returnRate * 100)}% of units come back, against 11% for footwear, mostly for size. Footwear exchanges show it runs small.`,
+      impact: extraReturns / 2,
+      impactText: `${formatCurrency(extraReturns / 2)} fewer refunds if half the extra returns stop`,
+      owner: "Merchandising",
+      effort: "Low",
+    },
+  ];
+  return actions
+    .sort((a, b) => b.impact - a.impact)
+    .map(({ impact, ...a }) => ({ ...a, impact: Math.round(impact) }));
+}
+
+/** Handlers other handlers reuse. */
+const run = {
+  segments: () =>
+    (
+      ecommerceHandlers.get_customer_segments!({}) as {
+        segments: { name: string; customers: number; daysSinceOrder: number }[];
+      }
+    ).segments,
+};
+
+// ── Sale command center: Black Friday Cyber Monday 2026 ─────────────────────
+
+/** Black Friday 2026 is Nov 27, 48 days after today; Cyber Monday is Nov 30. */
+const BFCM_2026 = { from: -48, to: -51 };
+
+function salePlan() {
+  const ly = STORE_EVENTS.find((e) => e.id === "bfcm-2025")!;
+  const all = channelsFor("all");
+  // Two weeks before Black Friday to two weeks after Cyber Monday, last year,
+  // on the same weekdays (52 weeks earlier).
+  const start = ly.from + 14;
+  const end = ly.to - 14;
+  const n = start - end + 1;
+  const lastYear = wholeDays(() => series(all, "total", n, end));
+  const plan = lastYear.map((v) => v * PLAN.volume);
+  const day = (ago: number) => dateLabel(ago, true);
+  const labels = Array.from({ length: n }, (_, i) => dateLabel(start - i - LAST_YEAR));
+  const inSale = (i: number) => start - i <= ly.from && start - i >= ly.to;
+  const saleSales = sum(plan.filter((_, i) => inSale(i)));
+  const lyOrders = wholeDays(() => series(all, "orders", 4, ly.to));
+  const saleOrders = sum(lyOrders) * PLAN.volume;
+  const lyAds = wholeDays(() => sum(adSpendDaily(4, ly.to).paid));
+  // Buying for the sale: normal reorders cover a normal pace, so the sale
+  // needs its planned units over the four days minus four normal days, on
+  // order a lead time and safety stock before Black Friday.
+  const products = productSales("30d", "all");
+  const units = sum(products.map((p) => p.units));
+  const extra = inventory()
+    .map((item) => {
+      const p = products.find((x) => x.sku === item.sku)!;
+      const planned = (p.units / units) * saleOrders * 1.62;
+      return {
+        name: item.name,
+        key: item.sku,
+        value: Math.round(Math.max(0, planned - 4 * item.dailySales)),
+      };
+    })
+    .filter((x) => x.value > 0)
+    .sort((a, b) => b.value - a.value);
+  const orderBy = dateLabel(BFCM_2026.from + LEAD_TIME + SAFETY_DAYS);
+  const tile = (id: MetricId, value: string, hint: string) => ({
+    label: (METRICS[id] as MetricDefinition).label,
+    value,
+    hint,
+    definition: definitionOf(id),
+  });
+  return {
+    event: "Black Friday Cyber Monday 2026",
+    detail: `${day(BFCM_2026.from)} – ${day(BFCM_2026.to)}, ${-BFCM_2026.from} days from today`,
+    daysToGo: -BFCM_2026.from,
+    labels,
+    lastYear: lastYear.map(Math.round),
+    plan: plan.map(Math.round),
+    events: [
+      {
+        label: "Black Friday to Cyber Monday",
+        start: dateLabel(ly.from - LAST_YEAR),
+        end: dateLabel(ly.to - LAST_YEAR),
+        kind: "promo" as const,
+        detail: "Planned at last year's same weekdays, plus 12%",
+      },
+    ],
+    metrics: [
+      tile("sale_sales", formatCurrency(saleSales), "Four days, last year's plus 12%"),
+      tile("sale_orders", formatNumber(saleOrders), "Four days"),
+      tile("sale_ad_budget", formatCurrency(lyAds * PLAN.adSpend), "Last year's spend plus 6%"),
+      tile(
+        "sale_extra_units",
+        formatNumber(sum(extra.map((x) => x.value))),
+        `Across ${extra.length} products; order by ${orderBy}`,
+      ),
+    ],
+    orderBy,
+    extraUnits: extra.slice(0, 8) as Item[],
+  };
 }
 
 // ── Products and inventory ─────────────────────────────────────────────────
@@ -451,34 +1625,50 @@ const CATEGORY_LABELS: Record<string, string> = {
   home: "Home",
 };
 
-function productSales(range: Range, channel: string) {
+function productSales(range: Range, channel: string, type: CustomerType = "all") {
   const chs = channelsFor(channel);
   const storefront = chs.filter((c) => STOREFRONT.includes(c));
-  const weights = PRODUCTS.map((p) => p.weight * between(`w:${p.sku}:${channel}`, 0.85, 1.15));
+  // New customers start with the cheaper products; returning ones trade up.
+  const tilt = (price: number) =>
+    type === "new" ? (40 / price) ** 0.35 : type === "returning" ? (price / 40) ** 0.2 : 1;
+  const weights = PRODUCTS.map(
+    (p) => p.weight * tilt(p.price) * between(`w:${p.sku}:${channel}`, 0.85, 1.15),
+  );
   const totalWeight = sum(weights);
-  const units = sum(current(chs, "orders", range)) * 1.62;
-  const prevUnits = sum(previous(chs, "orders", range)) * 1.62;
-  const discountRate = sum(current(chs, "discounts", range)) / sum(current(chs, "gross", range));
+  const units = sum(current(chs, "orders", range, type)) * 1.62;
+  const prevUnits = sum(previous(chs, "orders", range, type)) * 1.62;
+  const discountRate =
+    sum(current(chs, "discounts", range, type)) / sum(current(chs, "gross", range, type));
   const prevDiscountRate =
-    sum(previous(chs, "discounts", range)) / sum(previous(chs, "gross", range));
+    sum(previous(chs, "discounts", range, type)) / sum(previous(chs, "gross", range, type));
   const storefrontShare = storefront.length
-    ? sum(current(storefront, "orders", range)) / sum(current(chs, "orders", range))
+    ? sum(current(storefront, "orders", range, type)) / sum(current(chs, "orders", range, type))
     : 0;
-  const views = storefront.length ? sum(current(storefront, "sessions", range)) * 0.565 : 0;
+  const views = storefront.length ? sum(current(storefront, "sessions", range, type)) * 0.565 : 0;
+  const raw = PRODUCTS.map((p, i) => {
+    const u =
+      (units * weights[i] * between(`s:${p.sku}:${range}:${channel}`, 0.88, 1.18)) / totalWeight;
+    const pu =
+      (prevUnits * weights[i] * between(`p:${p.sku}:${range}:${channel}`, 0.9, 1.1)) / totalWeight;
+    return {
+      units: u,
+      revenue: u * p.price * (1 - discountRate) * (1 - p.ret),
+      prevRevenue: pu * p.price * (1 - prevDiscountRate) * (1 - p.ret),
+    };
+  });
+  // Product revenue is net sales, so the products add up to the store's net sales.
+  const scale = sum(current(chs, "net", range, type)) / sum(raw.map((r) => r.revenue));
+  const prevScale = sum(previous(chs, "net", range, type)) / sum(raw.map((r) => r.prevRevenue));
   return PRODUCTS.map((p, i) => {
-    const u = Math.round(
-      (units * weights[i] * between(`s:${p.sku}:${range}:${channel}`, 0.88, 1.18)) / totalWeight,
-    );
-    const pu = Math.round(
-      (prevUnits * weights[i] * between(`p:${p.sku}:${range}:${channel}`, 0.9, 1.1)) / totalWeight,
-    );
-    const revenue = u * p.price * (1 - discountRate);
-    const prevRevenue = pu * p.price * (1 - prevDiscountRate);
+    const u = Math.round(raw[i].units * scale);
+    const revenue = raw[i].revenue * scale;
+    const prevRevenue = raw[i].prevRevenue * prevScale;
     const v = Math.round((views * weights[i] * between(`v:${p.sku}`, 0.85, 1.15)) / totalWeight);
     const addToCartRate = p.cart * between(`c:${p.sku}:${range}`, 0.9, 1.1);
     const purchases = (u * storefrontShare) / 1.15;
-    const unitsDaily = current(chs, "orders", range).map(
-      (o, d) => ((o * 1.62 * weights[i]) / totalWeight) * between(`d:${p.sku}:${d}`, 0.75, 1.25),
+    const unitsDaily = current(chs, "orders", range, type).map(
+      (o, d) =>
+        ((o * 1.62 * weights[i] * scale) / totalWeight) * between(`d:${p.sku}:${d}`, 0.75, 1.25),
     );
     return {
       ...p,
@@ -510,16 +1700,33 @@ const STOCK_PLAN: Record<string, { cover?: number; incoming?: number; inDays?: n
 let inventoryCache: ReturnType<typeof buildInventory> | undefined;
 const inventory = () => (inventoryCache ??= buildInventory());
 
+/** Days from placing a purchase order to stock on the shelf, and the safety stock on top. */
+const LEAD_TIME = 14;
+const SAFETY_DAYS = 7;
+
 function buildInventory() {
   const sales = productSales("30d", "all");
+  const net = sum(sales.map((p) => p.revenue));
+  const adsPerDay = sum(adSpendDaily(30, 0).paid) / 30;
   return sales.map((p) => {
     const plan = STOCK_PLAN[p.sku] ?? {};
-    const dailySales = p.units / 30;
+    // Velocity counts only the days the product was in stock, so a sold-out
+    // product isn't mistaken for a slow one.
+    const out = STORE_EVENTS.find((e) => e.kind === "stockout" && e.label.startsWith(p.name));
+    const daysOut = out ? out.from - out.to + 1 : 0;
+    const dailySales = p.units / (30 - daysOut);
+    const unitRevenue = p.revenue / Math.max(1, p.units);
     const cover = plan.cover ?? between(`cover:${p.sku}`, 26, 75);
     const stock = Math.round(dailySales * cover);
-    const reorderPoint = Math.round(dailySales * 21);
+    const reorderPoint = Math.round(dailySales * (LEAD_TIME + SAFETY_DAYS));
     const incoming = plan.incoming ?? 0;
     const suggested = Math.max(0, Math.ceil((dailySales * 45 - stock - incoming) / 50) * 50);
+    // An open order counts toward cover: the next order is due when stock on
+    // hand plus what's already ordered runs down to lead time plus safety.
+    const orderIn = Math.floor((stock + incoming) / dailySales - LEAD_TIME - SAFETY_DAYS);
+    // Days with nothing to sell: until the open order lands, or a new order would.
+    const landsIn = plan.inDays ?? LEAD_TIME;
+    const gap = Math.max(0, landsIn - stock / dailySales);
     return {
       sku: p.sku,
       name: p.name,
@@ -531,6 +1738,12 @@ function buildInventory() {
       daysOfCover: round(stock / dailySales),
       ...(incoming ? { incoming, incomingInDays: plan.inDays } : {}),
       ...(suggested ? { suggestedOrder: suggested } : {}),
+      replenishBy: orderIn > 0 ? dateLabel(-orderIn) : "Now",
+      ...(orderIn < 0 ? { daysLate: -orderIn } : {}),
+      stockoutGapDays: round(gap),
+      revenueAtRisk: Math.round(gap * dailySales * unitRevenue),
+      ...(daysOut ? { lostRevenue: Math.round(daysOut * dailySales * unitRevenue) } : {}),
+      adSpendPerDay: Math.round((p.revenue / net) * adsPerDay),
     };
   });
 }
@@ -634,6 +1847,26 @@ const CUSTOMERS = [
   "Kai Nakamura",
   "Priya Nair",
   "Oliver Grant",
+  "Hana Kobayashi",
+  "Mateo García",
+  "Chloe Martin",
+  "Daniel Mensah",
+  "Ingrid Larsen",
+  "Arjun Mehta",
+  "Grace O'Neill",
+  "Tomás Novak",
+  "Leila Haddad",
+  "Ben Carter",
+  "Yuki Tanaka",
+  "Aisha Bello",
+  "Felix Wagner",
+  "Mia Rossi",
+  "Samuel Adeyemi",
+  "Clara Dubois",
+  "Ravi Kumar",
+  "Elena Popescu",
+  "Jonas Berg",
+  "Nora Fitzgerald",
 ];
 const COUNTRIES = [
   { label: "United States", share: 0.58 },
@@ -653,31 +1886,148 @@ function ledger(lines: [string, "base" | "add" | "subtract" | "total", number, n
   }));
 }
 
-function profit(range: Range, period: "current" | "previous") {
-  const get = period === "current" ? current : previous;
-  const all = channelsFor("all");
-  const m = marketing(range, period === "current" ? 0 : RANGE_DAYS[range]);
-  const net = sum(get(all, "net", range));
-  const cogs = sum(get(all, "cogs", range));
-  const fulfillment = sum(get(all, "fulfillment", range));
-  const fees = sum(get(all, "fees", range));
-  const gross = net - cogs;
-  const contribution = gross - fulfillment - fees - m.adSpend - m.otherMarketing;
+// ── Profit and comparisons ─────────────────────────────────────────────────
+
+/** The plan: the same weekdays last year, grown by these factors. */
+const PLAN = { volume: 1.12, sessions: 1.08, adSpend: 1.06, otherMarketing: 1 };
+
+const COMPARISON_LABEL: Record<Compare, string> = {
+  previous_period: "Prior period",
+  last_year: "Same days last year",
+  plan: "Plan",
+};
+const AGAINST_TEXT: Record<Compare, string | undefined> = {
+  previous_period: undefined,
+  last_year: "same days last year",
+  plan: "plan",
+};
+
+/** Daily values to set a period against: the period before it, the same weekdays last year, or the plan. */
+function against(
+  chs: Channel[],
+  field: Field,
+  range: Range,
+  compare: Compare,
+  type: CustomerType = "all",
+): number[] {
+  const days = RANGE_DAYS[range];
+  if (compare === "previous_period") return series(chs, field, days, days, type);
+  const lastYear = series(chs, field, days, LAST_YEAR, type);
+  if (compare === "last_year") return lastYear;
+  const growth = field === "sessions" ? PLAN.sessions : PLAN.volume;
+  return lastYear.map((v) => v * growth);
+}
+
+type ProfitLine =
+  "net" | "cogs" | "fulfillment" | "fees" | "returnCosts" | "adSpend" | "otherMarketing";
+type ProfitDays = Record<ProfitLine, number[]>;
+
+/**
+ * Each day's profit lines for the channels, for `days` days ending `offset`
+ * days ago. Fulfillment is net of the shipping customers paid. Marketing drives
+ * the online store and app, so each of them carries its share of the spend by
+ * sales; Amazon's selling costs are its fees.
+ */
+function profitDays(chs: Channel[], days: number, offset: number): ProfitDays {
+  const field = (f: Field) => series(chs, f, days, offset);
+  const share = storefrontShare(chs, days, offset);
+  const spend = adSpendDaily(days, offset);
+  const shipping = field("shipping");
   return {
-    net,
-    cogs,
-    gross,
-    fulfillment,
-    fees,
-    ad: m.adSpend,
-    other: m.otherMarketing,
-    contribution,
+    net: field("net"),
+    cogs: field("cogs"),
+    fulfillment: field("fulfillment").map((v, i) => v - shipping[i]),
+    fees: field("fees"),
+    returnCosts: field("returnCosts"),
+    adSpend: spend.paid.map((v, i) => v * share[i]),
+    otherMarketing: spend.other.map((v, i) => v * share[i]),
   };
+}
+
+/** Each day's share of online store and app sales that the channels made; marketing is shared out by it. */
+function storefrontShare(chs: Channel[], days: number, offset: number): number[] {
+  const storefront = series(STOREFRONT, "total", days, offset);
+  const own = series(
+    chs.filter((c) => STOREFRONT.includes(c)),
+    "total",
+    days,
+    offset,
+  );
+  return storefront.map((v, i) => (v ? own[i] / v : 0));
+}
+
+/** Daily spend on paid ads and on other marketing, and each paid platform's own. */
+function adSpendDaily(days: number, offset: number) {
+  const { channels } = marketingOver(days, offset);
+  const daily = (list: typeof channels) =>
+    Array.from({ length: days }, (_, i) => sum(list.map((c) => c.spendDaily[i])));
+  const paid = channels.filter((c) => PAID.has(c.m.key));
+  return {
+    paid: daily(paid),
+    other: daily(channels.filter((c) => !PAID.has(c.m.key))),
+    platforms: paid.map((c) => ({ key: c.m.key, label: c.m.label, daily: c.spendDaily })),
+  };
+}
+
+/** The comparison's profit lines; the plan grows last year's sales lines and its marketing separately. */
+function profitAgainst(chs: Channel[], range: Range, compare: Compare): ProfitDays {
+  const days = RANGE_DAYS[range];
+  if (compare === "previous_period") return profitDays(chs, days, days);
+  const lastYear = profitDays(chs, days, LAST_YEAR);
+  if (compare === "last_year") return lastYear;
+  return planned(lastYear);
+}
+
+/** Last year's profit lines grown into the plan: sales lines by volume, marketing on its own. */
+function planned(lastYear: ProfitDays): ProfitDays {
+  const grow = (line: ProfitLine) => {
+    const k =
+      line === "adSpend"
+        ? PLAN.adSpend
+        : line === "otherMarketing"
+          ? PLAN.otherMarketing
+          : PLAN.volume;
+    return lastYear[line].map((v) => v * k);
+  };
+  return Object.fromEntries(
+    (Object.keys(lastYear) as ProfitLine[]).map((line) => [line, grow(line)]),
+  ) as ProfitDays;
+}
+
+const beforeMarketingOf = (p: ProfitDays) =>
+  p.net.map((v, i) => v - p.cogs[i] - p.fulfillment[i] - p.fees[i] - p.returnCosts[i]);
+const contributionOf = (p: ProfitDays) =>
+  beforeMarketingOf(p).map((v, i) => v - p.adSpend[i] - p.otherMarketing[i]);
+
+/**
+ * The ROAS at which ad spend uses up all the profit before marketing: store
+ * and app total sales ÷ their profit before marketing, on the same basis as
+ * blended ROAS.
+ */
+function breakEvenRoas(days: number, offset = 0) {
+  const sales = sum(series(STOREFRONT, "total", days, offset));
+  return sales / sum(beforeMarketingOf(profitDays(STOREFRONT, days, offset)));
 }
 
 function ncpa(range: Range, offset = 0) {
   const days = RANGE_DAYS[range];
   return marketing(range, offset).adSpend / sum(series(STOREFRONT, "newOrders", days, offset));
+}
+
+/** A KPI for a registered metric: its label, good direction, and definition come from METRICS. */
+function metric(
+  id: MetricId,
+  current: number,
+  previous: number,
+  format: (v: number) => string,
+  options: Parameters<typeof kpi>[4] = {},
+): Kpi {
+  const { label, goodDirection } = METRICS[id] as MetricDefinition;
+  return kpi(label, current, previous, format, {
+    goodDirection,
+    definition: definitionOf(id),
+    ...options,
+  });
 }
 
 /** A daily series against the same days of the previous period, bucketed by week for 90d. */
@@ -707,8 +2057,13 @@ const roundTo = (value: number, digits: number) => {
   return Math.round(value / step) * step;
 };
 
-const saleEvent = (range: Range) =>
-  eventSpan(range, "Fall sale", 14, 12, "20% off sitewide, Sep 26–28");
+/** The store's calendar as chart events for the period, each with its kind. */
+function eventsFor(range: Range): ChartEvent[] {
+  return STORE_EVENTS.flatMap((e) => {
+    const span = eventSpan(range, e.label, e.from, e.to, e.detail);
+    return span ? [{ ...span, kind: e.kind }] : [];
+  });
+}
 
 /** Ranked items with their share of the total and change against the previous period. */
 function items(
@@ -729,28 +2084,29 @@ function items(
   }));
 }
 
-function salesBy({ range, channel, dimension }: Input<"get_sales_by">) {
+function salesBy({ range, channel, dimension, customerType: type }: Input<"get_sales_by">) {
   const chs = channelsFor(channel);
   if (dimension === "channel") {
     const all = Object.keys(CHANNELS) as Channel[];
     const names = all.map((c) => CHANNELS[c].label);
-    const totals = all.map((c) => sum(current([c], "total", range)));
+    const totals = all.map((c) => sum(current([c], "total", range, type)));
     return {
       labels: names,
       totalSales: totals.map(Math.round),
-      orders: all.map((c) => Math.round(sum(current([c], "orders", range)))),
+      orders: all.map((c) => Math.round(sum(current([c], "orders", range, type)))),
       items: items(
         names,
         totals,
-        all.map((c) => sum(previous([c], "total", range))),
+        all.map((c) => sum(previous([c], "total", range, type))),
         all,
       ),
     };
   }
   if (dimension === "category") {
-    const products = productSales(range, channel);
+    const products = productSales(range, channel, type);
     const categories = Object.keys(CATEGORY_LABELS);
-    const totalRatio = sum(current(chs, "total", range)) / sum(current(chs, "net", range));
+    const totalRatio =
+      sum(current(chs, "total", range, type)) / sum(current(chs, "net", range, type));
     const totals = categories.map(
       (c) => sum(products.filter((p) => p.category === c).map((p) => p.revenue)) * totalRatio,
     );
@@ -775,11 +2131,11 @@ function salesBy({ range, channel, dimension }: Input<"get_sales_by">) {
   }
   if (dimension === "device") {
     const storefront = chs.filter((c) => STOREFRONT.includes(c));
-    const sales = sum(current(storefront, "total", range));
-    const orders = sum(current(storefront, "orders", range));
+    const sales = sum(current(storefront, "total", range, type));
+    const orders = sum(current(storefront, "orders", range, type));
     const devices = Object.values(DEVICES);
     const weight = sum(devices.map((d) => d.orders * d.aov));
-    const prevSales = sum(previous(storefront, "total", range));
+    const prevSales = sum(previous(storefront, "total", range, type));
     const totals = devices.map((d) => (sales * d.orders * d.aov) / weight);
     return {
       labels: devices.map((d) => d.label),
@@ -793,13 +2149,13 @@ function salesBy({ range, channel, dimension }: Input<"get_sales_by">) {
       orders: devices.map((d) => Math.round(orders * d.orders)),
     };
   }
-  const sales = sum(current(chs, "total", range));
-  const orders = sum(current(chs, "orders", range));
+  const sales = sum(current(chs, "total", range, type));
+  const orders = sum(current(chs, "orders", range, type));
   const shares = COUNTRIES.map(
     (c) => c.share * between(`country:${c.label}:${range}:${channel}`, 0.9, 1.1),
   );
   const total = sum(shares);
-  const prevSales = sum(previous(chs, "total", range));
+  const prevSales = sum(previous(chs, "total", range, type));
   return {
     labels: COUNTRIES.map((c) => c.label),
     items: items(
@@ -817,9 +2173,9 @@ function salesBy({ range, channel, dimension }: Input<"get_sales_by">) {
  * change over the period, days add up to the store's total, and each part's
  * days add up to its item value.
  */
-function splitOverTime(range: Range, chs: Channel[], parts: Item[]) {
+function splitOverTime(range: Range, chs: Channel[], parts: Item[], type: CustomerType) {
   const days = RANGE_DAYS[range];
-  const daily = current(chs, "total", range);
+  const daily = current(chs, "total", range, type);
   const total = sum(parts.map((p) => p.value)) || 1;
   const raw = parts.map((p) => {
     const next = random(`split:${p.name}:${range}`);
@@ -844,10 +2200,517 @@ function splitOverTime(range: Range, chs: Channel[], parts: Item[]) {
   };
 }
 
+// ── Why: explain_change ────────────────────────────────────────────────────
+
+type WhyMetric = Input<"explain_change">["metric"];
+
+const WHY_LABEL: Record<WhyMetric, string> = {
+  total_sales: "Total sales",
+  orders: "Orders",
+  aov: "Average order value",
+  conversion_rate: "Conversion rate",
+  contribution_profit: "Contribution profit",
+};
+const WHY_FORMAT: Record<WhyMetric, ValueFormat> = {
+  total_sales: "currency",
+  orders: "number",
+  aov: "currency",
+  conversion_rate: "percent",
+  contribution_profit: "currency",
+};
+const whyText = (metric: WhyMetric) =>
+  metric === "orders"
+    ? formatNumber
+    : metric === "conversion_rate"
+      ? (v: number) => `${v.toFixed(2)}%`
+      : metric === "aov"
+        ? formatCurrency
+        : (v: number) => formatCurrency(Math.round(v));
+const whySigned = (metric: WhyMetric) => (v: number) =>
+  metric === "conversion_rate"
+    ? formatPoints(v, 2)
+    : `${v >= 0 ? "+" : "−"}${whyText(metric)(Math.abs(v))}`;
+
+/** Daily values for the channels in some window: the current period, a past one, or the comparison. */
+type DailyGetter = (chs: Channel[], field: Field) => number[];
+
+/** A sales metric's value from daily fields; conversion rate counts the online store and app only. */
+function metricFrom(
+  metric: Exclude<WhyMetric, "contribution_profit">,
+  chs: Channel[],
+  get: DailyGetter,
+) {
+  const t = (f: Field, cs = chs) => sum(get(cs, f));
+  if (metric === "total_sales") return t("total");
+  if (metric === "orders") return t("orders");
+  if (metric === "aov") return (t("gross") - t("discounts")) / t("orders");
+  const front = chs.filter((c) => STOREFRONT.includes(c));
+  return front.length ? (t("orders", front) / t("sessions", front)) * 100 : 0;
+}
+
+/** The metric over `days` days ending `offset` days ago. */
+function metricAt(metric: WhyMetric, chs: Channel[], days: number, offset: number) {
+  if (metric === "contribution_profit") return sum(contributionOf(profitDays(chs, days, offset)));
+  return metricFrom(metric, chs, (cs, f) => series(cs, f, days, offset));
+}
+
+/** KPI labels whose usual range the explain metrics can compute. */
+const USUAL_FOR: Record<string, WhyMetric> = {
+  "Total sales": "total_sales",
+  Orders: "orders",
+  "Average order value": "aov",
+  "Conversion rate": "conversion_rate",
+};
+
+/**
+ * A metric's own usual range (our rule): its 10th to 90th percentile over up
+ * to 13 earlier periods of the same length, and whether this period is inside.
+ */
+function usualRange(
+  metric: WhyMetric,
+  chs: Channel[],
+  range: Range,
+  format: (v: number) => string,
+) {
+  const days = RANGE_DAYS[range];
+  const periods = Math.min(13, Math.floor((HISTORY - days) / days) - 1);
+  const past = Array.from({ length: periods }, (_, k) =>
+    metricAt(metric, chs, days, (k + 1) * days),
+  ).sort((a, b) => a - b);
+  const at = (q: number) => {
+    const i = q * (past.length - 1);
+    const lo = Math.floor(i);
+    return past[lo]! + (past[Math.min(lo + 1, past.length - 1)]! - past[lo]!) * (i - lo);
+  };
+  const low = at(0.1);
+  const high = at(0.9);
+  const now = metricAt(metric, chs, days, 0);
+  return {
+    low: format(low),
+    high: format(high),
+    status: now < low ? ("below" as const) : now > high ? ("above" as const) : ("within" as const),
+    periods,
+  };
+}
+
+/** How many earlier windows of this length to judge a change against (our rule). */
+const PAST_WINDOWS: Record<Range, number> = { "7d": 8, "30d": 6, "90d": 3, mtd: 8 };
+
+/** The change between each earlier window and the one before it. */
+function pastChanges(metric: WhyMetric, chs: Channel[], range: Range): number[] {
+  const days = RANGE_DAYS[range];
+  return Array.from(
+    { length: PAST_WINDOWS[range] },
+    (_, k) =>
+      metricAt(metric, chs, days, (k + 1) * days) - metricAt(metric, chs, days, (k + 2) * days),
+  );
+}
+
+/** A segment's metric against the comparison, for metrics that add up. */
+function additiveSegments(
+  metric: "total_sales" | "orders",
+  chs: Channel[],
+  cur: DailyGetter,
+  cmp: DailyGetter,
+): Segment[] {
+  return chs.map((c) => ({
+    key: c,
+    label: CHANNELS[c].label,
+    current: metricFrom(metric, [c], cur),
+    comparison: metricFrom(metric, [c], cmp),
+  }));
+}
+
+/** New and returning customers' sales or orders, from each day's share of first orders. */
+function customerSegments(
+  metric: "total_sales" | "orders",
+  chs: Channel[],
+  cur: DailyGetter,
+  cmp: DailyGetter,
+): Segment[] {
+  const split = (get: DailyGetter) => {
+    const orders = get(chs, "orders");
+    const firsts = get(chs, "newOrders");
+    if (metric === "orders") return [sum(firsts), sum(orders) - sum(firsts)];
+    const sales = get(chs, "total");
+    const fromNew = sum(sales.map((v, i) => v * (firsts[i] / (orders[i] || 1)) * 0.94));
+    return [fromNew, sum(sales) - fromNew];
+  };
+  const [nowNew, nowReturning] = split(cur);
+  const [thenNew, thenReturning] = split(cmp);
+  return [
+    { key: "new", label: "New customers", current: nowNew, comparison: thenNew },
+    {
+      key: "returning",
+      label: "Returning customers",
+      current: nowReturning,
+      comparison: thenReturning,
+    },
+  ];
+}
+
+/** Items from get_sales_by as segments; only for the prior period, the comparison those items carry. */
+function itemSegments(items: Item[]): Segment[] {
+  return items.map((item) => ({
+    key: item.key ?? item.name,
+    label: item.name,
+    current: item.value,
+    comparison: item.change != null ? item.value / (1 + item.change / 100) : item.value,
+  }));
+}
+
+function ratioSegments(
+  metric: "aov" | "conversion_rate",
+  chs: Channel[],
+  cur: DailyGetter,
+  cmp: DailyGetter,
+): RatioSegment[] {
+  const parts = metric === "aov" ? chs : chs.filter((c) => STOREFRONT.includes(c));
+  const pair = (c: Channel, get: DailyGetter) => {
+    const t = (f: Field) => sum(get([c], f));
+    return metric === "aov"
+      ? { n: t("gross") - t("discounts"), d: t("orders") }
+      : { n: t("orders") * 100, d: t("sessions") };
+  };
+  return parts.map((c) => {
+    const now = pair(c, cur);
+    const then = pair(c, cmp);
+    return {
+      key: c,
+      label: CHANNELS[c].label,
+      numerator: [now.n, then.n],
+      denominator: [now.d, then.d],
+    };
+  });
+}
+
+/**
+ * How much of a conversion rate change is the tracking change: the change in
+ * the rate as recorded, minus the change with every day's sessions restored
+ * to what a full count would have been.
+ */
+function trackingEffect(chs: Channel[], range: Range, compare: Compare): number {
+  const front = chs.filter((c) => STOREFRONT.includes(c));
+  if (!front.length) return 0;
+  const days = RANGE_DAYS[range];
+  const restored = (sessions: number[], offset: number) =>
+    sessions.map((v, i) => v / trackedSessions(offset + days - 1 - i));
+  const rate = (orders: number[], sessions: number[]) => (sum(orders) / sum(sessions)) * 100;
+  const nowOrders = current(front, "orders", range);
+  const nowSessions = current(front, "sessions", range);
+  const thenOrders = against(front, "orders", range, compare);
+  const thenSessions = against(front, "sessions", range, compare);
+  // The prior period sits right before this one; last year and the plan come from last year.
+  const thenOffset = compare === "previous_period" ? days : LAST_YEAR;
+  const recorded = rate(nowOrders, nowSessions) - rate(thenOrders, thenSessions);
+  const real =
+    rate(nowOrders, restored(nowSessions, 0)) -
+    rate(thenOrders, restored(thenSessions, thenOffset));
+  return recorded - real;
+}
+
+/**
+ * The profit change from the comparison to now as steps that add up to it
+ * exactly: the extra (or lost) sales at the comparison's margin before
+ * marketing, each cost's rate per dollar of net sales, then marketing spend.
+ */
+function profitWalkSteps(now: ProfitDays, then: ProfitDays) {
+  const t = (p: ProfitDays) =>
+    Object.fromEntries(Object.entries(p).map(([k, v]) => [k, sum(v)])) as Record<
+      ProfitLine,
+      number
+    >;
+  const a = t(now);
+  const b = t(then);
+  const before = (x: typeof a) => x.net - x.cogs - x.fulfillment - x.fees - x.returnCosts;
+  const margin = before(b) / b.net;
+  const share = (v: number) => `${(v * 100).toFixed(1)}%`;
+  const rateStep = (label: string, line: ProfitLine) => ({
+    label,
+    delta: -(a[line] / a.net - b[line] / b.net) * a.net,
+    current: `${share(a[line] / a.net)} of net sales`,
+    comparison: `${share(b[line] / b.net)} of net sales`,
+    detail: "The cost per dollar of net sales; a higher rate lowers profit",
+  });
+  return [
+    {
+      label: a.net >= b.net ? "More sales" : "Fewer sales",
+      delta: (a.net - b.net) * margin,
+      current: formatCurrency(a.net),
+      comparison: formatCurrency(b.net),
+      detail: `Net sales, at a ${share(margin)} margin before marketing`,
+    },
+    rateStep("Product margin", "cogs"),
+    rateStep("Fulfillment rate", "fulfillment"),
+    rateStep("Fee rate", "fees"),
+    rateStep("Return cost rate", "returnCosts"),
+    {
+      label: "Ad spend",
+      delta: -(a.adSpend - b.adSpend),
+      current: formatCurrency(a.adSpend),
+      comparison: formatCurrency(b.adSpend),
+      detail: "More spend lowers profit",
+    },
+    {
+      label: "Other marketing",
+      delta: -(a.otherMarketing - b.otherMarketing),
+      current: formatCurrency(a.otherMarketing),
+      comparison: formatCurrency(b.otherMarketing),
+      detail: "Email and SMS tools and affiliate commissions",
+    },
+  ];
+}
+
+const pctText = (share: number) => `${Math.round(Math.abs(share) * 100)}%`;
+
+function driverOf(
+  dimension: string,
+  part: { label: string; delta: number; current: number; comparison: number },
+  total: number,
+  text: (v: number) => string,
+  signed: (v: number) => string,
+  detail?: string,
+): Driver & { value: number } {
+  return {
+    dimension,
+    name: part.label,
+    delta: signed(part.delta),
+    share: round(total === 0 ? 0 : part.delta / total, 3),
+    current: text(part.current),
+    comparison: text(part.comparison),
+    tone: part.delta > 0 ? "good" : part.delta < 0 ? "bad" : "neutral",
+    ...(detail ? { detail } : {}),
+    value: part.delta,
+  };
+}
+
+function explain({ metric, range, channel, compare }: Input<"explain_change">): Why {
+  const chs = channelsFor(channel);
+  const days = RANGE_DAYS[range];
+  const label = WHY_LABEL[metric];
+  const text = whyText(metric);
+  const signed = whySigned(metric);
+  const cur: DailyGetter = (cs, f) => current(cs, f, range);
+  const cmp: DailyGetter = (cs, f) => against(cs, f, range, compare);
+  const against_ =
+    compare === "plan"
+      ? "plan"
+      : compare === "last_year"
+        ? "the same days last year"
+        : `the prior ${days} days`;
+
+  let value: number;
+  let comparison: number;
+  let walkSteps: { label: string; delta: number }[];
+  const candidates: (Driver & { value: number })[] = [];
+  let dataQuality: string | undefined;
+
+  if (metric === "contribution_profit") {
+    const now = profitDays(chs, days, 0);
+    const then = profitAgainst(chs, range, compare);
+    value = sum(contributionOf(now));
+    comparison = sum(contributionOf(then));
+    const steps = profitWalkSteps(now, then);
+    walkSteps = steps;
+    const total = value - comparison;
+    for (const step of steps) {
+      candidates.push({
+        dimension: "Profit line",
+        name: step.label,
+        delta: signed(step.delta),
+        share: round(total === 0 ? 0 : step.delta / total, 3),
+        current: step.current,
+        comparison: step.comparison,
+        tone: step.delta > 0 ? "good" : step.delta < 0 ? "bad" : "neutral",
+        detail: step.detail,
+        value: step.delta,
+      });
+    }
+    for (const c of contributions(
+      chs.map((ch) => ({
+        key: ch,
+        label: CHANNELS[ch].label,
+        current: sum(contributionOf(profitDays([ch], days, 0))),
+        comparison: sum(contributionOf(profitAgainst([ch], range, compare))),
+      })),
+    )) {
+      candidates.push(driverOf("Sales channel", c, total, text, signed));
+    }
+    // Ad platforms: each one's spend against the comparison, shared out like the bridge.
+    const share = storefrontShare(chs, days, 0);
+    const thenOffset = compare === "previous_period" ? days : LAST_YEAR;
+    const thenShare = storefrontShare(chs, days, thenOffset);
+    const nowSpend = adSpendDaily(days, 0).platforms;
+    const thenSpend = adSpendDaily(days, thenOffset).platforms;
+    const grow = compare === "plan" ? PLAN.adSpend : 1;
+    nowSpend.forEach((p, k) => {
+      const spentNow = sum(p.daily.map((v, i) => v * share[i]));
+      const spentThen = sum(thenSpend[k]!.daily.map((v, i) => v * thenShare[i])) * grow;
+      if (spentNow === 0 && spentThen === 0) return;
+      candidates.push(
+        driverOf(
+          "Ad platform",
+          {
+            label: p.label,
+            delta: -(spentNow - spentThen),
+            current: spentNow,
+            comparison: spentThen,
+          },
+          total,
+          formatCurrency,
+          whySigned("total_sales"),
+          "Spend: more spend lowers profit",
+        ),
+      );
+    });
+  } else if (metric === "total_sales" || metric === "orders") {
+    const channels = additiveSegments(metric, chs, cur, cmp);
+    value = sum(channels.map((c) => c.current));
+    comparison = sum(channels.map((c) => c.comparison));
+    const total = value - comparison;
+    const byChannel = contributions(channels);
+    walkSteps = byChannel.map((c) => ({ label: c.label, delta: c.delta }));
+    byChannel.forEach((c) => candidates.push(driverOf("Sales channel", c, total, text, signed)));
+    contributions(customerSegments(metric, chs, cur, cmp)).forEach((c) =>
+      candidates.push(driverOf("Customer type", c, total, text, signed)),
+    );
+    if (compare === "previous_period" && metric === "total_sales") {
+      // get_sales_by carries the prior period, so categories and devices can be compared.
+      const scaled = (items: Item[]) => {
+        const segs = itemSegments(items);
+        const k = total / (sum(segs.map((g) => g.current - g.comparison)) || 1);
+        return contributions(segs).map((g) => ({ ...g, delta: g.delta * k }));
+      };
+      scaled(salesBy({ range, channel, dimension: "category", customerType: "all" }).items).forEach(
+        (c) => candidates.push(driverOf("Category", c, total, text, signed)),
+      );
+    }
+  } else {
+    const split = mixAndRate(ratioSegments(metric, chs, cur, cmp));
+    value = metric === "aov" ? split.current : metricFrom(metric, chs, cur);
+    comparison = metric === "aov" ? split.comparison : metricFrom(metric, chs, cmp);
+    const total = value - comparison;
+    const tracking = metric === "conversion_rate" ? trackingEffect(chs, range, compare) : 0;
+    walkSteps = [
+      { label: "Channel mix", delta: split.mix },
+      ...(Math.abs(tracking) >= 0.01
+        ? [
+            { label: "Tracking change", delta: tracking },
+            { label: "Within channels", delta: split.rate - tracking },
+          ]
+        : [{ label: "Within channels", delta: split.rate }]),
+    ];
+    for (const part of split.parts) {
+      const weight = metric === "aov" ? "orders" : "sessions";
+      candidates.push(
+        driverOf(
+          "Within channel",
+          {
+            label: part.label,
+            delta: part.rate,
+            current: part.ratio[0],
+            comparison: part.ratio[1],
+          },
+          total,
+          text,
+          signed,
+        ),
+        driverOf(
+          "Channel mix",
+          {
+            label: part.label,
+            delta: part.mix,
+            current: part.weight[0] * 100,
+            comparison: part.weight[1] * 100,
+          },
+          total,
+          (v) => `${v.toFixed(0)}% of ${weight}`,
+          signed,
+        ),
+      );
+    }
+    if (Math.abs(tracking) >= 0.01) {
+      const event = STORE_EVENTS.find((e) => e.id === "tracking-change")!;
+      dataQuality = `${signed(tracking)} of the change is the ${event.label.toLowerCase()} on ${dateLabel(event.from)}, which stopped counting about 7% of sessions. ${Math.abs(total - tracking) < 0.005 ? "Without it, conversion has not changed." : `Without it, the change is ${signed(total - tracking)}.`}`;
+      candidates.push({
+        dimension: "Data",
+        name: event.label,
+        delta: signed(tracking),
+        share: round(total === 0 ? 0 : tracking / total, 3),
+        current: "Sessions counted: 93%",
+        comparison: "Sessions counted: 100%",
+        tone: "neutral",
+        detail: event.detail,
+        value: tracking,
+      });
+    }
+  }
+
+  const total = value - comparison;
+  const change = comparison === 0 ? 0 : (total / Math.abs(comparison)) * 100;
+  const sure = confidence(total, pastChanges(metric, chs, range), comparison, {
+    centre: compare === "previous_period",
+  });
+  // The biggest movers in the total's direction, then those against it; at most
+  // two per dimension so one view does not crowd out the others.
+  const pick = (sameSign: boolean, limit: number) => {
+    const perDimension = new Map<string, number>();
+    return candidates
+      .filter((c) => Math.abs(c.share) >= 0.05 && c.value * total > 0 === sameSign)
+      .sort((a, b) => Math.abs(b.value) - Math.abs(a.value))
+      .filter((c) => {
+        const n = perDimension.get(c.dimension) ?? 0;
+        perDimension.set(c.dimension, n + 1);
+        return n < 2;
+      })
+      .slice(0, limit)
+      .map(({ value: _v, ...driver }) => driver);
+  };
+  const explained = sure.level !== "Low";
+  const drivers = explained ? pick(true, 4) : [];
+  const offsetting = explained ? pick(false, 3) : [];
+  const direction =
+    compare === "plan" ? (total >= 0 ? "above" : "below") : total >= 0 ? "up on" : "down on";
+  const size =
+    metric === "conversion_rate" ? `${Math.abs(total).toFixed(2)} pts` : text(Math.abs(total));
+  const verb = metric === "orders" ? "are" : "is";
+  const head = `${label} ${verb} ${size} (${Math.abs(change).toFixed(1)}%) ${direction} ${against_}.`;
+  // A tracking change is the explanation when there is one; name it once.
+  const top = dataQuality ? undefined : drivers[0];
+  const why = !explained
+    ? ` ${sure.note}, so no single cause stands out.`
+    : top
+      ? ` The biggest driver is ${top.name} (${top.dimension.toLowerCase()}): ${top.delta}, ${pctText(top.share)} of the change.`
+      : "";
+  return {
+    metric: label,
+    periodLabel: periodLabel(range, AGAINST_TEXT[compare]),
+    comparisonLabel: COMPARISON_LABEL[compare],
+    value: text(value),
+    comparison: text(comparison),
+    delta: signed(total),
+    change: round(change),
+    tone: Math.abs(change) < 0.05 ? "neutral" : total > 0 ? "good" : "bad",
+    confidence: sure,
+    summary: `${head}${why}${dataQuality ? ` ${dataQuality}` : ""}`,
+    drivers,
+    offsetting,
+    walk: walkOf(
+      { label: COMPARISON_LABEL[compare], value: comparison },
+      walkSteps,
+      { label: "This period", value },
+      Math.abs(value - comparison) * 0.005,
+    ).map((step) => ({ ...step, value: round(step.value, metric === "conversion_rate" ? 3 : 2) })),
+    format: WHY_FORMAT[metric],
+    ...(dataQuality ? { dataQuality } : {}),
+  };
+}
+
 export const ecommerceHandlers: Record<string, (args: any) => unknown> = {
-  get_store_kpis({ range, channel }: Input<"get_store_kpis">) {
+  get_store_kpis({ range, channel, compare }: Input<"get_store_kpis">) {
     const chs = channelsFor(channel);
     const storefront = chs.filter((c) => STOREFRONT.includes(c));
+    const prior = (s: Channel[], f: Field, r: Range) => against(s, f, r, compare);
     const sales = current(chs, "total", range);
     const orders = current(chs, "orders", range);
     const discounts = current(chs, "discounts", range);
@@ -855,40 +2718,44 @@ export const ecommerceHandlers: Record<string, (args: any) => unknown> = {
       current(chs, "gross", range).map((g, i) => g - discounts[i]),
       orders,
     );
-    const priorDiscounts = previous(chs, "discounts", range);
+    const priorDiscounts = prior(chs, "discounts", range);
     const priorAovDaily = ratio(
-      previous(chs, "gross", range).map((g, i) => g - priorDiscounts[i]),
-      previous(chs, "orders", range),
+      prior(chs, "gross", range).map((g, i) => g - priorDiscounts[i]),
+      prior(chs, "orders", range),
     );
     const aov = (s: Channel[], get: typeof current) =>
       (sum(get(s, "gross", range)) - sum(get(s, "discounts", range))) /
       sum(get(s, "orders", range));
     const returning = (get: typeof current) =>
       (1 - sum(get(chs, "newOrders", range)) / sum(get(chs, "orders", range))) * 100;
-    const hero = kpi(
-      "Total sales",
-      sum(sales),
-      sum(previous(chs, "total", range)),
-      formatCurrency,
-      {
-        hint: "Net sales + shipping + taxes, all selected channels",
-      },
-    );
-    const heroTrend = trendOf(range, sales, previous(chs, "total", range), "currency", [
-      saleEvent(range),
-    ]);
+    const profitNow = contributionOf(profitDays(chs, RANGE_DAYS[range], 0));
+    const profitThen = contributionOf(profitAgainst(chs, range, compare));
+    const hero = metric("contribution_profit", sum(profitNow), sum(profitThen), formatCurrency, {
+      series: profitNow,
+      hint: "What is left after products, delivery, fees, returns, and marketing",
+    });
+    const heroTrend = {
+      ...trendOf(range, profitNow, profitThen, "currency", eventsFor(range)),
+      comparisonLabel: COMPARISON_LABEL[compare],
+    };
     const metrics: Kpi[] = [
-      kpi("Orders", sum(orders), sum(previous(chs, "orders", range)), formatNumber, {
+      metric("total_sales", sum(sales), sum(prior(chs, "total", range)), formatCurrency, {
+        series: sales,
+        previousSeries: prior(chs, "total", range),
+        range,
+        chart: "currency",
+        total: true,
+      }),
+      metric("orders", sum(orders), sum(prior(chs, "orders", range)), formatNumber, {
         series: orders,
-        previousSeries: previous(chs, "orders", range),
+        previousSeries: prior(chs, "orders", range),
         range,
         chart: "number",
         total: true,
       }),
-      kpi("Average order value", aov(chs, current), aov(chs, previous), formatCurrency, {
+      metric("aov", aov(chs, current), aov(chs, prior), formatCurrency, {
         series: aovDaily,
         previousSeries: priorAovDaily,
-        hint: "(Gross sales − discounts) ÷ orders",
         range,
         chart: "currency",
       }),
@@ -898,20 +2765,20 @@ export const ecommerceHandlers: Record<string, (args: any) => unknown> = {
       const conv = (get: typeof current) =>
         (sum(get(storefront, "orders", range)) / sum(get(storefront, "sessions", range))) * 100;
       metrics.push(
-        kpi("Conversion rate", conv(current), conv(previous), pct, {
+        metric("conversion_rate", conv(current), conv(prior), pct, {
           series: ratio(current(storefront, "orders", range), sessions).map((v) => v * 100),
           previousSeries: ratio(
-            previous(storefront, "orders", range),
-            previous(storefront, "sessions", range),
+            prior(storefront, "orders", range),
+            prior(storefront, "sessions", range),
           ).map((v) => v * 100),
-          hint: "Orders ÷ sessions · DTC benchmark 1.5–3.5%",
+          hint: "DTC benchmark 1.5–3.5%",
           range,
           chart: "percent",
           band: { label: "DTC benchmark 1.5–3.5%", from: 1.5, to: 3.5 },
         }),
-        kpi("Sessions", sum(sessions), sum(previous(storefront, "sessions", range)), formatNumber, {
+        metric("sessions", sum(sessions), sum(prior(storefront, "sessions", range)), formatNumber, {
           series: sessions,
-          previousSeries: previous(storefront, "sessions", range),
+          previousSeries: prior(storefront, "sessions", range),
           hint: "Online store and app",
           range,
           chart: "number",
@@ -920,53 +2787,137 @@ export const ecommerceHandlers: Record<string, (args: any) => unknown> = {
       );
     } else {
       metrics.push(
-        { label: "Conversion rate", value: "—", hint: "Not tracked for Amazon" },
-        { label: "Sessions", value: "—", hint: "Not tracked for Amazon" },
+        {
+          label: "Conversion rate",
+          value: "—",
+          hint: "Not tracked for Amazon",
+          definition: definitionOf("conversion_rate"),
+        },
+        {
+          label: "Sessions",
+          value: "—",
+          hint: "Not tracked for Amazon",
+          definition: definitionOf("sessions"),
+        },
       );
     }
     metrics.push(
-      kpi(
-        "Returning customer rate",
+      metric(
+        "returning_customer_rate",
         returning(current),
-        returning(previous),
+        returning(prior),
         (v) => `${v.toFixed(1)}%`,
         {
           series: ratio(current(chs, "newOrders", range), orders).map((v) => (1 - v) * 100),
-          previousSeries: ratio(
-            previous(chs, "newOrders", range),
-            previous(chs, "orders", range),
-          ).map((v) => (1 - v) * 100),
-          hint: "Share of orders from returning customers · benchmark 20–40%",
+          previousSeries: ratio(prior(chs, "newOrders", range), prior(chs, "orders", range)).map(
+            (v) => (1 - v) * 100,
+          ),
+          hint: "Benchmark 20–40%",
           range,
           chart: "percent",
           band: { label: "Benchmark 20–40%", from: 20, to: 40 },
         },
       ),
     );
-    return { periodLabel: periodLabel(range), hero, heroTrend, metrics };
+    // Each KPI's usual range: the same-length periods before this one.
+    const usual = (metric: WhyMetric, k: Kpi, format: (v: number) => string): Kpi => ({
+      ...k,
+      usual: usualRange(metric, chs, range, format),
+    });
+    return {
+      periodLabel: periodLabel(range, AGAINST_TEXT[compare]),
+      hero: usual("contribution_profit", hero, formatCurrency),
+      heroTrend,
+      metrics: metrics
+        .map((k) => {
+          const metric = USUAL_FOR[k.label];
+          return metric && k.trend ? usual(metric, k, whyText(metric)) : k;
+        })
+        .map((k) =>
+          k.trend ? { ...k, trend: { ...k.trend, comparisonLabel: COMPARISON_LABEL[compare] } } : k,
+        ),
+      rules: [
+        `Compared with ${compare === "previous_period" ? `the prior ${RANGE_DAYS[range]} days` : AGAINST_TEXT[compare]}`,
+        channel === "all" ? "All channels" : CHANNELS[channel as Channel].label,
+        `US dollars, days in UTC; today until ${AS_OF.split(", ")[1]}, against the same hours before`,
+        "Total sales include shipping and taxes; net sales and profit do not",
+        "Revenue from store orders, not ad-platform claims",
+      ],
+    };
   },
 
-  get_sales_over_time({ range, channel }: Input<"get_sales_over_time">) {
+  explain_change: explain,
+
+  get_annotations({ range }: Input<"get_annotations">) {
+    return { events: eventsFor(range) };
+  },
+
+  get_promo_impact({ event }: Input<"get_promo_impact">) {
+    return promoImpact(event);
+  },
+
+  get_reconciliation({ range }: Input<"get_reconciliation">) {
+    const days = RANGE_DAYS[range];
+    const platforms = marketing(range)
+      .channels.filter((c) => PAID.has(c.m.key))
+      .map((c) => {
+        const claimed =
+          c.revenue *
+          PLATFORM_CLAIM[c.m.key as keyof typeof PLATFORM_CLAIM] *
+          between(`claim:${c.m.key}:${range}`, 0.95, 1.05);
+        return {
+          platform: c.m.label,
+          spend: Math.round(c.spend),
+          storeRevenue: Math.round(c.revenue),
+          claimedRevenue: Math.round(claimed),
+          storeRoas: round(c.revenue / c.spend, 2),
+          claimedRoas: round(claimed / c.spend, 2),
+        };
+      });
+    const store = sum(platforms.map((p) => p.storeRevenue));
+    const claimed = sum(platforms.map((p) => p.claimedRevenue));
+    const storefrontSales = sum(series(STOREFRONT, "total", days));
+    return {
+      periodLabel: periodLabel(range),
+      platforms,
+      storeTotal: store,
+      claimedTotal: claimed,
+      storefrontSales: Math.round(storefrontSales),
+      summary: `Meta, Google, and TikTok claim ${formatCurrency(claimed)} of sales for their ads; the store's own orders credit them with ${formatCurrency(store)}, so together they claim ${(claimed / store).toFixed(2)}× what they drove${claimed > storefrontSales ? ", more than every store and app sale in the period" : ""}. ROAS on this dashboard uses the store's numbers.`,
+    };
+  },
+
+  get_sales_over_time({
+    range,
+    channel,
+    customerType: type,
+    compare,
+  }: Input<"get_sales_over_time">) {
     const chs = channelsFor(channel);
     const days = RANGE_DAYS[range];
     const { labels, values } = bucket(
       dayLabels(days),
-      [current(chs, "total", range), previous(chs, "total", range), current(chs, "orders", range)],
+      [
+        current(chs, "total", range, type),
+        against(chs, "total", range, compare, type),
+        current(chs, "orders", range, type),
+      ],
       range,
     );
     return {
       labels,
       totalSales: values[0].map(Math.round),
-      previousPeriod: values[1].map(Math.round),
+      comparison: values[1].map(Math.round),
+      comparisonLabel: COMPARISON_LABEL[compare],
       orders: values[2].map(Math.round),
-      events: [saleEvent(range)].filter((e): e is ChartEvent => !!e),
+      events: eventsFor(range),
     };
   },
 
-  get_sales_breakdown({ range, channel }: Input<"get_sales_breakdown">) {
+  get_sales_breakdown({ range, channel, customerType: type }: Input<"get_sales_breakdown">) {
     const chs = channelsFor(channel);
-    const s = (f: Field) => sum(current(chs, f, range));
-    const p = (f: Field) => sum(previous(chs, f, range));
+    const s = (f: Field) => sum(current(chs, f, range, type));
+    const p = (f: Field) => sum(previous(chs, f, range, type));
     return {
       lines: ledger([
         ["Gross sales", "base", s("gross"), p("gross")],
@@ -988,18 +2939,20 @@ export const ecommerceHandlers: Record<string, (args: any) => unknown> = {
         : args.dimension === "device"
           ? channelsFor(args.channel).filter((c) => STOREFRONT.includes(c))
           : channelsFor(args.channel);
-    return { ...breakdown, overTime: splitOverTime(args.range, parts, breakdown.items) };
+    return {
+      ...breakdown,
+      overTime: splitOverTime(args.range, parts, breakdown.items, args.customerType),
+    };
   },
 
-  get_marketing_performance({ range }: Input<"get_marketing_performance">) {
+  get_marketing_performance({ range, model, window }: Input<"get_marketing_performance">) {
     const days = RANGE_DAYS[range];
-    const cur = marketing(range);
-    const prev = marketing(range, days);
+    const attribution = { model, window };
+    const cur = marketing(range, 0, attribution);
+    const prev = marketing(range, days, attribution);
     const storefrontSales = (offset: number) => sum(series(STOREFRONT, "total", days, offset));
     const allSales = (offset: number) => sum(series(channelsFor("all"), "total", days, offset));
     const newOrders = (offset: number) => sum(series(STOREFRONT, "newOrders", days, offset));
-    const aov = (offset: number) =>
-      storefrontSales(offset) / sum(series(STOREFRONT, "orders", days, offset));
     const dailySpend = cur.channels
       .filter((c) => PAID.has(c.m.key))
       .reduce((acc, c) => acc.map((v, i) => v + c.spendDaily[i]), new Array(days).fill(0));
@@ -1013,16 +2966,26 @@ export const ecommerceHandlers: Record<string, (args: any) => unknown> = {
       series(channelsFor("all"), "total", days, offset).map(
         (v, i) => v / ((spend[i] || 1) + other / days),
       );
+    const firstSales = (offset: number) => sum(series(STOREFRONT, "total", days, offset, "new"));
     const dailyCpa = (offset: number, spend: number[]) =>
       series(STOREFRONT, "newOrders", days, offset).map((v, i) => spend[i] / (v || 1));
     return {
       periodLabel: periodLabel(range),
-      hero: kpi(
-        "Blended ROAS",
+      rules: [
+        `Compared with the prior ${days} days`,
+        "Ad spend as billed by Meta, Google, and TikTok",
+        model === "platform"
+          ? `Channel revenue as each platform reports it (${window} window); it adds up to more than the store sold`
+          : `Channel revenue by ${ATTRIBUTION_LABEL[model]} with a ${window} window, from store orders`,
+        `Break-even ROAS ${breakEvenRoas(days).toFixed(2)}x, from profit before marketing`,
+      ],
+      hero: metric(
+        "blended_roas",
         storefrontSales(0) / cur.adSpend,
         storefrontSales(days) / prev.adSpend,
         times,
         {
+          series: dailyRoas(0, dailySpend),
           hint: "Store and app revenue ÷ ad spend on Meta, Google, and TikTok",
         },
       ),
@@ -1032,24 +2995,26 @@ export const ecommerceHandlers: Record<string, (args: any) => unknown> = {
           dailyRoas(0, dailySpend),
           dailyRoas(days, prevDailySpend),
           "ratio",
-          [saleEvent(range)],
+          eventsFor(range),
           true,
         ),
-        // At a 59% gross margin, ad-driven revenue pays for itself above 1.7x.
-        target: { label: "Break-even 1.7x", value: 1.7 },
+        // Below this, ad spend costs more than the profit it brings in.
+        target: {
+          label: `Break-even ${breakEvenRoas(days).toFixed(1)}x`,
+          value: round(breakEvenRoas(days), 2),
+        },
       },
       metrics: [
-        kpi("Ad spend", cur.adSpend, prev.adSpend, formatCurrency, {
+        metric("ad_spend", cur.adSpend, prev.adSpend, formatCurrency, {
           series: dailySpend,
           previousSeries: prevDailySpend,
-          goodDirection: "neutral",
           hint: "Meta, Google, and TikTok",
           range,
           chart: "currency",
           total: true,
         }),
-        kpi(
-          "MER",
+        metric(
+          "mer",
           allSales(0) / (cur.adSpend + cur.otherMarketing),
           allSales(days) / (prev.adSpend + prev.otherMarketing),
           times,
@@ -1062,21 +3027,20 @@ export const ecommerceHandlers: Record<string, (args: any) => unknown> = {
             band: { label: "Healthy DTC 3–5x", from: 3, to: 5 },
           },
         ),
-        kpi(
-          "New customer CPA",
+        metric(
+          "new_customer_cpa",
           cur.adSpend / newOrders(0),
           prev.adSpend / newOrders(days),
           formatCurrency,
           {
             series: dailyCpa(0, dailySpend),
             previousSeries: dailyCpa(days, prevDailySpend),
-            goodDirection: "down",
             hint: "Ad spend ÷ new-customer orders",
             range,
             chart: "currency",
           },
         ),
-        kpi("New customers", newOrders(0), newOrders(days), formatNumber, {
+        metric("new_customers_storefront", newOrders(0), newOrders(days), formatNumber, {
           series: series(STOREFRONT, "newOrders", days),
           previousSeries: series(STOREFRONT, "newOrders", days, days),
           hint: "First-time buyers in the store and app",
@@ -1084,12 +3048,32 @@ export const ecommerceHandlers: Record<string, (args: any) => unknown> = {
           chart: "number",
           total: true,
         }),
-        kpi(
-          "New customer ROAS",
-          (newOrders(0) * aov(0) * 0.94) / cur.adSpend,
-          (newOrders(days) * aov(days) * 0.94) / prev.adSpend,
-          times,
-          { hint: "First-order revenue ÷ ad spend", range, chart: "ratio" },
+        metric("amer", firstSales(0) / cur.adSpend, firstSales(days) / prev.adSpend, times, {
+          series: series(STOREFRONT, "total", days, 0, "new").map(
+            (v, i) => v / (dailySpend[i] || 1),
+          ),
+          previousSeries: series(STOREFRONT, "total", days, days, "new").map(
+            (v, i) => v / (prevDailySpend[i] || 1),
+          ),
+          hint: "What new customers' first orders return per ad dollar",
+          range,
+          chart: "ratio",
+        }),
+        metric(
+          "first_order_profit",
+          firstOrderProfit(days, 0),
+          firstOrderProfit(days, days),
+          formatCurrency,
+          {
+            // Each day reads the 7 days up to it: one day's new customers are too few.
+            series: Array.from({ length: days }, (_, i) => firstOrderProfit(7, days - 1 - i)),
+            previousSeries: Array.from({ length: days }, (_, i) =>
+              firstOrderProfit(7, 2 * days - 1 - i),
+            ),
+            hint: "Per new customer, after ad spend",
+            range,
+            chart: "currency",
+          },
         ),
       ],
       channels: cur.channels.map((c, i) => {
@@ -1115,26 +3099,48 @@ export const ecommerceHandlers: Record<string, (args: any) => unknown> = {
           trend: downsample(c.revenueDaily, 14).map(Math.round),
         };
       }),
-      targetRoas: TARGET_ROAS,
+      targetRoas: round(breakEvenRoas(days), 2),
     };
   },
 
-  get_profit_breakdown({ range }: Input<"get_profit_breakdown">) {
-    const c = profit(range, "current");
-    const p = profit(range, "previous");
+  get_profit_bridge({ range, channel, compare }: Input<"get_profit_bridge">) {
+    const chs = channelsFor(channel);
+    const days = RANGE_DAYS[range];
+    const totals = (p: ProfitDays) => {
+      const t = Object.fromEntries(
+        Object.entries(p).map(([line, values]) => [line, sum(values)]),
+      ) as Record<ProfitLine, number>;
+      const gross = t.net - t.cogs;
+      const beforeMarketing = gross - t.fulfillment - t.fees - t.returnCosts;
+      return {
+        ...t,
+        gross,
+        beforeMarketing,
+        contribution: beforeMarketing - t.adSpend - t.otherMarketing,
+      };
+    };
+    const c = totals(profitDays(chs, days, 0));
+    const p = totals(profitAgainst(chs, range, compare));
+    const share = (v: number) => `${((v / c.net) * 100).toFixed(1)}%`;
     return {
+      periodLabel: periodLabel(range, AGAINST_TEXT[compare]),
+      comparisonLabel: COMPARISON_LABEL[compare],
       lines: ledger([
         ["Net sales", "base", c.net, p.net],
         ["Cost of goods", "subtract", c.cogs, p.cogs],
         ["Gross profit", "total", c.gross, p.gross],
-        ["Shipping & fulfillment", "subtract", c.fulfillment, p.fulfillment],
-        ["Payment & marketplace fees", "subtract", c.fees, p.fees],
-        ["Ad spend", "subtract", c.ad, p.ad],
-        ["Other marketing", "subtract", c.other, p.other],
+        ["Fulfillment", "subtract", c.fulfillment, p.fulfillment],
+        ["Fees", "subtract", c.fees, p.fees],
+        ["Return costs", "subtract", c.returnCosts, p.returnCosts],
+        ["Profit before marketing", "total", c.beforeMarketing, p.beforeMarketing],
+        ["Ad spend", "subtract", c.adSpend, p.adSpend],
+        ["Other marketing", "subtract", c.otherMarketing, p.otherMarketing],
         ["Contribution profit", "total", c.contribution, p.contribution],
       ]),
-      grossMargin: `${((c.gross / c.net) * 100).toFixed(1)}%`,
-      contributionMargin: `${((c.contribution / c.net) * 100).toFixed(1)}%`,
+      grossMargin: share(c.gross),
+      contributionMargin: share(c.contribution),
+      breakEvenRoas: round(breakEvenRoas(days), 2),
+      profitPerOrder: formatCurrency(c.contribution / sum(current(chs, "orders", range))),
     };
   },
 
@@ -1186,46 +3192,50 @@ export const ecommerceHandlers: Record<string, (args: any) => unknown> = {
     const newOrders = current(all, "newOrders", range);
     const returning = (get: typeof current) =>
       (1 - sum(get(all, "newOrders", range)) / sum(get(all, "orders", range))) * 100;
-    const months = (seed: string, from: number, to: number) =>
-      Array.from(
-        { length: 12 },
-        (_, i) => from + ((to - from) * i) / 11 + between(`${seed}${i}`, -0.4, 0.4),
-      );
-    const ltv = 184.2;
-    const grossMargin = 0.59;
+    // 12-month LTV from the cohort curve: September's cohort (projected),
+    // against the cohort the comparison period acquired; and the cohorts so far.
+    const back = Math.max(1, Math.round(days / 30));
+    const ltv = cohortLtv(8, 12);
+    const ltvBefore = cohortLtv(8 - back, 12);
+    const all90 = profitDays(all, 90, 0);
+    const grossMargin = 1 - sum(all90.cogs) / sum(all90.net);
     const ratioNow = (ltv * grossMargin) / ncpa(range);
-    const ratioPrev = (171.4 * grossMargin) / ncpa(range, days);
+    const ratioPrev = (ltvBefore * grossMargin) / ncpa(range, days);
+    // Repeat purchase at each of the last 7 month ends: a trailing year each,
+    // as far back as the history reaches.
+    const monthEnds = Array.from({ length: 7 }, (_, i) => (6 - i) * 30);
     return {
       periodLabel: periodLabel(range),
-      hero: kpi(
-        "New customers",
+      hero: metric(
+        "new_customers",
         sum(newOrders),
         sum(previous(all, "newOrders", range)),
         formatNumber,
         {
+          series: newOrders,
           hint: "First order ever placed in the period, all channels",
         },
       ),
       heroTrend: trendOf(range, newOrders, previous(all, "newOrders", range), "number", [
-        saleEvent(range),
+        ...eventsFor(range),
       ]),
       metrics: [
-        kpi(
-          "Customers",
-          sum(orders) * 0.91,
-          sum(previous(all, "orders", range)) * 0.91,
+        metric(
+          "customers",
+          sum(orders) * BUYERS_PER_ORDER,
+          sum(previous(all, "orders", range)) * BUYERS_PER_ORDER,
           formatNumber,
           {
-            series: orders.map((o) => o * 0.91),
-            previousSeries: previous(all, "orders", range).map((o) => o * 0.91),
+            series: orders.map((o) => o * BUYERS_PER_ORDER),
+            previousSeries: previous(all, "orders", range).map((o) => o * BUYERS_PER_ORDER),
             hint: "Unique buyers in the period, all channels",
             range,
             chart: "number",
             total: true,
           },
         ),
-        kpi(
-          "Returning customer rate",
+        metric(
+          "returning_customer_rate",
           returning(current),
           returning(previous),
           (v) => `${v.toFixed(1)}%`,
@@ -1240,31 +3250,87 @@ export const ecommerceHandlers: Record<string, (args: any) => unknown> = {
             chart: "percent",
           },
         ),
-        kpi("Repeat purchase rate", 27.6, 25.9, (v) => `${v.toFixed(1)}%`, {
-          series: months("rpr", 25.9, 27.6),
+        metric("repeat_purchase_rate", repeatRate(0), repeatRate(days), (v) => `${v.toFixed(1)}%`, {
+          series: monthEnds.map(repeatRate),
           hint: "Customers with 2+ orders in the last 12 months",
-          range,
-          chart: "percent",
         }),
-        kpi("Time between orders", 46, 49, (v) => `${Math.round(v)} days`, {
-          goodDirection: "down",
-          series: months("tbo", 49, 46),
-          hint: "Median days from one order to the next",
-          range,
-          chart: "number",
+        // The gap between orders is a property of the store in our model, so it holds.
+        metric(
+          "time_between_orders",
+          ORDER_GAP.median,
+          ORDER_GAP.median,
+          (v) => `${Math.round(v)} days`,
+          { hint: "Median days from one order to the next" },
+        ),
+        metric("ltv_12m", ltv, ltvBefore, formatCurrency, {
+          series: Array.from({ length: 9 }, (_, k) => cohortLtv(k, 12)),
+          hint: "Revenue per customer in their first 12 months, from the cohort curve",
         }),
-        kpi("12-month LTV", ltv, 171.4, formatCurrency, {
-          series: months("ltv", 171.4, ltv),
-          hint: "Revenue per customer in their first 12 months",
-          range,
-          chart: "currency",
-        }),
-        kpi("LTV:CAC", ratioNow, ratioPrev, times, {
+        metric("ltv_cac", ratioNow, ratioPrev, times, {
           hint: "Gross-margin LTV ÷ new customer CPA · healthy ≥ 3x",
-          range,
-          chart: "ratio",
-          target: { label: "Healthy 3x", value: 3 },
         }),
+      ],
+    };
+  },
+
+  get_customer_flow({ range }: Input<"get_customer_flow">) {
+    const days = RANGE_DAYS[range];
+    const now = flowDaily(days, 0);
+    const then = flowDaily(days, days);
+    const { labels, values } = bucket(
+      dayLabels(days),
+      [now.newCustomers, now.reactivated, now.lapsed, now.net],
+      range,
+    );
+    const signedCount = (v: number) => `${v >= 0 ? "+" : "−"}${formatNumber(Math.abs(v))}`;
+    const daily = (key: keyof typeof now, sign = 1) => ({
+      series: now[key].map((v) => v * sign),
+      previousSeries: then[key].map((v) => v * sign),
+      range,
+      chart: "number" as const,
+      total: true,
+    });
+    return {
+      periodLabel: periodLabel(range),
+      labels,
+      newCustomers: values[0].map(Math.round),
+      reactivated: values[1].map(Math.round),
+      lapsed: values[2].map((v) => -Math.round(v)),
+      net: values[3].map(Math.round),
+      metrics: [
+        metric("net_active_customers", sum(now.net), sum(then.net), signedCount, daily("net")),
+        metric(
+          "active_customers",
+          activeCustomers(),
+          activeCustomers() - sum(now.net),
+          formatNumber,
+          {
+            // Each day's base: today's, less the net change still to come.
+            series: now.net.map((_, i) => activeCustomers() - sum(now.net.slice(i + 1))),
+            hint: "At the start of the period it was the comparison value",
+          },
+        ),
+        metric(
+          "new_customers",
+          sum(now.newCustomers),
+          sum(then.newCustomers),
+          formatNumber,
+          daily("newCustomers"),
+        ),
+        metric(
+          "reactivated_customers",
+          sum(now.reactivated),
+          sum(then.reactivated),
+          formatNumber,
+          daily("reactivated"),
+        ),
+        metric(
+          "lapsed_customers",
+          sum(now.lapsed),
+          sum(then.lapsed),
+          formatNumber,
+          daily("lapsed"),
+        ),
       ],
     };
   },
@@ -1295,36 +3361,50 @@ export const ecommerceHandlers: Record<string, (args: any) => unknown> = {
   },
 
   get_order_journey() {
-    return {
-      steps: [
-        { label: "1st order", value: 41820, previous: 37950 },
-        { label: "2nd order", value: 11710, previous: 9830, medianTime: "38 days" },
-        { label: "3rd order", value: 5621, previous: 4620, medianTime: "52 days" },
-        { label: "4th order", value: 3373, previous: 2680, medianTime: "61 days" },
-        { label: "5th order or later", value: 2193, previous: 1690, medianTime: "66 days" },
-      ],
-    };
+    return { steps: orderJourney() };
   },
 
   get_customer_cohorts({ metric, months }: Input<"get_customer_cohorts">) {
+    // Calendar month k of 2026 (January is 0), as days and days ago of its last day.
+    const monthDays = (k: number) => {
+      const start = Math.round((TODAY - Date.UTC(2026, k, 1)) / 86_400_000);
+      const end = Math.max(0, Math.round((TODAY - Date.UTC(2026, k + 1, 0)) / 86_400_000));
+      return { days: start - end + 1, offset: end };
+    };
     const names = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep"];
+    // Cumulative revenue per customer turns into contribution at the margin before marketing.
+    const recent = profitDays(channelsFor("all"), 90, 0);
+    const margin = sum(beforeMarketingOf(recent)) / sum(recent.net);
     const cohorts = names.map((name, k) => {
       const next = random(`cohort:${metric}:${name}`);
       const periods = names.length - k;
-      const lift = 1 + 0.025 * k;
-      let value = metric === "ltv" ? 78 * (1 + 0.01 * k) * (0.97 + next() * 0.06) : 3.8 * lift;
+      // Young cohorts get up to three months forecast from the same decay (our rule).
+      const predicted = Math.min(3, k);
+      const lift = 1 + (metric === "ltv" ? LTV_CURVE.liftPerCohort : 0.025) * k;
+      let value =
+        metric === "ltv"
+          ? LTV_CURVE.first * (1 + LTV_CURVE.firstPerCohort * k) * (0.97 + next() * 0.06)
+          : 3.8 * lift;
       const values = [round(value, metric === "ltv" ? 0 : 1)];
-      for (let m = 1; m < periods; m++) {
+      for (let m = 1; m < periods + predicted; m++) {
+        const noise = m < periods ? 0.9 + next() * 0.2 : 1;
         value +=
           metric === "ltv"
-            ? 13.5 * 0.82 ** (m - 1) * lift * (0.9 + next() * 0.2)
-            : 8.2 * 0.72 ** (m - 1) * lift * (0.9 + next() * 0.2);
+            ? LTV_CURVE.month1 * LTV_CURVE.decay ** (m - 1) * lift * noise
+            : 8.2 * 0.72 ** (m - 1) * lift * noise;
         values.push(round(value, metric === "ltv" ? 0 : 1));
       }
+      const cac = cohortCac(2026, k + 1);
+      const payback = values.findIndex((v) => v * margin >= cac);
       return {
         cohort: `${name} 2026`,
-        size: Math.round(5200 * (1 + 0.03 * k) * (0.92 + next() * 0.16)),
+        // New customers in that calendar month, all channels.
+        size: Math.round(
+          sum(series(channelsFor("all"), "newOrders", monthDays(k).days, monthDays(k).offset)),
+        ),
         values,
+        ...(predicted ? { predicted } : {}),
+        ...(metric === "ltv" && payback >= 0 ? { payback } : {}),
       };
     });
     const shown = cohorts.slice(-months);
@@ -1336,62 +3416,51 @@ export const ecommerceHandlers: Record<string, (args: any) => unknown> = {
   },
 
   get_customer_segments() {
-    const total = 61400;
-    const segments = [
-      [
-        "Champions",
-        "positive",
-        0.06,
-        0.29,
-        5.8,
-        612,
-        12,
-        "Early access and referral asks; skip discounts",
-      ],
-      ["Loyal", "positive", 0.11, 0.24, 3.9, 371, 31, "Bundles and loyalty perks"],
-      ["Promising", "neutral", 0.09, 0.09, 1.9, 168, 24, "Introduce a second category"],
-      [
-        "New",
-        "neutral",
-        0.17,
-        0.1,
-        1.0,
-        96,
-        9,
-        "Welcome series aimed at a 2nd order within 60 days",
-      ],
-      ["Needs attention", "warning", 0.14, 0.09, 2.2, 187, 68, "Personalized recommendations"],
-      ["At risk", "warning", 0.12, 0.11, 3.1, 298, 132, "Win-back offer and a short survey"],
-      ["Almost lost", "negative", 0.09, 0.04, 1.6, 142, 210, "One last win-back attempt"],
-      ["Dormant", "negative", 0.22, 0.04, 1.1, 88, 318, "Suppress from paid audiences"],
-    ] as const;
+    const { current, flows } = segmentMovement();
+    const total = sum(SEGMENTS.map((seg) => current.get(seg.name) ?? 0));
     return {
       totalCustomers: total,
-      segments: segments.map(([name, tone, cs, rs, avgOrders, avgSpend, days, action]) => ({
-        name,
-        tone,
-        customers: Math.round(total * cs),
-        customerShare: cs,
-        revenueShare: rs,
-        avgOrders,
-        avgSpend,
-        daysSinceOrder: days,
-        action,
-      })),
+      segments: SEGMENTS.map((seg) => {
+        const customers = current.get(seg.name) ?? 0;
+        return {
+          name: seg.name,
+          tone: seg.tone,
+          customers,
+          customerShare: round(customers / total, 4),
+          revenueShare: seg.revenueShare,
+          avgOrders: seg.avgOrders,
+          avgSpend: seg.avgSpend,
+          daysSinceOrder: seg.days,
+          action: seg.action,
+        };
+      }),
+      movement: flows,
+      lapsePoint: lapsePoint(),
     };
   },
 
-  get_product_performance({ range, channel, category, limit }: Input<"get_product_performance">) {
+  get_product_performance({
+    range,
+    channel,
+    category,
+    limit,
+    customerType,
+  }: Input<"get_product_performance">) {
     return {
-      products: productSales(range, channel)
+      products: productSales(range, channel, customerType)
         .filter((p) => category === "all" || p.category === category)
         .sort((a, b) => b.revenue - a.revenue)
         .slice(0, limit)
-        .map(({ weight: _w, cart: _c, ret: _r, price: _p, ...p }) => ({
-          ...p,
-          category: CATEGORY_LABELS[p.category],
-          stockStatus: stockStatus(p.sku),
-        })),
+        .map(({ weight: _w, cart: _c, ret: _r, price: _p, ...p }) => {
+          // Sell-through: what sold in the period against what was available to sell.
+          const stock = inventory().find((i) => i.sku === p.sku)?.stock ?? 0;
+          return {
+            ...p,
+            category: CATEGORY_LABELS[p.category],
+            stockStatus: stockStatus(p.sku),
+            sellThrough: round(p.units / (p.units + stock), 4),
+          };
+        }),
     };
   },
 
@@ -1403,23 +3472,39 @@ export const ecommerceHandlers: Record<string, (args: any) => unknown> = {
       metrics: [
         {
           label: "Inventory value",
+          definition: definitionOf("inventory_value"),
           value: formatCurrency(sum(all.map((i) => i.stock * i.unitCost))),
           hint: "Units on hand at cost",
         },
         {
           label: "Below reorder point",
+          definition: definitionOf("below_reorder_point"),
           value: `${low.length} of ${all.length} SKUs`,
           hint: "Under 21 days of cover",
         },
         {
           label: "Out of stock",
+          definition: definitionOf("out_of_stock"),
           value: ((n) => `${n} SKU${n === 1 ? "" : "s"}`)(all.filter((i) => i.stock === 0).length),
           hint: "Losing sales today",
         },
         {
           label: "Median days of cover",
+          definition: definitionOf("median_days_of_cover"),
           value: `${Math.round(covers[Math.floor(covers.length / 2)] ?? 0)} days`,
           hint: "At the last 30 days' sales rate",
+        },
+        {
+          label: "Revenue at risk",
+          definition: definitionOf("revenue_at_risk"),
+          value: formatCurrency(sum(low.map((i) => i.revenueAtRisk + (i.lostRevenue ?? 0)))),
+          hint: "Sales lost to stockouts, so far and before orders land",
+        },
+        {
+          label: "Ads on low stock",
+          definition: definitionOf("ads_on_low_stock"),
+          value: `${formatCurrency(sum(low.map((i) => i.adSpendPerDay)))}/day`,
+          hint: "Ad spend still sending shoppers to them",
         },
       ],
       items: low
@@ -1428,17 +3513,149 @@ export const ecommerceHandlers: Record<string, (args: any) => unknown> = {
     };
   },
 
+  get_returns({ range, category }: Input<"get_returns">) {
+    const all = channelsFor("all");
+    const products = productSales(range, "all").filter(
+      (p) => category === "all" || p.category === category,
+    );
+    // Category returns are the store's returns shared out by each product's returns.
+    const weight = (list: typeof products) => sum(list.map((p) => p.revenue * p.returnRate));
+    const share = weight(products) / weight(productSales(range, "all"));
+    const t = (field: Field, get = current) => sum(get(all, field, range)) * share;
+    const daily = (field: Field, get = current) => get(all, field, range).map((v) => v * share);
+    const gross = t("gross");
+    const refunds = t("returns");
+    const exchangeShare = EXCHANGE_SHARE[category];
+    const requested = refunds / (1 - exchangeShare);
+    const exchanged = requested - refunds;
+    const costs = t("returnCosts");
+    // Orders sent back: refunds and exchanges at the period's average order value.
+    const returnedOrdersOf = (get: typeof current) =>
+      t("returns", get) /
+      (1 - exchangeShare) /
+      (sum(get(all, "gross", range)) / sum(get(all, "orders", range)));
+    const returnedOrders = returnedOrdersOf(current);
+    const prev = { gross: t("gross", previous), refunds: t("returns", previous) };
+    const reasons = RETURN_REASONS[category === "all" ? "apparel" : category]!;
+    const sized =
+      category === "footwear" || category === "apparel"
+        ? category
+        : category === "all"
+          ? "footwear"
+          : undefined;
+    return {
+      periodLabel: periodLabel(range),
+      lines: ledger([
+        ["Gross sales", "base", gross, prev.gross],
+        ["Sent back", "subtract", requested, prev.refunds / (1 - exchangeShare)],
+        ["Kept as exchanges", "add", exchanged, prev.refunds / (1 - exchangeShare) - prev.refunds],
+        ["Gross sales kept", "total", gross - refunds, prev.gross - prev.refunds],
+      ]),
+      metrics: [
+        metric(
+          "return_rate",
+          (refunds / gross) * 100,
+          (prev.refunds / prev.gross) * 100,
+          (v) => `${v.toFixed(1)}%`,
+          {
+            series: daily("returns").map((r, i) => (r / (daily("gross")[i] || 1)) * 100),
+          },
+        ),
+        // The exchange share is a property of the category in our model, so it holds.
+        metric(
+          "exchange_share",
+          exchangeShare * 100,
+          exchangeShare * 100,
+          (v) => `${v.toFixed(0)}%`,
+        ),
+        metric("refunds", refunds, prev.refunds, formatCurrency, { series: daily("returns") }),
+        metric(
+          "cost_per_return",
+          costs / returnedOrders,
+          t("returnCosts", previous) / returnedOrdersOf(previous),
+          formatCurrency,
+        ),
+      ],
+      reasons: items(
+        reasons.map(([name]) => name),
+        reasons.map(([, s]) => s * requested),
+        // The period before: its own returns, with each reason's share a little
+        // different (fit problems vary with what sold).
+        (() => {
+          const before = prev.refunds / (1 - exchangeShare);
+          const shares = reasons.map(
+            ([name, s]) => s * between(`reason:${category}:${name}:${range}`, 0.85, 1.15),
+          );
+          const total = sum(shares);
+          return shares.map((s) => (s / total) * before);
+        })(),
+      ),
+      ...(sized
+        ? {
+            exchanges: {
+              category: CATEGORY_LABELS[sized],
+              ...exchangeMatrix(sized, exchanged / 80),
+            },
+          }
+        : {}),
+      products: [...products]
+        .sort((a, b) => b.returnRate - a.returnRate)
+        .slice(0, 5)
+        .map(
+          (p) =>
+            ({
+              name: p.name,
+              key: p.sku,
+              value: round(p.returnRate * 100, 1),
+              change: round((p.returnRate / p.ret - 1) * 100),
+            }) as Item,
+        ),
+    };
+  },
+
+  get_targets({ channel }: Input<"get_targets">) {
+    const chs = channelsFor(channel);
+    return {
+      periodLabel: `October to date: ${MONTH_ELAPSED} of ${MONTH_DAYS} days`,
+      // A channel with no spend (Amazon) has no ad budget to track.
+      targets: TARGETS.map((t) => monthTarget(chs, t)).filter((t) => t.target > 0),
+    };
+  },
+
+  get_live_view() {
+    return liveView();
+  },
+
+  get_creatives({ range, platform }: Input<"get_creatives">) {
+    return {
+      creatives: creatives(range, platform),
+      breakEvenRoas: round(breakEvenRoas(RANGE_DAYS[range]), 2),
+    };
+  },
+
+  get_actions({ range }: Input<"get_actions">) {
+    return { actions: recommendedActions(range) };
+  },
+
+  get_sale_plan() {
+    return salePlan();
+  },
+
   get_sales_goal({ channel }: Input<"get_sales_goal">) {
-    // October so far: the 1st to today, the 10th, of a 31-day month.
-    const elapsed = 10;
-    const days = 31;
-    const daily = series(channelsFor(channel), "total", elapsed);
+    const elapsed = MONTH_ELAPSED;
+    const days = MONTH_DAYS;
+    const chs = channelsFor(channel);
+    const daily = series(chs, "total", elapsed);
     let running = 0;
     const cumulative = daily.map((v) => Math.round((running += v)));
-    const projected = (running / elapsed) * days;
+    // The same plan-shaped forecast the targets use, so the two agree.
+    const sales = monthTarget(chs, TARGETS[0]);
     return {
+      projected: sales.forecast,
+      planToDate: sales.toDate,
       label: "October sales goal",
-      goal: roundTo(projected * 1.045, 3),
+      // The plan for the month, the same one the targets use.
+      goal: roundTo(sum(octoberPlan(channelsFor(channel), "total")), 3),
       format: "currency" as const,
       labels: Array.from({ length: days }, (_, i) => dateLabel(elapsed - 1 - i)),
       cumulative,
@@ -1483,6 +3700,7 @@ export const ecommerceHandlers: Record<string, (args: any) => unknown> = {
 
   get_recent_orders({ channel, limit }: Input<"get_recent_orders">) {
     const next = random(`orders:${channel}`);
+    const first = Math.floor(next() * CUSTOMERS.length);
     const chs = channelsFor(channel);
     let minutesAgo = 0;
     return {
@@ -1494,7 +3712,8 @@ export const ecommerceHandlers: Record<string, (args: any) => unknown> = {
         const roll = next();
         return {
           id: `#${48210 - i * 3}`,
-          customer: CUSTOMERS[Math.floor(next() * CUSTOMERS.length)],
+          // Step through the names (7 is coprime with 30) so a page never repeats one.
+          customer: CUSTOMERS[(first + i * 7) % CUSTOMERS.length],
           channel: CHANNELS[ch].label,
           items,
           total: formatCurrency(CHANNELS[ch].aov * (0.55 + items * 0.45) * (0.85 + next() * 0.3)),
@@ -1519,33 +3738,86 @@ export const ecommerceHandlers: Record<string, (args: any) => unknown> = {
     };
   },
 
-  get_store_insights({ range, channel }: Input<"get_store_insights">) {
+  get_store_insights({ range, channel, compare }: Input<"get_store_insights">) {
     const chs = channelsFor(channel);
     const days = RANGE_DAYS[range];
     const insights: Insight[] = [];
+    const why = (metric: WhyMetric) => explain({ metric, range, channel, compare });
 
-    const sales = sum(current(chs, "total", range));
-    const prevSales = sum(previous(chs, "total", range));
-    const orders = sum(current(chs, "orders", range));
-    const prevOrders = sum(previous(chs, "orders", range));
+    // Profit first: what moved it, from the explain engine.
+    const profit = why("contribution_profit");
+    if (profit.confidence.level !== "Low" && profit.drivers[0]) {
+      const top = profit.drivers[0];
+      insights.push({
+        tone: profit.tone === "good" ? "positive" : "negative",
+        kind: profit.tone === "good" ? "top_driver" : "top_detractor",
+        title: `Contribution profit ${profit.delta} against ${profit.comparisonLabel.toLowerCase()}, mostly ${top.name.toLowerCase()}`,
+        detail: `${top.name}: ${top.current} against ${top.comparison} (${top.delta}). ${profit.confidence.note}.`,
+        metric: profit.value,
+      });
+    }
+
+    // A tracking change can make conversion look better than it is.
+    if (chs.some((c) => STOREFRONT.includes(c))) {
+      const conversion = why("conversion_rate");
+      if (conversion.dataQuality) {
+        insights.push({
+          tone: "info",
+          kind: "data_quality",
+          title: "Conversion rate looks better than it is",
+          detail: conversion.dataQuality,
+          metric: conversion.delta,
+        });
+      }
+    }
+
+    const sales = why("total_sales");
+    const driver = sales.drivers[0];
     insights.push({
-      tone: sales >= prevSales ? "positive" : "negative",
-      title: `Total sales ${sales >= prevSales ? "up" : "down"} ${changeText(sales, prevSales).slice(1)} on the prior ${days} days`,
-      detail: `Orders changed ${changeText(orders, prevOrders)} and average order value ${changeText(
-        (sum(current(chs, "gross", range)) - sum(current(chs, "discounts", range))) / orders,
-        (sum(previous(chs, "gross", range)) - sum(previous(chs, "discounts", range))) / prevOrders,
-      )}.`,
-      metric: formatCurrency(sales),
+      // A change inside the normal range is a note, not news.
+      tone:
+        sales.confidence.level === "Low" ? "info" : sales.tone === "bad" ? "negative" : "positive",
+      kind: "period_change",
+      title: `Total sales ${sales.change >= 0 ? "up" : "down"} ${Math.abs(sales.change).toFixed(1)}% against ${compare === "previous_period" ? `the prior ${days} days` : sales.comparisonLabel.toLowerCase()}`,
+      detail: driver
+        ? `${driver.name} (${driver.dimension.toLowerCase()}) moved most: ${driver.delta}, ${Math.round(Math.abs(driver.share) * 100)}% of the change.`
+        : `${sales.confidence.note}, so no single cause stands out.`,
+      metric: sales.value,
     });
 
-    const inventoryNow = inventory();
+    const runner = inventory().find((i) => i.sku === "FTW-TRL-01")!;
     const bestseller = productSales(range, channel).sort((a, b) => b.revenue - a.revenue)[0];
-    const runner = inventoryNow.find((i) => i.sku === "FTW-TRL-01")!;
     insights.push({
       tone: "negative",
+      kind: "stock_risk",
       title: `${runner.name} sells out in about ${Math.round(runner.daysOfCover)} days`,
       detail: `${bestseller.sku === runner.sku ? "It is the top product by revenue. " : ""}${formatNumber(runner.incoming ?? 0)} units arrive in ${runner.incomingInDays} days, so expect a ${Math.max(0, (runner.incomingInDays ?? 0) - Math.round(runner.daysOfCover))}-day gap. Expedite the order or move ad spend to Canvas Low.`,
       metric: `${formatNumber(runner.stock)} left`,
+    });
+
+    const breakEven = breakEvenRoas(days);
+    const tiktok = marketing(range).channels.find((c) => c.m.key === "tiktok")!;
+    const tiktokPrev = marketing(range, days).channels.find((c) => c.m.key === "tiktok")!;
+    const tiktokRoas = tiktok.revenue / tiktok.spend;
+    if (tiktokRoas < breakEven) {
+      insights.push({
+        tone: "warning",
+        kind: "below_break_even",
+        title: `TikTok Ads ROAS ${tiktokRoas.toFixed(2)}x, below the ${breakEven.toFixed(1)}x break-even`,
+        detail: `Spend changed ${changeText(tiktok.spend, tiktokPrev.spend)} while attributed revenue changed ${changeText(tiktok.revenue, tiktokPrev.revenue)}. ${aboveBreakEven(range, breakEven)}`,
+        metric: formatCurrency(tiktok.spend),
+      });
+    }
+
+    const goal = ecommerceHandlers.get_sales_goal!({ channel }) as Goal;
+    const soFar = goal.cumulative.at(-1) ?? 0;
+    const projected = (soFar / goal.cumulative.length) * goal.labels.length;
+    insights.push({
+      tone: projected >= goal.goal ? "positive" : "warning",
+      kind: "pace_to_goal",
+      title: `October on pace for ${formatCurrency(projected)} of the ${formatCurrency(goal.goal)} goal`,
+      detail: `${formatCurrency(soFar)} so far in ${goal.cumulative.length} days; reaching the goal needs ${formatCurrency((goal.goal - soFar) / (goal.labels.length - goal.cumulative.length))} a day from here.`,
+      metric: `${Math.round((projected / goal.goal) * 100)}%`,
     });
 
     if (chs.some((c) => STOREFRONT.includes(c))) {
@@ -1553,21 +3825,10 @@ export const ecommerceHandlers: Record<string, (args: any) => unknown> = {
       const desktop = DEVICES.desktop;
       insights.push({
         tone: "warning",
+        kind: "trend_change",
         title: "Mobile shoppers drop off at payment",
         detail: `${Math.round((1 - mobile.pay) * 100)}% of mobile checkouts stop before adding payment, against ${Math.round((1 - desktop.pay) * 100)}% on desktop, and ${Math.round((mobile.prevPay - mobile.pay) * 100)} points worse than the prior period. Check wallet payment options on mobile.`,
         metric: `${Math.round((1 - mobile.pay) * 100)}% drop`,
-      });
-    }
-
-    const tiktok = marketing(range).channels.find((c) => c.m.key === "tiktok")!;
-    const tiktokPrev = marketing(range, days).channels.find((c) => c.m.key === "tiktok")!;
-    const tiktokRoas = tiktok.revenue / tiktok.spend;
-    if (tiktokRoas < TARGET_ROAS) {
-      insights.push({
-        tone: "warning",
-        title: `TikTok Ads ROAS ${tiktokRoas.toFixed(2)}x, below the ${TARGET_ROAS.toFixed(1)}x target`,
-        detail: `Spend changed ${changeText(tiktok.spend, tiktokPrev.spend)} while attributed revenue changed ${changeText(tiktok.revenue, tiktokPrev.revenue)}. Meta and Google are above target.`,
-        metric: formatCurrency(tiktok.spend),
       });
     }
 
@@ -1576,8 +3837,9 @@ export const ecommerceHandlers: Record<string, (args: any) => unknown> = {
       const saleOrders = mean([12, 13, 14].map((d) => daily[days - 1 - d]));
       insights.push({
         tone: "info",
-        title: "Fall sale lifted orders for three days",
-        detail: `Sep 26–28 averaged ${formatNumber(saleOrders)} orders a day, ${changeText(saleOrders, mean(daily))} on the period average, at a 21% discount rate against 7% normally.`,
+        kind: "trend_change",
+        title: "Fall sale lifted orders for three days, then a dip",
+        detail: `Sep 26–28 averaged ${formatNumber(saleOrders)} orders a day, ${changeText(saleOrders, mean(daily))} on the period average, at a 21% discount rate against 7% normally. Orders ran below normal for about two weeks after, as sales pulled demand forward.`,
         metric: changeText(saleOrders, mean(daily)),
       });
     }
@@ -1589,6 +3851,19 @@ export const ecommerceHandlers: Record<string, (args: any) => unknown> = {
       detail: `The highest return rate in the catalog, against ${Math.round((sum(current(chs, "returns", range)) / sum(current(chs, "gross", range))) * 100)}% for the store. Returns are mostly sizing; add a fit note to the product page.`,
       metric: `${Math.round(returns.returnRate * 100)}%`,
     });
-    return { insights: insights.slice(0, 6) };
+
+    const spend = marketing(range).channels.filter((c) => PAID.has(c.m.key));
+    const biggest = spend.reduce((a, b) => (b.spend > a.spend ? b : a));
+    const biggestShare = biggest.spend / sum(spend.map((c) => c.spend));
+    if (biggestShare > 0.5) {
+      insights.push({
+        tone: "info",
+        kind: "concentration_risk",
+        title: `${biggest.m.label} is ${Math.round(biggestShare * 100)}% of ad spend`,
+        detail: `One platform carries most of the paid budget, so a change in its costs or tracking moves the whole store's profit. Google and TikTok carry the rest.`,
+        metric: formatCurrency(biggest.spend),
+      });
+    }
+    return { insights: insights.slice(0, 8) };
   },
 };

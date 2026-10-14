@@ -8,6 +8,7 @@ export default defineConfig({
     index: "src/index.ts",
     ecommerce: "src/ecommerce.ts",
     analytics: "src/analytics.ts",
+    usage: "src/usage.ts",
     server: "src/server.ts",
   },
   format: ["esm", "cjs"],

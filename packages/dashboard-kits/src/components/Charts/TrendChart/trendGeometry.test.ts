@@ -1,6 +1,12 @@
 import { curveLinear } from "d3-shape";
 import { describe, expect, it } from "vitest";
-import { differencePaths, packTrend, spreadLabels, unpackTrend } from "./trendGeometry";
+import {
+  differencePaths,
+  packTrend,
+  placeEventLabels,
+  spreadLabels,
+  unpackTrend,
+} from "./trendGeometry";
 
 describe("packTrend / unpackTrend", () => {
   it("round-trips x positions, every series, and the guides", () => {
@@ -53,5 +59,26 @@ describe("spreadLabels", () => {
       200,
     );
     expect(out.get("b")).toBeLessThanOrEqual(200);
+  });
+});
+
+describe("placeEventLabels", () => {
+  it("keeps labels that fit on their row, steps a clash down, and drops what runs off the edge", () => {
+    const rows = placeEventLabels(
+      [
+        { x: 10, text: "Fall sale", minRow: 0 },
+        { x: 30, text: "Cookie banner update", minRow: 0 },
+        { x: 380, text: "Wool Beanie sold out", minRow: 0 },
+      ],
+      0,
+      400,
+    );
+    expect(rows).toEqual([0, 1, undefined]);
+  });
+
+  it("right-aligns a label near the edge so it fits", () => {
+    expect(placeEventLabels([{ x: 390, text: "Restated", minRow: 1, end: true }], 0, 400)).toEqual([
+      1,
+    ]);
   });
 });

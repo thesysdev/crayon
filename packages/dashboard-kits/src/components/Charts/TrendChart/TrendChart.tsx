@@ -229,6 +229,16 @@ function TrendChartImpl({
             layoutKey={String(width)}
             isAnimationActive={isAnimationActive}
           />
+          <EventBands
+            events={events}
+            labels={labels}
+            x={at}
+            top={MARGIN_TOP}
+            height={plotBottom - MARGIN_TOP}
+            halfStep={x.step() / 2 || 8}
+            active={hoveredEvent}
+            layer="labels"
+          />
           <ChartCrosshair
             classPrefix={P}
             x={at(shown)}

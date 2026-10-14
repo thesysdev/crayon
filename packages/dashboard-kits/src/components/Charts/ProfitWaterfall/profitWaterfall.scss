@@ -1,0 +1,138 @@
+@use "../prefix" as brand;
+@use "../shared/chartBase" as base;
+
+// A profit bridge: floating bars, the comparison as a dashed outline on each,
+// and step labels under the plot.
+
+@include base.chart-frame("waterfall-chart");
+@include base.plot-axes("waterfall-chart");
+
+.#{brand.$prefix}-waterfall-chart {
+  gap: 8px;
+
+  &-top {
+    font: var(--kit-body);
+    min-height: 1.5em;
+  }
+
+  &-readout {
+    color: var(--kit-ink-2);
+    font-variant-numeric: tabular-nums;
+  }
+
+  // The legend swatch for the dashed comparison outline.
+  &-key {
+    display: inline-block;
+    width: 12px;
+    height: 9px;
+    margin-right: 2px;
+    vertical-align: -1px;
+    border: 1.5px dashed var(--kit-ink-2);
+    border-radius: 2px;
+  }
+
+  &-hover-band {
+    fill: var(--kit-sunk);
+  }
+
+  &-bar {
+    transition: opacity 0.15s ease;
+
+    &--base,
+    &--total {
+      fill: var(--kit-total);
+    }
+    &--add {
+      fill: var(--kit-up);
+    }
+    &--subtract {
+      fill: var(--kit-down);
+    }
+    &--result {
+      fill: var(--kit-accent);
+    }
+  }
+
+  // While a bar is hovered, the others step back.
+  &-bars--hovering &-bar:not(&-bar--active) {
+    opacity: 0.45;
+  }
+
+  &-ghost {
+    fill: none;
+    stroke: var(--kit-ink-2);
+    stroke-width: 1.5;
+    stroke-dasharray: 4 3;
+    pointer-events: none;
+  }
+
+  &-link {
+    stroke: var(--kit-ink-3);
+    stroke-width: 1;
+    stroke-dasharray: 2 3;
+  }
+
+  &-value {
+    @include base.svg-tick-label;
+    fill: var(--kit-ink-2);
+
+    &--total {
+      fill: var(--kit-ink);
+      font-weight: 600;
+    }
+  }
+
+  &-row-label {
+    font: 500 11.5px var(--kit-font);
+    fill: var(--kit-ink-2);
+
+    &--total {
+      fill: var(--kit-ink);
+      font-weight: 600;
+    }
+  }
+
+  &-labels {
+    height: 30px;
+    position: relative;
+    width: 100%;
+  }
+
+  &-label {
+    position: absolute;
+    top: 0;
+    font: 500 11px/1.25 var(--kit-font);
+    color: var(--kit-ink-3);
+    text-align: center;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow-wrap: anywhere;
+
+    &--total {
+      color: var(--kit-ink);
+      font-weight: 600;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .#{brand.$prefix}-waterfall-chart-bar--animated {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: #{brand.$prefix}-bar-rise 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
+
+  .#{brand.$prefix}-waterfall-chart-late--animated {
+    opacity: 0;
+    animation: #{brand.$prefix}-fade-appear 0.3s ease-out 0.55s forwards;
+  }
+}
+
+@keyframes #{brand.$prefix}-bar-rise {
+  from {
+    opacity: 0;
+    transform: scaleY(0.3);
+  }
+}

@@ -25,6 +25,18 @@ function argumentSets(input: z.ZodObject): Record<string, unknown>[] {
   return sets;
 }
 
+/**
+ * Prompt size ceilings in characters. Every token of the prompt is paid on each
+ * generation and dilutes the rules, so a kit change that grows it past the
+ * ceiling has to trim something else first. Both kits, fully built, share one
+ * ceiling (the plans aimed for 60,000).
+ */
+const PROMPT_BUDGET: Record<string, number> = {
+  ecommerce: 64_000,
+  analytics: 64_000,
+  usage: 64_000,
+};
+
 let failures = 0;
 const fail = (message: string) => {
   failures++;
@@ -75,7 +87,15 @@ for (const kit of KITS) {
   );
 
   const prompt = buildSystemPrompt(kit);
-  console.log(`  ✓ system prompt: ${prompt.length.toLocaleString()} characters`);
+  const budget = PROMPT_BUDGET[kit.id];
+  if (budget && prompt.length > budget)
+    fail(
+      `system prompt: ${prompt.length.toLocaleString()} characters, over the ${budget.toLocaleString()} budget`,
+    );
+  else
+    console.log(
+      `  ✓ system prompt: ${prompt.length.toLocaleString()} of ${budget?.toLocaleString() ?? "no"} budget characters`,
+    );
 }
 
 console.log(failures ? `\n${failures} problem(s) found` : "\nAll kits pass");

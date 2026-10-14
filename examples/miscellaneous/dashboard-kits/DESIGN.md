@@ -40,30 +40,48 @@ The kits copy what the tools people already use show, with the same metric names
 
 ## The two kits
 
-|                   | E-commerce                                                                                                                                                                                                                                                                                                      | Product analytics                                                                                                                                                                                                                             |
-| ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Demo business     | Sundial Goods: a direct-to-consumer brand selling apparel, footwear, accessories, and home goods through its online store, app, and Amazon                                                                                                                                                                      | Relay: a team workspace app with Free, Team, and Business plans on web, iOS, and Android                                                                                                                                                      |
-| Domain components | `MoneyBreakdown`, `ChannelPerformance`, `CustomerSegments`, `ProductPerformance`, `ProductLeaderboard`, `InventoryAlerts`                                                                                                                                                                                       | `LifecycleChart`, `PowerUserCurve`, `EngagementMatrix`, `FeatureAdoption`, `ActivityHeatmap`, `EventTable`, `UserPaths`, `ExperimentResults`, `AccountHealth`                                                                                 |
-| Tools (19 and 16) | KPIs, sales over time, sales breakdown, sales by dimension, marketing performance, profit breakdown, purchase and checkout journeys, customer KPIs, new vs returning, order journey, cohorts, RFM segments, product performance, inventory health, monthly sales goal, fulfillment SLA, recent orders, insights | Usage KPIs, active users, lifecycle, activation funnel, retention cohorts and curves, stickiness, feature engagement, activity heatmap, top events, user paths, signups by source, monthly signup goal, experiments, account health, insights |
-| Filters           | `$range`, `$channel`, `$category`, `$device`, cohort view                                                                                                                                                                                                                                                       | `$range`, `$platform`, `$plan`, experiment status, account plan                                                                                                                                                                               |
-| Dashboards        | Store overview · Marketing and profit · Customers and retention · Merchandising and checkout                                                                                                                                                                                                                    | Product health · Activation and retention · Engagement and features · Experiments and accounts                                                                                                                                                |
+|                   | E-commerce                                                                                                                                                                                                                                                                                                                                                                                                      | Product analytics                                                                                                                                                                                                                                                                                                                                                                                |
+| ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Demo business     | Sundial Goods: a direct-to-consumer brand selling apparel, footwear, accessories, and home goods through its online store, app, and Amazon                                                                                                                                                                                                                                                                      | Relay: a team workspace app with Free, Team, and Business plans on web, iOS, and Android                                                                                                                                                                                                                                                                                                         |
+| Domain components | `MoneyBreakdown`, `ProfitWaterfall`, `ReconciliationCard`, `ChannelPerformance`, `CustomerSegments`, `SegmentFlow`, `ProductPerformance`, `ProductLeaderboard`, `ProductQuadrant`, `ExchangeMatrix`, `CreativeLeaderboard`, `InventoryAlerts`                                                                                                                                                                   | `LifecycleChart`, `PowerUserCurve`, `EngagementMatrix`, `FeatureValue`, `FeatureAdoption`, `ActivityHeatmap`, `EventTable`, `UserPaths`, `ActivationMoments`, `ExperimentResults`, `AccountHealth`, `PaywallMatrix`, `CommitPacing`, `WeeklyReview`                                                                                                                                              |
+| Tools (30 and 27) | KPIs, explain a change, sales over time, breakdown, and by dimension, marketing, attribution reconciliation, profit bridge, annotations, promotion impact, purchase, checkout, and order journeys, customer KPIs, new vs returning, customer flow, cohorts, RFM segments, products, inventory, returns, targets, live view, creatives, actions, sale plan, sales goal, fulfillment SLA, recent orders, insights | Usage KPIs, explain a change, data status, annotations, active users, lifecycle, activation funnel and moment, retention cohorts and curves, stickiness, feature engagement, activity heatmap, top events, user paths, signups by source, signup goal, experiments, account health and activity, revenue retention, monetisation, usage commits, weekly review, actions, alert preview, insights |
+| Filters           | `$range`, `$compare` (previous period, last year, plan), `$channel`, `$category`, `$device`, `$customer`, attribution `$model`, `$promo`                                                                                                                                                                                                                                                                        | `$range`, `$compare` (previous period, last year, plan), `$platform`, `$plan`, `$active` (core action or any event), retention mode and unit, experiment status, account plan and active rule, alert metric, drop, confirmation, quiet hours, and window                                                                                                                                         |
+| Dashboards        | Store overview · What changed and why · Marketing and profit · Customers and retention · Targets and pacing · Monday summary · Live · Black Friday Cyber Monday · Promotions · Merchandising and checkout                                                                                                                                                                                                       | Product health · What changed and why · Activation · Retention and lifecycle · Accounts and revenue · Features and experiments · Monetisation · Weekly review · Alert check                                                                                                                                                                                                                      |
 
 The sample data tells a consistent story the insight tools pick up, so the dashboards have something real to show:
 
 - **Sundial Goods:**
-  - a Fall sale on Sep 26–28;
-  - TikTok spend ramping while its ROAS falls below the 2.0x target;
-  - the best-selling Trail Runner 2 running out 3 days before its purchase order lands;
+  - a Fall sale on Sep 26–28 that lifted orders but pulled demand forward, and last year's sale and Black Friday to compare;
+  - TikTok spend ramping while its ROAS sits below break-even, and Meta claiming more orders than the store recorded;
+  - a tracking change that moves sessions without moving sales;
+  - the best-selling Trail Runner 2 running out 3 days before its purchase order lands, and a beanie already out;
   - mobile shoppers abandoning at the payment step more than last period;
-  - a high-return suede boot.
+  - a high-return suede boot, mostly sent back for size; footwear exchanges, mostly one size up, show the line runs small.
 - **Relay:**
-  - an onboarding experiment that lifted activation and shipped;
-  - Android retention lagging web;
-  - a Labor Day dormant spike followed by resurrecting users;
-  - Automations as a power feature;
-  - a Business account whose seat activity is falling.
+  - an onboarding checklist that lifted activation and shipped, scored from its counts;
+  - a pricing test whose traffic split 52/48 against a planned 50/50, and a digest email past its unsubscribe limit;
+  - iOS duplicate events that inflate "any event" actives, and an Oct 8 restatement;
+  - Android retention lagging web, and a Labor Day dip an alert would have caught;
+  - Automations as a feature that goes with staying but few users find;
+  - Harbor & Pine slipping, Kestrel Labs ready to expand, and Business seat cuts in September's MRR.
+  - free to paid at 4.4%, inside the freemium "good" band; Automations converting best of the Free limits but few reaching it;
+  - Brightline Health under-pacing its AI credit commit 41 days before renewal, Orbit Fintech over;
+  - in the weekly review, signups 4.6% behind plan with no known cause (owner: Growth).
 
-Every tool derives from one daily history per segment, so numbers agree across cards: the sales breakdown's total equals the KPI strip's total sales, and channel revenue and new customers add up to the store totals.
+Every tool derives from one history, so numbers agree across cards. In e-commerce it is one daily history per channel: the sales breakdown's total equals the KPI strip's total sales, and channel revenue and new customers add up to the store totals. The customer base is sized from that order history too: a year's active customers include all its new customers, the RFM segments scale with them, and the repeat purchase rate, the order journey, and 12-month LTV come from the same reorder, order-gap, and cohort models the other cards use. In analytics it is a simulated user population per platform and plan, so daily, weekly, and monthly actives, lifecycle states, and retention cohorts are counted from the same users; revenue is anchored to the paying workspaces. Users away 120 days or more have churned and rarely return, and the simulation starts from four years of history, so actives grow with signups and with the cohorts whose retention has flattened, not with every user ever. The 8,000 paying workspaces, mostly small teams, fit the flows into them: about 300 new paying workspaces a month from the monetisation funnel, at roughly 1.5% churn; signups by source add up exactly to the activation funnel's signups.
+
+## The usage kit
+
+The third kit is the other side of the analytics kit: the usage page Relay shows its customers' admins. Its demo workspace, Brightline Health (180 seats, active seats down from 166 to 118 in 90 days, renewing in 41 days, AI credits under pace), is one the analytics kit already tracks, with Kestrel Labs (seats nearly full, credits running out) and Bluefin Studio (22 seats) for contrast. Every figure is counted off a member-by-member model calibrated to the vendor's record, so the customer's and the vendor's views of the same account agree. Collaboration and champions come from an item model on top of it: each team's boards and docs, shared ones, and who edited which on which day, so "worked on together" (2+ editors) and "across teams" (editors from 2+ teams) are counted, and champions are ranked from the same edits. Members can opt out of the champions list, names are hidden by default, and an anonymous champion from a team under 5 shows as "a smaller team".
+
+|            | Usage                                                                                                                                                                                                                                 |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Components | `SeatInventory`, `ReclaimList`, `MemberTable`, `TeamAdoption`, `CreditBurn`, `ValueEstimate`, `PeerBenchmark`, `SecurityPosture`, `AuditLog`, `ChampionList`                                                                          |
+| Tools (16) | Overview, seat inventory, members (directory or reclaim view), invites, activity, team adoption, feature adoption, collaboration, champions, AI adoption, credits, value estimate, peer benchmarks, security, insights, admin actions |
+| Filters    | `$workspace`, `$window` (7, 28, or 90 days), member status, names shown or hidden, minutes per AI action and hourly rate                                                                                                              |
+| Dashboards | Workspace overview · Seats and renewal · AI adoption and credits · Teams and members · Value report · Security and access · Small team                                                                                                |
+
+Thresholds come from what admin pages already use: a 28-day active window (Slack, GitHub Copilot, Microsoft's Copilot Dashboard, Gemini), inactive at 30 days (GitHub's reclaim guide; Slack bills at 28), dormant at 90, groups under 5 hidden (GitHub, Microsoft), credit alerts at 75/90/100% (GitHub), and hours saved as actions × 6 minutes × $72 an hour, always labelled an estimate (Microsoft). Two are our own picks and say so: never active after 14 days, and stale invites after 7.
 
 ## Visual design
 
@@ -72,7 +90,8 @@ The galleries follow what well-regarded product dashboards do, checked against [
 - **One hero per dashboard.** `HeroMetric` shows the number the dashboard is about at 52px, its change, and a large trend of this period against the prior one, with promotions and holidays shaded. Everything else is smaller.
 - **A fixed reading order.** Each dashboard opens with a hero row (the hero, and a card that explains it: insights, a funnel, or a profit breakdown), then one KPI strip, then detail rows. The prompt rules describe the same order, so generated dashboards look like the gallery.
 - **Balanced rows.** Cards in a row stretch to the same height. Trend and column charts grow into height a taller neighbour leaves, up to 420px, and cards are paired so their contents are close in height (the [bento grid][bento] idea). Number-titled card headers read as a metric: the label on top, the figure below.
-- **KPI strips fill their card.** The strip measures its width and balances its rows, so six KPIs wrap as 3 + 3 instead of 5 + 1, and a shorter last row stretches to the full width. Tiles in a row share row lines, so values align when a label wraps. Every KPI has a sparkline, coloured by whether its change is good for that metric.
+- **Labels never collide.** Event labels sit above the lines with a halo in the card's colour, take the first row where they fit, and are left to the tooltip when none has room; quadrant labels go to the biggest bubbles first and are left off rather than drawn over another.
+- **KPI strips fill their card.** The strip measures its width and balances its rows, so six KPIs wrap as 3 + 3 instead of 5 + 1, and a shorter last row stretches to the full width. Tiles in a row share row lines, so values align when a label wraps. A KPI with real values has a sparkline, coloured by whether its change is good for that metric; one without (a fixed model property such as the gap between orders) shows its number alone.
 - **Charts reuse react-ui where it fits.** Column charts, the lifecycle chart, and the power user curve are react-ui's `BarChart`; the activity heatmap is `HeatmapChart`; the share bar is `SegmentedBar`. Each gets an explicit `customPalette` in the kit's colour order, because the base dashboard's nested theme provider would otherwise pick the colours (finding 10). The charts react-ui does not have — the period-over-period `TrendChart`, `GoalPace`, `Tracker`, the KPI `Sparkline`, and the `EngagementMatrix` — are built the way react-ui builds its charts:
   - a hook-free dispatcher that renders the empty state, and an implementation split into `parts/`;
   - d3 throughout, as react-ui uses it: `scalePoint`, `scaleBand`, `scaleLinear`, and `scaleSqrt` place the marks, d3-shape draws them (`line` and `area` on the monotone curve react-ui calls "natural", `arc` for the gauge), and d3-selection's `pointer` resolves hovers;
@@ -88,7 +107,7 @@ The galleries follow what well-regarded product dashboards do, checked against [
   | ------------------ | ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
   | `Sparkline`        | `MiniAreaChart`              | `MiniAreaChart` keeps one point per 20px, so an 84px cell shows 5 of 30 days, and its range starts at zero, which flattens a KPI that moves between 40K and 45K |
   | `ConversionFunnel` | `FunnelChart`                | The kit funnel shows what continues and drops off between steps, the median time between them, and the change against the prior period                          |
-  | `EngagementMatrix` | `ScatterChart`               | The matrix needs median quadrant lines, quadrant names, bubble sizes, and a label per feature                                                                   |
+  | `QuadrantChart`    | `ScatterChart`               | The quadrants need split lines, quadrant names, bubble sizes, and labels that never overlap                                                                     |
   | `GoalPace` gauge   | `RadialChart` (semicircular) | The gauge marks where the pace says the month should be                                                                                                         |
   | `TrendChart`       | `LineChart`, `AreaChart`     | The trend needs the prior period, the shaded gap, events, goal lines, benchmark bands, and the in-progress last point                                           |
 
@@ -193,21 +212,23 @@ Each kit's prompt is assembled from:
 - the base layout rules;
 - the shared data rules;
 - the kit's own rules: filters, metric definitions, which tool answers which question, and how to title cards;
-- the four gallery dashboards as worked examples.
+- the kit's example dashboards (two or three per kit; the rest of the gallery is for people, not the prompt).
 
-The e-commerce prompt is about 63,000 characters and the analytics prompt about 57,000.
+The e-commerce prompt is 63,516 characters, the analytics prompt 63,479, and the usage prompt 46,258, against a budget of 64,000 for each that `npm run check` enforces (the plans aimed for 60,000; the first two kits, fully built, settled just under 64,000). Tool outputs that only flow into a component are collapsed to `object` in the prompt (`.meta({ opaque })`), filter inputs read as `string`, component props that take a tool's items are loose records, and metrics define themselves once: the glossary lists the ones the model must reason about, and every KPI carries its own definition.
 
 ## Data contract
 
 - Tools are read-only. Dashboards call them with `Query()`, and filters re-run them through `$bindings`.
 - Each tool is defined once with zod. The prompt gets MCP-style `inputSchema` and `outputSchema`, and the tools route validates arguments and results against the same schemas (`runTool`).
 - KPI tools return a `periodLabel` ("Sep 11 – Oct 10, 2026 vs prior 30 days") for the dashboard header and a `metrics` list for `KpiStrip`.
+- A KPI shows a sparkline only when its tool has real values for it, and a trend (the chart a selected tile shows) only when there is a value for every day of the period. Nothing is drawn from invented data: a metric with no history, such as the median gap between orders, shows its number alone.
 - Insight tools return detected changes, each with a tone, a headline, an explanation, and a key figure.
-- `npm run check` does four things:
+- `npm run check` does five things:
   - parses every gallery dashboard against its kit's library;
   - rejects Queries to unknown tools;
-  - calls every tool with every value of every enum argument (259 calls) and validates each result;
-  - builds every prompt.
+  - calls every tool with every value of every enum argument (593 calls) and validates each result;
+  - builds every prompt;
+  - fails a prompt over its size budget.
 
 ## Serving
 
@@ -265,7 +286,7 @@ These are not kit bugs. Each one affects anyone who builds on the dashboard arti
 6. Should kits ship connectors to real data, such as Shopify, GA4, or PostHog, or only the tool contract?
 7. Should the kit chart family and its theme tokens replace the base charts, so every dashboard gets them?
 
-Not in this draft: Mutations, editing a generated dashboard, persistence, and authentication.
+Not in this draft: mutations (`ActionCards` approve and dismiss only write to the card's own log), editing a generated dashboard, persistence, and authentication.
 
 ## Adding a kit
 

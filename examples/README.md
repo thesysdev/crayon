@@ -74,7 +74,7 @@ through `openui create --example <name>`.
 | Example                                          | Demonstrates                                                         |
 | ------------------------------------------------ | -------------------------------------------------------------------- |
 | [Autofix](./miscellaneous/autofix)               | Direct OpenAI generation with `@openuidev/server` Autofix repair     |
-| [Dashboard kits](./miscellaneous/dashboard-kits) | E-commerce and product analytics kits for the dashboard artifact     |
+| [Dashboard kits](./miscellaneous/dashboard-kits) | E-commerce, analytics, and usage kits for the dashboard artifact     |
 | [Handsontable](./miscellaneous/handsontable)     | Generated spreadsheet interfaces backed by Handsontable              |
 | [HTML artifact](./miscellaneous/html-artifact)   | Sandboxed HTML artifacts as an OpenUI capability                     |
 | [React Email](./miscellaneous/react-email)       | Generating and previewing emails with the OpenUI React Email library |

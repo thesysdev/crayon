@@ -2,13 +2,18 @@
 
 export {
   AccountHealth,
+  ActivationMoments,
   ActivityHeatmap,
+  CommitPacing,
   EngagementMatrix,
   EventTable,
   ExperimentResults,
   FeatureAdoption,
+  FeatureValue,
   LifecycleChart,
+  PaywallMatrix,
   PowerUserCurve,
   UserPaths,
+  WeeklyReview,
 } from "./analytics/components";
 export { createAnalyticsLibrary } from "./analytics/library";

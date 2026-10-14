@@ -42,6 +42,8 @@ const KIT_ICONS: Record<string, string> = {
   ecommerce:
     "M4 6h16l-1.5 9.5a2 2 0 0 1-2 1.5H7.5a2 2 0 0 1-2-1.5L4 6Zm0 0L3.2 3H1.5M9 21h.01M16 21h.01",
   analytics: "M4 20V10m6 10V4m6 16v-7m6 7V8",
+  usage:
+    "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2m7-10a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm13 10v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75",
 };
 
 export function KitWorkspace() {

@@ -50,7 +50,7 @@ function GoalPaceImpl({ goal: g, className }: GoalPaceProps) {
           </span>
           <span className={`kit-status kit-status--${STATUS_CLASS[status.tone]}`}>
             <i className="kit-status__dot" />
-            {status.pace >= 0
+            {status.onPace
               ? `On pace for ${finish} of goal`
               : `Behind pace · on track for ${finish}`}
           </span>

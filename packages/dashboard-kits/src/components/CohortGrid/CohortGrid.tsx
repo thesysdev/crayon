@@ -26,12 +26,21 @@ export function CohortGrid({ cohorts, periodLabels, format, sizeLabel }: CohortG
   const labels = periodLabels ?? Array.from({ length: periods }, (_, i) => `P${i}`);
   const all = cohorts.flatMap((c) => c.values);
   const max = Math.max(1, ...all);
-  const min = currency ? Math.min(...all) : 0;
+  // Shares start the scale at zero; amounts, and percentages that never fall
+  // near it (net revenue retention), start at their smallest value.
+  const min = currency || Math.min(...all) >= 50 ? Math.min(...all) : 0;
   const scale = (v: number) => (v - min) / (max - min || 1);
   const fmt = (v: number) =>
     currency ? formatCurrency(Math.round(v)) : `${v.toFixed(v < 10 ? 1 : 0)}%`;
+  // Forecast cells are the last `predicted` values of a row, and a period in
+  // progress is the last value of a `partial` row; averages leave both out.
+  const forecast = (c: CohortRow, i: number) => i >= c.values.length - (c.predicted ?? 0);
+  const inProgress = (c: CohortRow, i: number) => !!c.partial && i === c.values.length - 1;
+  const hasForecast = cohorts.some((c) => c.predicted);
+  const hasPartial = cohorts.some((c) => c.partial);
+  const hasPayback = cohorts.some((c) => c.payback != null);
   const average = Array.from({ length: periods }, (_, i) => {
-    const rows = cohorts.filter((c) => c.values[i] != null);
+    const rows = cohorts.filter((c) => c.values[i] != null && !forecast(c, i) && !inProgress(c, i));
     const size = rows.reduce((a, c) => a + c.size, 0);
     return size ? rows.reduce((a, c) => a + c.values[i] * c.size, 0) / size : undefined;
   });
@@ -57,12 +66,15 @@ export function CohortGrid({ cohorts, periodLabels, format, sizeLabel }: CohortG
                   const v = row.values[i];
                   if (v == null) return <td key={i} />;
                   const s = scale(v);
+                  const predicted = forecast(row, i);
+                  const partial = inProgress(row, i);
+                  const paidBack = row.payback === i;
                   return (
                     <td key={i} className="kit-cohort__cell-wrap">
                       <span
-                        className={`kit-cohort__cell${s > 0.58 ? " kit-cohort__cell--strong" : ""}`}
+                        className={`kit-cohort__cell${s > 0.58 ? " kit-cohort__cell--strong" : ""}${predicted ? " kit-cohort__cell--predicted" : ""}${partial ? " kit-cohort__cell--partial" : ""}${paidBack ? " kit-cohort__cell--payback" : ""}`}
                         style={{ background: heat(s) }}
-                        title={`${row.cohort}, ${labels[i] ?? i}: ${fmt(v)}`}
+                        title={`${row.cohort}, ${labels[i] ?? i}: ${fmt(v)}${predicted ? " (forecast)" : ""}${partial ? " (so far; the period is not over)" : ""}${paidBack ? " · paid back what it cost to acquire" : ""}`}
                       >
                         {fmt(v)}
                       </span>
@@ -85,6 +97,26 @@ export function CohortGrid({ cohorts, periodLabels, format, sizeLabel }: CohortG
           </tbody>
         </table>
       </div>
+      {(hasForecast || hasPartial || hasPayback) && (
+        <div className="kit-cohort__keys" aria-hidden>
+          {hasForecast && (
+            <span>
+              <i className="kit-cohort__key kit-cohort__cell--predicted" /> Forecast
+            </span>
+          )}
+          {hasPartial && (
+            <span>
+              <i className="kit-cohort__key kit-cohort__cell--partial" /> In progress, left out of
+              averages
+            </span>
+          )}
+          {hasPayback && (
+            <span>
+              <i className="kit-cohort__key kit-cohort__cell--payback" /> Paid back acquisition cost
+            </span>
+          )}
+        </div>
+      )}
       <div className="kit-scale-legend" aria-hidden>
         <span>{fmt(min).replace(/^0\.0%$/, "0%")}</span>
         <span

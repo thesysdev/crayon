@@ -80,5 +80,56 @@
   &-event-label {
     font: 600 11px var(--kit-font);
     fill: var(--kit-warn-ink);
+    // A halo in the card's colour keeps the label readable over lines and bands.
+    paint-order: stroke;
+    stroke: var(--kit-card);
+    stroke-width: 3px;
+    stroke-linejoin: round;
+  }
+  &-events--labels {
+    pointer-events: none;
+  }
+
+  &-event-marker {
+    stroke: var(--kit-ink-3);
+    stroke-width: 1;
+    stroke-dasharray: 3 3;
+  }
+
+  &-event--active &-event-marker {
+    stroke: var(--kit-ink);
+  }
+
+  &-event--stockout &-event-band {
+    fill: color-mix(in oklch, var(--kit-bad) 10%, transparent);
+  }
+
+  &-event--stockout &-event-label,
+  &-event--incident &-event-label {
+    fill: var(--kit-bad-ink);
+  }
+
+  &-event--holiday &-event-band {
+    fill: color-mix(in oklch, var(--kit-muted-mark) 22%, transparent);
+  }
+
+  &-event--holiday &-event-label {
+    fill: var(--kit-ink-2);
+  }
+
+  &-event--launch &-event-label {
+    fill: var(--kit-info-ink);
+  }
+
+  // A tracking change is not a real change, so it reads apart from the others.
+  &-event--measurement &-event-marker {
+    stroke: var(--kit-info-ink);
+    stroke-dasharray: 1 3;
+    stroke-width: 1.5;
+  }
+
+  &-event--measurement &-event-label {
+    fill: var(--kit-info-ink);
+    font-style: italic;
   }
 }

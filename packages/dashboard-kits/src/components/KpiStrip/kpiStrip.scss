@@ -26,7 +26,15 @@
   padding: 10px 18px 10px;
   border-left: 1px solid var(--kit-border);
 }
-.kit-kpi:first-child {
+// Each tile sits in a cell that also hosts its definition; the cell passes the
+// row's lines through so values still align.
+.kit-kpis__cell {
+  display: grid;
+  grid-row: span 5;
+  grid-template-rows: subgrid;
+  min-width: 0;
+}
+.kit-kpis__cell:first-child > .kit-kpi {
   border-left: 0;
   padding-left: 6px;
 }
@@ -87,7 +95,7 @@
   transform: scaleX(0);
   transition: transform 0.25s ease;
 }
-.kit-kpi--tab:first-child::before {
+.kit-kpis__cell:first-child > .kit-kpi--tab::before {
   left: 4px;
 }
 .kit-kpi--tab[aria-pressed="true"] {
@@ -114,4 +122,9 @@
   .kit-kpi--tab::before {
     transition: none;
   }
+}
+
+// A value outside its own usual range, said in words.
+.kit-usual__flag {
+  font-weight: 600;
 }

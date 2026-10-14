@@ -17,7 +17,9 @@ export function buildSystemPrompt(kit: KitDefinition, spec: LibrarySpec): string
     tools: kit.tools.map(toToolSpec),
     preamble: kit.preamble,
     additionalRules: [...BASE_RULES, ...DATA_RULES, ...kit.rules],
-    toolExamples: kit.gallery.map((dashboard) => dashboard.program),
+    toolExamples: kit.gallery
+      .filter((dashboard) => dashboard.example !== false)
+      .map((dashboard) => dashboard.program),
   });
 }
 

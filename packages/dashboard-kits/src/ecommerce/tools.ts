@@ -1,7 +1,9 @@
 import { z } from "zod/v4";
 import { defineTool } from "../core/kit";
 import {
+  actionSchema,
   cohortRowSchema,
+  compareSchema,
   eventSchema,
   funnelStepSchema,
   goalSchema,
@@ -10,7 +12,9 @@ import {
   kpiOutput,
   rangeSchema,
   seriesSchema,
+  targetProgressSchema,
   trackerItemSchema,
+  whySchema,
 } from "../core/schemas";
 
 // Data contract for Sundial Goods, a direct-to-consumer brand selling apparel,
@@ -20,15 +24,23 @@ import {
 const channel = z
   .enum(["all", "online", "app", "amazon"])
   .default("all")
-  .describe("Sales channel: online store, mobile app, or Amazon");
+  .describe("Sales channel: online store, mobile app, or Amazon")
+  .meta({ filter: "$channel" });
 const category = z
   .enum(["all", "apparel", "footwear", "accessories", "home"])
   .default("all")
-  .describe("Product category");
+  .describe("Product category")
+  .meta({ filter: "$category" });
+const customerType = z
+  .enum(["all", "new", "returning"])
+  .default("all")
+  .describe("Orders from first-time customers, from returning ones, or both")
+  .meta({ filter: "$customer" });
 const device = z
   .enum(["all", "desktop", "mobile", "tablet"])
   .default("all")
-  .describe("Shopper device (storefront and app only)");
+  .describe("Shopper device (storefront and app only)")
+  .meta({ filter: "$device" });
 
 /** A line in a running money breakdown, e.g. gross sales minus discounts. */
 export const ledgerLineSchema = z.object({
@@ -37,87 +49,127 @@ export const ledgerLineSchema = z.object({
   kind: z
     .enum(["base", "add", "subtract", "total"])
     .describe("base starts the breakdown, add and subtract adjust it, total is a subtotal"),
-  previous: z.number().optional().describe("The same line in the previous period"),
-});
-
-export const marketingChannelSchema = z.object({
-  channel: z.string(),
-  type: z.enum(["paid", "owned", "organic", "partner"]),
-  spend: z.number().describe("Ad spend, platform cost, or commissions"),
-  revenue: z.number().describe("Attributed order revenue"),
-  roas: z.number().optional().describe("Revenue ÷ spend; missing for organic channels"),
-  cpa: z.number().optional().describe("Spend ÷ attributed orders"),
-  orders: z.number(),
-  newCustomers: z.number(),
-  share: z.number().describe("Share of attributed revenue, 0–1"),
-  roasChange: z.number().optional().describe("Percent change in ROAS against the previous period"),
-  trend: z
-    .array(z.number())
-    .optional()
-    .describe("Attributed revenue over the period, for a sparkline"),
-});
-
-export const segmentSchema = z.object({
-  name: z.string(),
-  tone: z.enum(["positive", "neutral", "warning", "negative"]),
-  customers: z.number(),
-  customerShare: z.number().describe("Share of customers, 0–1"),
-  revenueShare: z.number().describe("Share of 12-month revenue, 0–1"),
-  avgOrders: z.number(),
-  avgSpend: z.number().describe("Average 12-month spend per customer"),
-  daysSinceOrder: z.number().describe("Median days since the last order"),
-  action: z.string().describe("Recommended next step for the segment"),
-});
-
-export const productSchema = z.object({
-  name: z.string(),
-  sku: z.string(),
-  category: z.string(),
-  revenue: z.number(),
-  units: z.number(),
-  change: z.number().describe("Percent change in revenue against the previous period"),
-  views: z.number().optional().describe("Product page views (storefront and app)"),
-  addToCartRate: z.number().optional().describe("Add-to-carts ÷ views, 0–1"),
-  conversionRate: z.number().optional().describe("Purchases ÷ views, 0–1"),
-  returnRate: z.number().describe("Units returned ÷ units sold, 0–1"),
-  margin: z.number().describe("Gross margin after cost of goods, 0–1"),
-  stockStatus: z.enum(["In stock", "Low stock", "Out of stock"]),
-  trend: z.array(z.number()).optional().describe("Units sold over the period, for a sparkline"),
-});
-
-export const inventoryItemSchema = z.object({
-  sku: z.string(),
-  name: z.string(),
-  stock: z.number(),
-  reorderPoint: z
+  previous: z
     .number()
-    .describe("21 days of sales: 14-day lead time plus 7 days of safety stock"),
-  dailySales: z.number().describe("Average units sold per day over the last 30 days"),
-  daysOfCover: z.number(),
-  incoming: z.number().optional().describe("Units on open purchase orders"),
-  incomingInDays: z.number().optional().describe("Days until the open purchase order arrives"),
-  suggestedOrder: z.number().optional().describe("Units to order now to cover 45 days"),
+    .optional()
+    .describe("The same line in the comparison: the previous period, last year, or the plan"),
 });
+
+export const marketingChannelSchema = z
+  .object({
+    channel: z.string(),
+    type: z.enum(["paid", "owned", "organic", "partner"]),
+    spend: z.number().describe("Ad spend, platform cost, or commissions"),
+    revenue: z.number().describe("Attributed order revenue"),
+    roas: z.number().optional().describe("Revenue ÷ spend; missing for organic channels"),
+    cpa: z.number().optional().describe("Spend ÷ attributed orders"),
+    orders: z.number(),
+    newCustomers: z.number(),
+    share: z.number().describe("Share of attributed revenue, 0–1"),
+    roasChange: z
+      .number()
+      .optional()
+      .describe("Percent change in ROAS against the previous period"),
+    trend: z
+      .array(z.number())
+      .optional()
+      .describe("Attributed revenue over the period, for a sparkline"),
+  })
+  .meta({ opaque: "MarketingChannel" });
+
+export const segmentSchema = z
+  .object({
+    name: z.string(),
+    tone: z.enum(["positive", "neutral", "warning", "negative"]),
+    customers: z.number(),
+    customerShare: z.number().describe("Share of customers, 0–1"),
+    revenueShare: z.number().describe("Share of 12-month revenue, 0–1"),
+    avgOrders: z.number(),
+    avgSpend: z.number().describe("Average 12-month spend per customer"),
+    daysSinceOrder: z.number().describe("Median days since the last order"),
+    action: z.string().describe("Recommended next step for the segment"),
+  })
+  .meta({ opaque: "Segment" });
+
+export const productSchema = z
+  .object({
+    name: z.string(),
+    sku: z.string(),
+    category: z.string(),
+    revenue: z.number().describe("Net sales from the product: after discounts and returns"),
+    units: z.number(),
+    change: z.number().describe("Percent change in revenue against the previous period"),
+    views: z.number().optional().describe("Product page views (storefront and app)"),
+    addToCartRate: z.number().optional().describe("Add-to-carts ÷ views, 0–1"),
+    conversionRate: z.number().optional().describe("Purchases ÷ views, 0–1"),
+    returnRate: z.number().describe("Units returned ÷ units sold, 0–1"),
+    margin: z.number().describe("Gross margin after cost of goods, 0–1"),
+    stockStatus: z.enum(["In stock", "Low stock", "Out of stock"]),
+    sellThrough: z.number().describe("Units sold ÷ (units sold + units on hand), 0–1"),
+    trend: z.array(z.number()).optional().describe("Units sold over the period, for a sparkline"),
+  })
+  .meta({ opaque: "Product" });
+
+export const inventoryItemSchema = z
+  .object({
+    sku: z.string(),
+    name: z.string(),
+    stock: z.number(),
+    reorderPoint: z
+      .number()
+      .describe("21 days of sales: 14-day lead time plus 7 days of safety stock"),
+    dailySales: z
+      .number()
+      .describe("Units sold per in-stock day over the last 30 days (stockout-adjusted)"),
+    daysOfCover: z.number(),
+    incoming: z.number().optional().describe("Units on open purchase orders"),
+    incomingInDays: z.number().optional().describe("Days until the open purchase order arrives"),
+    suggestedOrder: z.number().optional().describe("Units to order now to cover 45 days"),
+    replenishBy: z
+      .string()
+      .describe('The last day to place an order without dipping into safety stock, or "Now"'),
+    daysLate: z.number().optional().describe("How many days past that day it is"),
+    stockoutGapDays: z.number().describe("Days with nothing to sell before stock lands"),
+    revenueAtRisk: z.number().describe("Net sales lost in that gap"),
+    lostRevenue: z.number().optional().describe("Net sales already lost while out of stock"),
+    adSpendPerDay: z.number().describe("Ad spend still sending shoppers to it, per day"),
+  })
+  .meta({ opaque: "InventoryItem" });
 
 export const ecommerceTools = [
   defineTool({
     name: "get_store_kpis",
     description:
-      "Store KPIs: total sales as the hero with its daily trend against the prior period (Fall sale shaded), plus orders, average order value, conversion rate, sessions, and returning customer rate with sparklines. Every KPI carries its own trend. Feeds HeroMetric(kpis.hero, kpis.heroTrend, kpis.metrics, $metric) and KpiStrip(kpis.metrics, $metric).",
-    input: z.object({ range: rangeSchema, channel }),
+      "Store KPIs: contribution profit as the hero, against the comparison, plus total sales, orders, average order value, conversion rate, sessions, and returning customer rate, each with its trend. Feeds HeroMetric(kpis.hero, kpis.heroTrend, kpis.metrics, $metric) and KpiStrip(kpis.metrics, $metric).",
+    input: z.object({ range: rangeSchema, channel, compare: compareSchema }),
     output: z.object(kpiOutput),
+  }),
+  defineTool({
+    name: "explain_change",
+    description:
+      "Why a metric moved: its change, a confidence label (Low means within the normal range, so no drivers), a summary, the drivers for and against (by channel, customer type, category, profit line, or ad platform), a walk from the comparison to now, and any tracking change behind it. Feeds DriverCards(why) and VarianceWalk(why.walk, why.comparisonLabel, why.format).",
+    input: z.object({
+      metric: z
+        .enum(["contribution_profit", "total_sales", "orders", "aov", "conversion_rate"])
+        .default("contribution_profit"),
+      range: rangeSchema,
+      channel,
+      compare: compareSchema,
+    }),
+    output: whySchema,
   }),
   defineTool({
     name: "get_sales_over_time",
     description:
-      "Total sales and orders over time with the previous period aligned for comparison: daily for 7d and 30d, weekly for 90d.",
-    input: z.object({ range: rangeSchema, channel }),
+      'Total sales and orders over time against the comparison, day by day (weekly for 90d), with promotions to shade: TrendChart(sales.labels, [{name: "This period", values: sales.totalSales, emphasis: "primary"}, {name: sales.comparisonLabel, values: sales.comparison, emphasis: "muted"}], "currency", "area", sales.events).',
+    input: z.object({ range: rangeSchema, channel, customerType, compare: compareSchema }),
     output: z.object({
       labels: z.array(z.string()),
       totalSales: z.array(z.number()),
-      previousPeriod: z
+      comparison: z
         .array(z.number())
-        .describe("Total sales for the matching days of the previous period"),
+        .describe("Total sales for the matching days of the comparison"),
+      comparisonLabel: z.string(),
       orders: z.array(z.number()),
       events: z.array(eventSchema).describe("Promotions to shade on the chart"),
     }),
@@ -126,7 +178,7 @@ export const ecommerceTools = [
     name: "get_sales_breakdown",
     description:
       "Shopify-style total sales breakdown: gross sales, discounts, returns, net sales, shipping charges, taxes, and total sales. Feeds MoneyBreakdown directly.",
-    input: z.object({ range: rangeSchema, channel }),
+    input: z.object({ range: rangeSchema, channel, customerType }),
     output: z.object({ lines: z.array(ledgerLineSchema) }),
   }),
   defineTool({
@@ -136,6 +188,7 @@ export const ecommerceTools = [
     input: z.object({
       range: rangeSchema,
       channel,
+      customerType,
       dimension: z.enum(["channel", "category", "country", "device"]).default("channel"),
     }),
     output: z.object({
@@ -153,8 +206,17 @@ export const ecommerceTools = [
   defineTool({
     name: "get_marketing_performance",
     description:
-      "Marketing efficiency: blended ROAS as the hero with its daily trend, KPIs (ad spend, MER, new-customer CPA, new customers, ncROAS), and per-channel spend, attributed revenue, ROAS against target, CPA, new customers, and a revenue sparkline. Feeds HeroMetric, KpiStrip, and ChannelPerformance directly.",
-    input: z.object({ range: rangeSchema }),
+      "Marketing efficiency: blended ROAS against break-even as the hero, KPIs (ad spend, MER, new customer CPA, new customers, aMER, first-order profit), and per-channel spend, attributed revenue, ROAS, CPA, and new customers under an attribution model and window (blended ROAS and MER don't depend on them). Feeds HeroMetric, KpiStrip, RuleChips, and ChannelPerformance directly.",
+    input: z.object({
+      range: rangeSchema,
+      model: z
+        .enum(["last_click", "first_click", "linear", "platform"])
+        .default("last_click")
+        .describe(
+          "Who gets credit for an order; platform is what each ad platform claims for itself",
+        ),
+      window: z.enum(["1d", "7d", "28d"]).default("7d").describe("Days after a click that count"),
+    }),
     output: z.object({
       ...kpiOutput,
       channels: z.array(marketingChannelSchema),
@@ -162,14 +224,73 @@ export const ecommerceTools = [
     }),
   }),
   defineTool({
-    name: "get_profit_breakdown",
+    name: "get_annotations",
     description:
-      "Contribution profit: net sales, cost of goods, gross profit, shipping and fulfillment, payment and marketplace fees, ad spend, other marketing, and contribution profit. Feeds MoneyBreakdown directly.",
+      "What happened in the period, for any time chart: promotions, launches, stockouts, incidents, and tracking changes (kind measurement, which move metrics without being real). Pass to TrendChart's events.",
+    input: z.object({ range: rangeSchema }),
+    output: z.object({ events: z.array(eventSchema) }),
+  }),
+  defineTool({
+    name: "get_promo_impact",
+    description:
+      'Did a promotion pay: daily sales against a baseline from the weeks before, the order lift against the lift needed to cover the discount, the sales lift during, the dip after (demand pulled forward), the net profit effect, and a summary. TrendChart(promo.labels, [{name: "Actual", values: promo.actual, emphasis: "primary"}, {name: "Baseline", values: promo.baseline, emphasis: "muted"}], "currency", "area", promo.events) and KpiStrip(promo.metrics).',
+    input: z.object({
+      event: z
+        .enum(["fall-sale", "fall-sale-2025", "bfcm-2025"])
+        .default("fall-sale")
+        .describe("This year's Fall sale, last year's, or Black Friday Cyber Monday 2025"),
+    }),
+    output: z.object({
+      event: z.string(),
+      detail: z.string(),
+      labels: z.array(z.string()),
+      actual: z.array(z.number()),
+      baseline: z.array(z.number()),
+      events: z.array(eventSchema),
+      metrics: kpiOutput.metrics,
+      summary: z.string(),
+    }),
+  }),
+  defineTool({
+    name: "get_reconciliation",
+    description:
+      "Can we trust the ad platforms' numbers: for Meta, Google, and TikTok, the revenue the store's orders credit them with against what each platform claims, with ROAS both ways and a summary. Feeds ReconciliationCard(recon).",
     input: z.object({ range: rangeSchema }),
     output: z.object({
+      periodLabel: z.string(),
+      platforms: z.array(
+        z
+          .object({
+            platform: z.string(),
+            spend: z.number(),
+            storeRevenue: z.number(),
+            claimedRevenue: z.number(),
+            storeRoas: z.number(),
+            claimedRoas: z.number(),
+          })
+          .meta({ opaque: "PlatformClaim" }),
+      ),
+      storeTotal: z.number(),
+      claimedTotal: z.number(),
+      storefrontSales: z.number(),
+      summary: z.string(),
+    }),
+  }),
+  defineTool({
+    name: "get_profit_bridge",
+    description:
+      "Did the store make money: net sales to gross profit, profit before marketing, and contribution profit, each step against the comparison, with margins, profit per order, and break-even ROAS. Feeds ProfitWaterfall(profit.lines, profit.comparisonLabel) or MoneyBreakdown(profit.lines).",
+    input: z.object({ range: rangeSchema, channel, compare: compareSchema }),
+    output: z.object({
+      periodLabel: z.string(),
+      comparisonLabel: z.string().describe('What each line is compared with, e.g. "Plan"'),
       lines: z.array(ledgerLineSchema),
       grossMargin: z.string(),
       contributionMargin: z.string(),
+      profitPerOrder: z.string(),
+      breakEvenRoas: z
+        .number()
+        .describe("Blended ROAS below which ad spend costs more than the profit it brings in"),
     }),
   }),
   defineTool({
@@ -207,9 +328,24 @@ export const ecommerceTools = [
     }),
   }),
   defineTool({
+    name: "get_customer_flow",
+    description:
+      'Is the customer base growing: new customers and reactivated ones (back after 52 weeks without an order) gained, and customers lapsing (their last order now 52 weeks old) lost, over time, with KPIs for net active customers and the active base. For a diverging ColumnChart: ColumnChart(flow.labels, [{name: "New", values: flow.newCustomers}, {name: "Lapsed", values: flow.lapsed}, {name: "Reactivated", values: flow.reactivated}], "number", true, "Customers"); KpiStrip(flow.metrics).',
+    input: z.object({ range: rangeSchema }),
+    output: z.object({
+      periodLabel: z.string(),
+      labels: z.array(z.string()),
+      newCustomers: z.array(z.number()),
+      reactivated: z.array(z.number()),
+      lapsed: z.array(z.number()).describe("Negative: customers lost, drawn below the line"),
+      net: z.array(z.number()),
+      metrics: kpiOutput.metrics,
+    }),
+  }),
+  defineTool({
     name: "get_order_journey",
     description:
-      "How customers progress from their 1st to 5th order over the last 12 months, with the median days between orders and the prior 12 months for comparison. Feeds ConversionFunnel directly.",
+      "How customers progress from their 1st to 5th order over the last 6 months, with the median days between orders and the 6 months before for comparison. Feeds ConversionFunnel directly.",
     input: z.object({}),
     output: z.object({ steps: z.array(funnelStepSchema) }),
   }),
@@ -236,9 +372,22 @@ export const ecommerceTools = [
   defineTool({
     name: "get_customer_segments",
     description:
-      "RFM customer segments over the last 12 months (Champions, Loyal, Promising, New, Needs attention, At risk, Almost lost, Dormant) with size, revenue share, and the recommended action. Feeds CustomerSegments directly.",
+      "RFM customer segments over the last 12 months (Champions, Loyal, Promising, New, Needs attention, At risk, Almost lost, Dormant) with size, revenue share, and the recommended action (CustomerSegments), how customers moved between them over 90 days (SegmentFlow), and the lapse point after which a customer counts as at risk.",
     input: z.object({}),
-    output: z.object({ totalCustomers: z.number(), segments: z.array(segmentSchema) }),
+    output: z.object({
+      totalCustomers: z.number(),
+      segments: z.array(segmentSchema),
+      movement: z
+        .array(
+          z
+            .object({ from: z.string(), to: z.string(), customers: z.number() })
+            .meta({ opaque: "SegmentMove" }),
+        )
+        .describe(
+          'Customers by segment 90 days ago (from, or "First order") and today (to, or "Lapsed"): SegmentFlow(segments.movement)',
+        ),
+      lapsePoint: z.object({ days: z.number(), note: z.string() }),
+    }),
   }),
   defineTool({
     name: "get_product_performance",
@@ -247,6 +396,7 @@ export const ecommerceTools = [
     input: z.object({
       range: rangeSchema,
       channel,
+      customerType,
       category,
       limit: z.number().int().min(1).max(16).default(8),
     }),
@@ -255,9 +405,113 @@ export const ecommerceTools = [
   defineTool({
     name: "get_inventory_health",
     description:
-      "Inventory KPIs and the products that need restocking: stock against reorder point, days of cover, open purchase orders, and the suggested order. Feeds InventoryAlerts and KpiStrip directly.",
+      "Inventory KPIs (including revenue at risk and ad spend on low stock) and the products that need restocking: stock-adjusted velocity, days of cover, the order-by date, open purchase orders, any stockout gap before they land and the sales it costs, and the suggested order. Feeds InventoryAlerts and KpiStrip directly.",
     input: z.object({ category }),
     output: z.object({ metrics: kpiOutput.metrics, items: z.array(inventoryItemSchema) }),
+  }),
+  defineTool({
+    name: "get_returns",
+    description:
+      "Returns and exchanges: a ledger from gross sales to what was sent back, kept as exchanges, and kept overall (MoneyBreakdown); return KPIs (KpiStrip); return reasons (BarList); the size-exchange matrix, ordered size against exchanged-for size, for footwear or apparel (ExchangeMatrix(returns.exchanges)); and the most-returned products with their return rate in percent (BarList).",
+    input: z.object({ range: rangeSchema, category }),
+    output: z.object({
+      periodLabel: z.string(),
+      lines: z.array(ledgerLineSchema),
+      metrics: kpiOutput.metrics,
+      reasons: z.array(itemSchema),
+      exchanges: z
+        .object({
+          category: z.string(),
+          sizes: z.array(z.string()),
+          counts: z.array(z.array(z.number())).describe("counts[ordered][exchangedFor]"),
+        })
+        .optional()
+        .meta({ opaque: "ExchangeMatrix" }),
+      products: z.array(itemSchema),
+    }),
+  }),
+  defineTool({
+    name: "get_targets",
+    description:
+      "Are we on track this month: October to date for total sales, contribution profit, orders, new customers, and the ad budget, each against its target to date and for the month, with a forecast and its range. Feeds BulletList(targets.targets).",
+    input: z.object({ channel }),
+    output: z.object({ periodLabel: z.string(), targets: z.array(targetProgressSchema) }),
+  }),
+  defineTool({
+    name: "get_live_view",
+    description:
+      'The last hour, live, online store and app: sessions, orders, and sales per 5 minutes (the last step still in progress), sessions at the same time a week ago, visitors right now, KPIs, the hour\'s purchase funnel, and the products most added to carts. TrendChart(live.labels, [{name: "Sessions", values: live.sessions, emphasis: "primary"}, {name: "Same time last week", values: live.sessionsWeekAgo, emphasis: "muted"}], "number", "area", [], true).',
+    input: z.object({}),
+    output: z.object({
+      asOf: z.string(),
+      labels: z.array(z.string()),
+      sessions: z.array(z.number()),
+      sessionsWeekAgo: z.array(z.number()),
+      orders: z.array(z.number()),
+      sales: z.array(z.number()),
+      visitorsNow: z.number(),
+      metrics: kpiOutput.metrics,
+      funnel: z.array(funnelStepSchema),
+      products: z.array(itemSchema),
+    }),
+  }),
+  defineTool({
+    name: "get_creatives",
+    description:
+      "Ad creatives ranked by spend: platform, format, spend, store-attributed revenue and ROAS against break-even, CTR and its change, hook and hold rates for video, frequency, and fatigue. Feeds CreativeLeaderboard(ads.creatives, ads.breakEvenRoas).",
+    input: z.object({
+      range: rangeSchema,
+      platform: z.enum(["all", "meta", "google", "tiktok"]).default("all"),
+    }),
+    output: z.object({
+      creatives: z.array(
+        z
+          .object({
+            name: z.string(),
+            platform: z.string(),
+            format: z.string(),
+            spend: z.number(),
+            revenue: z.number(),
+            roas: z.number(),
+            ctr: z.number(),
+            ctrChange: z.number(),
+            hookRate: z.number().optional().describe("3-second views ÷ impressions, 0–1"),
+            holdRate: z.number().optional().describe("15-second views ÷ 3-second views, 0–1"),
+            frequency: z.number().optional(),
+            fatigue: z.enum(["Fresh", "Watch", "Fatigued"]),
+            belowBreakEven: z.boolean(),
+          })
+          .meta({ opaque: "Creative" }),
+      ),
+      breakEvenRoas: z.number(),
+    }),
+  }),
+  defineTool({
+    name: "get_actions",
+    description:
+      "What to do next, biggest effect first: each recommended action with why (from the data), its expected effect, owner, and effort. Approving one in the demo only writes to a log. Feeds ActionCards(actions.actions).",
+    input: z.object({ range: rangeSchema }),
+    output: z.object({
+      actions: z.array(actionSchema),
+    }),
+  }),
+  defineTool({
+    name: "get_sale_plan",
+    description:
+      'Black Friday Cyber Monday 2026: days to go, the plan by day against last year\'s same weekdays, plan KPIs, and the extra units each product needs for the sale and the date to order them by. TrendChart(sale.labels, [{name: "Plan", values: sale.plan, emphasis: "primary"}, {name: "Last year", values: sale.lastYear, emphasis: "muted"}], "currency", "area", sale.events), KpiStrip(sale.metrics), BarList(sale.extraUnits, "number").',
+    input: z.object({}),
+    output: z.object({
+      event: z.string(),
+      detail: z.string(),
+      daysToGo: z.number(),
+      labels: z.array(z.string()),
+      lastYear: z.array(z.number()),
+      plan: z.array(z.number()),
+      events: z.array(eventSchema),
+      metrics: kpiOutput.metrics,
+      orderBy: z.string().describe("The last day to order the extra units"),
+      extraUnits: z.array(itemSchema).describe("Units to buy for the sale, by product, most first"),
+    }),
   }),
   defineTool({
     name: "get_sales_goal",
@@ -296,8 +550,8 @@ export const ecommerceTools = [
   defineTool({
     name: "get_store_insights",
     description:
-      "Notable changes detected across sales, marketing, conversion, inventory, and returns for the period, most important first. Feeds InsightList directly.",
-    input: z.object({ range: rangeSchema, channel }),
+      "What changed, most important first: what moved profit, tracking changes, the sales change and its driver, stockouts, channels below break-even, goal pace, checkout, promotions, returns, and ad-spend concentration. Feeds InsightList directly.",
+    input: z.object({ range: rangeSchema, channel, compare: compareSchema }),
     output: z.object({ insights: z.array(insightSchema) }),
   }),
 ];

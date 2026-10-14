@@ -4,19 +4,29 @@ import { defineComponent } from "@openuidev/react-lang";
 import { z } from "zod/v4";
 import { TrendChart as TrendChartView } from "../components/Charts/TrendChart";
 import { FILL_MAX_HEIGHT } from "../components/Charts/utils/constants";
-import { eventSchema, formatSchema, seriesSchema } from "../core/schemas";
+import {
+  eventSchema,
+  formatSchema,
+  passed,
+  seriesSchema,
+  type Band,
+  type Target,
+} from "../core/schemas";
 import { Pending } from "./Pending";
 
 export const TrendChart = defineComponent({
   name: "TrendChart",
   description:
-    'Line or area chart over time with a crosshair tooltip, an end label, and shaded events. Up to 4 series, colored in a fixed order; mark context series "muted" (e.g. the prior period) and the series the story is about "primary". Use it instead of LineChart and AreaChart: TrendChart(sales.labels, [{name: "This period", values: sales.totalSales, emphasis: "primary"}, {name: "Prior period", values: sales.previousPeriod, emphasis: "muted"}], "currency").',
+    'Line or area chart over time with a crosshair tooltip, an end label, and events (spans, or markers for one-day events). Up to 4 series, colored in a fixed order; mark context series "muted" (e.g. the comparison) and the series the story is about "primary". Pass partial true when the last point is today, still in progress, so it draws dotted; band shades a benchmark range and target draws a goal line. Use it instead of LineChart and AreaChart: TrendChart(sales.labels, [{name: "This period", values: sales.totalSales, emphasis: "primary"}, {name: sales.comparisonLabel, values: sales.comparison, emphasis: "muted"}], "currency", "area", sales.events, true).',
   props: z.object({
     labels: z.array(z.string()).default([]),
     series: z.array(seriesSchema).default([]),
     format: formatSchema.optional(),
     variant: z.enum(["area", "line"]).optional(),
     events: z.array(eventSchema).optional(),
+    partial: z.boolean().optional(),
+    band: passed("A tool's band: {label, from, to}").optional(),
+    target: passed("A tool's target: {label, value}").optional(),
   }),
   component: ({ props }) => {
     const labels = props.labels ?? [];
@@ -31,6 +41,9 @@ export const TrendChart = defineComponent({
         format={props.format}
         variant={props.variant}
         events={props.events}
+        partial={props.partial}
+        band={props.band as Band | undefined}
+        target={props.target as Target | undefined}
         fill
         maxHeight={FILL_MAX_HEIGHT}
       />

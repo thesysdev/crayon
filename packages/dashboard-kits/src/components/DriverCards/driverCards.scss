@@ -1,0 +1,159 @@
+// Why a metric moved: summary, confidence, and the drivers with their share of the change.
+
+.kit-why {
+  container-type: inline-size;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font: var(--kit-body);
+  min-width: 0;
+}
+.kit-why__summary {
+  margin: 0;
+  color: var(--kit-ink);
+  text-wrap: pretty;
+}
+.kit-why__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 10px;
+}
+.kit-why__confidence {
+  padding: 1px 8px;
+  border-radius: 999px;
+  font: 600 11.5px/1.6 var(--kit-font);
+  white-space: nowrap;
+
+  &--strong {
+    background: color-mix(in srgb, var(--kit-accent) 14%, var(--kit-card));
+    color: var(--kit-accent);
+  }
+  &--medium {
+    background: color-mix(in srgb, var(--kit-warn) 18%, var(--kit-card));
+    color: var(--kit-warn-ink);
+  }
+  &--calm {
+    background: var(--kit-neutral-bg);
+    color: var(--kit-ink-2);
+  }
+}
+.kit-why__note {
+  font: 400 12px/1.4 var(--kit-font);
+  color: var(--kit-ink-3);
+}
+.kit-why__calm {
+  margin: 0;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: var(--kit-sunk);
+  color: var(--kit-ink-2);
+}
+.kit-why__heading {
+  margin-top: 4px;
+  font: 600 11px/1.4 var(--kit-font);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--kit-ink-3);
+}
+.kit-why__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  &--offsetting .kit-driver {
+    background: transparent;
+  }
+}
+.kit-driver {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(64px, 1fr) auto;
+  align-items: center;
+  gap: 4px 12px;
+  padding: 9px 12px;
+  border-radius: 10px;
+  background: var(--kit-sunk);
+  border: 1px solid var(--kit-border);
+}
+.kit-driver__name {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.kit-driver__dimension {
+  font: 500 11px/1.4 var(--kit-font);
+  color: var(--kit-ink-3);
+}
+.kit-driver__label {
+  font-weight: 600;
+  color: var(--kit-ink);
+  overflow-wrap: anywhere;
+}
+.kit-driver__share {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.kit-driver__track {
+  flex: 1 1 auto;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--kit-neutral-bg);
+  overflow: hidden;
+}
+.kit-driver__bar {
+  display: block;
+  height: 100%;
+  border-radius: 3px;
+  background: var(--kit-ink-3);
+  transition: width 0.4s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.kit-driver--good .kit-driver__bar {
+  background: var(--kit-good);
+}
+.kit-driver--bad .kit-driver__bar {
+  background: var(--kit-bad);
+}
+.kit-driver__pct {
+  font: 600 11.5px/1 var(--kit-font);
+  font-variant-numeric: tabular-nums;
+  color: var(--kit-ink-2);
+  min-width: 3.2em;
+  text-align: right;
+}
+.kit-driver__figures {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+}
+.kit-driver__delta {
+  font: 600 13px/1.4 var(--kit-font);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.kit-driver__from {
+  font: 400 11.5px/1.4 var(--kit-font);
+  color: var(--kit-ink-3);
+  font-variant-numeric: tabular-nums;
+}
+.kit-driver__detail {
+  grid-column: 1 / -1;
+  font: 400 11.5px/1.4 var(--kit-font);
+  color: var(--kit-ink-3);
+}
+
+// Narrow cards (a MediumCard, or a phone): the share bar moves under the name.
+@container (max-width: 420px) {
+  .kit-driver {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+  .kit-driver__share {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+}

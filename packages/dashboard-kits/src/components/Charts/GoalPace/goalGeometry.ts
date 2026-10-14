@@ -2,6 +2,8 @@ import { arc as d3Arc, type DefaultArcObject } from "d3-shape";
 import type { Goal } from "../../../core/schemas";
 import type { PaceTone } from "./types";
 
+/** Within this share of the goal either way, the period is on pace (the targets use the same band). */
+const ON_PACE_BAND = 0.02;
 /** Within this share behind pace, the goal reads as close rather than missed. */
 const WARN_BAND = 0.05;
 
@@ -17,6 +19,8 @@ export interface GoalStatus {
   expected: number;
   /** Projected finish against the goal, minus 1: +0.04 means 4% ahead. */
   pace: number;
+  /** Within the on-pace band, or ahead. */
+  onPace: boolean;
   tone: PaceTone;
   /** What each remaining day needs to reach the goal; undefined once the period ends. */
   neededPerDay?: number;
@@ -27,7 +31,8 @@ export function goalStatus(goal: Goal): GoalStatus {
   const total = goal.labels.length;
   const elapsed = Math.min(goal.cumulative.length, total);
   const actual = goal.cumulative[elapsed - 1] ?? 0;
-  const projected = elapsed > 0 ? (actual / elapsed) * total : 0;
+  // A tool's own forecast (shaped by its plan) wins over a straight line.
+  const projected = goal.projected ?? (elapsed > 0 ? (actual / elapsed) * total : 0);
   const pace = goal.goal > 0 ? projected / goal.goal - 1 : 0;
   return {
     total,
@@ -35,9 +40,15 @@ export function goalStatus(goal: Goal): GoalStatus {
     actual,
     projected,
     reached: goal.goal > 0 ? actual / goal.goal : 0,
-    expected: total > 0 ? elapsed / total : 0,
+    expected:
+      goal.planToDate != null && goal.goal > 0
+        ? goal.planToDate / goal.goal
+        : total > 0
+          ? elapsed / total
+          : 0,
     pace,
-    tone: pace >= 0 ? "good" : pace >= -WARN_BAND ? "warn" : "bad",
+    onPace: pace >= -ON_PACE_BAND,
+    tone: pace >= -ON_PACE_BAND ? "good" : pace >= -WARN_BAND ? "warn" : "bad",
     neededPerDay: elapsed < total ? Math.max(0, goal.goal - actual) / (total - elapsed) : undefined,
   };
 }

@@ -1,0 +1,91 @@
+@use "../prefix" as brand;
+
+// Customers moving between segments: nodes then and now, ribbons by direction.
+
+.#{brand.$prefix}-flow {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  font: var(--kit-body);
+
+  &-top {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    font: 600 11.5px var(--kit-font);
+    color: var(--kit-ink-3);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  &-readout {
+    text-transform: none;
+    letter-spacing: 0;
+    font-weight: 500;
+    color: var(--kit-ink-2);
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+  }
+
+  &-frame {
+    position: relative;
+    width: 100%;
+    min-width: 0;
+  }
+
+  &-svg {
+    display: block;
+    overflow: visible;
+  }
+
+  &-ribbon {
+    transition: opacity 0.15s ease;
+    fill-opacity: 0.32;
+
+    &--up {
+      fill: var(--kit-good);
+    }
+    &--down,
+    &--out {
+      fill: var(--kit-bad);
+    }
+    &--stay {
+      fill: var(--kit-muted-mark);
+      fill-opacity: 0.22;
+    }
+    &--in {
+      fill: var(--kit-s1);
+    }
+    &--faded {
+      opacity: 0.18;
+    }
+  }
+
+  &-bar {
+    fill: var(--kit-ink-2);
+  }
+
+  &-label {
+    font: 600 11.5px var(--kit-font);
+    fill: var(--kit-ink);
+  }
+
+  &-count {
+    font-weight: 500;
+    fill: var(--kit-ink-3);
+    font-variant-numeric: tabular-nums;
+  }
+
+  &-moves {
+    margin: 0;
+    font: 400 12.5px/1.5 var(--kit-font);
+    color: var(--kit-ink-2);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .#{brand.$prefix}-flow-ribbons {
+    animation: #{brand.$prefix}-fade-appear 0.5s ease-out both;
+  }
+}

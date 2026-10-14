@@ -5,17 +5,23 @@
 
 // openui-lang definitions and the library factory.
 export {
+  ActionCards,
   BarList,
+  BulletList,
   CohortGrid,
   ColumnChart,
   ConversionFunnel,
+  DataStatus,
+  DriverCards,
   GoalPace,
   HeroMetric,
   InsightList,
   KpiStrip,
+  RuleChips,
   ShareBar,
   Tracker,
   TrendChart,
+  VarianceWalk,
   createKitLibrary,
 } from "./genui-lib";
 export type { CardSlot, KitComponent, KitLibraryDefinition } from "./genui-lib";
