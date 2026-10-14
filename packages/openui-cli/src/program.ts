@@ -52,8 +52,7 @@ function buildProgram(): Command {
     });
     ctx.telemetry.registerRun({
       agent_name: globalOptions.agentName,
-      detected_agent_name: ctx.detectedAgent ?? UNKNOWN_AGENT_NAME,
-      agent: ctx.activeAgent ?? null,
+      detected_agent_name: ctx.detectedAgentName ?? UNKNOWN_AGENT_NAME,
       no_interactive_flag: ctx.interactive === undefined ? null : !ctx.interactive,
       can_prompt: ctx.canPrompt,
       cli_run_id: randomUUID(),

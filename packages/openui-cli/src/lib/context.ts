@@ -10,7 +10,7 @@ export type CliContext = {
   /** `--agent-name` as passed. */
   readonly agent?: string;
   /** Agent found from the env markers its harness sets. */
-  readonly detectedAgent?: string;
+  readonly detectedAgentName?: string;
   /** `--no-interactive` as passed (false when given); undefined for commands without the flag. */
   readonly interactive?: boolean;
   /** Both stdin and stdout are terminals. */
