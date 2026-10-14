@@ -101,6 +101,7 @@ export const GLOBAL_DOCS_TREE: PageTree.Root = {
       name: NESTED_DOCS_SECTIONS["build-agents"].title,
       url: NESTED_DOCS_SECTIONS["build-agents"].entryUrl,
     },
+    { type: "page", name: "Cookbooks", url: COOKBOOKS_URL },
     { type: "separator", name: "Production" },
     { type: "page", name: "Overview", url: "/docs/production" },
     {

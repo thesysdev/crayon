@@ -1,4 +1,4 @@
-import { getIntegrationsByCategory, integrationCategories } from "@/app/(home)/integrations/data";
+import { SITE_NAV_LINKS } from "@/lib/site-nav-links";
 import svgPaths from "@/imports/svg-urruvoh2be";
 import Link from "next/link";
 import { useId } from "react";
@@ -122,29 +122,78 @@ function ThesysLogo() {
   );
 }
 
-// Every integration page, one column per category. Rendered on the server so the
-// catalog never ships to the client, and read from the catalog so a new page is
-// linked from every footer without touching this file.
-function IntegrationLinks() {
+type FooterLink = { title: string; href: string; newTab?: boolean };
+
+const FOOTER_GROUPS: { title: string; links: FooterLink[] }[] = [
+  {
+    title: "Products",
+    links: [
+      { title: "OpenUI", ...SITE_NAV_LINKS.openui },
+      { title: "Gateway", ...SITE_NAV_LINKS.gateway },
+      { title: "Observability", ...SITE_NAV_LINKS.observability },
+      { title: "Pricing", ...SITE_NAV_LINKS.pricing },
+    ],
+  },
+  {
+    title: "Build",
+    links: [
+      { title: "Getting Started", ...SITE_NAV_LINKS.gettingStarted },
+      { title: "Documentation", ...SITE_NAV_LINKS.documentation },
+      { title: "Cookbooks", ...SITE_NAV_LINKS.cookbooks },
+      { title: "Integrations", ...SITE_NAV_LINKS.integrations },
+      { title: "API Reference", ...SITE_NAV_LINKS.apiReference },
+    ],
+  },
+  {
+    title: "Explore",
+    links: [
+      { title: "All Demos", ...SITE_NAV_LINKS.demos },
+      { title: "Open Intelligent UI", ...SITE_NAV_LINKS.openIntelligentUi },
+      { title: "F1 Dashboard", ...SITE_NAV_LINKS.f1Dashboard },
+      { title: "Trip Planner", ...SITE_NAV_LINKS.tripPlanner },
+      { title: "AI Dashboards", ...SITE_NAV_LINKS.aiDashboards },
+    ],
+  },
+  {
+    title: "Labs",
+    links: [
+      { title: "OUI-1", ...SITE_NAV_LINKS.oui1 },
+      { title: "OpenClaw OS", ...SITE_NAV_LINKS.openClawOs },
+      { title: "AppLess", ...SITE_NAV_LINKS.appless },
+      { title: "Community Projects", ...SITE_NAV_LINKS.community },
+    ],
+  },
+  {
+    title: "Resources",
+    links: [
+      { title: "Blog", ...SITE_NAV_LINKS.blog },
+      { title: "Benchmarks", ...SITE_NAV_LINKS.benchmarks },
+      { title: "GitHub", href: "https://github.com/thesysdev/openui", newTab: true },
+      { title: "Discord", href: "https://discord.com/invite/Pbv5PsqUSv", newTab: true },
+    ],
+  },
+];
+
+function FooterLinks() {
   return (
-    <nav className={styles.integrations} aria-labelledby="footer-integrations">
-      <Link className={styles.integrationsTitle} href="/integrations" id="footer-integrations">
-        Integrations
-      </Link>
-      <div className={styles.integrationColumns}>
-        {integrationCategories.map((category) => (
-          <div key={category.id}>
-            <p className={styles.integrationCategory}>{category.shortTitle}</p>
-            <ul className={styles.integrationList}>
-              {getIntegrationsByCategory(category.id).map((integration) => (
-                <li key={integration.slug}>
-                  <Link href={`/integrations/${integration.slug}`}>{integration.name}</Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))}
-      </div>
+    <nav className={styles.navigation} aria-label="Footer">
+      {FOOTER_GROUPS.map((group) => (
+        <div key={group.title}>
+          <h2 className={styles.navigationHeading}>{group.title}</h2>
+          <ul className={styles.navigationList}>
+            {group.links.map((link) => (
+              <li key={link.title}>
+                <Link
+                  href={link.href}
+                  {...(link.newTab ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                >
+                  {link.title}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
     </nav>
   );
 }
@@ -159,7 +208,7 @@ export function Footer() {
       {/* Footer content */}
       <div className={styles.contentSection}>
         <div className={styles.contentContainer}>
-          <IntegrationLinks />
+          <FooterLinks />
 
           {/* Mark on the left, theme control on the right, sitting directly on
               the separator below. */}

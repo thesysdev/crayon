@@ -1,24 +1,9 @@
+import { SITE_NAV_LINKS } from "@/lib/site-nav-links";
 import { EXAMPLES_REPO_URL } from "@/lib/examples-catalog";
 import { labProjects } from "@/lib/lab-projects";
 import { LinkCardGrid, ShowcaseGrid, type ShowcaseItem } from "./cards";
 
 const PLAYGROUND: ShowcaseItem[] = [
-  {
-    name: "OpenUI Chat",
-    tagline: "Chat assistant",
-    description:
-      "A ChatGPT-like assistant powered by OpenUI Cloud. Start a live conversation or replay a curated one.",
-    image: { light: "/nav/chat-light.webp", dark: "/nav/chat-dark.webp" },
-    links: [{ label: "Open demo", href: "/chat" }],
-  },
-  {
-    name: "AI Dashboards",
-    tagline: "Live GitHub data",
-    description:
-      "Enter a GitHub username and ask questions about their activity. Each answer is an interactive dashboard.",
-    image: { light: "/nav/dashboard-light.webp", dark: "/nav/dashboard-dark.webp" },
-    links: [{ label: "Open demo", href: "/demo/github" }],
-  },
   {
     name: "Compare",
     tagline: "Side by side",
@@ -43,6 +28,29 @@ export function Playground() {
 
 const FEATURED_PROJECTS: ShowcaseItem[] = [
   {
+    name: "OpenUI Chat",
+    tagline: "Chat assistant",
+    description:
+      "A ChatGPT-like assistant powered by OpenUI Cloud. Start a live conversation or replay a curated one.",
+    image: { light: "/nav/chat-light.webp", dark: "/nav/chat-dark.webp" },
+    links: [{ label: "Open demo", href: "/chat" }],
+  },
+  {
+    name: "AI Dashboards",
+    tagline: "Live GitHub data",
+    description:
+      "Enter a GitHub username and ask questions about their activity. Each answer is an interactive dashboard.",
+    image: { light: "/nav/dashboard-light.webp", dark: "/nav/dashboard-dark.webp" },
+    links: [{ label: "Open demo", href: "/demo/github" }],
+  },
+  {
+    name: "Open Intelligent UI",
+    tagline: "Interactive answers",
+    description:
+      "An open-source recreation of ChatGPT’s Intelligent UI experience, with maps, photographs, and editable itineraries rendered with OpenUI.",
+    links: [{ label: "GitHub", href: SITE_NAV_LINKS.openIntelligentUi.href, external: true }],
+  },
+  {
     name: "F1 Dashboard",
     tagline: "Live race data",
     description:
@@ -65,23 +73,15 @@ const FEATURED_PROJECTS: ShowcaseItem[] = [
     ],
   },
   {
-    name: "OpenClaw OS",
-    tagline: "Agent workspace",
-    description:
-      "The default workspace for OpenClaw. Agents generate interactive apps and artifacts that stay updated with live data.",
-    image: { light: "/nav/openclaw-light.webp", dark: "/nav/openclaw-dark.webp" },
-    links: [
-      { label: "Website", href: "/openclaw-os" },
-      { label: "GitHub", href: "https://github.com/thesysdev/openclaw-os", external: true },
-    ],
-  },
-  {
     name: "AppLess",
     tagline: "Phone OS concept",
     description:
       "An experimental phone with no apps. Ask for what you need and OpenUI streams a native interface for it on iOS and Android.",
     image: { light: "/nav/appless-light.webp", dark: "/nav/appless-dark.webp" },
-    links: [{ label: "GitHub", href: "https://github.com/thesysdev/appless", external: true }],
+    links: [
+      { label: "Website", href: SITE_NAV_LINKS.appless.href },
+      { label: "GitHub", href: "https://github.com/thesysdev/appless", external: true },
+    ],
   },
 ];
 

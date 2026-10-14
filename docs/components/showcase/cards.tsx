@@ -9,7 +9,7 @@ export type ShowcaseItem = {
   name: string;
   tagline: string;
   description: string;
-  image: { light: string; dark: string };
+  image?: { light: string; dark: string };
   links: CardLinkItem[];
 };
 
@@ -43,6 +43,7 @@ export function ShowcaseGrid({ items }: { items: ShowcaseItem[] }) {
     <div className={styles.featuredGrid}>
       {items.map((item) => (
         <article key={item.name} className={styles.featuredCard}>
+          {item.image && (
           <div className={styles.featuredMedia}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
@@ -59,6 +60,7 @@ export function ShowcaseGrid({ items }: { items: ShowcaseItem[] }) {
               loading="lazy"
             />
           </div>
+          )}
           <div className={styles.featuredBody}>
             <span className={styles.eyebrow}>{item.tagline}</span>
             <h3 className={styles.cardTitle}>{item.name}</h3>
