@@ -1,6 +1,5 @@
 import { THESYS_KEYS_URL } from "../../../lib/auth/mint";
 import { DEFAULT_ENV_FILE } from "../../../lib/env";
-import type { TemplateName } from "./create-types";
 
 export function missingCloudKeyNote(
   projectDir: string,
@@ -20,10 +19,11 @@ export function getStartedMessage(o: {
   name: string;
   devCmd: string;
   dlxCmd: string;
-  template: TemplateName;
   backendGettingStarted?: string;
   skillInstalled: boolean;
   envWritten: boolean;
+  /** A key is in `.env` or already exported in the shell. */
+  apiKeyAvailable: boolean;
   startDev: boolean;
   installCmd: string;
   dependencyInstalled: boolean;
@@ -32,20 +32,28 @@ export function getStartedMessage(o: {
     ? "The OpenUI agent skill was installed.\nAI coding assistants will use it to help you build with OpenUI.\n"
     : "";
 
-  const envNote =
-    o.template === "openui-cloud"
-      ? o.envWritten
-        ? "✅ .env created with your OpenUI Cloud API key + base URL."
-        : missingCloudKeyNote(o.name, o.dlxCmd)
-      : o.envWritten
-        ? "✅ .env created with your API key."
-        : "Add your API key to .env:\nOPENAI_API_KEY=sk-your-key-here";
+  const envNote = o.envWritten ? "✅ .env created with your OpenUI Cloud API key + base URL." : "";
 
-  const nextStep = o.startDev
-    ? `Starting the development server in "${o.name}"...\n\n> ${o.devCmd} run dev`
+  // Without a key the app can't answer yet, so the key step replaces the usual
+  // next steps and goes last, where it's read.
+  const nextStep = !o.apiKeyAvailable
+    ? ""
+    : o.startDev
+      ? `Starting the development server in "${o.name}"...\n\n> ${o.devCmd} run dev`
+      : [
+          `> cd ${o.name}`,
+          ...(o.dependencyInstalled ? [] : [`> ${o.installCmd}`]),
+          `> ${o.devCmd} run dev`,
+        ].join("\n");
+
+  const keyStep = o.apiKeyAvailable
+    ? ""
     : [
+        "Next, add your OpenUI API key. This signs you in and writes THESYS_API_KEY to .env:",
+        "",
         `> cd ${o.name}`,
         ...(o.dependencyInstalled ? [] : [`> ${o.installCmd}`]),
+        `> ${o.dlxCmd} @openuidev/cli@latest generate-api-key`,
         `> ${o.devCmd} run dev`,
       ].join("\n");
 
@@ -62,6 +70,7 @@ export function getStartedMessage(o: {
     nextStep,
     deployHint,
     feedbackHint,
+    keyStep,
   ]
     .filter(Boolean)
     .join("\n\n")}\n`;

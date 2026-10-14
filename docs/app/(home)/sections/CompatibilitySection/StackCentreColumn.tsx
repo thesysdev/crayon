@@ -8,7 +8,7 @@ import styles from "./CompatibilityDiagram.module.css";
  * stacked, sitting over the drifting bands and lining up with their rows.
  *
  * One element rather than one per row, so the shadow it casts onto the bands is
- * a single shadow around a single box. Four stacked boxes each cast onto the
+ * a single shadow around a single box. Stacked boxes each cast onto the
  * ones above and below them, which are the rest of this same column.
  */
 
@@ -69,7 +69,7 @@ export function StackCentreColumn({ layers }: { layers: Layer[] }) {
           items={layer.items}
           key={layer.label}
           label={layer.label}
-          /* Staggered, so the four titles do not all change logo together. */
+          /* Staggered, so the titles do not all change logo together. */
           swapDelay={index * 550}
         />
       ))}

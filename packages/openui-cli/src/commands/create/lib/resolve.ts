@@ -41,18 +41,13 @@ export type CreateCatalog = {
 
 export async function loadCreateCatalog(params: {
   example?: string;
-  template?: TemplateName;
   backendFramework?: OverlayName;
   interactive: boolean;
   onRetry?: (info: RetryAttemptInfo) => void;
 }): Promise<CreateCatalog> {
-  const { example, template: requestedTemplate, backendFramework, interactive, onRetry } = params;
+  const { example, backendFramework, interactive, onRetry } = params;
 
-  rejectConflictingScaffoldSelectors({
-    example,
-    backendFramework,
-    template: requestedTemplate,
-  });
+  rejectConflictingScaffoldSelectors({ example, backendFramework });
 
   if (example) {
     const examples = await loadExamplesCatalog({ onRetry });
@@ -65,7 +60,7 @@ export async function loadCreateCatalog(params: {
       loadTemplatesCatalog({ onRetry }),
       loadExamplesCatalog({ onRetry }),
     ]);
-    const template = requestedTemplate ?? DEFAULT_TEMPLATE_KEY;
+    const template = DEFAULT_TEMPLATE_KEY;
     const templateEntry = findCatalogTemplate(catalog, template);
     if (backendFramework) {
       findCatalogOverlay(templateEntry, backendFramework);
@@ -74,7 +69,7 @@ export async function loadCreateCatalog(params: {
   }
 
   const catalog = await loadTemplatesCatalog({ onRetry });
-  const template = requestedTemplate ?? DEFAULT_TEMPLATE_KEY;
+  const template = DEFAULT_TEMPLATE_KEY;
   const templateEntry = findCatalogTemplate(catalog, template);
   if (backendFramework) {
     findCatalogOverlay(templateEntry, backendFramework);

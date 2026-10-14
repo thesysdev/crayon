@@ -57,7 +57,7 @@ Available on every command.
 
 ## `create`
 
-Scaffolds a new Next.js agent app with OpenUI.
+Scaffolds a generative UI agent with Next.js and your choice of agent framework. No account or API key is needed to scaffold; add the key afterwards with [`generate-api-key`](#generate-api-key).
 
 ```
 openui create [options]
@@ -68,108 +68,93 @@ openui create [options]
 | Flag                              | Description                                                                                                         |
 | --------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
 | `-n, --name <string>`             | Project name (default: `openui-agent`)                                                                              |
-| `-t, --template <template>`       | AI backend: `openui-cloud` (Gateway, default) or `openui-self-hosted`                                               |
 | `--backend-framework <framework>` | Backend framework: `langgraph` (default), `vercel-ai-sdk`, or `vercel-eve`                                          |
-| `-e, --example <example>`         | Scaffold an [OpenUI example](https://github.com/thesysdev/openui/blob/main/examples) instead of a template          |
-| `--api-key <key>`                 | OpenUI Gateway API key; skips sign-in                                                                               |
-| `--auth <method>`                 | How to get the Gateway key: `oauth` (browser sign-in) or `skip`                                                     |
+| `-e, --example <example>`         | Scaffold an [OpenUI example](https://github.com/thesysdev/openui/blob/main/examples) instead                        |
 | `--skill` / `--no-skill`          | Install or skip the [OpenUI agent skill](/docs/mcp#install-via-the-skills-cli-recommended) for AI coding assistants |
 | `--no-install`                    | Scaffold without installing dependencies                                                                            |
 | `-i, --immediate`                 | Start the development server after installing                                                                       |
 | `--no-immediate`                  | Install dependencies without starting the development server                                                        |
 | `--no-interactive`                | Never prompt; use defaults for anything not passed                                                                  |
 
-`--example` cannot be combined with `--template` or `--backend-framework`. `--immediate` and `--no-immediate` cannot be used together.
+`--example` cannot be combined with `--backend-framework`. `--immediate` and `--no-immediate` cannot be used together.
 
 **Interactive and non-interactive runs**
 
-In a terminal, `create` prompts for anything you didn't pass: the project name, a backend framework or example, Gateway sign-in (or your provider key for `openui-self-hosted`), and the agent skill. It then installs dependencies and starts the development server.
+In a terminal, `create` prompts for anything you didn't pass: the project name, a backend framework or example, Gateway sign-in, and the agent skill. It then installs dependencies and starts the development server.
 
-In non-interactive mode, `create` uses the defaults: the `openui-cloud` template, `langgraph`, and the name `openui-agent` (or `openui-agent-2`, `-3`, … if that directory exists). This happens when you pass `--no-interactive`, when there's no terminal attached (CI, scripts), or when a coding agent runs the CLI. In that mode it:
+When nobody can answer prompts, `create` takes the defaults instead: `langgraph` and the name `openui-agent` (or `openui-agent-2`, `-3`, … if that directory exists). This happens when you pass `--no-interactive`, when there's no terminal attached (CI, scripts), or when a coding agent runs the CLI. In that mode it:
 
 - installs dependencies but doesn't start the development server (pass `--immediate` to start it)
-- skips Gateway sign-in unless you pass `--api-key` or `--auth`, and prints the `generate-api-key` command to run afterwards
+- skips Gateway sign-in and ends with the `generate-api-key` command to run next
 - skips the agent skill unless you pass `--skill`
 
 An explicit `--name` that already exists is an error in non-interactive runs.
 
-**Templates**
-
-| Value                | Use it when                                                                                                               |
-| -------------------- | ------------------------------------------------------------------------------------------------------------------------- |
-| `openui-cloud`       | Recommended. Hosted models, managed conversation history, streaming, built-in tools, and artifacts through OpenUI Gateway |
-| `openui-self-hosted` | You bring an OpenAI-compatible provider key and own the AI route and persistence                                          |
-
-The app reads its key from `.env`: `THESYS_API_KEY` for `openui-cloud`, `OPENAI_API_KEY` for `openui-self-hosted`.
-
 **Backend frameworks**
 
-| Value           | Framework                               |
-| --------------- | --------------------------------------- |
-| `langgraph`     | LangGraph, running in the Next.js route |
-| `vercel-ai-sdk` | Vercel AI SDK                           |
-| `vercel-eve`    | Vercel Eve                              |
+| Value           | Description                                |
+| --------------- | ------------------------------------------ |
+| `langgraph`     | LangGraph agent                            |
+| `vercel-ai-sdk` | Vercel AI SDK agent                        |
+| `vercel-eve`    | Eve agent rendered through Agent Interface |
+
+
+**OpenUI examples**
+
+Loaded from [OpenUI examples](https://github.com/thesysdev/openui/blob/main/examples). Pass `--example <name>` with any catalog folder name; it can't be combined with `--backend-framework`.
 
 **Examples**
 
 ```bash tab="pnpm" tab-group="pkg"
-# Prompt for everything
+# Prompt for anything not passed
 pnpx @openuidev/cli@latest create
 
-# Pick a template and backend framework
-pnpx @openuidev/cli@latest create --name my-app --template openui-cloud --backend-framework vercel-ai-sdk
-pnpx @openuidev/cli@latest create --name my-app --template openui-self-hosted
-
-# Scaffold an example
+# Pick a backend framework, or start from an example
+pnpx @openuidev/cli@latest create --name my-app --backend-framework vercel-ai-sdk
 pnpx @openuidev/cli@latest create --name my-app --example shadcn
 
-# Scripted setup with an existing key
-pnpx @openuidev/cli@latest create --no-interactive --name my-app --api-key <key>
+# Never prompt, then add the key
+pnpx @openuidev/cli@latest create --no-interactive --name my-app
+cd my-app && pnpx @openuidev/cli@latest generate-api-key
 ```
 
 ```bash tab="bun" tab-group="pkg"
-# Prompt for everything
+# Prompt for anything not passed
 bunx @openuidev/cli@latest create
 
-# Pick a template and backend framework
-bunx @openuidev/cli@latest create --name my-app --template openui-cloud --backend-framework vercel-ai-sdk
-bunx @openuidev/cli@latest create --name my-app --template openui-self-hosted
-
-# Scaffold an example
+# Pick a backend framework, or start from an example
+bunx @openuidev/cli@latest create --name my-app --backend-framework vercel-ai-sdk
 bunx @openuidev/cli@latest create --name my-app --example shadcn
 
-# Scripted setup with an existing key
-bunx @openuidev/cli@latest create --no-interactive --name my-app --api-key <key>
+# Never prompt, then add the key
+bunx @openuidev/cli@latest create --no-interactive --name my-app
+cd my-app && bunx @openuidev/cli@latest generate-api-key
 ```
 
 ```bash tab="yarn" tab-group="pkg"
-# Prompt for everything
+# Prompt for anything not passed
 yarn dlx @openuidev/cli@latest create
 
-# Pick a template and backend framework
-yarn dlx @openuidev/cli@latest create --name my-app --template openui-cloud --backend-framework vercel-ai-sdk
-yarn dlx @openuidev/cli@latest create --name my-app --template openui-self-hosted
-
-# Scaffold an example
+# Pick a backend framework, or start from an example
+yarn dlx @openuidev/cli@latest create --name my-app --backend-framework vercel-ai-sdk
 yarn dlx @openuidev/cli@latest create --name my-app --example shadcn
 
-# Scripted setup with an existing key
-yarn dlx @openuidev/cli@latest create --no-interactive --name my-app --api-key <key>
+# Never prompt, then add the key
+yarn dlx @openuidev/cli@latest create --no-interactive --name my-app
+cd my-app && yarn dlx @openuidev/cli@latest generate-api-key
 ```
 
 ```bash tab="npm" tab-group="pkg"
-# Prompt for everything
+# Prompt for anything not passed
 npx @openuidev/cli@latest create
 
-# Pick a template and backend framework
-npx @openuidev/cli@latest create --name my-app --template openui-cloud --backend-framework vercel-ai-sdk
-npx @openuidev/cli@latest create --name my-app --template openui-self-hosted
-
-# Scaffold an example
+# Pick a backend framework, or start from an example
+npx @openuidev/cli@latest create --name my-app --backend-framework vercel-ai-sdk
 npx @openuidev/cli@latest create --name my-app --example shadcn
 
-# Scripted setup with an existing key
-npx @openuidev/cli@latest create --no-interactive --name my-app --api-key <key>
+# Never prompt, then add the key
+npx @openuidev/cli@latest create --no-interactive --name my-app
+cd my-app && npx @openuidev/cli@latest generate-api-key
 ```
 
 ## `deploy`
@@ -242,7 +227,7 @@ npx @openuidev/cli@latest deploy ./my-app --skip-env
 
 ## `generate-api-key`
 
-Signs in with Thesys in the browser, mints an OpenUI Gateway API key, and writes it to an env file in the current project.
+Signs in with Thesys in the browser, mints an OpenUI Gateway API key, and writes it to an env file in the current project. It needs an interactive terminal; without one it exits with the command to run yourself.
 
 ```
 openui generate-api-key [options]

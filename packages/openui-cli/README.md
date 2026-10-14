@@ -45,7 +45,7 @@ npx @openuidev/cli@latest deploy
 
 ### `openui create`
 
-Scaffolds a new Next.js agent app.
+Scaffolds a generative UI agent with Next.js and your choice of agent framework. No account or API key is needed to scaffold; add the key afterwards with `openui generate-api-key`.
 
 ```bash
 openui create [options]
@@ -54,33 +54,34 @@ openui create [options]
 Options:
 
 - `-n, --name <string>`: Project name (default: `openui-agent`)
-- `-t, --template <template>`: `openui-cloud` (recommended, default) or `openui-self-hosted`
 - `--backend-framework <framework>`: `langgraph` (default), `vercel-ai-sdk`, or `vercel-eve`
-- `-e, --example <example>`: Scaffold an [OpenUI example](https://github.com/thesysdev/openui/blob/main/examples) instead of a template; can't be combined with `--template` or `--backend-framework`
-- `--api-key <key>`: OpenUI Cloud API key; skips sign-in
-- `--auth <method>`: How to get the Cloud key: `oauth` (browser sign-in) or `skip`
+- `-e, --example <example>`: Scaffold an OpenUI example instead (see below)
 - `--skill` / `--no-skill`: Install or skip the OpenUI agent skill for AI coding assistants
 - `--no-install`: Scaffold without installing dependencies
 - `-i, --immediate` / `--no-immediate`: Start, or don't start, the development server after installing
 - `--no-interactive`: Never prompt; use defaults for anything not passed
 
-Templates:
+Backend frameworks:
 
-- **OpenUI Cloud (`openui-cloud`, recommended)**: hosted models, managed conversation history, streaming, built-in tools, and report and presentation artifacts. Uses `THESYS_API_KEY`.
-- **Self-hosted (`openui-self-hosted`)**: bring an OpenAI-compatible provider and own the AI route and persistence. Uses `OPENAI_API_KEY`.
+| Value           | Description                                |
+| --------------- | ------------------------------------------ |
+| `langgraph`     | LangGraph agent                            |
+| `vercel-ai-sdk` | Vercel AI SDK agent                        |
+| `vercel-eve`    | Eve agent rendered through Agent Interface |
+
+Examples are loaded from [OpenUI Examples](https://github.com/thesysdev/openui/blob/main/examples). Pass `--example <name>` with any catalog folder name; it can't be combined with `--backend-framework`.
 
 In a terminal, `create` prompts for anything you didn't pass, installs dependencies, and starts the development server.
 
-When nobody can answer prompts (`--no-interactive`, no terminal attached, or a coding agent running the CLI), it takes the defaults instead: `openui-cloud`, `langgraph`, and `openui-agent` (or the next free `openui-agent-<n>`). It installs dependencies without starting the server, skips Cloud sign-in unless you pass `--api-key` or `--auth`, and prints the `generate-api-key` command to run afterwards. An explicit `--name` that already exists is an error.
+When nobody can answer prompts (`--no-interactive`, no terminal attached, or a coding agent running the CLI), it takes the defaults instead: `langgraph` and `openui-agent` (or the next free `openui-agent-<n>`). It installs dependencies without starting the server, skips Cloud sign-in, and ends with the `generate-api-key` command to run next. An explicit `--name` that already exists is an error.
 
 Examples:
 
 ```bash
 openui create
-openui create --name my-app --template openui-cloud --backend-framework vercel-ai-sdk
-openui create --name my-app --template openui-self-hosted
+openui create --name my-app --backend-framework vercel-ai-sdk
 openui create --name my-app --example shadcn
-openui create --no-interactive --name my-app --api-key <key>
+openui create --no-interactive --name my-app
 ```
 
 ### `openui deploy`
@@ -111,7 +112,7 @@ openui deploy --skip-env -- --force
 
 ### `openui generate-api-key`
 
-Signs in with Thesys in the browser, mints an OpenUI Cloud API key, and writes it to an env file in the current project.
+Signs in with Thesys in the browser, mints an OpenUI Cloud API key, and writes it to an env file in the current project. It needs an interactive terminal; without one it exits with the command to run yourself.
 
 ```bash
 openui generate-api-key [options]
