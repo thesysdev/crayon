@@ -36,7 +36,7 @@ state_name    = "$" identifier ;
 function_name = "@" identifier ;
 ```
 
-`$name` is a state variable, and the `$` is part of the name. `@name` calls a built-in, a custom function, or an action step. Clients MUST NOT give `$` and `@` other meanings.
+`$name` is a state variable, and the `$` is part of the name. `@name` calls a built-in, a custom function, or an action. Clients MUST NOT give `$` and `@` other meanings.
 
 #### Keywords
 
@@ -49,7 +49,7 @@ The only keywords are `true`, `false`, and `null`.
 | Keyword literals | `true`, `false`, `null` |
 | Reserved call forms | `Query`, `Mutation`, `Action` |
 | Built-in functions | `@Count`, `@First`, `@Last`, `@Sum`, `@Avg`, `@Min`, `@Max`, `@Filter`, `@Sort`, `@Round`, `@Abs`, `@Floor`, `@Ceil`, `@Each` |
-| Action steps | `@Set`, `@Reset`, `@Run`, `@ToAssistant`, `@OpenUrl` |
+| Actions | `@Set`, `@Reset`, `@Run`, `@ToAssistant`, `@OpenUrl` |
 | State prefix | every `$name` |
 
 `Query` and `Mutation` are statement forms. `Action` is an expression form (section 2.1). None of them is a component.
@@ -304,8 +304,8 @@ Fixtures: `evaluation/*-each-*`
 
 A library declares extra functions in its `functions` list ([prompt.md](./prompt.md), section 2.5). Programs call them with `@`. Arguments are positional, in the key order of the function's `params` (the same rule as components).
 
-- Built-ins are looked up first. A library MUST NOT register a function named like a built-in, an action step, `Query`, `Mutation`, or one of its components.
-- A `@Name` call that is not a built-in, action step, or custom function evaluates to null and reports `unknown-function`. The statement is kept.
+- Built-ins are looked up first. A library MUST NOT register a function named like a built-in, an action, `Query`, `Mutation`, or one of its components.
+- A `@Name` call that is not a built-in, an action, or a custom function evaluates to null and reports `unknown-function`. The statement is kept.
 - Custom functions MUST be pure and synchronous. The runtime MAY cache results and MAY call them any number of times, in any order.
 - Arguments are checked against `params` the same way component props are, with the same recovery (section 8.2). An invalid argument takes its default if it has one. Otherwise an invalid optional argument or array item is left out, and an invalid required argument makes the call evaluate to null. Extra arguments are dropped. Missing optional arguments take their defaults.
 - Literal arguments are checked when parsing, with the same codes (`type-mismatch`, `missing-required`, `null-required`, and `excess-args` for extra arguments). Arguments that are only known at runtime are checked when the call runs, and a failed check reports `runtime-error`.
@@ -411,24 +411,24 @@ Fixtures: `actions/*-query-*`, including `actions/*-query-args-*`
 
 Fixtures: `actions/*-mutation-*`
 
-### 6.3 Action plans and steps
+### 6.3 Actions
 
-`Action([step, step, ...])` builds a plan, which a component's action prop triggers. An action position is a prop whose schema is a `$ref` to `ActionExpression`, or an `anyOf` of `$ref`s to action names ([prompt.md](./prompt.md), section 2.3). Such a restricted slot shapes the prompt and the schema only. In 1.0 it accepts any step or plan. Steps run in order. A mutation run is awaited. Query fetches and host events are sent without waiting.
+An action is a `@` call such as `@ToAssistant("Hi")` in an action position. `Action([a, b, ...])` holds several actions. A component triggers them through its action prop. An action position is a prop whose schema is a `$ref` to `ActionExpression`, or an `anyOf` of `$ref`s to action names ([prompt.md](./prompt.md), section 2.3). Such a restricted slot shapes the prompt and the schema only. In 1.0 it accepts any action or `Action([...])`. Actions run in order. A mutation run is awaited. Query fetches and host events are sent without waiting.
 
-- `@Set($var, value)`: evaluates `value` when the step runs, and writes it.
+- `@Set($var, value)`: evaluates `value` when the action runs, and writes it.
 - `@Reset($a, $b, ...)`: restores the declared defaults (null if none).
-- `@Run(ref)`: runs a mutation or fetches a query again. A failed mutation stops the remaining steps. `@Run` on a query never stops the plan.
+- `@Run(ref)`: runs a mutation or fetches a query again. A failed mutation stops the remaining actions. `@Run` on a query never stops them.
 - `@ToAssistant(message, context?)`: sends a `continue_conversation` event with the message, the optional context, and the form state.
 - `@OpenUrl(url)`: sends an `open_url` event.
-- `@Name(args)`, a custom action from the library's `actions` ([prompt.md](./prompt.md), section 2.5): sends an event with `type` set to `Name`, `params` holding the arguments keyed by the action's param names, and an empty `humanFriendlyMessage`. Arguments map by position in the key order of the action's `params` and are checked like custom function arguments (section 3.6), with one difference: any invalid argument, even an optional one with a default, makes the step do nothing. A literal one is reported when parsing (for example `type-mismatch`), and one known only at runtime reports `runtime-error`. A required argument that is null when the step is built, with no default, also makes it do nothing, with no error. Extra arguments are only dropped.
+- `@Name(args)`, a custom action from the library's `actions` ([prompt.md](./prompt.md), section 2.5): sends an event with `type` set to `Name`, `params` holding the arguments keyed by the action's param names, and an empty `humanFriendlyMessage`. Arguments map by position in the key order of the action's `params` and are checked like custom function arguments (section 3.6), with one difference: any invalid argument, even an optional one with a default, makes the action do nothing. A literal one is reported when parsing (for example `type-mismatch`), and one known only at runtime reports `runtime-error`. A required argument that is null when the action is built, with no default, also makes it do nothing, with no error. Extra arguments are only dropped.
 
 `@Run`, `@Set`, and `@Reset` name their targets instead of evaluating them: `@Run` takes a query or mutation reference, `@Set` and `@Reset` take state variables. The `@Each` template is deferred the same way.
 
-**Single steps.** Every step call evaluates to a plan of one step, wherever it is written, so one step needs no wrapper: `Button("Save", @ToAssistant("Save"))` equals `Button("Save", Action([@ToAssistant("Save")]))`. Several steps need `Action([...])`. A plain list of steps, such as `[@Set($saved, true), @ToAssistant("Saved")]`, is not a plan. It is plain data, a list of one-step plans, and the component receives it as it is. It is not reported as an error, even though a strict JSON Schema reader would find that a list does not match `ActionExpression`.
+**One action.** Every action call evaluates to an `Action` of one action, wherever it is written, so one action needs no wrapper: `Button("Save", @ToAssistant("Save"))` equals `Button("Save", Action([@ToAssistant("Save")]))`. Several actions need `Action([...])`. A plain list of actions, such as `[@Set($saved, true), @ToAssistant("Saved")]`, is not an `Action`. It is plain data, a list of one-action `Action`s, and the component receives it as it is. It is not reported as an error, even though a strict JSON Schema reader would find that a list does not match `ActionExpression`.
 
 **Context.** The `context` of `@ToAssistant` may be any value. The host receives it unchanged in `params.context` and decides how it reaches the model ([prompt.md](./prompt.md), section 6.3).
 
-**Form state timing.** Each event carries the form state as of when its step runs, so an earlier `@Set` in the same plan is visible.
+**Form state timing.** Each event carries the form state as of when its action runs, so an earlier `@Set` in the same `Action([...])` is visible.
 
 Components MAY define a default action. The reference library's button with no action sends `continue_conversation` with its label as the message.
 
@@ -446,7 +446,7 @@ Events reach the host in one shape:
 - `formState` holds each field as `{ value, componentType }`: that form's fields inside a form, the page-level state outside one.
 - `open_url` events carry the same fields, with `params.url` and an empty `humanFriendlyMessage`.
 
-Fixtures: `actions/*-plan-*`, `actions/*-single-step-*`, `actions/*-event-*`, `actions/*-custom-*`, `actions/*-step-list-*`
+Fixtures: `actions/*-several-actions`, `actions/*-one-action*`, `actions/*-event-*`, `actions/*-custom-*`, `actions/*-action-list-*`
 
 ### 6.4 Tool resolution
 
@@ -486,7 +486,7 @@ A **fatal** error means nothing renders. Any other error leaves the rest of the 
 | `type-mismatch` | parser | Argument does not match the prop's type or enum | Schema default if any. Otherwise the optional prop or array item is removed; a required prop drops the component |
 | `excess-args` | parser | More arguments than props | Extra arguments dropped, component renders |
 | `inline-reserved` | parser | `Query` or `Mutation` in a value position | Expression evaluates to nothing |
-| `unknown-function` | parser | `@Name` is not a built-in, an action step, or a custom function | The call evaluates to null. The statement is kept |
+| `unknown-function` | parser | `@Name` is not a built-in, an action, or a custom function | The call evaluates to null. The statement is kept |
 | `no-root` | parser, runtime | No usable entry (section 2.2), stream complete. `runtime` when a `root` expression such as a ternary gives no component | Non-fatal when the fallback entry renders. Fatal otherwise |
 | `parse-failed` | parser | The response has text but yields no statements | Fatal |
 | `parse-exception` | parser | The parser itself failed | Fatal. The client MUST catch it |
@@ -583,7 +583,7 @@ Fixtures: `streaming/001-worked-example`
 A client claims conformance by passing a tagged fixture release. If the prose and the fixtures disagree, that is a spec bug, and the next release fixes both.
 
 ```text
-spec/fixtures/<area>/<NNN-short-name>/
+spec/fixtures/<version>/<area>/<NNN-short-name>/
 ```
 
 The areas are `grammar`, `entry`, `streaming`, `evaluation`, `state`, `actions`, `editing`, and `errors`. Each "Fixtures:" line names a folder or a narrower pattern such as `entry/001-*`.
@@ -592,7 +592,7 @@ Each case holds:
 
 - `input.oui`: the program text. Streaming cases use `chunks.json` instead, a JSON array of strings, the chunks in order.
 - `expected.json`: the expected result after the stream ends.
-- `steps.json`: action cases only. User actions and tool results, and what the host should see.
+- `interactions.json`: action and form cases only. User input and tool results, and what the host should see.
 
 `expected.json`:
 
@@ -606,7 +606,7 @@ Each case holds:
         { "type": "Input", "props": { "name": "q", "value": { "$binding": "$query" } } },
         { "type": "Button", "props": {
           "label": "Save",
-          "action": { "action": [{ "step": "ToAssistant", "args": ["Save order"] }] } } }
+          "action": { "actions": [{ "action": "ToAssistant", "args": ["Save order"] }] } } }
       ]
     }
   },
@@ -617,16 +617,16 @@ Each case holds:
 }
 ```
 
-- `root` is the rendered tree summary, or null when nothing renders. A component is `{ "type", "props" }`. Primitive props are plain values. Component props are nested summaries. Actions are `{ "action": [ { "step", "args" } ] }`. Bindings are `{ "$binding": "$name" }`.
+- `root` is the rendered tree summary, or null when nothing renders. A component is `{ "type", "props" }`. Primitive props are plain values. Component props are nested summaries. Actions are `{ "actions": [ { "action", "args" } ] }`. Bindings are `{ "$binding": "$name" }`.
 - `errors` lists `{ "code", "statementId" }` for each error.
 - `unresolved` and `orphans` list names.
 - `incomplete` is true when the input ended inside an unclosed string or bracket.
 
-`steps.json`:
+`interactions.json`:
 
 ```json
 {
-  "steps": [
+  "interactions": [
     { "type": ["search", "late"] },
     { "tool": "listTickets", "result": { "rows": [] } },
     { "click": "saveBtn" }
@@ -638,9 +638,9 @@ Each case holds:
 }
 ```
 
-A step is `{ "click": "<statementId>" }`, `{ "type": ["<statementId>", "<text>"] }`, or `{ "tool": "<name>", "result": <json> }`. `expected.events` lists the host events in order, in the shape of section 6.3. `expected.state` is the final state.
+An interaction is `{ "click": "<statementId>" }`, `{ "type": ["<statementId>", "<text>"] }`, or `{ "tool": "<name>", "result": <json> }`. `expected.events` lists the host events in order, in the shape of section 6.3. `expected.state` is the final state.
 
 ## Appendix C. Changelog
 
-- **2026-10-12**: 1.0, released with `@openuidev/lang-core` and `@openuidev/react-lang` 1.0.0. The entry is the `root` statement, or the first value statement whose value calls the library's root component, with a real `no-root` code. Added custom functions, custom actions, single-step actions, any-value `@ToAssistant` context, form state read when the step runs, the `unknown-function` code, and the fixture layout. Streaming must equal a batch parse, and edits merge with the parser's statement boundaries.
+- **2026-10-12**: 1.0, released with `@openuidev/lang-core` and `@openuidev/react-lang` 1.0.0. The entry is the `root` statement, or the first value statement whose value calls the library's root component, with a real `no-root` code. Added custom functions, custom actions, one action without a wrapper, any-value `@ToAssistant` context, form state read when the action runs, the `unknown-function` code, and the fixture layout. Streaming must equal a batch parse, and edits merge with the parser's statement boundaries.
 - Earlier drafts: 0.9 community review (2026-07-22) and 1.0-beta (2026-08-05). See the git history.

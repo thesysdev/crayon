@@ -153,9 +153,9 @@ A program calls a custom function like a built-in, with the `@` prefix and posit
 share = TextContent(@Percent(done, total))
 ```
 
-The prompt lists custom functions next to the built-ins. Lookup goes to built-ins first, then custom functions. A call to a name that is not a built-in, an action step, or a custom function evaluates to null, like an unresolved reference, and reports `unknown-function`. The statement is not dropped ([language.md](./language.md), sections 3.6 and 8.2).
+The prompt lists custom functions next to the built-ins. Lookup goes to built-ins first, then custom functions. A call to a name that is not a built-in, an action, or a custom function evaluates to null, like an unresolved reference, and reports `unknown-function`. The statement is not dropped ([language.md](./language.md), sections 3.6 and 8.2).
 
-**Custom actions.** A library declares its own action steps with `defineAction({ name, description, params })`. The schema keeps their description and `params` in `schema.actions`, with no `returns`. The LibrarySpec's `actions` keeps their signatures and descriptions. A program uses one as a step, `@CopyToClipboard("text")`, alone or inside `Action([...])`. The client does not run it. The host receives it in `onAction` ([language.md](./language.md), section 6.3). The prompt lists custom actions with the built-in steps.
+**Custom actions.** A library declares its own actions with `defineAction({ name, description, params })`. The schema keeps their description and `params` in `schema.actions`, with no `returns`. The LibrarySpec's `actions` keeps their signatures and descriptions. A program uses one like a built-in action, `@CopyToClipboard("text")`, alone or inside `Action([...])`. The client does not run it. The host receives it in `onAction` ([language.md](./language.md), section 6.3). The prompt lists custom actions with the built-in actions.
 
 Fixtures: `evaluation/*-function-*`, `errors/*-unknown-function-*`, `actions/*-custom-*`
 
@@ -217,7 +217,7 @@ The system prompt is a function of the LibrarySpec and the options. The same inp
 
 The entry point is `generateSystemPrompt({ library, promptOptions })`. The flat `generatePrompt(spec)` form is deprecated.
 
-Fixtures: none in `spec/fixtures/`. A golden-file test generates the prompt for a fixed library and options and compares the bytes to a stored file.
+Fixtures: none in `spec/fixtures/1.0/`. A golden-file test generates the prompt for a fixed library and options and compares the bytes to a stored file.
 
 ### 4.2 Options
 
@@ -239,7 +239,7 @@ The inline mode section teaches that openui-lang goes inside fences, with prose 
 
 - The entry statement `root`, written first.
 - Positional arguments only, with optional arguments left out from the end.
-- Single-step actions: one step bare, several in `Action([...])`.
+- One action needs no wrapper. Several go in `Action([...])`.
 - Restricted action slots and `$binding<type>` props, when the library has them.
 
 ### 4.4 Order of the prompt
@@ -252,7 +252,7 @@ The inline mode section teaches that openui-lang goes inside fences, with prose 
 
 Components appear in the order they are listed in `components`. `componentGroups` split the list into titled sections. A group is `{ name, components, notes? }`. Components in no group go under "Other".
 
-Fixtures: none in `spec/fixtures/`. Covered by the golden-file test in section 4.1.
+Fixtures: none in `spec/fixtures/1.0/`. Covered by the golden-file test in section 4.1.
 
 ## 5. Component signatures and descriptions
 
@@ -284,7 +284,7 @@ A description SHOULD say what the type does not: units, ranges, and when to use 
 
 Error `hint` fields do not reuse the signature line. They carry a shorter form: prop names only, with required props marked by a star ([language.md](./language.md), section 8.3).
 
-Fixtures: none in `spec/fixtures/`. Covered by the golden-file test in section 4.1.
+Fixtures: none in `spec/fixtures/1.0/`. Covered by the golden-file test in section 4.1.
 
 ## 6. The conversation
 
@@ -294,7 +294,7 @@ The model's earlier responses appear in history as the OpenUI Lang text it wrote
 
 The host removes every marker line (section 7) from history before the model sees it. The rules in section 3.2 keep stored programs readable across library changes.
 
-Fixtures: none in `spec/fixtures/`.
+Fixtures: none in `spec/fixtures/1.0/`.
 
 ### 6.2 Error feedback
 
@@ -312,15 +312,15 @@ A user action that continues the conversation becomes the next user turn. It has
 
 The host receives `context` unchanged in `params.context`. How it reaches the model is up to the host (see "Reference format" below). The host writes the context and form state in a `context` section (section 7). The event shape is in [language.md](./language.md), section 6.3.
 
-Form state is read when the step runs, not when the click starts. A `@Set` earlier in the same action is visible in the form state.
+Form state is read when the action runs, not when the click starts. A `@Set` earlier in the same `Action([...])` is visible in the form state.
 
-A step can stand alone in an action position. It is a plan of one step:
+One action can stand alone in an action position:
 
 ```
 Button("Save", @ToAssistant("Save order"))
 ```
 
-This equals `Button("Save", Action([@ToAssistant("Save order")]))`. It works for `@ToAssistant`, `@OpenUrl`, `@Set`, `@Reset`, `@Run`, and custom actions. Several steps need `Action([...])`. A plain list of steps is data, not a plan.
+This equals `Button("Save", Action([@ToAssistant("Save order")]))`. It works for `@ToAssistant`, `@OpenUrl`, `@Set`, `@Reset`, `@Run`, and custom actions. Several actions need `Action([...])`. A plain list of actions is data, not an `Action`.
 
 **Reference format.** Hosts may use their own format. The reference chat client and the reference backend use this one. The user turn is stored as:
 
@@ -365,7 +365,7 @@ The attributes are a query string in `application/x-www-form-urlencoded` form, a
 
 A marker counts only at the very start of a line. `]]>openui:` in the middle of a line is ordinary text, with one exception: a `content` marker (`]]>openui:content` followed by `?`, a line end, or the end of the message) in the middle of a line starts a new line there. A regenerated response is written right after the cut-off text of the failed one, and this keeps the last content winning.
 
-Fixtures: none in `spec/fixtures/`.
+Fixtures: none in `spec/fixtures/1.0/`.
 
 ### 7.2 Kinds and sections
 
@@ -393,7 +393,7 @@ saveBtn = Button("Save", @ToAssistant("Save order", {"orderId": 42}))
 ]]>openui:end
 ```
 
-Fixtures: none in `spec/fixtures/`.
+Fixtures: none in `spec/fixtures/1.0/`.
 
 ### 7.3 Reading messages
 
@@ -406,7 +406,7 @@ Fixtures: none in `spec/fixtures/`.
 
 While a response streams, the last line may be incomplete. If that line starts with `]]>openui:`, or is a prefix of it, the reader holds it back until its newline arrives or the stream ends. A partial `content` marker at the end of a line is held back the same way.
 
-Fixtures: none in `spec/fixtures/`.
+Fixtures: none in `spec/fixtures/1.0/`.
 
 ### 7.4 Writing messages
 
@@ -414,20 +414,20 @@ The host writes the markers. It puts a `content` line before the response and, w
 
 The attribute tells a later reader which library wrote the message. It does not change how the program is parsed.
 
-Fixtures: none in `spec/fixtures/`.
+Fixtures: none in `spec/fixtures/1.0/`.
 
 ### 7.5 What the model sees
 
 Nothing of this protocol. The party that builds a model request MUST strip every marker line, and every section body it does not use, before the text reaches the model. The party that shows a message MUST strip every marker line before display. The prompt never teaches the syntax.
 
-Fixtures: none in `spec/fixtures/`.
+Fixtures: none in `spec/fixtures/1.0/`.
 
 ### 7.6 Older forms
 
 - The attribute `libraryVersion` (a version with no library id) is still written by some hosts. Readers return it like any other attribute.
 - Other envelopes, such as an XML `<content>`/`<context>` wrapper or an artifact header, are host-specific. OpenUI readers do not read them; the host that writes them reads them.
 
-Fixtures: none in `spec/fixtures/`.
+Fixtures: none in `spec/fixtures/1.0/`.
 
 ## Appendix A. Changelog
 

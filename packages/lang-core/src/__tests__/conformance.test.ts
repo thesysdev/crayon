@@ -1,5 +1,5 @@
-// The spec/fixtures conformance cases (spec/language.md, Appendix B; rules in spec/fixtures/README.md).
-// A failing case fails the run unless known-failing.json lists it. steps.json runs in react-lang.
+// The spec/fixtures/1.0 conformance cases (spec/language.md, Appendix B; rules in spec/fixtures/1.0/README.md).
+// A failing case fails the run unless known-failing.json lists it. interactions.json runs in react-lang.
 // OPENUI_FIXTURES points the runners at another fixture folder.
 import fs from "node:fs";
 import path from "node:path";
@@ -57,7 +57,7 @@ interface FixtureCase {
 }
 
 const FIXTURES_DIR = path.resolve(
-  process.env.OPENUI_FIXTURES ?? path.join(__dirname, "../../../../spec/fixtures"),
+  process.env.OPENUI_FIXTURES ?? path.join(__dirname, "../../../../spec/fixtures/1.0"),
 );
 
 const read = (...p: string[]) => fs.readFileSync(path.join(FIXTURES_DIR, ...p), "utf8");
@@ -160,25 +160,25 @@ const same = (a: unknown, b: unknown) => isDeepStrictEqual(json(a), json(b));
 
 // ─── Summary (README, "How the tree is summarized") ───
 
-function summarizeStep(s: Dict, ev: (ast: unknown) => unknown): Dict {
+function summarizeAction(s: Dict, ev: (ast: unknown) => unknown): Dict {
   switch (s.type) {
     case "continue_conversation":
       return {
-        step: "ToAssistant",
+        action: "ToAssistant",
         args: s.context == null ? [s.message] : [s.message, s.context],
       };
     case "open_url":
-      return { step: "OpenUrl", args: [s.url] };
+      return { action: "OpenUrl", args: [s.url] };
     case "set":
-      return { step: "Set", args: [s.target, ev(s.valueAST) ?? null] };
+      return { action: "Set", args: [s.target, ev(s.valueAST) ?? null] };
     case "reset":
-      return { step: "Reset", args: s.targets as string[] };
+      return { action: "Reset", args: s.targets as string[] };
     case "run":
-      return { step: "Run", args: [s.statementId] };
+      return { action: "Run", args: [s.statementId] };
     default: {
       const params = (s.params as Dict) ?? {};
       const keys = actionParams[s.name as string] ?? Object.keys(params);
-      return { step: s.name, args: keys.map((k) => summarize(params[k], ev)) };
+      return { action: s.name, args: keys.map((k) => summarize(params[k], ev)) };
     }
   }
 }
@@ -196,7 +196,7 @@ function summarize(v: unknown, ev: (ast: unknown) => unknown): unknown {
     return { type: o.typeName, props };
   }
   if (Array.isArray(o.steps))
-    return { action: (o.steps as Dict[]).map((s) => summarizeStep(s, ev)) };
+    return { actions: (o.steps as Dict[]).map((s) => summarizeAction(s, ev)) };
   if (o.__reactive === "assign") return { $binding: o.target };
   return Object.fromEntries(Object.entries(o).map(([k, pv]) => [k, summarize(pv, ev)]));
 }
