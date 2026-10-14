@@ -26,7 +26,7 @@ const geistMono = Geist_Mono({
 
 const SITE_TITLE = SITE_NAME;
 const SITE_DESCRIPTION =
-  "OpenUI is the open standard for Intelligent UI. Full-stack, framework-agnostic Generative UI built on OpenUI Lang, a streaming-first language with first-party runtimes for React, Vue, Svelte, and Angular, and up to 67% fewer tokens than JSON.";
+  "Full-stack, framework-agnostic Generative UI built on OpenUI Lang, a streaming-first language with first-party runtimes for React, Vue, Svelte, and Angular, and up to 67% fewer tokens than JSON.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
@@ -39,7 +39,6 @@ export const metadata: Metadata = {
   referrer: "origin-when-cross-origin",
   keywords: [
     "OpenUI",
-    "Intelligent UI",
     "Generative UI",
     "AI UI",
     "OpenUI Lang",
