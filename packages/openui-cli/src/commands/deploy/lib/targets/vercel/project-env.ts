@@ -1,7 +1,7 @@
 import { runCommand } from "../../../../../lib/process-runner";
 import type { CliInvocation } from "../../cli-bin";
 import { SENSITIVE_DEPLOY_ENV_KEYS } from "../../project-env";
-import { confirmOrDefault } from "../../prompt";
+import { canPromptInteractive, confirmOrDefault } from "../../prompt";
 import { vercelSpawnArgs } from "./args";
 import { isVercelLinked, vercelCliEnv } from "./connect";
 
@@ -19,7 +19,7 @@ export async function syncLocalEnvToVercelProject(opts: {
   projectDir: string;
   localEnv: Record<string, string>;
   yes: boolean;
-  canPrompt: boolean;
+  noInteractive: boolean;
 }): Promise<number> {
   if (!isVercelLinked(opts.projectDir)) {
     console.info(
@@ -55,15 +55,15 @@ export async function syncLocalEnvToVercelProject(opts: {
     `Save ${keyList} to this Vercel project where missing (production / preview / development)?`,
     {
       yes: opts.yes,
-      canPrompt: opts.canPrompt,
+      noInteractive: opts.noInteractive,
       cancelStage: "vercel_env_prompt",
     },
   );
   if (!shouldSave) {
     console.info(
-      opts.yes || opts.canPrompt
+      opts.yes || canPromptInteractive(opts.noInteractive)
         ? "Skipping project env save — using deployment-only env for this run.\n"
-        : "Non-interactive run — not saving env to the Vercel project (pass --yes to save).\n",
+        : "No TTY — not saving env to the Vercel project (pass --yes to save).\n",
     );
     return 0;
   }

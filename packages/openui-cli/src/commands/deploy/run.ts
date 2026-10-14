@@ -43,6 +43,7 @@ export async function runDeploy(options: DeployOptions, ctx: CliContext): Promis
     extraArgs.includes("-y");
   const skipEnv = Boolean(options.skipEnv);
   const verbose = ctx.verbose || (options.extraArgs ?? []).includes("--verbose");
+  const interactive = !options.noInteractive;
   const isOpenUiProject = hasOpenUiPackages(readProjectDependencies(projectDir));
 
   const targetOpts: DeployTargetOptions = {
@@ -52,12 +53,12 @@ export async function runDeploy(options: DeployOptions, ctx: CliContext): Promis
     yes,
     skipEnv,
     noInteractive: Boolean(options.noInteractive),
-    canPrompt: ctx.canPrompt,
     verbose,
     tel,
   };
 
   tel.registerContext({
+    interactive,
     is_openui_project: isOpenUiProject,
     package_manager: resolveInstallPackageManager().name,
   });
@@ -68,6 +69,7 @@ export async function runDeploy(options: DeployOptions, ctx: CliContext): Promis
     yes,
     skip_env: skipEnv,
     verbose,
+    interactive,
     is_openui_project: isOpenUiProject,
     has_dir_arg: Boolean(resolved.projectDir),
   });

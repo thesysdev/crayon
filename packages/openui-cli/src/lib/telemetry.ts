@@ -131,7 +131,6 @@ export class Telemetry {
 
   registerRun(props: {
     agent_name: string;
-    /** Whether this run may prompt: a terminal, no --no-interactive, and no agent. */
     can_prompt: boolean;
     /** false when `--no-interactive` is passed; only sent for commands that have the flag. */
     interactive?: boolean;

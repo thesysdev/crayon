@@ -7,19 +7,13 @@ export type CliContext = {
   telemetry: Telemetry;
   verbose: boolean;
   cliVersion?: string;
-  /** `--agent-name` as passed. */
   readonly agent?: string;
-  /** Agent found from the env markers its harness sets. */
   readonly detectedAgentName?: string;
   /** `--no-interactive` as passed (false when given); undefined for commands without the flag. */
   readonly interactive?: boolean;
-  /** Both stdin and stdout are terminals. */
   readonly detectedInteractive: boolean;
-  /** The agent driving this run, declared or detected; undefined for a human. */
   readonly activeAgent?: string;
-  /** Whether this run may prompt: not `--no-interactive`, a terminal, and no agent. */
   readonly canPrompt: boolean;
-  /** Set the passed and detected run values once, before the command runs. */
   initialize(
     this: CliContext,
     passed: { verbose: boolean; agent?: string; interactive?: boolean },

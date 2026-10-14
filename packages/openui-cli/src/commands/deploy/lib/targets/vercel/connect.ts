@@ -7,6 +7,7 @@ import { mutedNpmEnv, runCommand } from "../../../../../lib/process-runner";
 import { withSpinner } from "../../../../../lib/spinner";
 import type { CliInvocation } from "../../cli-bin";
 import { readProjectPackageJson } from "../../project";
+import { canPromptInteractive } from "../../prompt";
 import type { DeployTargetOptions } from "../../types";
 import { adoptVercelEnvVars } from "../../vercel-env";
 import { vercelLinkScopeArgs, vercelSpawnArgs } from "./args";
@@ -114,9 +115,9 @@ export async function isVercelLoggedIn(invocation: CliInvocation, cwd: string): 
 /** Run interactive `vercel login`, or fail if there is no TTY. */
 export async function loginToVercel(
   invocation: CliInvocation,
-  opts: Pick<DeployTargetOptions, "projectDir" | "canPrompt">,
+  opts: Pick<DeployTargetOptions, "projectDir" | "noInteractive">,
 ): Promise<void> {
-  if (!opts.canPrompt) {
+  if (!canPromptInteractive(opts.noInteractive)) {
     throw new CreateError(
       "vercel_login",
       "Not logged into Vercel. Run `vercel login` or set VERCEL_TOKEN, then retry.",
@@ -139,16 +140,13 @@ export async function loginToVercel(
 /** Link the directory to a Vercel project (`vercel link`, `--yes` when skipping prompts). */
 export async function linkVercelProject(
   invocation: CliInvocation,
-  opts: Pick<
-    DeployTargetOptions,
-    "projectDir" | "yes" | "noInteractive" | "canPrompt" | "extraArgs"
-  >,
+  opts: Pick<DeployTargetOptions, "projectDir" | "yes" | "noInteractive" | "extraArgs">,
 ): Promise<void> {
   const skipPrompts = opts.yes || opts.noInteractive;
-  if (!skipPrompts && !opts.canPrompt) {
+  if (!skipPrompts && !canPromptInteractive(opts.noInteractive)) {
     throw new CreateError(
       "vercel_link",
-      "Vercel project is not linked. Run `vercel link` or re-run with --yes.",
+      "Vercel project is not linked. Run `vercel link` or re-run with a TTY / --yes.",
       "invalid_input",
       "NOT_LINKED",
     );

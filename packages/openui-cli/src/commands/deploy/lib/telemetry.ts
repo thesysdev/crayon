@@ -11,6 +11,7 @@ export class DeployTelemetryClient extends Telemetry {
     yes: boolean;
     skip_env: boolean;
     verbose: boolean;
+    interactive: boolean;
     is_openui_project: boolean;
     has_dir_arg: boolean;
   }) {

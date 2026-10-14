@@ -8,8 +8,6 @@ export type DeployTargetOptions = {
   yes: boolean;
   skipEnv: boolean;
   noInteractive: boolean;
-  /** Whether prompts can be shown: see `canPrompt` in lib/context. */
-  canPrompt: boolean;
   verbose: boolean;
   tel: DeployTelemetryClient;
 };

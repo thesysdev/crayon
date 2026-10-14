@@ -103,8 +103,6 @@ Options:
 
 Any other flags, such as `--prod`, are passed through to Vercel. Unlinked projects are linked first.
 
-When there's no terminal, or a coding agent runs it, `deploy` doesn't prompt: it stops if you need to log in to Vercel, and only links an unlinked project or saves env keys when you pass `--yes`.
-
 ```bash
 openui deploy
 openui deploy ./my-app --prod
@@ -180,7 +178,7 @@ openui --agent-name codex feedback --category bug "Renderer throws when a stream
 
 Coding agents should pass `--agent-name` with their stable, lowercase kebab-case product slug, such as `codex`, `claude-code`, `cline`, `factory-droid`, or `pi`. Don't pass a model version, user name, or session ID. Humans can omit it.
 
-The CLI never waits on a prompt when an agent runs it, whether or not `--agent-name` is passed. `create` takes the non-interactive defaults and prints any follow-up commands at the end; `deploy` stops with the command to run instead of starting Vercel login.
+`create` never waits on a prompt when an agent runs it, whether or not `--agent-name` is passed. It takes the non-interactive defaults and prints any follow-up commands at the end.
 
 ## Telemetry
 
