@@ -455,7 +455,7 @@ function ModelCell({ id, name }: { id: string; name: string }) {
             style={{ maskImage: `url(${icon.src})`, WebkitMaskImage: `url(${icon.src})` }}
           />
         ) : (
-          <Image src={icon.src} alt="" width={16} height={16} unoptimized />
+          <Image src={icon.src} alt={`${slugOf(id)} logo`} width={16} height={16} unoptimized />
         )}
       </span>
       <div className={styles.modelText}>
