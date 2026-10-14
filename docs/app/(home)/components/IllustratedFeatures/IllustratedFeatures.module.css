@@ -1,0 +1,114 @@
+/* Feature cards that lead with an illustration: a stage on top, then a title
+   and a line of copy. Shared by the OUI-1 and AppLess pages. The --feat-*
+   tokens are the palette the illustrations inside draw with. */
+.features {
+  --feat-ink: var(--openui-text-neutral-primary);
+  --feat-muted: var(--openui-text-neutral-secondary);
+  --feat-panel: var(--openui-foreground);
+  --feat-line: var(--home-hairline);
+  --feat-fill: color-mix(in srgb, var(--feat-ink) 5%, transparent);
+
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 64px 24px;
+}
+
+.feature {
+  min-width: 0;
+}
+.feature[data-span="half"] {
+  grid-column: span 3;
+}
+.feature[data-span="full"] {
+  grid-column: span 6;
+}
+.feature[data-span="third"] {
+  grid-column: span 2;
+}
+
+/* The same stage the hero uses: shader behind, artwork on top. The stroke is
+   the shader's own base colour; keep in step with TONES in FadedDitherCanvas. */
+.stage {
+  --stage-stroke: #f8f8f8;
+
+  container-type: inline-size;
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  border: 1px solid var(--stage-stroke);
+  border-radius: 24px;
+}
+[data-theme="dark"] .stage {
+  --stage-stroke: #0e0e0e;
+}
+.stage[data-flat] {
+  background: var(--stage-stroke);
+}
+.feature[data-span="half"] .stage {
+  aspect-ratio: 588 / 360;
+}
+.feature[data-span="full"] .stage {
+  aspect-ratio: 1200 / 420;
+}
+.feature[data-span="third"] .stage {
+  aspect-ratio: 384 / 280;
+}
+.stageShader {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+}
+.stageShader > * {
+  width: 100%;
+  height: 100%;
+}
+.stageArt {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  color: var(--feat-ink);
+}
+
+.title {
+  margin: 20px 0 0;
+  font-family: var(--home-font-display);
+  font-size: var(--home-heading-size);
+  font-weight: var(--home-heading-weight);
+  line-height: var(--home-heading-leading);
+  letter-spacing: var(--home-heading-tracking);
+  color: var(--feat-ink);
+}
+.description {
+  max-width: 44ch;
+  margin: 8px 0 0;
+  font-size: var(--home-body-size);
+  line-height: var(--home-body-leading);
+  color: var(--feat-muted);
+}
+
+@media (min-width: 768px) and (max-width: 899.98px) {
+  .features {
+    gap: 48px 16px;
+  }
+}
+@media (max-width: 767px) {
+  .features {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 40px;
+  }
+  .feature[data-span] {
+    grid-column: auto;
+  }
+  .stage {
+    border-radius: 12px;
+  }
+  .feature[data-span] .stage {
+    aspect-ratio: 358 / 260;
+  }
+  .feature[data-span="full"] .stage {
+    aspect-ratio: 360 / 300;
+  }
+}

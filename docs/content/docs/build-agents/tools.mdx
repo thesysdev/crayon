@@ -49,9 +49,9 @@ $priority = "high"
 $title = ""
 tickets = Query("list_tickets", {priority: $priority}, {rows: []})
 createTicket = Mutation("create_ticket", {title: $title, priority: $priority})
-filter = Select("priority", $priority, [SelectItem("high", "High"), SelectItem("low", "Low")])
+filter = Select("priority", [SelectItem("high", "High"), SelectItem("low", "Low")], null, null, $priority)
 addBtn = Button("Add", Action([@Run(createTicket), @Run(tickets), @Reset($title)]))
-form = Form("create", addBtn, [FormControl("Title", Input("title", $title))])
+form = Form("create", Buttons([addBtn]), [FormControl("Title", Input("title", "Ticket title", "text", null, $title))])
 tbl = Table([Col("Title", tickets.rows.title), Col("Priority", tickets.rows.priority)])
 root = Stack([CardHeader("Tickets"), filter, form, tbl])
 ```

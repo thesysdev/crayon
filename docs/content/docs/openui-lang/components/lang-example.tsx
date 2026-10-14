@@ -12,18 +12,6 @@ import { genuiOutput } from "@/components/overview-components/genui";
 import { Renderer } from "@openuidev/react-lang";
 import { openuiLibrary } from "@openuidev/react-ui";
 
-const renderableOutput = `root = Stack([welcomeCard])
-welcomeCard = Card([welcomeHeader, welcomeBody])
-welcomeHeader = CardHeader("Welcome", "Get started with our platform")
-welcomeBody = Stack([signupForm], "column", "m")
-signupForm = Form("signup", actions, [nameField, emailField])
-nameField = FormControl("Name", Input("name", "Your name", "text", { required: true, minLength: 2 }))
-emailField = FormControl("Email", Input("email", "you@example.com", "email", { required: true, email: true }))
-actions = Buttons([signUpBtn, learnMoreBtn], "row")
-signUpBtn = Button("Sign up", { type: "continue_conversation", context: "signup" }, "primary")
-learnMoreBtn = Button("Learn more", { type: "continue_conversation", context: "learn_more" }, "secondary")
-`;
-
 export const LangExample = () => {
   return (
     <div className="grid gap-4 lg:grid-cols-2">
@@ -49,7 +37,7 @@ export const LangExample = () => {
             className="h-full"
             title="Component Library Definition"
             code={`import { defineComponent, createLibrary } from '@openuidev/react-lang';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 const MyCard = defineComponent({
   name: 'MyCard',
@@ -91,13 +79,13 @@ export function AssistantMessage({ content, isStreaming }) {
           <div className="mb-3 text-sm font-medium">Generate System Prompt with CLI</div>
           <CodeBlock
             title=""
-            code={`@openuidev/cli generate path/to/library.ts -o system-prompt.txt`}
+            code={`npx @openuidev/cli@latest generate path/to/library.ts --out system-prompt.txt`}
           />
           <div className="my-3 text-sm font-medium">Send system prompt to the LLM</div>
           <CodeBlock
             title=""
             code={`import fs from "fs";
-const openuiSystemPrompt = fs.readFileSync("system-prompt.txt", "utf8");              
+const systemPrompt = fs.readFileSync("system-prompt.txt", "utf8");
 const completion = await client.chat.completions.create({
   model: "gpt-5.2",
   stream: true,
@@ -115,7 +103,7 @@ const completion = await client.chat.completions.create({
           <span className="text-sm font-medium">Output Preview</span>
         </div>
         <div className="p-6">
-          <Renderer library={openuiLibrary} response={renderableOutput} isStreaming={false} />
+          <Renderer library={openuiLibrary} response={genuiOutput} isStreaming={false} />
         </div>
       </SimpleCard>
     </div>

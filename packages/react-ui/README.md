@@ -6,7 +6,7 @@ React components and a ready-made chat surface for OpenUI. Use the `AgentInterfa
 [![monthly downloads](https://img.shields.io/npm/dm/@openuidev/react-ui)](https://www.npmjs.com/package/@openuidev/react-ui)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/thesysdev/openui/blob/main/LICENSE)
 
-**Links:** [Package docs](https://openui.com/docs/api-reference/react-ui) | [Chat docs](https://openui.com/docs/chat) | [GitHub repo](https://github.com/thesysdev/openui)
+**Links:** [Package docs](https://openui.com/docs/api-reference/react-ui) | [Chat docs](https://openui.com/docs/agent) | [GitHub repo](https://github.com/thesysdev/openui)
 
 ## Install
 
@@ -16,7 +16,9 @@ npm install @openuidev/react-ui @openuidev/react-lang @openuidev/react-headless
 pnpm add @openuidev/react-ui @openuidev/react-lang @openuidev/react-headless
 ```
 
-**Peer dependencies:** `react >=19.0.0`, `react-dom >=19.0.0`, `zustand ^4.5.5`, `@openuidev/react-lang`, `@openuidev/react-headless`
+**Peer dependencies:** `react >=19.0.0`, `react-dom >=19.0.0`, `zustand ^4.5.5`, `zod ^3.25.0 || ^4.0.0`, `@openuidev/react-lang >=1.0.0 <2.0.0`, `@openuidev/react-headless`
+
+react-ui 0.18 renders OpenUI Lang 1.0: upgrade it together with `@openuidev/react-lang` 1.x and the server that builds your system prompt.
 
 Don't forget to import the component styles:
 
@@ -74,7 +76,7 @@ function App() {
 | `agentName`        | Name displayed in the header                                                                 |
 | `starters`         | Conversation-starter prompts shown on the welcome screen                                     |
 
-See the [chat docs](https://openui.com/docs/chat) for full configuration.
+See the [chat docs](https://openui.com/docs/agent) for full configuration.
 
 ## Built-in Component Libraries
 
@@ -91,7 +93,7 @@ Use them directly when building custom chat experiences:
 import { Renderer } from "@openuidev/react-lang";
 import { openuiLibrary } from "@openuidev/react-ui";
 
-function AssistantMessage({ content, isStreaming }) {
+function AssistantMessage({ content, isStreaming }: { content: string; isStreaming: boolean }) {
   return <Renderer response={content} library={openuiLibrary} isStreaming={isStreaming} />;
 }
 ```
@@ -112,9 +114,9 @@ Wrap your app in `ThemeProvider` to customize colors, typography, spacing, and e
 import { ThemeProvider, createTheme } from "@openuidev/react-ui";
 
 const customTheme = createTheme({
-  primary: "#6366f1",
+  interactiveAccentDefault: "#6366f1",
   background: "#fafafa",
-  foreground: "#1a1a1a",
+  textNeutralPrimary: "#1a1a1a",
 });
 
 function App() {
@@ -129,7 +131,7 @@ function App() {
 | Export                   | Description                                 |
 | :----------------------- | :------------------------------------------ |
 | `ThemeProvider`          | Context provider for theming                |
-| `createTheme(overrides)` | Create a theme with validation and defaults |
+| `createTheme(overrides)` | Type a partial theme; warns about unknown keys in development |
 | `defaultLightTheme`      | Built-in light theme                        |
 | `defaultDarkTheme`       | Built-in dark theme                         |
 | `swatchTokens`           | Token palette for use in theme builders     |
@@ -186,8 +188,8 @@ All components are available as individual imports:
 
 | Category         | Components                                                                                                                                                             |
 | :--------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Layout**       | `Card`, `CardHeader`, `SectionBlock`, `Tabs`, `Accordion`, `Carousel`, `Separator`, `Steps`                                                                            |
-| **Data Display** | `Table`, `Charts` (bar, line, area, pie, radar, scatter), `ListBlock`, `ListItem`, `Tag`, `TagBlock`, `CodeBlock`, `Image`, `ImageBlock`, `ImageGallery`               |
+| **Layout**       | `Card`, `CardHeader`, `Tabs`, `Accordion`, `Carousel`, `Separator`, `Steps`                                                                                            |
+| **Data Display** | `Table`, charts (`BarChart`, `LineChart`, `AreaChart`, `PieChart`, `RadarChart`, `RadialChart`, ...), `ListBlock`, `ListItem`, `Tag`, `TagBlock`, `CodeBlock`, `Image`, `ImageBlock`, `ImageGallery` |
 | **Forms**        | `Input`, `TextArea`, `Select`, `CheckBoxGroup`, `CheckBoxItem`, `RadioGroup`, `RadioItem`, `SwitchGroup`, `SwitchItem`, `Slider`, `DatePicker`, `FormControl`, `Label` |
 | **Actions**      | `Button`, `Buttons`, `IconButton`, `FollowUpBlock`, `FollowUpItem`                                                                                                     |
 | **Feedback**     | `Callout`, `TextCallout`                                                                                                                                               |
@@ -201,7 +203,7 @@ For smaller bundles, import components individually:
 ```ts
 import { Button } from "@openuidev/react-ui/Button";
 import { Card } from "@openuidev/react-ui/Card";
-import { Charts } from "@openuidev/react-ui/Charts";
+import { BarChart } from "@openuidev/react-ui/Charts";
 ```
 
 ## Subpath Exports
@@ -223,7 +225,7 @@ import { Charts } from "@openuidev/react-ui/Charts";
 ## Documentation
 
 - [React UI API reference](https://openui.com/docs/api-reference/react-ui)
-- [Chat guides](https://openui.com/docs/chat)
+- [Chat guides](https://openui.com/docs/agent)
 - [Source on GitHub](https://github.com/thesysdev/openui/tree/main/packages/react-ui)
 
 ## License
