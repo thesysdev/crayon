@@ -144,14 +144,7 @@ export async function runCreateExample(params: {
     auth_succeeded: envResult.authSucceeded,
     dependency_installed: false,
   });
-  const envKey = example.env.key;
-  const envNote = envKey
-    ? envResult.envWritten
-      ? `✅ ${example.env.file} updated with ${envKey}.`
-      : envKey === "THESYS_API_KEY"
-        ? missingCloudKeyNote(name, packageManager.dlxCmd, example.env.file)
-        : `Add ${envKey}=… to ${example.env.file} (see the example README).`
-    : `Add your API keys to ${example.env.file} (see the example README).`;
+  const envNote = exampleEnvNote(example.env, envResult.envWritten, name, packageManager.dlxCmd);
   const skillMessage = skillInstalled
     ? "The OpenUI agent skill was installed.\nAI coding assistants will use it to help you build with OpenUI.\n"
     : "";
@@ -216,6 +209,18 @@ async function promptForProviderKey(envKey: string): Promise<string | null> {
     }
     throw error;
   }
+}
+
+function exampleEnvNote(
+  env: ExampleProject["env"],
+  envWritten: boolean,
+  name: string,
+  dlxCmd: string,
+): string {
+  if (!env.key) return `Add your API keys to ${env.file} (see the example README).`;
+  if (envWritten) return `✅ ${env.file} updated with ${env.key}.`;
+  if (env.key === "THESYS_API_KEY") return missingCloudKeyNote(name, dlxCmd, env.file);
+  return `Add ${env.key}=… to ${env.file} (see the example README).`;
 }
 
 function posixJoin(...parts: string[]): string {
