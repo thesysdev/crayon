@@ -58,7 +58,6 @@ export async function runDeploy(options: DeployOptions, ctx: CliContext): Promis
   };
 
   tel.registerContext({
-    interactive: ctx.interactive !== false,
     is_openui_project: isOpenUiProject,
     package_manager: resolveInstallPackageManager().name,
   });
@@ -69,7 +68,6 @@ export async function runDeploy(options: DeployOptions, ctx: CliContext): Promis
     yes,
     skip_env: skipEnv,
     verbose,
-    interactive: ctx.interactive !== false,
     is_openui_project: isOpenUiProject,
     has_dir_arg: Boolean(resolved.projectDir),
   });

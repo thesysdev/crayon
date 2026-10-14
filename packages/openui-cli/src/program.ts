@@ -54,6 +54,7 @@ function buildProgram(): Command {
       agent_name: globalOptions.agentName,
       detected_agent_name: ctx.detectedAgentName ?? UNKNOWN_AGENT_NAME,
       can_prompt: ctx.canPrompt,
+      ...(ctx.interactive === undefined ? {} : { interactive: ctx.interactive }),
       cli_run_id: randomUUID(),
       command: actionCommand.name(),
     });

@@ -128,6 +128,8 @@ export class Telemetry {
     detected_agent_name: string;
     /** Whether this run may prompt: a terminal, no --no-interactive, and no agent. */
     can_prompt: boolean;
+    /** false when `--no-interactive` is passed; only sent for commands that have the flag. */
+    interactive?: boolean;
     cli_run_id: string;
     command: string;
   }) {

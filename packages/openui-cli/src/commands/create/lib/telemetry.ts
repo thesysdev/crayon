@@ -63,7 +63,6 @@ export class CreateTelemetryClient extends Telemetry {
   }
 
   trackStarted(props: {
-    interactive: boolean;
     has_name_arg: boolean;
     has_template_arg: boolean;
     has_backend_framework_arg: boolean;
