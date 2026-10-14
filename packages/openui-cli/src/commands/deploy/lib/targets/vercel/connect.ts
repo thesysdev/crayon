@@ -1,7 +1,6 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 
-import { canPromptInteractive } from "../../../../../lib/detect-tty";
 import { loadAllowlistedProjectEnv } from "../../../../../lib/env";
 import { CreateError, throwCommandFailure } from "../../../../../lib/errors";
 import { mutedNpmEnv, runCommand } from "../../../../../lib/process-runner";
@@ -115,9 +114,9 @@ export async function isVercelLoggedIn(invocation: CliInvocation, cwd: string): 
 /** Run interactive `vercel login`, or fail if there is no TTY. */
 export async function loginToVercel(
   invocation: CliInvocation,
-  opts: Pick<DeployTargetOptions, "projectDir" | "noInteractive">,
+  opts: Pick<DeployTargetOptions, "projectDir" | "canPrompt">,
 ): Promise<void> {
-  if (!canPromptInteractive(opts.noInteractive)) {
+  if (!opts.canPrompt) {
     throw new CreateError(
       "vercel_login",
       "Not logged into Vercel. Run `vercel login` or set VERCEL_TOKEN, then retry.",
@@ -140,13 +139,16 @@ export async function loginToVercel(
 /** Link the directory to a Vercel project (`vercel link`, `--yes` when skipping prompts). */
 export async function linkVercelProject(
   invocation: CliInvocation,
-  opts: Pick<DeployTargetOptions, "projectDir" | "yes" | "noInteractive" | "extraArgs">,
+  opts: Pick<
+    DeployTargetOptions,
+    "projectDir" | "yes" | "noInteractive" | "canPrompt" | "extraArgs"
+  >,
 ): Promise<void> {
   const skipPrompts = opts.yes || opts.noInteractive;
-  if (!skipPrompts && !canPromptInteractive(opts.noInteractive)) {
+  if (!skipPrompts && !opts.canPrompt) {
     throw new CreateError(
       "vercel_link",
-      "Vercel project is not linked. Run `vercel link` or re-run with a TTY / --yes.",
+      "Vercel project is not linked. Run `vercel link` or re-run with --yes.",
       "invalid_input",
       "NOT_LINKED",
     );

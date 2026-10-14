@@ -1,3 +1,4 @@
+import { detectAgent, UNKNOWN_AGENT_NAME } from "./detect-agent";
 import { telemetry, type Telemetry } from "./telemetry";
 
 export type CliContext = {
@@ -5,16 +6,24 @@ export type CliContext = {
   argv: string[];
   telemetry: Telemetry;
   verbose: boolean;
-  /** `--agent-name` as passed. */
-  agent?: string;
-  /** Agent found from the env markers its harness sets. */
-  detectedAgent?: string;
-  /** `--no-interactive` as passed (false when given); undefined for commands without the flag. */
-  interactive?: boolean;
-  /** Both stdin and stdout are terminals. */
-  detectedInteractive: boolean;
   cliVersion?: string;
+  /** `--agent-name` as passed. */
+  readonly agent?: string;
+  /** Agent found from the env markers its harness sets. */
+  readonly detectedAgent?: string;
+  /** `--no-interactive` as passed (false when given); undefined for commands without the flag. */
+  readonly interactive?: boolean;
+  /** Both stdin and stdout are terminals. */
+  readonly detectedInteractive: boolean;
+  /** The agent driving this run, declared or detected; undefined for a human. */
+  readonly activeAgent?: string;
+  /** Whether this run may prompt: not `--no-interactive`, a terminal, and no agent. */
+  readonly canPrompt: boolean;
+  /** Set the passed and detected run values once, before the command runs. */
+  initialize(this: CliContext, passed: { agent?: string; interactive?: boolean }): void;
 };
+
+const isInteractiveTerminal = () => Boolean(process.stdin.isTTY && process.stdout.isTTY);
 
 export const context: CliContext = {
   get cwd() {
@@ -25,16 +34,22 @@ export const context: CliContext = {
   },
   telemetry,
   verbose: false,
-  detectedInteractive: false,
   cliVersion: undefined,
+  detectedInteractive: false,
+  canPrompt: false,
+  initialize(passed) {
+    const detected = detectAgent();
+    const agent = passed.agent === UNKNOWN_AGENT_NAME ? undefined : passed.agent;
+    const detectedAgent = detected === UNKNOWN_AGENT_NAME ? undefined : detected;
+    const detectedInteractive = isInteractiveTerminal();
+    const activeAgent = agent ?? detectedAgent;
+    Object.assign(this, {
+      agent,
+      detectedAgent,
+      interactive: passed.interactive,
+      detectedInteractive,
+      activeAgent,
+      canPrompt: passed.interactive !== false && detectedInteractive && !activeAgent,
+    });
+  },
 };
-
-/** The agent driving this run, declared or detected; undefined for a human. */
-export function activeAgent(ctx: CliContext): string | undefined {
-  return ctx.agent ?? ctx.detectedAgent;
-}
-
-/** Whether this run may prompt: not `--no-interactive`, a terminal, and no agent. */
-export function canPrompt(ctx: CliContext): boolean {
-  return ctx.interactive !== false && ctx.detectedInteractive && !activeAgent(ctx);
-}

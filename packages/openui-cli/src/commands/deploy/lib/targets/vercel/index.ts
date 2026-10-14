@@ -55,7 +55,7 @@ export async function deployToVercel(opts: DeployTargetOptions): Promise<void> {
       projectDir: opts.projectDir,
       localEnv: projectEnvToSave,
       yes: opts.yes,
-      noInteractive: opts.noInteractive,
+      canPrompt: opts.canPrompt,
     });
   }
 

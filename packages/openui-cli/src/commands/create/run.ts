@@ -1,7 +1,7 @@
 import * as fs from "node:fs";
 
 import { localSourceDir } from "../../lib/checkout";
-import { activeAgent, canPrompt, type CliContext } from "../../lib/context";
+import type { CliContext } from "../../lib/context";
 import { resolveInstallPackageManager } from "../../lib/detect-package-manager";
 import { cliErrorProperties, CreateError, processErrorProperties } from "../../lib/errors";
 import { ensureGitAvailable } from "../../lib/git-preflight";
@@ -32,8 +32,8 @@ import { findCatalogOverlay } from "./lib/templates-catalog";
 
 export async function runCreateApp(options: CreateAppOptions, ctx: CliContext): Promise<void> {
   const tel = new CreateTelemetryClient(ctx.telemetry);
-  const interactive = canPrompt(ctx);
-  const agent = activeAgent(ctx);
+  const interactive = ctx.canPrompt;
+  const agent = ctx.activeAgent;
   const packageManager = resolveInstallPackageManager();
   const t0 = Date.now();
   tel.registerContext({ interactive, package_manager: packageManager.name });

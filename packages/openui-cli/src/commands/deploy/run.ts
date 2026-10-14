@@ -53,6 +53,7 @@ export async function runDeploy(options: DeployOptions, ctx: CliContext): Promis
     yes,
     skipEnv,
     noInteractive: Boolean(options.noInteractive),
+    canPrompt: ctx.canPrompt,
     verbose,
     tel,
   };

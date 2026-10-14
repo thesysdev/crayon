@@ -1,16 +1,16 @@
-import { canPromptInteractive } from "../../../lib/detect-tty";
 import { CliCancelledError } from "../../../lib/errors";
 
 /**
  * Confirm with default yes when a TTY is available. `--yes` accepts without
- * asking. No TTY and no `--yes` returns false so secrets are not written remotely.
+ * asking. Without a prompt (no TTY, `--no-interactive`, or an agent) and no `--yes`
+ * it returns false so secrets are not written remotely.
  */
 export async function confirmOrDefault(
   message: string,
-  opts: { yes?: boolean; noInteractive?: boolean; cancelStage: string },
+  opts: { yes?: boolean; canPrompt: boolean; cancelStage: string },
 ): Promise<boolean> {
   if (opts.yes) return true;
-  if (!canPromptInteractive(opts.noInteractive)) return false;
+  if (!opts.canPrompt) return false;
 
   try {
     const { confirm } = await import("@inquirer/prompts");

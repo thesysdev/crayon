@@ -3,7 +3,6 @@ import * as os from "node:os";
 import * as path from "node:path";
 import type { PostHog } from "posthog-node";
 
-import { isInteractiveTerminal } from "./detect-tty";
 import { isTruthyEnv } from "./env";
 import { cliErrorProperties } from "./errors";
 import { createPostHogClient } from "./posthog";
@@ -73,7 +72,7 @@ export class Telemetry {
     };
   }
 
-  init(opts: { cliVersion: string; flagEnabled: boolean }) {
+  init(opts: { cliVersion: string; flagEnabled: boolean; interactiveTerminal: boolean }) {
     const optedOut =
       isTruthyEnv(process.env["DO_NOT_TRACK"]) ||
       isTruthyEnv(process.env["OPENUI_TELEMETRY_DISABLED"]) ||
@@ -81,7 +80,6 @@ export class Telemetry {
     if (optedOut) return; // enabled stays false → all capture() are no-ops
     const state = loadOrCreateState();
     this.session.distinctId = state.distinctId;
-    const interactiveTerminal = isInteractiveTerminal();
     this.session.superProps = {
       cli_version: opts.cliVersion,
       os: process.platform,
@@ -91,7 +89,7 @@ export class Telemetry {
       ci: isCi(),
       stdin_is_tty: Boolean(process.stdin.isTTY),
       stdout_is_tty: Boolean(process.stdout.isTTY),
-      is_interactive_terminal: interactiveTerminal,
+      is_interactive_terminal: opts.interactiveTerminal,
     };
     try {
       this.session.client = createPostHogClient();
