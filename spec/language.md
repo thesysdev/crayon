@@ -100,7 +100,7 @@ status = $count > 0
 
 The batch parser, the streaming parser, and the edit merge (section 7) MUST agree on these boundaries byte for byte. Rule 3 looks at the next line, so a boundary is provisional while streaming (section 4, rule 1).
 
-Fixtures: `grammar/*-statement-*`
+Fixtures: `entry/*-ternary-root-multiline`, `streaming/*-multiline-ternary-*`
 
 ### 1.5 Expressions
 
@@ -194,7 +194,7 @@ Fixtures: `evaluation/*-kind-*`
 
 ### 2.2 Entry
 
-The entry is the statement named `root`. Its value must evaluate to a component: a component call, a reference to a statement whose value is one, or any expression that gives one. For example, `root = $t ? A : B` is a valid entry when `A` and `B` are component statements. When the value is not a component, the client reports a fatal `no-root` at stream end, with no fallback.
+The entry is the statement named `root`. Its value must evaluate to a component: a component call, a reference to a statement whose value is one, or any expression that gives one. For example, `root = $t ? A : B` is a valid entry when `A` and `B` are component statements. When the value is not a component, `root` is still the entry: the client reports a fatal `no-root` at stream end, with no fallback, and statements `root` cannot reach are still orphans (section 2.3).
 
 With no `root` statement, the first value statement whose value is a call to the library's root component (the LibrarySpec `root` field, [prompt.md](./prompt.md), section 2.2) is the entry, wherever it is in the program. It renders with a non-fatal `no-root`.
 
@@ -219,9 +219,9 @@ A bare name refers to the statement with that name, wherever it is in the progra
 - A statement referenced from two places is evaluated separately at each. Only the tree is copied: the state store is shared, and a query referenced twice fetches once, with both places reading the same result.
 - References to query or mutation statements resolve to their results (section 6).
 
-Value statements the entry cannot reach are **orphans**. When there is no entry, there are no orphans, and `no-root` reports the problem. Orphans go into the parse metadata and are not rendered. State, query, and mutation statements are never orphans, and a query runs whether or not the entry reaches it.
+Value statements the entry cannot reach are **orphans**. A statement referenced from a query's or mutation's arguments is reachable, since reachability follows that reference like any other, so it is never an orphan. When there is no `root` statement and no fallback entry, there are no orphans, and `no-root` reports the problem. Orphans go into the parse metadata and are not rendered. State, query, and mutation statements are never orphans, and a query runs whether or not the entry reaches it.
 
-Fixtures: `evaluation/*-ref-*`, including `evaluation/*-ref-array-*`
+Fixtures: `evaluation/*-ref-*`
 
 ### 2.4 Duplicate names
 
@@ -298,7 +298,7 @@ Fixtures: `evaluation/*-builtin-*`, including `evaluation/*-builtin-sort-*`
 rows = @Each(tickets.rows, "t", Row(t.title, Button("Close", Action([@Run(close), @Set($selected, t.id)]))))
 ```
 
-Fixtures: `evaluation/*-each-*`
+Fixtures: none in `spec/fixtures/1.0/`.
 
 ### 3.6 Custom functions
 
@@ -399,7 +399,7 @@ Fixtures: `state/*-validation-*`
 - A refresh interval runs the query again on a timer.
 - References inside Query and Mutation args resolve to their statements' values before the call, the same as anywhere else.
 
-Fixtures: `actions/*-query-*`, including `actions/*-query-args-*`
+Fixtures: `actions/*-query-*`
 
 ### 6.2 Mutation lifecycle
 
@@ -443,7 +443,7 @@ Events reach the host in one shape:
 ```
 
 - `formName` is the nearest form around the triggering component, absent otherwise.
-- `formState` holds each field as `{ value, componentType }`: that form's fields inside a form, the page-level state outside one.
+- Inside a form, `formState` holds that form's fields, each as `{ value, componentType }`. Outside a form, it holds the page's `$variables` with their plain values, and the page-level fields, each as `{ value, componentType }` (section 5.3).
 - `open_url` events carry the same fields, with `params.url` and an empty `humanFriendlyMessage`.
 
 Fixtures: `actions/*-several-actions`, `actions/*-one-action*`, `actions/*-event-*`, `actions/*-custom-*`, `actions/*-action-list-*`
@@ -459,8 +459,9 @@ Fixtures: `actions/*-tool-*`
 In edit mode, the model gets the current program and answers with only the changed statements. The client merges by name:
 
 - A patch statement whose name exists replaces the original. A new name is appended. Names absent from the patch are kept.
+- The merged program has each name once: the last definition wins.
 - A top-level `name = null` in a patch deletes the statement, state declarations included. (Inside one program it is an ordinary binding.) Deleting a state declaration never deletes its store key (section 5.1).
-- After merging, statements `root` cannot reach are removed, unless there is no `root` statement. State declarations are always kept.
+- After merging, statements `root` cannot reach are removed, unless there is no `root` statement. Reachability is the same as for orphans (section 2.3), so a statement referenced from a query's or mutation's arguments is never removed. State declarations are always kept.
 
 The merge MUST read both texts with sections 1.2 and 1.4, including multi-line ternaries. The host decides when a text is a patch. While streaming, each patched statement is applied as it completes. If the reply is prose plus a fenced patch, only the fenced part is merged.
 

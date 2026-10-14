@@ -35,7 +35,6 @@ const spec = readJSON("library.json") as {
   schema: { $defs: Record<string, Schema>; actions?: Record<string, { params: Schema }> };
   components: Record<string, { signature: string; description: string }>;
 };
-const knownFailing = readJSON("known-failing.json") as Record<string, string>;
 
 // ─── Test renderers; each registers its handlers by statement id ───
 
@@ -227,14 +226,8 @@ describe("OpenUI conformance fixtures (interactions)", () => {
           fs.readFileSync(path.join(dir, "input.oui"), "utf8"),
           readJSON(area, name, "interactions.json"),
         );
-        const listed = id in knownFailing;
-        if (!diffs.length) {
-          results[id] = { status: listed ? "fixed" : "pass" };
-          if (listed) console.warn(`[conformance] ${id} passes: remove it from known-failing.json`);
-        } else {
-          results[id] = { status: listed ? "known-failing" : "fail", diffs };
-          if (!listed) expect.fail(`${id}\n  ${diffs.join("\n  ")}`);
-        }
+        results[id] = diffs.length ? { status: "fail", diffs } : { status: "pass" };
+        if (diffs.length) expect.fail(`${id}\n  ${diffs.join("\n  ")}`);
       });
     }
   }

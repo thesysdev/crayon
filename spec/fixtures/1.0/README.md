@@ -1,11 +1,10 @@
 # OpenUI 1.0 conformance fixtures
 
-The layout and main file formats are in [language.md](../../language.md), Appendix B. This file lists the details Appendix B leaves open. Every expected result was written from the spec text.
+The layout and main file formats are in [language.md](../../language.md), Appendix B. This file lists the details Appendix B leaves open. Every expected result was written from the spec text. The suite holds only cases the reference implementation passes. A new case arrives with the fix that makes it pass.
 
 ```text
 spec/fixtures/1.0/
   library.json          the test library, used by every case
-  known-failing.json    ids a runner reports but does not fail on, with the reason
   <area>/<NNN-short-name>/
 ```
 
@@ -53,7 +52,7 @@ A case is a folder with `input.oui` (or `chunks.json`) and `expected.json`, plus
 
 The canonical form holds only spec concepts: component types and props, resolved values, error codes, unresolved names, orphans, `incomplete`, state, and statements. It never holds parser internals or message text.
 
-The reference runners are `packages/lang-core/src/__tests__/conformance.test.ts` (program and validation cases) and `packages/react-lang/src/__tests__/conformance.interactions.test.tsx` (`interactions.json`). They run with each package's tests, and `OPENUI_FIXTURES` points them at another fixture folder.
+The reference runners are `packages/lang-core/src/__tests__/conformance.test.ts` (program and validation cases) and `packages/react-lang/src/__tests__/conformance.interactions.test.tsx` (`interactions.json`). They run with each package's tests and fail on any case that does not pass. `OPENUI_FIXTURES` points them at another fixture folder.
 
 ## Editing cases
 
@@ -75,7 +74,3 @@ State cases with user input (`state/*-binding-*`, `state/*-form-*`) use `interac
 ## Validation cases
 
 `state/*-validation-*` cases hold `validation.json` instead of a program: `{ "cases": [{ "rules", "value", "valid" }] }`. `rules` is the validation rules object (language.md, section 5.4). The runner checks each value against the rules and compares only pass or fail, not the message.
-
-## known-failing.json
-
-`{ "<area>/<name>": "reason" }`. The `interactions.json` part of a case has its own id, `<area>/<name>#interactions`. A runner reports every case, fails only on unlisted failures, and reports listed cases that pass so they can be removed.

@@ -1,5 +1,5 @@
 // The spec/fixtures/1.0 conformance cases (spec/language.md, Appendix B; rules in spec/fixtures/1.0/README.md).
-// A failing case fails the run unless known-failing.json lists it. interactions.json runs in react-lang.
+// Every case must pass. interactions.json runs in react-lang.
 // OPENUI_FIXTURES points the runners at another fixture folder.
 import fs from "node:fs";
 import path from "node:path";
@@ -52,7 +52,7 @@ interface LibrarySpecJSON {
 }
 
 interface FixtureCase {
-  id: string; // `<area>/<folder>`, as in known-failing.json
+  id: string; // `<area>/<folder>`
   files: Record<string, string>;
 }
 
@@ -69,13 +69,6 @@ const dirs = (...p: string[]) =>
     .sort();
 
 const spec: LibrarySpecJSON = JSON.parse(read("library.json"));
-
-/** `{ "<id>": "reason" }`; keys starting with `//` are comments. */
-const knownFailing: Record<string, string> = Object.fromEntries(
-  Object.entries(JSON.parse(read("known-failing.json")) as Record<string, string>).filter(
-    ([id]) => !id.startsWith("//"),
-  ),
-);
 
 function loadCases(): FixtureCase[] {
   return dirs().flatMap((area) =>
@@ -339,14 +332,8 @@ describe("OpenUI conformance fixtures", () => {
   for (const c of loadCases()) {
     it(c.id, () => {
       const diffs = c.files["validation.json"] ? runValidation(c) : runProgram(c);
-      const listed = c.id in knownFailing;
-      if (!diffs.length) {
-        results[c.id] = { status: listed ? "fixed" : "pass" };
-        if (listed) console.warn(`[conformance] ${c.id} passes: remove it from known-failing.json`);
-      } else {
-        results[c.id] = { status: listed ? "known-failing" : "fail", diffs };
-        if (!listed) expect.fail(`${c.id}\n  ${diffs.join("\n  ")}`);
-      }
+      results[c.id] = diffs.length ? { status: "fail", diffs } : { status: "pass" };
+      if (diffs.length) expect.fail(`${c.id}\n  ${diffs.join("\n  ")}`);
     });
   }
 
