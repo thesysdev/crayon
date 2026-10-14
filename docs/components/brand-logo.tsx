@@ -85,9 +85,17 @@ export function ThesysLogo({
 
 export function OpenUILogo({ variant = "light" }: { variant?: LogoVariant }) {
   const isDark = variant === "dark";
-  const textClass = isDark
-    ? "font-[family-name:var(--font-geist),sans-serif] font-semibold text-[15px] text-white leading-6"
-    : "font-[family-name:var(--font-geist),sans-serif] font-semibold text-[15px] text-black leading-6";
+  const textClass =
+    "font-[family-name:var(--font-geist),sans-serif] font-semibold text-[15px] text-white leading-6";
+
+  if (!isDark) {
+    return (
+      <Link href="/" className="flex items-center no-underline">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/openui-logo-wordmark.svg" alt="OpenUI" className="block h-8 w-auto" />
+      </Link>
+    );
+  }
 
   return (
     <Link href="/" className="flex items-center gap-0.5 no-underline">
