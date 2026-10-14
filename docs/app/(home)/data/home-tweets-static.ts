@@ -17,41 +17,52 @@ export type StaticTweet = {
 
 export const STATIC_TWEETS: StaticTweet[] = [
   {
-    "id": "2031845364286783776",
-    "name": "Chris Tate",
-    "handle": "ctatedev",
+    "id": "2102288655276490901",
+    "name": "Xuan Huang · 黄玄",
+    "handle": "Huxpro",
     "verified": true,
-    "avatar": "/tweets/avatar-ctatedev.jpg",
-    "text": "@rabi_guha Very cool!",
-    "date": "Mar 11, 2026",
-    "likes": 30,
-    "replies": 1
+    "avatar": "/tweets/avatar-Huxpro.jpg",
+    "text": "This. We came to a similar conclusion at @LynxJS_org, at least for now.",
+    "date": "Sep 22, 2026",
+    "likes": 20,
+    "replies": 0
   },
   {
-    "id": "2031989015147397122",
-    "name": "rahulmax",
-    "handle": "rahulmax",
+    "id": "2105153144506503199",
+    "name": "Lynx",
+    "handle": "LynxJS_org",
     "verified": true,
-    "avatar": "/tweets/avatar-rahulmax.jpg",
-    "text": "@rabi_guha Been a fan of Thesys! The craft in UX and interaction is unmatched. Congrats! \n\nWas open-sourcing OpenUI always the plan, or did watching JSON break at scale across 10k+ devs force the shift to making the format a shared standard?",
-    "date": "Mar 12, 2026",
-    "likes": 0,
-    "replies": 1
+    "avatar": "/tweets/avatar-LynxJS_org.jpg",
+    "text": "Lynx 4.0 is here! 🎉 \n\n📱 Foldables & CSS media queries\n✨ Liquid Glass & Blur with <blur-view>\n🌐 Open-source <webview>\n🤖 OpenUI & Agent Skills\n⚛️ ReactLynx improvements",
+    "date": "Sep 30, 2026",
+    "likes": 317,
+    "replies": 10
   },
   {
-    "id": "2031891607394664677",
-    "name": "jinjingliang",
-    "handle": "JinjingLiang",
+    "id": "2098624943218913364",
+    "name": "Tom Dörr",
+    "handle": "tom_doerr",
     "verified": true,
-    "avatar": "/tweets/avatar-JinjingLiang.jpg",
-    "text": "@rabi_guha Just tried it. Pretty cool",
-    "date": "Mar 12, 2026",
-    "likes": 9,
-    "replies": 0,
+    "avatar": "/tweets/avatar-tom_doerr.jpg",
+    "text": "OpenUI is a generative UI framework utilizing a compact, streaming-first language that consumes up to 67% fewer tokens than JSON for structuring interface components.\n\ngithub.com/thesysdev/open…",
+    "date": "Sep 12, 2026",
+    "likes": 562,
+    "replies": 5,
     "media": {
-      "type": "video",
-      "url": "/tweets/media-2031891607394664677.jpg"
+      "type": "photo",
+      "url": "/tweets/media-2098624943218913364.jpg"
     }
+  },
+  {
+    "id": "2073104523670049265",
+    "name": "Mastra",
+    "handle": "mastra",
+    "verified": true,
+    "avatar": "/tweets/avatar-mastra.jpg",
+    "text": "🆕 Conceptual guide for building generative UIs with Mastra and OpenUI.\n\n• Connect Mastra agents to an OpenUI chat surface\n• Stream generative UI components as the model responds\n• Control the UI with component libraries, AG-UI events, and more\n\nmastra.ai/guides/build-y…",
+    "date": "Jul 3, 2026",
+    "likes": 55,
+    "replies": 1
   },
   {
     "id": "2034082798051443052",
@@ -61,8 +72,60 @@ export const STATIC_TWEETS: StaticTweet[] = [
     "avatar": "/tweets/avatar-shadcn.jpg",
     "text": "@rabi_guha Looks great. Will give it a try. 👀",
     "date": "Mar 18, 2026",
-    "likes": 26,
+    "likes": 25,
     "replies": 1
+  },
+  {
+    "id": "2105153183068889236",
+    "name": "Lynx",
+    "handle": "LynxJS_org",
+    "verified": true,
+    "avatar": "/tweets/avatar-LynxJS_org.jpg",
+    "text": "🤖 OpenUI + more Skills!\n\nLynx GenUI now speaks OpenUI: agents stream compact expressions, and we turns them into native UI. \n\n3 New Agent Skills: lynx-a2ui, lynx-openui, lynx-api-docs.",
+    "date": "Sep 30, 2026",
+    "likes": 7,
+    "replies": 3,
+    "media": {
+      "type": "photo",
+      "url": "/tweets/media-2105153183068889236.jpg"
+    }
+  },
+  {
+    "id": "2100211596886704477",
+    "name": "Dan Kornas",
+    "handle": "DanKornas",
+    "verified": true,
+    "avatar": "/tweets/avatar-DanKornas.jpg",
+    "text": "Your AI assistant shouldn’t be stuck replying in plain text.\n\nOpenUI is a full-stack, renderer-agnostic Generative UI framework for builders who want models to generate structured interfaces.\n\nIt helps you turn a component library into live UI by generating model instructions",
+    "date": "Sep 16, 2026",
+    "likes": 169,
+    "replies": 8,
+    "media": {
+      "type": "photo",
+      "url": "/tweets/media-2100211596886704477.jpg"
+    }
+  },
+  {
+    "id": "2031845364286783776",
+    "name": "Chris Tate",
+    "handle": "ctatedev",
+    "verified": true,
+    "avatar": "/tweets/avatar-ctatedev.jpg",
+    "text": "@rabi_guha Very cool!",
+    "date": "Mar 11, 2026",
+    "likes": 34,
+    "replies": 2
+  },
+  {
+    "id": "2102835411651273135",
+    "name": "Wayne Sutton",
+    "handle": "waynesutton",
+    "verified": true,
+    "avatar": "/tweets/avatar-waynesutton.jpg",
+    "text": "@convex OpenUI Generative UI by @aayushhsays \n\nDurable reactive per-message state for OpenUI interfaces. \n\nconvex.dev/components/ope…",
+    "date": "Sep 23, 2026",
+    "likes": 16,
+    "replies": 2
   },
   {
     "id": "2034668122691735612",
@@ -89,42 +152,5 @@ export const STATIC_TWEETS: StaticTweet[] = [
     "date": "Mar 19, 2026",
     "likes": 58,
     "replies": 3
-  },
-  {
-    "id": "2039548793960681815",
-    "name": "AB",
-    "handle": "abhin_27",
-    "verified": false,
-    "avatar": "/tweets/avatar-abhin_27.jpg",
-    "text": "Thanks @rabi_guha! For me, OpenUI Lang is the unlock - the absurdly token efficient standard. So many possibilities when you're shipping full component trees over the wire. Excited to keep contributing to its growth!",
-    "date": "Apr 2, 2026",
-    "likes": 3,
-    "replies": 0
-  },
-  {
-    "id": "2032387346616758375",
-    "name": "Pere",
-    "handle": "pmontp19",
-    "verified": false,
-    "avatar": "/tweets/avatar-pmontp19.jpg",
-    "text": "These guys cooked. How does it work? They build an AST from all OpenUI Lang statements response, compile the library's JSON Schema into a param catalog to map args to props, validate fields, then React walks the element tree calling each component's render function recursively",
-    "date": "Mar 13, 2026",
-    "likes": 13,
-    "replies": 0
-  },
-  {
-    "id": "2034284259805176222",
-    "name": "Yasuhiro Yokota@タイミー",
-    "handle": "yktyshr",
-    "verified": false,
-    "avatar": "/tweets/avatar-yktyshr.jpg",
-    "text": "Generative UIのライブラリ OpenUIのPlaygroundさわれる\nopenui.com/playground",
-    "date": "Mar 18, 2026",
-    "likes": 8,
-    "replies": 0,
-    "media": {
-      "type": "photo",
-      "url": "/tweets/media-2034284259805176222.jpg"
-    }
   }
 ];
