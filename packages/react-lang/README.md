@@ -16,7 +16,7 @@ npm install @openuidev/react-lang
 pnpm add @openuidev/react-lang
 ```
 
-**Peer dependencies:** `react >=19.0.0`
+**Peer dependencies:** `react >=19.0.0`, `zod ^3.25.0 || ^4.0.0` (schemas use Zod 4: `import { z } from "zod/v4"`)
 
 ## Query failures
 
@@ -61,9 +61,11 @@ While queries load, `Renderer.Content` renders their defaults or previously succ
 
 ### 1. Define a component
 
+Renderers receive the parsed props as `props`:
+
 ```tsx
 import { defineComponent } from "@openuidev/react-lang";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 const Greeting = defineComponent({
   name: "Greeting",
@@ -72,9 +74,9 @@ const Greeting = defineComponent({
     name: z.string().describe("The person's name"),
     mood: z.enum(["happy", "excited"]).optional().describe("Tone of the greeting"),
   }),
-  component: ({ name, mood }) => (
-    <div className={mood === "excited" ? "text-xl font-bold" : ""}>
-      Hello, {name}!
+  component: ({ props }) => (
+    <div className={props.mood === "excited" ? "text-xl font-bold" : ""}>
+      Hello, {props.name}!
     </div>
   ),
 });
@@ -86,18 +88,20 @@ const Greeting = defineComponent({
 import { createLibrary } from "@openuidev/react-lang";
 
 const library = createLibrary({
-  components: [Greeting, Card, Table /* ... */],
-  root: "Card", // optional default root component
+  components: [Greeting /* , Card, Table, ... */],
+  root: "Greeting", // the component the program's root statement calls
 });
 ```
 
 ### 3. Generate a system prompt
 
+Examples are written in OpenUI Lang:
+
 ```ts
 const systemPrompt = library.prompt({
   preamble: "You are a helpful assistant.",
   additionalRules: ["Always greet the user by name."],
-  examples: ["<Greeting name='Alice' mood='happy' />"],
+  examples: [`root = Greeting("Alice", "happy")`],
 });
 ```
 
@@ -106,17 +110,20 @@ const systemPrompt = library.prompt({
 ```tsx
 import { Renderer } from "@openuidev/react-lang";
 
-function AssistantMessage({ response, isStreaming }) {
+function AssistantMessage({ response, isStreaming }: { response: string; isStreaming: boolean }) {
   return (
     <Renderer
       response={response}
       library={library}
       isStreaming={isStreaming}
-      onAction={(event) => console.log("Action:", event)}
+      onAction={(event) => console.log("Action:", event.type, event.params)}
+      onError={(errors) => console.warn(errors)}
     />
   );
 }
 ```
+
+`response` is the raw model output, or a stored message written with `buildMessage`.
 
 ## API Reference
 
@@ -125,70 +132,46 @@ function AssistantMessage({ response, isStreaming }) {
 | Export | Description |
 | :--- | :--- |
 | `defineComponent(config)` | Define a single component with a name, Zod props schema, description, and React renderer |
-| `createLibrary(definition)` | Create a library from an array of defined components |
+| `defineFunction(config)` | A library function the model calls as `@Name(...)` ([docs](https://openui.com/docs/openui-lang/functions)) |
+| `defineAction(config)` | A custom action step a button can run, delivered to `onAction` ([docs](https://openui.com/docs/openui-lang/actions)) |
+| `createLibrary(definition)` | A library from components, functions and actions; `library.extend()` derives a new one |
+| `action()` | Schema for an action prop (one step, or `Action([...])`) |
+| `reactive(schema)` | Marks a prop as bindable to a `$variable`; read it with `useStateField()` |
 
 ### Rendering
-
-| Export | Description |
-| :--- | :--- |
-| `Renderer` | Render OpenUI Lang |
 
 **`RendererProps`:**
 
 | Prop | Type | Description |
 | :--- | :--- | :--- |
-| `response` | `string \| null` | Raw OpenUI Lang text from the model |
+| `response` | `string \| null` | Raw OpenUI Lang text, or a stored message (see `buildMessage`) |
 | `library` | `Library` | Component library from `createLibrary()` |
 | `isStreaming` | `boolean` | Whether the model is still streaming (disables form interactions) |
 | `onAction` | `(event: ActionEvent) => void` | Callback when a component triggers an action |
-| `onStateUpdate` | `(state: Record<string, any>) => void` | Callback when form field values change |
-| `initialState` | `Record<string, any>` | Initial form state for hydration |
+| `onStateUpdate` | `(state: Record<string, any>) => void` | Callback when form fields or `$variables` change |
+| `initialState` | `Record<string, any>` | State to restore, e.g. from a stored message |
+| `toolProvider` | function map or MCP client | Runs `Query()` and `Mutation()` tools |
+| `onError` | `(errors: OpenUIError[]) => void` | Structured errors, `[]` when resolved |
 | `queryLoader` | `React.ReactNode` | Custom loading indicator; defaults to a spinner |
 | `onParseResult` | `(result: ParseResult \| null) => void` | Callback when the parse result changes |
 
-### Parser (Server-Side)
+### Parser and prompt (server-side)
 
-| Export | Description |
-| :--- | :--- |
-| `createParser(library)` | Create a one-shot parser for complete OpenUI Lang text |
-| `createStreamingParser(library)` | Create an incremental parser for streaming input |
-
-The streaming parser exposes two methods:
-
-| Method | Description |
-| :--- | :--- |
-| `push(chunk)` | Feed the next chunk; returns the latest `ParseResult` |
-| `getResult()` | Get the latest result without consuming new data |
-
-After the stream ends, check `meta.unresolved` for any identifiers that were referenced but never defined. During streaming these are expected (forward refs) and are not treated as errors.
-
-#### Errors
-
-`ParseResult.meta.errors` contains structured `OpenUIError` objects. Each error has a `type` discriminant (currently always `"validation"`) and a `code` for consumer-side filtering:
-
-| Code | Meaning |
-| :--- | :--- |
-| `missing-required` | Required prop absent with no default |
-| `null-required` | Required prop explicitly null with no default |
-| `unknown-component` | Component name not found in the library schema |
-| `excess-args` | More positional args passed than the schema defines |
-
-Errors do not affect rendering. The parser stays permissive and renders what it can. Use `code` to decide how to surface or log errors:
+Parsers take the library's JSON Schema, not the library itself:
 
 ```ts
+import { createParser, createStreamingParser } from "@openuidev/react-lang";
+
+const parser = createParser(library.toJSONSchema(), library.root);
 const result = parser.parse(output);
-const critical = result.meta.errors.filter(
-  (e) => e.code === "unknown-component"
-);
+
+const streaming = createStreamingParser(library.toJSONSchema(), library.root);
+streaming.push(chunk); // returns the latest ParseResult
 ```
 
-To check for unresolved references after streaming, inspect `meta.unresolved`:
+`result.meta.errors` holds structured errors with a `code` (`missing-required`, `null-required`, `type-mismatch`, `unknown-component`, `unknown-function`, `excess-args`, `inline-reserved`, `no-root`). The parser stays permissive and renders what it can. `meta.unresolved` lists names referenced but never defined; during streaming these are expected forward references.
 
-```ts
-if (result.meta.unresolved.length > 0) {
-  console.warn("Unresolved refs:", result.meta.unresolved);
-}
-```
+`generateSystemPrompt`, `buildMessage`, `parseMessage` and `mergeStatements` are re-exported from `@openuidev/lang-core`. Stored messages are described in the [message protocol](https://openui.com/docs/openui-lang/message-protocol).
 
 ### Context Hooks
 
@@ -201,6 +184,7 @@ Use these inside component renderers to interact with the rendering context:
 | `useTriggerAction()` | Trigger an action event |
 | `useGetFieldValue()` | Get a form field's current value |
 | `useSetFieldValue()` | Set a form field's value |
+| `useStateField(name, value)` | Read and write a field or bound `$variable` |
 | `useSetDefaultValue()` | Set a field's default value |
 | `useFormName()` | Get the current form's name |
 
@@ -229,8 +213,6 @@ import type {
   ElementNode,
   ParseResult,
   OpenUIError,
-  ValidationErrorCode,
-  LibraryJSONSchema,
 } from "@openuidev/react-lang";
 ```
 
@@ -248,6 +230,7 @@ const schema = library.toJSONSchema();
 
 - [React API reference](https://openui.com/docs/api-reference/react-lang)
 - [OpenUI Lang guide](https://openui.com/docs/openui-lang)
+- [Language specification 1.0](https://openui.com/docs/openui-lang/specification)
 - [Source on GitHub](https://github.com/thesysdev/openui/tree/main/packages/react-lang)
 
 ## License
