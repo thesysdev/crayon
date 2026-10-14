@@ -17,6 +17,7 @@ export function publicFileExists(path: string) {
 function cardAssets(card: OgCardData) {
   const assets = ["/shiro-logo.svg"];
   if (card.template === "cover") assets.push(card.cover);
+  else if (card.template === "home") assets.push(card.art);
   else if (card.partnerLogo) assets.push(card.partnerLogo);
   return assets;
 }
