@@ -1,6 +1,7 @@
 import { GitHubButton } from "@/app/(home)/components/GitHubButton/GitHubButton";
 import { Footer } from "@/app/(home)/sections/Footer/Footer";
 import { JsonLd } from "@/components/seo/JsonLd";
+import { postDates } from "@/lib/content-dates";
 import { blogOgImage } from "@/lib/og/content";
 import { ogImageUrl } from "@/lib/og/images";
 import { withOgImage } from "@/lib/page-metadata";
@@ -17,7 +18,8 @@ type BlogSourcePage = NonNullable<ReturnType<typeof blog.getPage>>;
 /* BlogPosting and breadcrumb structured data: gives Google the post's dates and author. */
 function blogStructuredData(page: BlogSourcePage) {
   const url = `${BASE_URL}${page.url}`;
-  const { title, description, author, date } = page.data;
+  const { title, description, author } = page.data;
+  const dates = postDates(page.data);
   return [
     {
       "@context": "https://schema.org",
@@ -26,8 +28,8 @@ function blogStructuredData(page: BlogSourcePage) {
       headline: title,
       description,
       image: `${BASE_URL}${ogImageUrl(blogOgImage(page))}`,
-      datePublished: new Date(date).toISOString(),
-      dateModified: new Date(date).toISOString(),
+      datePublished: dates.published,
+      dateModified: dates.modified,
       // Bylines are a person or a team ("Thesys Engineering Team").
       author: { "@type": /\bteam\b/i.test(author) ? "Organization" : "Person", name: author },
       publisher: {
@@ -55,6 +57,7 @@ export default async function BlogPostPage(props: { params: Promise<{ slug: stri
   const page = blog.getPage([params.slug]);
 
   if (!page) notFound();
+  const dates = postDates(page.data);
   const Mdx = page.data.body;
   const { faq } = page.data;
   const toc = faq?.length
@@ -92,7 +95,16 @@ export default async function BlogPostPage(props: { params: Promise<{ slug: stri
             <div className="flex items-center gap-3 border-b border-[color:var(--home-hairline)] pb-6 text-[length:var(--home-body-size)] font-[family-name:var(--home-font-text)] text-[color:var(--openui-text-neutral-tertiary)]">
               <span>{page.data.author}</span>
               <span>&middot;</span>
-              <time>{new Date(page.data.date).toDateString()}</time>
+              <time dateTime={dates.published}>{new Date(dates.published).toDateString()}</time>
+              {dates.updated ? (
+                <>
+                  <span>&middot;</span>
+                  <span>
+                    Updated{" "}
+                    <time dateTime={dates.updated}>{new Date(dates.updated).toDateString()}</time>
+                  </span>
+                </>
+              ) : null}
             </div>
             <article className="prose mt-8 min-w-0">
               <Mdx components={getMDXComponents()} />
@@ -116,6 +128,7 @@ export async function generateMetadata(props: {
   const page = blog.getPage([params.slug]);
 
   if (!page) notFound();
+  const dates = postDates(page.data);
 
   return withOgImage(
     {
@@ -123,6 +136,12 @@ export async function generateMetadata(props: {
       description: page.data.description,
       alternates: {
         canonical: page.url,
+      },
+      openGraph: {
+        type: "article",
+        publishedTime: dates.published,
+        modifiedTime: dates.modified,
+        authors: [page.data.author],
       },
     },
     blogOgImage(page),

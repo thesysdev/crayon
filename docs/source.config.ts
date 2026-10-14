@@ -1,6 +1,5 @@
 import { metaSchema, pageSchema } from "fumadocs-core/source/schema";
 import { defineCollections, defineConfig, defineDocs } from "fumadocs-mdx/config";
-import lastModified from "fumadocs-mdx/plugins/last-modified";
 import { z } from "zod";
 
 const docsPageSchema = pageSchema.extend({
@@ -13,6 +12,9 @@ const docsPageSchema = pageSchema.extend({
   sidebar: z.boolean().optional().default(true),
   // Hides Copy Markdown and Open, for pages whose Markdown is mostly component tags.
   pageActions: z.boolean().optional().default(true),
+  // Day the content last changed, used as the sitemap `lastmod`. Bump it when readers would
+  // notice the edit; CI (.github/workflows/content-dates.yml) checks this.
+  updatedAt: z.string().date().or(z.date()).optional(),
 });
 
 // You can customise Zod schemas for frontmatter and `meta.json` here
@@ -38,6 +40,7 @@ export const blogPosts = defineCollections({
     seoTitle: z.string().optional(),
     author: z.string(),
     date: z.string().date().or(z.date()),
+    updatedAt: z.string().date().or(z.date()).optional(),
     featured: z.boolean().optional(),
     // Rendered after the post and emitted as FAQPage JSON-LD. Answers are
     // paragraphs that may use inline code and [links](/path).
@@ -47,6 +50,4 @@ export const blogPosts = defineCollections({
   }),
 });
 
-export default defineConfig({
-  plugins: [lastModified()],
-});
+export default defineConfig();

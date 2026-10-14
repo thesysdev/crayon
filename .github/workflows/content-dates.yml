@@ -1,0 +1,39 @@
+name: Content dates
+
+on:
+  pull_request:
+    branches: [main]
+    # labeled/unlabeled re-run the check when `no-date-bump` is added or removed.
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+    paths:
+      - "docs/content/**"
+
+permissions:
+  contents: read
+
+jobs:
+  updated-at:
+    # A PR that edits a docs page or blog post must also change its `updatedAt`, the page's sitemap
+    # lastmod. For edits readers won't notice, like a typo fix, label the PR `no-date-bump`.
+    if: ${{ !contains(github.event.pull_request.labels.*.name, 'no-date-bump') }}
+    runs-on: ubuntu-latest
+    steps:
+      # The PR merge commit and its first parent (the base branch) are all the history this needs.
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - name: Edited pages change updatedAt
+        run: |
+          # New and edited docs pages, and edited blog posts (new posts are dated by `date`).
+          files=$({
+            git diff --name-only --diff-filter=AM HEAD^1 HEAD -- docs/content/docs
+            git diff --name-only --diff-filter=M HEAD^1 HEAD -- docs/content/blog
+          } | grep -E '\.mdx?$' || true)
+          status=0
+          for file in $files; do
+            if ! git diff HEAD^1 HEAD -- "$file" | grep -q '^+updatedAt:'; then
+              echo "::error file=$file::Edited without changing updatedAt. Set it to today's date, or label the PR no-date-bump."
+              status=1
+            fi
+          done
+          exit $status

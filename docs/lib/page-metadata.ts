@@ -30,6 +30,8 @@ export type PageMetadataInput = {
   /** Link-preview title and description, when they differ from the page's. */
   openGraph?: { title?: string; description?: string };
   ogImage?: { eyebrow?: string; partnerLogo?: string };
+  /** YYYY-MM-DD the page's content last changed, used as its sitemap `lastmod`. */
+  updatedAt?: string;
 };
 
 export function pageOgImage(page: PageMetadataInput): OgImage {

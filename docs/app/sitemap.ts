@@ -1,12 +1,15 @@
+import { ogPages } from "@/generated/og-pages";
+import { postDates, toDay } from "@/lib/content-dates";
 import { BASE_URL, blog, source } from "@/lib/source";
+import type { MetadataRoute } from "next";
 import { integrations } from "./(home)/integrations/data";
 
+// Listed without a `lastmod` until their `metadata.ts` sets `updatedAt`.
 const STATIC_PATHS = [
   "/",
   "/openui-vs-json",
   "/compare",
   "/lab",
-  "/integrations",
   "/chat",
   "/demo/f1-dashboard",
   "/demo/trip-planner",
@@ -17,7 +20,6 @@ const STATIC_PATHS = [
   "/cloud/observability",
   "/openclaw-os",
   "/components",
-  "/blog",
   "/benchmarks",
   "/benchmarks/language",
   "/benchmarks/language/agent.md",
@@ -34,30 +36,39 @@ const STATIC_PATHS = [
   "/benchmarks/data.csv",
 ];
 
-export default async function sitemap() {
-  const staticRoutes = STATIC_PATHS.map((path) => ({
+/** The page's `updatedAt`; data files like `agent.md` and `data.json` share their page's. */
+function staticPageDate(path: string) {
+  return (ogPages[path] ?? ogPages[path.replace(/\/[^/]+\.\w+$/, "")])?.updatedAt;
+}
+
+/**
+ * Every `lastmod` is the date a page's content last changed, set by hand next to the content
+ * (frontmatter, `metadata.ts`, integration data), never the build time.
+ */
+export default function sitemap(): MetadataRoute.Sitemap {
+  const route = (path: string, updatedAt?: string | Date) => ({
     url: `${BASE_URL}${path}`,
-    lastModified: new Date(),
+    lastModified: updatedAt === undefined ? undefined : toDay(updatedAt),
     changeFrequency: "weekly" as const,
-  }));
+  });
+  const latest = (routes: { lastModified?: string }[]) =>
+    routes
+      .map((r) => r.lastModified)
+      .filter((date) => date !== undefined)
+      .sort()
+      .at(-1);
 
-  const docsRoutes = source.getPages().map((page) => ({
-    url: `${BASE_URL}${page.url}`,
-    lastModified: page.data.lastModified,
-    changeFrequency: "weekly" as const,
-  }));
+  const integrationRoutes = integrations.map((integration) =>
+    route(`/integrations/${integration.slug}`, integration.updatedAt),
+  );
+  const blogRoutes = blog.getPages().map((page) => route(page.url, postDates(page.data).modified));
 
-  const blogRoutes = blog.getPages().map((page) => ({
-    url: `${BASE_URL}${page.url}`,
-    lastModified: new Date(),
-    changeFrequency: "weekly" as const,
-  }));
-
-  const integrationRoutes = integrations.map((integration) => ({
-    url: `${BASE_URL}/integrations/${integration.slug}`,
-    lastModified: new Date(),
-    changeFrequency: "weekly" as const,
-  }));
-
-  return [...staticRoutes, ...integrationRoutes, ...docsRoutes, ...blogRoutes];
+  return [
+    ...STATIC_PATHS.map((path) => route(path, staticPageDate(path))),
+    route("/integrations", latest(integrationRoutes)),
+    ...integrationRoutes,
+    ...source.getPages().map((page) => route(page.url, page.data.updatedAt)),
+    route("/blog", latest(blogRoutes)),
+    ...blogRoutes,
+  ];
 }
