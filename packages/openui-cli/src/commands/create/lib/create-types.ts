@@ -11,7 +11,6 @@ export interface CreateAppOptions {
   backendFramework?: OverlayName;
   example?: string;
   skill?: boolean;
-  noInteractive?: boolean;
   noInstall?: boolean;
   immediate?: boolean;
   apiKey?: string;

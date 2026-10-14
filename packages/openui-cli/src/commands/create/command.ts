@@ -61,7 +61,6 @@ export const createCommand = new Command("create")
           apiKey: options.apiKey,
           auth: normalizeAuth(options.auth),
           skill: options.skill,
-          noInteractive: !options.interactive,
           noInstall: !options.install,
           immediate: options.immediate,
         },

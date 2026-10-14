@@ -6,6 +6,8 @@ export type CliContext = {
   telemetry: Telemetry;
   verbose: boolean;
   agent?: string;
+  /** Whether this run may prompt: a terminal, no `--no-interactive`, and no agent. */
+  interactive: boolean;
   cliVersion?: string;
 };
 
@@ -18,5 +20,6 @@ export const context: CliContext = {
   },
   telemetry,
   verbose: false,
+  interactive: false,
   cliVersion: undefined,
 };
