@@ -5,7 +5,7 @@ export function ShiroPeek() {
     <div className={styles.root}>
       <div className={styles.figure}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img className={styles.svg} src="/shiro-peek.svg" alt="" aria-hidden="true" />
+        <img className={styles.svg} src="/shiro-peek.svg" alt="OpenUI mascot" aria-hidden="true" />
       </div>
     </div>
   );

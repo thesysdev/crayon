@@ -24,7 +24,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
   title: {
     default: SITE_TITLE,
-    template: `%s | ${SITE_TITLE}`,
+    template: "%s | OpenUI",
   },
   description: SITE_DESCRIPTION,
   applicationName: SITE_TITLE,

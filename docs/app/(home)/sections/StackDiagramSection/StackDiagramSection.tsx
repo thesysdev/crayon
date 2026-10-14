@@ -56,7 +56,7 @@ function WorksWith({ marks }: { marks: WorksWithMark[] }) {
                 <img
                   className={styles.wordmarkWhite}
                   src={`${mark.base}-white.svg`}
-                  alt=""
+                  alt={mark.name}
                   aria-hidden="true"
                   style={{ height: mark.height }}
                   loading="lazy"

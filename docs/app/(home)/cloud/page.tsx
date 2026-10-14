@@ -108,7 +108,7 @@ export default function OpenUICloudPage() {
               <Image
                 className={`${cloudStyles.heroImage} ${cloudStyles.heroImageDark}`}
                 src="/openui-cloud/hero-dark.svg"
-                alt=""
+                alt="OpenUI Cloud"
                 aria-hidden="true"
                 width={1280}
                 height={600}
@@ -129,7 +129,7 @@ export default function OpenUICloudPage() {
               <Image
                 className={`${cloudStyles.heroImage} ${cloudStyles.heroImageDark}`}
                 src="/openui-cloud/hero-dark.svg"
-                alt=""
+                alt="OpenUI Cloud"
                 aria-hidden="true"
                 width={1280}
                 height={600}

@@ -96,7 +96,7 @@ export function OpenUILogo({ variant = "light" }: { variant?: LogoVariant }) {
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src="/shiro-logo.svg"
-          alt=""
+          alt="OpenUI"
           aria-hidden="true"
           className="absolute inset-0 block size-full object-contain"
         />

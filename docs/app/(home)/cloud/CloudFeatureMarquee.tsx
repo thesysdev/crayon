@@ -158,7 +158,7 @@ export function CloudFeatureMarquee() {
                     <img
                       className={`${styles.image} ${styles.imageLight}`}
                       src={feature.lightImage}
-                      alt=""
+                      alt={feature.title}
                       aria-hidden="true"
                       loading="lazy"
                     />
@@ -166,7 +166,7 @@ export function CloudFeatureMarquee() {
                     <img
                       className={`${styles.image} ${styles.imageDark}`}
                       src={feature.darkImage}
-                      alt=""
+                      alt={feature.title}
                       aria-hidden="true"
                       loading="lazy"
                     />

@@ -84,7 +84,7 @@ export function CloudSection() {
               <Image
                 className={`${styles.observabilityImage} ${styles.observabilityImageLight}`}
                 src="/homepage/observability-light.webp"
-                alt=""
+                alt="OpenUI Observability dashboard"
                 aria-hidden="true"
                 width={2240}
                 height={880}
@@ -94,7 +94,7 @@ export function CloudSection() {
               <Image
                 className={`${styles.observabilityImage} ${styles.observabilityImageDark}`}
                 src="/homepage/observability-dark.webp"
-                alt=""
+                alt="OpenUI Observability dashboard"
                 aria-hidden="true"
                 width={2240}
                 height={880}
@@ -106,7 +106,7 @@ export function CloudSection() {
               <Image
                 className={`${styles.observabilityImage} ${styles.observabilityImageLight}`}
                 src="/homepage/observability-mobile-light.webp"
-                alt=""
+                alt="OpenUI Observability dashboard"
                 aria-hidden="true"
                 width={1440}
                 height={1200}
@@ -116,7 +116,7 @@ export function CloudSection() {
               <Image
                 className={`${styles.observabilityImage} ${styles.observabilityImageDark}`}
                 src="/homepage/observability-mobile-dark.webp"
-                alt=""
+                alt="OpenUI Observability dashboard"
                 aria-hidden="true"
                 width={1440}
                 height={1200}

@@ -113,7 +113,7 @@ export function CloudFeatureCard({
           <Image
             className={`${styles.featureImage} ${styles.featureImageDark}`}
             src={imageDark}
-            alt=""
+            alt={imageAlt ?? title}
             aria-hidden="true"
             width={720}
             height={400}
@@ -133,7 +133,7 @@ export function CloudFeatureCard({
             <Image
               className={`${styles.featureImage} ${styles.featureImageDark}`}
               src={imageMobileDark}
-              alt=""
+              alt={imageAlt ?? title}
               aria-hidden="true"
               width={720}
               height={600}
