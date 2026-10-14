@@ -3,15 +3,16 @@ import { BASE_URL } from "@/lib/source";
 import type { Metadata } from "next";
 import { AGENT_SETUP_PROMPT, AgentPicker } from "./components/AgentPicker/AgentPicker";
 import styles from "./page.module.css";
-import { BANNER_END_ANCHOR_ID, CloudBanner } from "./sections/CloudBanner/CloudBanner";
+import { BANNER_END_ANCHOR_ID } from "./sections/CloudBanner/CloudBanner";
 import { CloudSection } from "./sections/CloudSection/CloudSection";
 import { FAQS, FaqSection } from "./sections/FaqSection/FaqSection";
-import { FeatureGridSection } from "./sections/FeatureGridSection/FeatureGridSection";
 import { Footer } from "./sections/Footer/Footer";
 import { HeroSection } from "./sections/HeroSection/HeroSection";
 import { LogoStrip } from "./sections/LogoStrip/LogoStrip";
-import { ProductSection } from "./sections/ProductSection/ProductSection";
-import { LANG_PRODUCT } from "./sections/ProductSection/products";
+import { HeroProof } from "./sections/HeroProof/HeroProof";
+import { CompatibilitySection } from "./sections/CompatibilitySection/CompatibilitySection";
+import { HowItWorksSection } from "./sections/HowItWorksSection/HowItWorksSection";
+import { WhatItDoesSection } from "./sections/WhatItDoesSection/WhatItDoesSection";
 import { ShiroPeek } from "./sections/ShiroPeek/ShiroPeek";
 import { TweetWallSection } from "./sections/TweetWallSection/TweetWallSection";
 
@@ -92,11 +93,21 @@ export default function HomePage() {
           __html: JSON.stringify(structuredData).replaceAll("<", "\\u003c"),
         }}
       />
+      {/* Five folds, in order: the hero, what OpenUI does, how it works, what
+          it works with, then questions. Gateway and the tweet wall sit between
+          the last two so they never interrupt that story. */}
       <div className={styles.heroShell}>
         <HeroSection
           align="left"
           desktopFromTablet
-          subtitle="Open Standard for Generative UI"
+          subtitle={
+            <>
+              Open Standard for Generative UI
+              <span className={styles.heroOutcome}>
+                Make your AI apps and agents respond with intelligent UI, not just text.
+              </span>
+            </>
+          }
           showPlaygroundButton={false}
           showTagline={false}
           commandTrailing={<AgentPicker command={AGENT_SETUP_PROMPT} />}
@@ -104,41 +115,43 @@ export default function HomePage() {
              the star count already. Dropping githubRepoUrl takes the desktop
              button; the mobile banner defaults on, so it is turned off here. */
           showGitHubBanner={false}
+          /* Just the hero: what OpenUI is and how to start. The demo fold
+             follows straight after, starting within the first screen. */
+          showPreview={false}
         />
-        <LogoStrip />
-        {/* Tagline hidden for now; restore this line to bring it back. */}
       </div>
-      {/* The open-source band opens the solid page field. */}
-      <div className={styles.contentSection}>
+      {/* The demo fold sits tight under the hero, so it starts halfway down
+          the first screen. */}
+      <div className={`${styles.contentSection} ${styles.contentSectionTight}`}>
         <div className={styles.contentShell}>
-          <div className={styles.langBand}>
-            <ProductSection {...LANG_PRODUCT} />
-          </div>
-          {/* The benchmark header and the compatibility band, without the feature
-              grid that used to sit between them. */}
-          {/* No compatFirst: the benchmark claim leads and the compatibility band
-              follows it, so the page proves the point before saying what it
-              works with. The grid runs on its own six features — Live data and
-              Cross-platform are only stated here. */}
-          <FeatureGridSection
-            gridFirst
-            showHeaderSeparator={false}
-            showCompatSeparator={false}
-            showBottomSeparator={false}
-          />
+          {/* Fold 2: what it does. */}
+          <WhatItDoesSection />
 
+          {/* Fold 3: how it works. */}
+          <HowItWorksSection />
+
+          {/* Fold 4: integrations. */}
+          <CompatibilitySection />
+
+          {/* The proof, then the hosted product: fewer tokens and faster
+              generation, then reliability in production. */}
+          <HeroProof />
+
+          {/* Then who uses OpenUI and what they say. */}
           <div className={styles.cloudGroup}>
             <ShiroPeek />
             <CloudSection />
           </div>
+          <LogoStrip />
           <TweetWallSection />
+
+          {/* Fold 5: FAQ. */}
           <div className={styles.faqBand} id={BANNER_END_ANCHOR_ID}>
             <FaqSection />
           </div>
         </div>
       </div>
       <Footer />
-      <CloudBanner />
     </div>
   );
 }

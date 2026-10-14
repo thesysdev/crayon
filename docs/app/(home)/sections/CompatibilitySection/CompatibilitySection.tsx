@@ -1,20 +1,25 @@
 "use client";
 
-import { SectionHeader } from "../../components/SectionHeader/SectionHeader";
-import { stackChipStyles, type StackChipItem } from "../../components/StackChip/StackChip";
-import { CompatibilityDiagram } from "./CompatibilityDiagram";
+import { FoldHeader } from "../../components/FoldHeader/FoldHeader";
+import {
+  StackChip,
+  stackChipStyles,
+  type StackChipItem,
+} from "../../components/StackChip/StackChip";
 import styles from "./CompatibilitySection.module.css";
 
 interface StackRow {
   label: string;
+  /* Plain-language name and one line for the card. `label` stays the
+     technical term for the hidden list and any reader who wants it. */
+  title: string;
+  description: string;
   items: StackChipItem[];
 }
 
-/* The four compatibility groups, ordered the way the stack is drawn top to
-   bottom: the model at the top, then the service that calls it, the library it
-   renders with, and the client the user touches at the base. The diagram draws
-   one StackLayerRow per group, in this order, and runs that group's own logos
-   past it.
+/* The four compatibility groups: the model, the agent code that calls it, the
+   components it renders with, and the app the user touches. Each becomes one
+   card, in this order.
 
    Every entry needs a real mark. Anything with no logo to be found is left out
    rather than stood in for by a related company's. */
@@ -23,6 +28,8 @@ const STACK_ROWS: StackRow[] = [
     /* OpenAI, xAI and DeepSeek are local files: Simple Icons carries no OpenAI
        mark, and its "x" is the social network, not xAI. */
     label: "LLMs",
+    title: "Any AI model",
+    description: "Closed or open, hosted or running on your own machine.",
     items: [
       {
         name: "OpenAI",
@@ -72,6 +79,8 @@ const STACK_ROWS: StackRow[] = [
     /* Llama, LlamaIndex and Mastra are absent: no logo could be found for any of
        them, and a row is better short than wrong. */
     label: "Backend",
+    title: "The agent you already have",
+    description: "Add it to your existing agent code. No rewrite needed.",
     items: [
       {
         name: "Vercel AI SDK",
@@ -112,6 +121,8 @@ const STACK_ROWS: StackRow[] = [
   },
   {
     label: "UI library",
+    title: "Your own components",
+    description: "Answers use your design system, so they look like your product.",
     items: [
       {
         name: "OpenUI Design system",
@@ -171,6 +182,8 @@ const STACK_ROWS: StackRow[] = [
   },
   {
     label: "Clients",
+    title: "Your app",
+    description: "Works in the web framework you build with today.",
     items: [
       {
         name: "React",
@@ -225,30 +238,35 @@ const STACK_ROWS: StackRow[] = [
   },
 ];
 
-export function CompatibilitySection({ embedded = false }: { embedded?: boolean } = {}) {
+/* Four cards in plain words rather than the stack diagram: what each group
+   means to someone choosing a tool, then the logos that prove it. */
+export function CompatibilitySection() {
   return (
-    <section
-      className={styles.section}
-      data-variant={embedded ? "embedded" : undefined}
-      aria-labelledby="favorite-stack-title"
-    >
+    <section className={styles.section} aria-labelledby="integrations-title">
+      <FoldHeader
+        id="integrations-title"
+        title="Works with the tools you already use."
+        subtitle="Swap the model, keep the UI."
+      />
       <div className={styles.container}>
-        <div className={styles.stack}>
-          <CompatibilityDiagram groups={STACK_ROWS} />
-        </div>
-        {/* Sits under the diagram, reading as its caption. Same treatment as the
-            benchmark header above this band, so the two read as peers, and
-            titleId keeps the section's aria-labelledby valid. */}
-        <div className={styles.header}>
-          {/* The diagram is images and a hidden list, so the caption is what
-              puts this band's claim into crawlable body text. One clause per
-              row above it, in the same order. */}
-          <SectionHeader
-            caption="Generative UI that renders in any client framework, uses any component library, and runs on any agent backend or model."
-            title="...and works with your stack."
-            titleId="favorite-stack-title"
-          />
-        </div>
+        <ul className={styles.cards}>
+          {STACK_ROWS.map((row) => (
+            <li key={row.label} className={styles.card}>
+              {/* Logos lead each column as its picture; the names follow in
+                  text, so nothing depends on recognising a mark. */}
+              <div className={styles.cardLogos} aria-hidden="true">
+                {row.items.map((item) => (
+                  <span key={item.name} className={styles.cardLogo} title={item.name}>
+                    <StackChip item={item} iconOnly />
+                  </span>
+                ))}
+              </div>
+              <h3 className={styles.cardTitle}>{row.title}</h3>
+              <p className={styles.cardDescription}>{row.description}</p>
+              <p className={styles.cardNames}>{row.items.map((item) => item.name).join(" · ")}</p>
+            </li>
+          ))}
+        </ul>
       </div>
     </section>
   );

@@ -8,7 +8,6 @@ import {
 } from "@/lib/chat-demo-analytics";
 import {
   OPENUI_CLOUD_LOGO_URL,
-  OPENUI_CLOUD_PROMPT_TEMPLATES,
   OPENUI_CLOUD_STARTERS,
 } from "@/lib/openui-cloud/chat-constants";
 import { createCloudChatLLM } from "@/lib/openui-cloud/chat-llm";
@@ -181,7 +180,6 @@ export function CloudAgentSurface() {
         <AgentInterface.Welcome
           title="Good to see you"
           description="What's on your mind today?"
-          promptTemplates={OPENUI_CLOUD_PROMPT_TEMPLATES}
           starterVariant="card"
           glowAnimation
         />
