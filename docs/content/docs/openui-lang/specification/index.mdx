@@ -3,7 +3,7 @@ title: Specification
 description: Language specification for OpenUI Lang 1.0. The entry rule, @-calls, action expressions, stored messages, and error codes.
 ---
 
-OpenUI Lang 1.0 extends the [v0.5 specification](/docs/openui-lang/specification/v0.5). The syntax stays the same. 1.0 adds a clear entry rule, custom functions and actions, actions without an `Action([...])` wrapper, a format for stored messages, and new error codes. See [What's New in 1.0](/docs/openui-lang/whats-new) for upgrade notes.
+OpenUI Lang 1.0 extends the [v0.5 specification](/docs/openui-lang/specification/v0.5). The statement syntax is unchanged. 1.0 adds one expression form, a lone action without an `Action([...])` wrapper. It also adds a clear entry rule, custom functions and actions, a format for stored messages, and new error codes. See [What's New in 1.0](/docs/openui-lang/whats-new) for upgrade notes.
 
 ## Syntax Overview
 
@@ -50,7 +50,7 @@ title = TextContent("Orders")
 page = Card([title])
 ```
 
-In every other case nothing renders, and `no-root` is reported when the stream ends. While streaming, a missing entry is not an error.
+In every other case nothing renders. The parser reports `no-root` on every parse. Renderers, such as the React `Renderer`, hold errors back until the stream ends, so a missing entry is not shown as an error while streaming.
 
 The fallback needs the root component name. The `Renderer` takes it from the library. A parser on the server needs it as the second argument: `createParser(library.toJSONSchema(), library.root)`.
 
@@ -95,7 +95,7 @@ saveBtn = Button("Save", Action([@Run(save), @Run(orders), @Reset($note)]))
 | `@OpenUrl(url)`                   | Send an `open_url` event                                                  |
 | `@Set($var, value)`               | Set a `$variable`. `value` is evaluated when the action runs              |
 | `@Reset($var1, $var2)`            | Restore `$variables` to declared defaults                                 |
-| `@Run(ref)`                       | Run a Mutation or re-fetch a Query. A failed mutation stops later actions |
+| `@Run(ref)`                       | Run a Mutation or re-fetch a Query. A mutation that fails stops the rest  |
 | `@Name(args)`                     | A custom action. Sends an event with `type: "Name"` and `params`          |
 
 The `context` of `@ToAssistant` reaches the host unchanged in `params.context`:
@@ -108,7 +108,7 @@ Each event carries the form state as of when its action runs.
 
 ### Invalid actions
 
-An action that cannot run does nothing, and the other actions still run. A custom action with any invalid argument, required or optional, is a no-op. It does not fall back to a default.
+An action with invalid arguments is skipped and the rest still run. A mutation that runs and fails stops the rest. A custom action with any invalid argument, required or optional, is a no-op. It does not fall back to a default.
 
 Only an `@Name(...)` call written in the program creates a custom action. An object, a `$variable`, or a query row shaped like an action never reaches the host as one.
 
@@ -141,9 +141,9 @@ title = TextContent("Order 42")
 | ------------------- | ----------------------------------------------------- |
 | `]]>openui:content` | Starts the program, or prose with fenced programs     |
 | `]]>openui:context` | Starts host data, such as form state. Usually JSON    |
-| `]]>openui:end`     | The stream finished. A message without it was cut off |
+| `]]>openui:end`     | The stream finished                                   |
 
-A marker counts only at the start of a line. With several `content` sections, the last one wins. Text with no markers is the content. A message with no `end` line still renders. See [Message Protocol](/docs/openui-lang/message-protocol).
+A `]]>openui:content` marker in the middle of a line is first moved onto its own line. Other markers count only at the start of a line. With several `content` sections, the last one wins. Text with no markers is the content. `end` is absent when the host did not mark the stream as finished. A message without it still renders. See [Message Protocol](/docs/openui-lang/message-protocol).
 
 ## Error Codes
 

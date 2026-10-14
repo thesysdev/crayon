@@ -7,7 +7,7 @@ Functions compute values inside a program. The model writes the call, and the re
 
 For example, a ticket dashboard shows "Open tickets: 12". The model writes `@Count(@Filter(tickets.rows, "status", "==", "open"))`. The renderer counts the rows when the query returns and counts again when the rows change. The model never sees the rows.
 
-Function calls start with `@`. The `@` marks a function call, not a component. OpenUI Lang has built-in functions. When they are not enough, such as for currency formatting or a calculation specific to your domain, a library adds its own ([custom functions](#custom-functions)).
+Function calls start with `@`. The `@` marks a call (function or action), not a component. OpenUI Lang has built-in functions. When they are not enough, such as for currency formatting or a calculation specific to your domain, a library adds its own ([custom functions](#custom-functions)).
 
 ## Calling a function
 
@@ -178,7 +178,7 @@ To add a function to an existing library, such as `openuiLibrary` from `@openuid
 
 | Field         | Description                                                                                    |
 | :------------ | :--------------------------------------------------------------------------------------------- |
-| `name`        | The name after `@` in programs. Start it with an uppercase letter, like the built-ins.         |
+| `name`        | The name after `@` in programs. By convention, start it with an uppercase letter.              |
 | `description` | Shown next to the signature in the prompt.                                                     |
 | `params`      | A `z.object(...)`. Key order is the positional order of the arguments.                         |
 | `returns`     | Optional. A Zod schema for the result. It is printed in the prompt and checked at runtime.     |
@@ -212,7 +212,7 @@ The Vue, Svelte, and Angular renderers are on 0.4 and do not run custom function
 
 A sales summary where the renderer computes the percentages.
 
-Your app adds the function to `openuiLibrary` and renders with the result:
+Your app adds the function to `openuiLibrary` and renders with the extended library:
 
 ```tsx
 "use client";

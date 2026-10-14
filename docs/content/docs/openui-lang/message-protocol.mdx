@@ -5,7 +5,7 @@ description: Store a response and show it again later, with form values kept, us
 
 import { MessageProtocolDiagram } from "@/components/openui-lang-diagrams";
 
-The message protocol lets your app store a model response and show it again later, with the user's form values kept. Without it, a reloaded chat shows the generated UI with every field empty.
+The message protocol lets your app store a model response and show it again later, with the user's form values kept. Without stored context, a reloaded chat has no form values to restore.
 
 For example, a user fills half of a booking form in a chat and closes the tab. When the user opens the chat again, the form is back with the same dates and guest count. Your app stored the response and the form values together as one message.
 
@@ -59,6 +59,8 @@ const { content, context, attributes, end } = parseMessage(stored);
 | `context`    | The body of the context section, parsed as JSON. Raw text when it is not valid JSON. `null` when there is no context section. |
 | `attributes` | The decoded attributes of the content line.                                                                                   |
 | `end`        | `true` when the message has an `end` line.                                                                                    |
+
+`end` is absent when the host did not mark the stream as finished. A message without it still renders.
 
 ## Show a stored message again
 
@@ -142,11 +144,11 @@ saveBtn = Button("Save", @ToAssistant("Save order", {orderId: 42}))
 | :------------------ | :------------------------------------------------------------------------------------------- |
 | `]]>openui:content` | Starts the content: the program, or prose with fenced programs. Attributes follow `?`.       |
 | `]]>openui:context` | Starts the context: data your app keeps with the message, such as form values. Usually JSON. |
-| `]]>openui:end`     | The stream finished. A stored message without it was cut off.                                |
+| `]]>openui:end`     | The stream finished. It is absent when the host did not mark the stream as finished.         |
 
 Reading rules:
 
-- A marker counts only at the start of a line. `]]>openui:end` in the middle of a line is ordinary text.
+- A `]]>openui:content` marker in the middle of a line is first moved onto its own line. Other markers count only at the start of a line, so `]]>openui:end` in the middle of a line is ordinary text.
 - With several content sections, the last one wins. A context section before it is ignored.
 - Text before the first marker is the content only when the message has no content marker.
 - Unknown marker kinds are skipped together with their text.
@@ -167,6 +169,6 @@ A last line that is, or could become, a marker line (for example `]]>open`) is t
 `AgentInterface` in `@openuidev/react-ui` stores its messages in this format:
 
 - An assistant message stores `[formState]` as its context once the user changes a field.
-- A user turn created by `@ToAssistant` stores the message as content and an array as context: `["User clicked: <message>", formState, context]`. The form state is included when there is form state or a context. The third element is the `@ToAssistant` context, included when there is one.
+- A user turn created by `@ToAssistant` stores the message as content and an array as context: `["User clicked: <message>", formState, context]`. The second element is the form state. It is present when there is form state or a context, and is `{}` when there is only a context. The third element, the `@ToAssistant` context, is present only when one is given.
 
 It still reads messages stored in the older `<content>...</content><context>...</context>` envelope.

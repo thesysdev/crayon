@@ -110,7 +110,7 @@ export function GenerateExecuteDiagram() {
     <DiagramFrame
       id={m}
       title="Generate once, then execute"
-      description="Generate runs once per request: the user's request goes to your backend, which sends the system prompt and tool specs to the model, and the model writes an OpenUI Lang program. Execute runs on every click without the model: the Renderer parses the program and renders your components. When the user clicks or changes a $variable, the runtime calls your tools through the toolProvider and sends the rows back to the components."
+      description="Generate runs once per request: the user's request goes to your backend, which sends the system prompt and tool specs to the model, and the model writes an OpenUI Lang program. Execute runs after generation, without the model: the Renderer parses the program and renders your components. When the user clicks or changes a $variable, the runtime calls your tools through the toolProvider and sends the rows back to the components."
       width={1020}
       height={520}
       minWidth={680}
@@ -332,7 +332,7 @@ export function QueryFlowDiagram() {
     <DiagramFrame
       id={m}
       title="How a Query reaches your tools"
-      description="The program declares tickets = Query(list_tickets). On load, or when an action runs it with @Run, the runtime evaluates the arguments and calls toolProvider.callTool. Your tools, a function map or an MCP server, return rows. The runtime passes the rows to the components that read them, such as a table and a chart."
+      description="The program declares tickets = Query(list_tickets). On load, or when an action runs it with @Run, the runtime evaluates the arguments and calls the tool through toolProvider. Your tools, a function map or an MCP server, return rows. The runtime passes the rows to the components that read them, such as a table and a chart."
       width={1020}
       height={460}
       minWidth={640}

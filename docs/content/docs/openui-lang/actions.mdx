@@ -3,11 +3,11 @@ title: Actions
 description: Write one action or several in Action([...]), define custom actions, and handle them in your app.
 ---
 
-Actions decide what happens when the user clicks. The model writes the action into a component's action prop, such as a button's. The renderer runs it on click.
+Actions decide what happens when the user clicks. The model writes the action into a component's action prop, such as a button's. On click the renderer runs it, or hands it to your app as an event.
 
 For example, an order card has an "Approve" button. The model writes `Action([@Run(approveOrder), @Run(orders), @ToAssistant("Order approved")])`. On click, the renderer runs the mutation, refreshes the order list, and sends a message to the model, in that order.
 
-Each `@ToAssistant`, `@OpenUrl`, `@Set`, `@Reset`, `@Run`, or custom `@Name` call in an action prop is an action. `Action([...])` holds several actions that run in order. What your `onAction` handler receives is an event.
+Each `@ToAssistant`, `@OpenUrl`, `@Set`, `@Reset`, `@Run`, or custom `@Name` call in an action prop is an action. `Action([...])` holds several actions that run in order. The API and the generated prompt call these steps (`ActionStep`, `{ steps: [...] }`). What your `onAction` handler receives is an event.
 
 ## One action needs no wrapper
 
@@ -196,6 +196,7 @@ A prop can name the actions it accepts. Build it from the `.ref` of a custom act
 ```tsx
 import { defineComponent, steps, useTriggerAction } from "@openuidev/react-lang";
 import { z } from "zod/v4";
+import { copyToClipboard } from "./message";
 
 const ShareButton = defineComponent({
   name: "ShareButton",
