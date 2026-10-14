@@ -120,7 +120,7 @@ export function OverviewPage() {
                 className="h-full"
                 title="Component Library Definition"
                 code={`import { defineComponent, createLibrary } from '@openuidev/react-lang';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 const MyCard = defineComponent({
   name: 'MyCard',
@@ -195,8 +195,8 @@ export function AssistantMessage({ content, isStreaming }) {
         </div>
 
         <p className="mb-4 text-sm text-slate-600 sm:mb-6 sm:text-base dark:text-slate-400">
-          Drop in <code>AgentInterface</code> — a production-ready artifact chat surface with thread
-          history, conversation starters, and streaming — or build custom UIs with headless hooks.
+          Drop in <code>AgentInterface</code>, a production-ready artifact chat surface with thread
+          history, conversation starters, and streaming, or build custom UIs with headless hooks.
           Fully themeable and accessible out of the box.
         </p>
 
@@ -324,7 +324,7 @@ const llm = {
                 title="Quick example"
                 code={`import { createLibrary, defineComponent } from '@openuidev/react-lang';
 import { openuiLibrary } from '@openuidev/react-ui';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 // Generate prompt with CLI: openui generate ./src/library.ts
 

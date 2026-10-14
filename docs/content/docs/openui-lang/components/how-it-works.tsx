@@ -10,7 +10,7 @@ const steps = [
     title: "Define Library",
     description: "Create your component library with Zod schemas and generate the system prompt",
     code: `import { defineComponent, createLibrary } from '@openuidev/react-lang';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 const Card = defineComponent({
   name: 'Card',
@@ -35,12 +35,12 @@ export const systemPrompt = library.prompt(); // Generated system prompt
 welcomeCard = Card([welcomeHeader, welcomeBody], "card")
 welcomeHeader = CardHeader("Welcome", "Get started with our platform")
 welcomeBody = Stack([signupForm], "column", "m")
-signupForm = Form("signup", [nameField, emailField], actions)
-nameField = FormControl("Name", Input("name", "Your name", "text", ["required", "minLength:2"]))
-emailField = FormControl("Email", Input("email", "you@example.com", "email", ["required", "email"]))
+signupForm = Form("signup", actions, [nameField, emailField])
+nameField = FormControl("Name", Input("name", "Your name", "text", {required: true, minLength: 2}))
+emailField = FormControl("Email", Input("email", "you@example.com", "email", {required: true, email: true}))
 actions = Buttons([signUpBtn, learnMoreBtn], "row")
-signUpBtn = Button("Sign up", "submit:signup", "primary")
-learnMoreBtn = Button("Learn more", "action:learn_more", "secondary")
+signUpBtn = Button("Sign up", @ToAssistant("Sign me up"), "primary")
+learnMoreBtn = Button("Learn more", @ToAssistant("Tell me more about the platform"), "secondary")
 `,
   },
 ];
