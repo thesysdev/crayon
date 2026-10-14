@@ -172,7 +172,7 @@ const integrationCatalog: Integration[] = [
     name: "LangChain & LangGraph",
     seoTitle: "LangGraph generative UI: a frontend for LangGraph agents",
     seoDescription:
-      "Connect LangChain and LangGraph agents to OpenUI with a stream transformer. Render agent responses as interactive cards, tables, charts and forms.",
+      "Let your LangChain or LangGraph agent answer with interactive charts, tables and forms. Use OpenUI to build a visual frontend beyond text-only chat.",
     logo: "https://raw.githubusercontent.com/langchain-ai/docs/main/src/images/brand/langchain-icon.png",
     category: "ai-frameworks",
     type: "Agent framework adapter",
@@ -201,7 +201,7 @@ const integrationCatalog: Integration[] = [
     name: "Vercel AI SDK",
     seoTitle: "Vercel AI SDK generative UI with OpenUI",
     seoDescription:
-      "Add generative UI to Vercel AI SDK apps with OpenUI. Stream interactive components using vercelAIAdapter(), with support for AI SDK v6 and v7.",
+      "Build a Vercel AI SDK chat app that answers with more than text. Use OpenUI to stream interactive charts, tables and forms alongside the conversation.",
     logo: "/integration-logos/vercel.svg",
     category: "ai-frameworks",
     type: "AI SDK adapter",
@@ -231,7 +231,7 @@ const integrationCatalog: Integration[] = [
     name: "Google ADK",
     seoTitle: "Google ADK agent UI: render rich interfaces with OpenUI",
     seoDescription:
-      "Build a generative UI frontend for Google ADK agents with OpenUI. Map TypeScript ADK events to AG-UI and stream interactive components to your app.",
+      "Build a frontend for your Google ADK agent with OpenUI. Let users explore its answers through interactive charts, tables and forms, not just text.",
     logo: "/integration-logos/google.svg",
     category: "ai-frameworks",
     type: "Agent SDK",
@@ -274,7 +274,7 @@ const integrationCatalog: Integration[] = [
     name: "assistant-ui",
     seoTitle: "assistant-ui + OpenUI: generative UI in assistant-ui chats",
     seoDescription:
-      "Add generative UI to assistant-ui chats with the OpenUI toolkit. Render cards, tables, charts and forms while assistant-ui manages the conversation.",
+      "Add interactive charts, tables and forms to your assistant-ui chat app with OpenUI, while keeping your existing chat interface and conversation flow.",
     logo: "/integration-logos/assistant-ui.svg",
     category: "frontend-platforms",
     type: "Chat framework",
@@ -303,7 +303,7 @@ const integrationCatalog: Integration[] = [
     name: "AG-UI",
     seoTitle: "AG-UI frontend: render AG-UI streams as generative UI",
     seoDescription:
-      "Connect any AG-UI SSE endpoint to OpenUI with agUIAdapter(). Render generative UI with support for text messages, tool calls, tool results and run errors.",
+      "Build a frontend for agents that use the AG-UI protocol. OpenUI lets them answer with interactive charts, tables and forms instead of text-only chat.",
     logo: "/integration-logos/ag-ui.svg",
     category: "ai-frameworks",
     type: "Agent protocol",
@@ -444,7 +444,7 @@ const integrationCatalog: Integration[] = [
     name: "Vue 3",
     seoTitle: "Generative UI for Vue",
     seoDescription:
-      "Build generative UI in Vue 3 with OpenUI. Register single-file components with Zod schemas and render streamed interfaces using @openuidev/vue-lang.",
+      "Build AI-powered interfaces in Vue 3 with OpenUI. Let AI use your Vue components to show interactive charts, tables and forms instead of plain text.",
     logo: "/integration-logos/vue.svg",
     category: "frontend-platforms",
     type: "Native runtime",
@@ -465,7 +465,7 @@ const integrationCatalog: Integration[] = [
     name: "Angular",
     seoTitle: "Generative UI for Angular",
     seoDescription:
-      "Build generative UI in Angular with OpenUI. Register standalone components with Zod schemas and stream interfaces using @openuidev/angular-lang.",
+      "Build AI-powered interfaces in Angular with OpenUI. Let AI use your Angular components to show interactive charts, tables and forms instead of plain text.",
     logo: "/integration-logos/angular.svg",
     category: "frontend-platforms",
     type: "Native runtime",
@@ -507,7 +507,7 @@ const integrationCatalog: Integration[] = [
     name: "Svelte 5",
     seoTitle: "Generative UI for Svelte",
     seoDescription:
-      "Build generative UI in Svelte 5 with OpenUI. Register components with Zod schemas and render streamed interfaces using @openuidev/svelte-lang.",
+      "Build AI-powered interfaces in Svelte 5 with OpenUI. Let AI use your Svelte components to show interactive charts, tables and forms instead of plain text.",
     logo: "/integration-logos/svelte.svg",
     category: "frontend-platforms",
     type: "Native runtime",
