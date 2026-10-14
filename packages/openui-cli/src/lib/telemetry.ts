@@ -72,7 +72,7 @@ export class Telemetry {
     };
   }
 
-  init(opts: { cliVersion: string; flagEnabled: boolean; interactiveTerminal: boolean }) {
+  init(opts: { cliVersion: string; flagEnabled: boolean; detectedInteractive: boolean }) {
     const optedOut =
       isTruthyEnv(process.env["DO_NOT_TRACK"]) ||
       isTruthyEnv(process.env["OPENUI_TELEMETRY_DISABLED"]) ||
@@ -89,7 +89,7 @@ export class Telemetry {
       ci: isCi(),
       stdin_is_tty: Boolean(process.stdin.isTTY),
       stdout_is_tty: Boolean(process.stdout.isTTY),
-      is_interactive_terminal: opts.interactiveTerminal,
+      detected_interactive: opts.detectedInteractive,
     };
     try {
       this.session.client = createPostHogClient();
@@ -126,8 +126,6 @@ export class Telemetry {
   registerRun(props: {
     agent_name: string;
     detected_agent_name: string;
-    /** `--no-interactive` as passed; null for commands without the flag. */
-    no_interactive_flag: boolean | null;
     /** Whether this run may prompt: a terminal, no --no-interactive, and no agent. */
     can_prompt: boolean;
     cli_run_id: string;

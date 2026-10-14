@@ -46,7 +46,6 @@ export async function resolveAvailableTarget(
     // instead of throwing, so without this the TARGET_EXISTS signal that used
     // to reach analytics via cli_create_failed would disappear for them.
     tel.trackTargetExists({
-      interactive,
       attempt: retries + 1,
       exhausted,
       error_code: "TARGET_EXISTS",

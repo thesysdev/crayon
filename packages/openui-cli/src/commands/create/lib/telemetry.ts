@@ -257,12 +257,7 @@ export class CreateTelemetryClient extends Telemetry {
     this.capture("cli_target_name_retried", props);
   }
 
-  trackTargetExists(props: {
-    interactive: boolean;
-    attempt: number;
-    exhausted: boolean;
-    error_code: string;
-  }) {
+  trackTargetExists(props: { attempt: number; exhausted: boolean; error_code: string }) {
     this.capture("cli_target_exists", props);
   }
 }

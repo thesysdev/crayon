@@ -20,7 +20,10 @@ export type CliContext = {
   /** Whether this run may prompt: not `--no-interactive`, a terminal, and no agent. */
   readonly canPrompt: boolean;
   /** Set the passed and detected run values once, before the command runs. */
-  initialize(this: CliContext, passed: { agent?: string; interactive?: boolean }): void;
+  initialize(
+    this: CliContext,
+    passed: { verbose: boolean; agent?: string; interactive?: boolean },
+  ): void;
 };
 
 const isInteractiveTerminal = () => Boolean(process.stdin.isTTY && process.stdout.isTTY);
@@ -40,16 +43,18 @@ export const context: CliContext = {
   initialize(passed) {
     const detected = detectAgent();
     const agent = passed.agent === UNKNOWN_AGENT_NAME ? undefined : passed.agent;
-    const detectedAgent = detected === UNKNOWN_AGENT_NAME ? undefined : detected;
+    const detectedAgentName = detected === UNKNOWN_AGENT_NAME ? undefined : detected;
     const detectedInteractive = isInteractiveTerminal();
-    const activeAgent = agent ?? detectedAgent;
+    const activeAgent = agent ?? detectedAgentName;
+    const verbose = passed.verbose;
     Object.assign(this, {
       agent,
-      detectedAgent,
+      verbose,
+      detectedAgentName,
       interactive: passed.interactive,
       detectedInteractive,
       activeAgent,
       canPrompt: passed.interactive !== false && detectedInteractive && !activeAgent,
-    });
+    } satisfies Partial<CliContext>);
   },
 };

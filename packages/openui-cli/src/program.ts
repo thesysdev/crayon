@@ -43,17 +43,16 @@ function buildProgram(): Command {
     ctx.initialize({
       agent: globalOptions.agentName,
       interactive: actionCommand.opts()["interactive"] as boolean | undefined,
+      verbose: Boolean(globalOptions.verbose || actionCommand.optsWithGlobals()["verbose"]),
     });
-    ctx.verbose = Boolean(globalOptions.verbose || actionCommand.optsWithGlobals()["verbose"]);
     ctx.telemetry.init({
       cliVersion,
       flagEnabled: globalOptions.telemetry !== false,
-      interactiveTerminal: ctx.detectedInteractive,
+      detectedInteractive: ctx.detectedInteractive,
     });
     ctx.telemetry.registerRun({
       agent_name: globalOptions.agentName,
       detected_agent_name: ctx.detectedAgentName ?? UNKNOWN_AGENT_NAME,
-      no_interactive_flag: ctx.interactive === undefined ? null : !ctx.interactive,
       can_prompt: ctx.canPrompt,
       cli_run_id: randomUUID(),
       command: actionCommand.name(),

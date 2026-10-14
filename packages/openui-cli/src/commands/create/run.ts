@@ -36,9 +36,12 @@ export async function runCreateApp(options: CreateAppOptions, ctx: CliContext): 
   const agent = ctx.activeAgent;
   const packageManager = resolveInstallPackageManager();
   const t0 = Date.now();
-  tel.registerContext({ interactive, package_manager: packageManager.name });
+  tel.registerContext({
+    interactive: ctx.interactive !== false,
+    package_manager: packageManager.name,
+  });
   tel.trackStarted({
-    interactive,
+    interactive: ctx.interactive !== false,
     has_name_arg: Boolean(options.name),
     has_template_arg: Boolean(options.template),
     has_backend_framework_arg: Boolean(options.backendFramework),
