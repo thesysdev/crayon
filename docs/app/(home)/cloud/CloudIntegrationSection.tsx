@@ -164,7 +164,7 @@ export function CloudIntegrationSection() {
               <Image
                 className={styles.customerBackground}
                 src={customer.background}
-                alt=""
+                alt={`${customer.name} background`}
                 fill
                 sizes="(max-width: 767px) 100vw, (max-width: 1023px) 50vw, 400px"
               />

@@ -48,8 +48,8 @@ type NavDropdownChild = {
      a link, so there is nothing to click and nothing to tab to. The href stays
      put: clearing this flag is all it takes to turn it back on. */
   comingSoon?: true;
-  /* A short status chip under the card's copy, on an item that is otherwise a
-     normal link. Unlike `comingSoon` this changes no behaviour: the arrow, the
+  /* A short status chip under the card's copy (beside the title in a "list"
+     row), on an item that is otherwise a normal link. Unlike `comingSoon` this changes no behaviour: the arrow, the
      hover and the destination all stay. Rendered uppercase by the stylesheet,
      so write it in sentence case. */
   tag?: string;
@@ -119,7 +119,7 @@ export const PRIMARY_SITE_NAV_ITEMS: NavItem[] = [
         children: [
           {
             title: "OpenUI",
-            description: "The open standard for Intelligent UI.",
+            description: "The open standard for generative UI.",
             href: "/",
           },
         ],
@@ -184,17 +184,24 @@ export const PRIMARY_SITE_NAV_ITEMS: NavItem[] = [
         label: "Lab projects",
         children: [
           {
-            title: "OpenClaw OS",
-            description: "A power-packed workspace for your OpenClaw agents",
-            href: "/openclaw-os",
-            icon: Monitor,
+            title: "OUI-1",
+            description: "An open-weight model for Generative UI",
+            href: "/oui-1",
+            icon: Code,
+            tag: "New",
           },
           {
             title: "AppLess",
             description: "An open-source concept for an OS without any apps",
-            href: "https://github.com/thesysdev/appless",
-            newTab: true,
+            href: "/appless",
             icon: DeviceMobileCamera,
+            tag: "New",
+          },
+          {
+            title: "OpenClaw OS",
+            description: "A power-packed workspace for your OpenClaw agents",
+            href: "/openclaw-os",
+            icon: Monitor,
           },
           {
             title: "By community",
@@ -325,7 +332,7 @@ function renderBody(child: NavDropdownChild, layout: "cards" | "list") {
               there's no hydration flash on first paint. */}
           <img
             src={child.preview.light}
-            alt=""
+            alt={`${child.title} preview`}
             aria-hidden="true"
             width={852}
             height={480}
@@ -335,7 +342,7 @@ function renderBody(child: NavDropdownChild, layout: "cards" | "list") {
           />
           <img
             src={child.preview.dark}
-            alt=""
+            alt={`${child.title} preview`}
             aria-hidden="true"
             width={852}
             height={480}
@@ -348,6 +355,10 @@ function renderBody(child: NavDropdownChild, layout: "cards" | "list") {
       <span className={styles.dropdownText}>
         <span className={styles.dropdownTitleRow}>
           <span className={styles.dropdownTitle}>{child.title}</span>
+          {/* A list row is one line, so its tag sits beside the title. */}
+          {layout === "list" && child.tag && !child.comingSoon && (
+            <ItemTag label={child.tag} inline />
+          )}
           {/* No arrow: it would point at a destination that is not there yet. */}
           {!child.comingSoon && (
             <span className={styles.dropdownArrow} aria-hidden="true">
@@ -366,7 +377,7 @@ function renderBody(child: NavDropdownChild, layout: "cards" | "list") {
             read, once you know what the thing is. */}
         {child.comingSoon ? (
           <ItemTag label="Coming soon" />
-        ) : child.tag ? (
+        ) : child.tag && layout === "cards" ? (
           <ItemTag label={child.tag} />
         ) : null}
       </span>
@@ -376,8 +387,12 @@ function renderBody(child: NavDropdownChild, layout: "cards" | "list") {
 
 /* The status chip under a card's copy. Carries no behaviour of its own: whether
    the item is clickable is decided by `comingSoon`, not by this. */
-function ItemTag({ label }: { label: string }) {
-  return <span className={styles.itemTag}>{label}</span>;
+function ItemTag({ label, inline }: { label: string; inline?: boolean }) {
+  return (
+    <span className={inline ? `${styles.itemTag} ${styles.itemTagInline}` : styles.itemTag}>
+      {label}
+    </span>
+  );
 }
 
 function DropdownCard({

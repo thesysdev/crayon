@@ -128,7 +128,7 @@ function FeaturedCard({ card }: { card: BlogCardData }) {
         {card.image ? (
           <img
             src={card.image}
-            alt=""
+            alt={card.title}
             loading="lazy"
             className="absolute inset-0 h-full w-full object-cover"
           />
@@ -167,7 +167,7 @@ function RegularCard({ card }: { card: BlogCardData }) {
         {card.image ? (
           <img
             src={card.image}
-            alt=""
+            alt={card.title}
             loading="lazy"
             className="absolute inset-0 h-full w-full object-cover"
           />

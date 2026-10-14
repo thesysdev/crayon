@@ -33,7 +33,7 @@ export function GatewayReliabilityDashboardIllustration({
         <Image
           className={`${styles.reliabilityDashboardImage} ${styles.reliabilityDashboardImageDark}`}
           src="/homepage/gateway-dark.webp"
-          alt=""
+          alt={alt}
           aria-hidden="true"
           width={2240}
           height={880}
@@ -54,7 +54,7 @@ export function GatewayReliabilityDashboardIllustration({
         <Image
           className={`${styles.reliabilityDashboardImage} ${styles.reliabilityDashboardImageDark}`}
           src="/homepage/gateway-mobile-dark.webp"
-          alt=""
+          alt={alt}
           aria-hidden="true"
           width={1440}
           height={1200}
@@ -88,7 +88,9 @@ const openResponseLanes = [
   {
     path: "M 111 210 H 174 C 206 210 214 220 232 232 S 260 246 288 246 H 306 C 332 246 350 246 405 246",
   },
-  { path: "M 97 310 H 174 C 206 310 214 300 232 288 S 260 274 288 274 H 306 C 332 274 350 274 405 274" },
+  {
+    path: "M 97 310 H 174 C 206 310 214 300 232 288 S 260 274 288 274 H 306 C 332 274 350 274 405 274",
+  },
   {
     path: "M 83 411 H 174 C 204 411 210 386 228 356 S 258 322 286 322 H 304 C 330 322 344 304 405 298",
   },
@@ -251,7 +253,7 @@ function GatewayReliabilityFlow({ openCanvas = false }: { openCanvas?: boolean }
               key={`model-slot-${slot}`}
             >
               <span className={styles.modelSourceIcon}>
-                <Image src={model.src} alt="" width={14} height={14} />
+                <Image src={model.src} alt={`${model.name} logo`} width={14} height={14} />
               </span>
               <span>{model.name}</span>
             </div>
@@ -283,7 +285,7 @@ function GatewayReliabilityFlow({ openCanvas = false }: { openCanvas?: boolean }
         <Image
           className={styles.renderedInterfaceLight}
           src="/images/gateway/rendered-ui-light@3x.png"
-          alt=""
+          alt="Generative UI rendered by OpenUI"
           width={1716}
           height={1367}
           unoptimized
@@ -291,7 +293,7 @@ function GatewayReliabilityFlow({ openCanvas = false }: { openCanvas?: boolean }
         <Image
           className={styles.renderedInterfaceDark}
           src="/images/gateway/rendered-ui-dark@3x.png"
-          alt=""
+          alt="Generative UI rendered by OpenUI"
           width={1716}
           height={1367}
           unoptimized

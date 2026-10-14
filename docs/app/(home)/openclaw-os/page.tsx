@@ -29,7 +29,7 @@ export default function OpenClawOSPage() {
             <>
               The Default workspace for{" "}
               <span className={heroStyles.subtitleLogoTile} aria-hidden="true">
-                <img src="/openclaw-dark.svg" alt="" />
+                <img src="/openclaw-dark.svg" alt="OpenClaw logo" />
               </span>
               OpenClaw.
             </>

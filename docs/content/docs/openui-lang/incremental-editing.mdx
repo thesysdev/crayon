@@ -1,24 +1,15 @@
 ---
 title: Incremental Editing
-description: Edit existing UIs efficiently - the LLM patches only what changed, the parser merges it.
+description: Edit an existing UI by sending only what changed. The model writes a patch, mergeStatements merges it by name.
 ---
 
-When a user says "add a pie chart" to an existing dashboard, the LLM doesn't regenerate everything.
-It outputs only the changed and new statements. The parser merges them into the existing code.
+import { IncrementalEditDiagram } from "@/components/openui-lang-diagrams";
 
-## How it works
+Incremental editing lets the model change an existing UI without writing it again. The model writes only the statements that changed or are new. Your app merges them into the previous program by statement name.
 
-```
- Before (4 statements):                After merge (5 statements):
+For example, a user has a ticket dashboard and says "add a pie chart". The model does not regenerate the whole dashboard. It writes two lines: a new `root` that includes the chart, and the chart itself. The queries, state, and table from the first response stay as they were.
 
- root = Stack([header, tbl])           root = Stack([header, chart, tbl])  ← replaced
- header = CardHeader("Tickets")        header = CardHeader("Tickets")      ← kept
- tickets = Query("list_tickets",...)   tickets = Query("list_tickets",...) ← kept
- tbl = Table([...])                    tbl = Table([...])                  ← kept
-                                       chart = PieChart(...)               ← added
-
- LLM only output 2 lines (root + chart). Parser merged by name.
-```
+<IncrementalEditDiagram />
 
 <video
   src="/videos/openui-lang/incremental-editing.mp4"
@@ -29,7 +20,9 @@ It outputs only the changed and new statements. The parser merges them into the 
   className="w-full rounded-lg"
 />
 
-**Initial generation** - LLM outputs full code:
+## How it works
+
+**First response.** The model writes the full program:
 
 ```text
 root = Stack([header, tbl])
@@ -38,56 +31,96 @@ tickets = Query("list_tickets", {}, {rows: []})
 tbl = Table([Col("Title", tickets.rows.title), Col("Status", tickets.rows.status)])
 ```
 
-**User says:** _"add a pie chart showing ticket status breakdown"_
+**The user says:** _"add a pie chart showing ticket status breakdown"_
 
-**LLM outputs only the patch:**
+**The model writes only the patch:**
 
 ```text
 root = Stack([header, chart, tbl])
-chart = PieChart(["Open", "Closed"], [
-  @Count(@Filter(tickets.rows, "status", "==", "open")),
-  @Count(@Filter(tickets.rows, "status", "==", "closed"))
-], "donut")
+chart = PieChart(["Open", "Closed"], [@Count(@Filter(tickets.rows, "status", "==", "open")), @Count(@Filter(tickets.rows, "status", "==", "closed"))], "donut")
 ```
 
-The parser merges by statement name:
+`mergeStatements` merges by statement name:
 
-- `root` is redefined → new definition wins (now includes `chart`)
-- `chart` is new → added
-- `header`, `tickets`, `tbl` → kept from original (not in the patch, so unchanged)
+- `root` is in the patch, so the new definition replaces the old one. It now includes `chart`.
+- `chart` is new, so it is added.
+- `header`, `tickets`, and `tbl` are not in the patch, so they are kept.
 
 ## Merge rules
 
-- **Same name** → new definition replaces old
-- **New name** → added to the program
-- **Missing from patch** → kept from original (not deleted)
-- **Explicit deletion** → remove a statement from the `root` children list, it becomes unreachable and gets garbage-collected
+- **Same name:** the patch definition replaces the old one.
+- **New name:** the statement is added to the program.
+- **Not in the patch:** the statement is kept.
+- **Removed from its parent:** when the model writes the parent again without a child, the child is no longer reachable from `root` and is dropped. `$variables` are always kept.
+- **`name = null`:** the statement is deleted.
 
-## Why this matters
+## Why use it
 
-- **Fewer tokens** - LLM outputs 2-3 lines instead of regenerating 20+
-- **Faster** - less to stream, less to parse
-- **Preserves context** - existing queries, state, and bindings stay intact
-- **Works with streaming** - each patched line renders as it arrives
+- **Fewer tokens.** The model writes 2 or 3 lines instead of the whole program.
+- **Faster.** There is less to stream and less to parse.
+- **State stays.** Existing queries, `$variables`, and bindings are not rebuilt.
 
-Full regeneration: 20 statements, ~400 tokens, ~2s streaming.
-Incremental patch: 2 statements, ~60 tokens, ~0.3s streaming.
-Same result, up to **85% fewer tokens**.
+For example, a dashboard of 20 statements might take about 400 tokens and 2 seconds to stream in full. A patch of 2 statements might take about 60 tokens and 0.3 seconds. The real numbers depend on the program and the model.
 
 ## Enabling edit mode
 
-Two flags control this behavior in your prompt config:
+Two prompt options control this behavior. Pass them to `generateSystemPrompt` in your backend:
 
 ```ts
-const config: PromptSpec = {
-  ...componentSpec,
-  editMode: true, // LLM outputs patches instead of full regenerations
-  inlineMode: true, // LLM can mix text and code in the same response
-};
+import { generateSystemPrompt, type LibrarySpec } from "@openuidev/lang-core";
+import librarySpec from "./generated/system-prompt.spec.json";
+
+const systemPrompt = generateSystemPrompt({
+  library: librarySpec as LibrarySpec,
+  promptOptions: {
+    editMode: true, // the model writes patches instead of full programs
+    inlineMode: true, // the model can mix text and code in one response
+  },
+});
 ```
 
-**`editMode`** tells the LLM it can output partial patches. Without it, the LLM regenerates the entire UI on every turn, even for small changes. With it enabled, the LLM only outputs the statements that changed or were added.
+**`editMode`** tells the model to write only the statements that changed or were added. Without it, the model writes the whole program on every turn, even for small changes.
 
-**`inlineMode`** lets the LLM respond with explanation text alongside the code. The parser extracts code from fenced blocks (` ```openui-lang `) and ignores everything else. This way the LLM can say "I added a pie chart for the status breakdown" before the patch, which gives the user context about what changed.
+**`inlineMode`** lets the model answer with text next to the code. The parser reads code from ` ```openui-lang ` fences and treats everything else as text. The model can say "I added a pie chart for the status breakdown" before the patch, so the user knows what changed.
 
-Both flags are passed to `generateSystemPrompt()` via `promptOptions`. See [System Prompts](/docs/openui-lang/system-prompts) for the full reference.
+Gateway builds its own prompt and drops `editMode` and `inlineMode`. Build the prompt in your backend to use edit mode. See [System Prompts](/docs/openui-lang/system-prompts).
+
+## Complete example
+
+Your backend builds the prompt with `editMode: true` as shown above and sends the full conversation, including the previous program, with each request. Your app keeps the current program and merges each new response into it:
+
+```tsx
+"use client";
+
+import { mergeStatements, Renderer } from "@openuidev/react-lang";
+import { openuiLibrary } from "@openuidev/react-ui";
+
+export function Dashboard({
+  previous,
+  latest,
+  isStreaming,
+}: {
+  previous: string; // the program shown before this turn
+  latest: string; // the model's patch for this turn
+  isStreaming: boolean;
+}) {
+  const program = isStreaming ? previous : mergeStatements(previous, latest);
+  return <Renderer library={openuiLibrary} response={program} isStreaming={isStreaming} />;
+}
+```
+
+The component merges after the stream ends. While the patch streams, `root` is half written, and `mergeStatements` would drop the statements it cannot reach yet. After the merge, store `program` as the new `previous` for the next turn.
+
+The model writes the two-line patch from [How it works](#how-it-works). The user keeps seeing the same ticket table while the patch streams. When it ends, a donut chart appears between the header and the table, and the table keeps its data. The `list_tickets` query is not rebuilt.
+
+## When to use it
+
+Use incremental editing when:
+
+- Users refine a generated UI over several turns: "add a filter", "rename the title", "remove the chart".
+- Programs are long, so writing them again costs time and tokens.
+
+Do not use it when:
+
+- Each response is a new, unrelated UI, such as a chat that answers with a fresh card every turn.
+- Your app does not keep the previous program. Without it, there is nothing to merge into.

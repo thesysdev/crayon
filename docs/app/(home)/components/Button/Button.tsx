@@ -58,6 +58,8 @@ interface ClipboardCommandButtonProps {
   iconFrameClassName?: string;
   iconPosition?: "start" | "end";
   copyIconColor?: string;
+  /** Renders it as one of the site's pills instead of the bare command style. */
+  variant?: PillVariant;
   type?: ButtonType;
   onCopyChange?: (copied: boolean) => void;
   onCopySuccess?: (command: string) => void;
@@ -71,6 +73,7 @@ export function ClipboardCommandButton({
   iconFrameClassName = "",
   iconPosition = "end",
   copyIconColor = "white",
+  variant,
   type = "button",
   onCopyChange,
   onCopySuccess,
@@ -114,7 +117,14 @@ export function ClipboardCommandButton({
     <button
       type={type}
       onClick={handleClick}
-      className={[styles.clipboardCommandButton, className].filter(Boolean).join(" ")}
+      className={[
+        styles.clipboardCommandButton,
+        variant ? styles.pillBase : "",
+        variant ? VARIANT_CLASS_MAP[variant] : "",
+        className,
+      ]
+        .filter(Boolean)
+        .join(" ")}
     >
       {iconPosition === "start" ? icon : null}
       {children}

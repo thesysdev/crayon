@@ -54,7 +54,8 @@ export function LogoStrip({
                   <Image
                     className={styles.logo}
                     src={logo.src}
-                    alt={set === 0 ? logo.alt : ""}
+                    alt={logo.alt}
+                    aria-hidden={set === 0 ? undefined : true}
                     width={160}
                     height={48}
                     loading="lazy"

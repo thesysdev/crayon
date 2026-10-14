@@ -39,8 +39,7 @@ const EXAMPLE_LOGOS: Record<string, string> = {
   "app-frameworks/vue": "/integration-logos/vue.svg",
   "design-systems/material-ui": "/integration-logos/mui.svg",
   "design-systems/shadcn": "/integration-logos/shadcn-ui.svg",
-  "harnesses/grok-build":
-    "https://media.x.ai/v1/website/spacexai-symbol-black-transparent-6435cf42.png",
+  "harnesses/grok-build": "/brand-icons/xai.svg",
   "harnesses/pi": "/integration-logos/pi.svg",
   "miscellaneous/autofix": "/favicon.svg",
   "miscellaneous/handsontable":

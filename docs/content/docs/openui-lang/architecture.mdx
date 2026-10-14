@@ -3,6 +3,7 @@ title: Architecture
 description: Build dashboards, CRUD interfaces, and monitoring tools. The LLM generates the UI once, then your app runs independently.
 ---
 
+import { GenerateExecuteDiagram } from "@/components/openui-lang-diagrams";
 import { GatewayCallout } from "./components/gateway-callout";
 
 ## The problem today
@@ -13,18 +14,15 @@ In most AI-powered applications, when a user interacts with a generated UI (filt
 
 OpenUI separates **generation** from **execution**. The LLM generates the interface once. After that, the UI runs on its own: fetching data, handling state, and responding to user actions without any LLM involvement.
 
-<img
-  src="/images/openui-lang/architecture.png"
-  alt="Architecture diagram showing two phases: GENERATE (one-time) and EXECUTE (ongoing, no LLM)"
-/>
+<GenerateExecuteDiagram />
 
 ### Generate
 
-The user describes what they want. Your backend sends the request to an LLM along with a system prompt that includes your component library and tool descriptions. The LLM responds with openui-lang code, a compact declarative format that describes the UI layout, data sources, and interactions.
+The user describes what they want. Your backend sends the request to an LLM along with a system prompt that includes your component library and tool descriptions. The LLM responds with OpenUI Lang, a compact format that describes the UI layout, data sources, and interactions.
 
 ### Execute
 
-The Renderer parses the generated code. When it encounters a `Query("list_tickets")`, the runtime calls your tool directly, no LLM roundtrip. When the user clicks a button that triggers `@Run(createResult)`, the runtime executes the mutation against your tool. When a `$variable` changes from a dropdown, all dependent queries re-fetch automatically.
+The Renderer parses the generated code in the browser. When it reaches `Query("list_tickets")`, the runtime calls your tool through the `toolProvider`, with no LLM call. When the user clicks a button that runs `@Run(createResult)`, the runtime runs the mutation with your tool. When a dropdown changes a `$variable`, the runtime fetches every query that uses it again.
 
 The LLM generated the wiring. The runtime executes it.
 
@@ -47,12 +45,12 @@ The LLM doesn't have to get it right the first time. With [incremental editing](
 Turn 1:                              Turn 2 (patch only):
 
 root = Stack([header, tbl])          root = Stack([header, chart, tbl])  ← updated
-header = CardHeader("Tickets")       chart = PieChart(["Open","Closed"], ← new
-tickets = Query(...)                   [@Count(@Filter(..., "open")),
-tbl = Table([...])                      @Count(@Filter(..., "closed"))
-                                       ], "donut")
-  20 lines, ~400 tokens               3 lines, ~60 tokens (85% fewer)
+header = CardHeader("Tickets")       chart = PieChart(...)               ← new
+tickets = Query(...)
+tbl = Table([...])
 ```
+
+For example, a full program of 20 lines might take about 400 tokens. A patch of 2 or 3 lines might take about 60.
 
 <video
   src="/videos/openui-lang/incremental-editing.mp4"
@@ -81,7 +79,7 @@ The Renderer accepts a `toolProvider` prop that tells the runtime how to call yo
 />
 ```
 
-**[MCP](https://modelcontextprotocol.io/docs/getting-started/intro) client** for server-side tools:
+**[MCP](https://modelcontextprotocol.io/docs/getting-started/intro) client** for tools that run on an MCP server:
 
 ```tsx
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
@@ -92,9 +90,9 @@ await client.connect(new StreamableHTTPClientTransport(new URL("/api/mcp")));
 <Renderer toolProvider={client} response={code} library={library} />;
 ```
 
-These examples are simplified for demonstration. In production, you'll need to handle authentication, error boundaries, and connection lifecycle.
+These examples leave out authentication, error handling, and connection lifecycle. Production code needs them.
 
-The [GitHub Demo](/demo/github) uses a function map where tools run entirely client-side, calling the GitHub API directly from the browser. Server-side applications can expose the same tool surface through MCP.
+The `toolProvider` runs in the browser, next to the `Renderer`. The [GitHub Demo](/demo/github) uses a function map that calls the GitHub API from the browser. To keep data access on your server, point the functions at your API routes or connect an MCP client to your server.
 
 ## A concrete example
 
@@ -104,7 +102,9 @@ Here's the full flow for a ticket tracker: define tools, generate the prompt, re
 
 ```ts
 // tools.ts
-const tools: ToolSpec[] = [
+import type { ToolSpec } from "@openuidev/lang-core";
+
+export const tools: ToolSpec[] = [
   {
     name: "list_tickets",
     description: "List all tickets",
@@ -139,24 +139,24 @@ const tools: ToolSpec[] = [
 
 ### 2. Generate the prompt and call the LLM
 
+The prompt must list your tools, so your backend builds it with `generateSystemPrompt` and calls the provider. Gateway builds its own prompt from `generateSystemPrompt({ cloud: true, library })` and accepts only `preamble`, `examples`, and `additionalRules`. It drops every other option, including `tools`. [System Prompts](/docs/openui-lang/system-prompts#where-the-prompt-is-built) lists them all.
+
 ```ts
 // route.ts
 import OpenAI from "openai";
 import { generateSystemPrompt, type LibrarySpec } from "@openuidev/lang-core";
 import componentSpec from "./generated/component-spec.json";
+import { tools } from "./tools";
 
-const gateway = new OpenAI({
-  apiKey: process.env.THESYS_API_KEY,
-  baseURL: "https://api.thesys.dev/v1/embed",
-});
+const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 const systemPrompt = generateSystemPrompt({
   library: componentSpec as LibrarySpec,
   promptOptions: { tools, toolCalls: true, bindings: true },
 });
 
-const completion = await gateway.chat.completions.create({
-  model: "openai/gpt-5",
+const completion = await client.chat.completions.create({
+  model: "gpt-5",
   stream: true,
   messages: [
     { role: "system", content: systemPrompt },
@@ -167,15 +167,18 @@ const completion = await gateway.chat.completions.create({
 
 ### 3. Render the response
 
+The `Renderer` runs in the browser, and so does the `toolProvider`. Each tool calls an API route that reads or writes your database on the server:
+
 ```tsx
-// page.tsx
+// page.tsx, a client component
 <Renderer
   library={library}
   response={streamedText}
   isStreaming={isStreaming}
   toolProvider={{
-    list_tickets: async () => db.query("SELECT * FROM tickets"),
-    create_ticket: async (args) => db.query("INSERT INTO tickets ...", args),
+    list_tickets: async () => fetch("/api/tickets").then((r) => r.json()),
+    create_ticket: async (args) =>
+      fetch("/api/tickets", { method: "POST", body: JSON.stringify(args) }).then((r) => r.json()),
   }}
 />
 ```
@@ -183,19 +186,19 @@ const completion = await gateway.chat.completions.create({
 ### What the LLM generates
 
 ```text
+root = Stack([CardHeader("Ticket Tracker"), form, tbl])
 $title = ""
 $priority = "medium"
 createResult = Mutation("create_ticket", {title: $title, priority: $priority})
 tickets = Query("list_tickets", {}, {rows: []})
-submitBtn = Button("Create", Action([@Run(createResult), @Run(tickets), @Reset($title, $priority)]))
-form = Form("create", submitBtn, [
-  FormControl("Title", Input("title", $title)),
-  FormControl("Priority", Select("priority", $priority, [
+submitBtn = Button("Create", Action([@Run(createResult), @Run(tickets), @Reset($title, $priority)]), "primary")
+form = Form("create", Buttons([submitBtn]), [
+  FormControl("Title", Input("title", "Ticket title", "text", {required: true}, $title)),
+  FormControl("Priority", Select("priority", [
     SelectItem("low", "Low"), SelectItem("medium", "Medium"), SelectItem("high", "High")
-  ]))
+  ], null, null, $priority))
 ])
 tbl = Table([Col("Title", tickets.rows.title), Col("Priority", tickets.rows.priority)])
-root = Stack([CardHeader("Ticket Tracker"), form, tbl])
 ```
 
 <video
@@ -209,10 +212,10 @@ root = Stack([CardHeader("Ticket Tracker"), form, tbl])
 
 ### What happens at runtime
 
-1. `Query("list_tickets")` → runtime calls your tool → table fills with data
-2. User types a title, picks a priority, clicks "Create"
-3. `@Run(createResult)` → runtime calls `create_ticket` directly
-4. `@Run(tickets)` → runtime re-fetches `list_tickets` → table updates
-5. `@Reset($title, $priority)` → form clears
+1. `Query("list_tickets")`: the runtime calls your tool and the table fills with data.
+2. The user types a title, picks a priority, and clicks "Create".
+3. `@Run(createResult)`: the runtime calls `create_ticket`.
+4. `@Run(tickets)`: the runtime fetches `list_tickets` again and the table updates.
+5. `@Reset($title, $priority)`: the form clears.
 
-All without the LLM.
+The LLM is not called for any of these.

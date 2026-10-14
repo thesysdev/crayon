@@ -13,7 +13,13 @@ npm ci
 npm run prepare:data
 ```
 
-Create an inference key in the [Thesys Console](https://console.thesys.dev/keys) and configure `THESYS_API_KEY` privately in `.env.local`. Optional `OPENUI_MODEL` selects a supported `provider/model` identifier; the default is `openai/gpt-5.5`.
+Mint a `THESYS_API_KEY` into `.env.local`, or create one in the [Thesys Console](https://console.thesys.dev/keys) and add it there yourself:
+
+```bash
+npm run generate:apiKey
+```
+
+Optional `OPENUI_MODEL` selects a supported `provider/model` identifier; the default is `openai/gpt-5.5`.
 
 ```bash
 npm run dev

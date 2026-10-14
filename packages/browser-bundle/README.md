@@ -16,14 +16,14 @@ For any build-pipeline project, use `@openuidev/react-lang` and `@openuidev/reac
 
 ## Install
 
-You almost certainly want to use the CDN. jsDelivr and unpkg both auto-publish from npm:
+You almost certainly want to use the CDN. jsDelivr and unpkg both auto-publish from npm. Version 0.2 bundles react-lang 1.0 and react-ui 0.18, so it renders OpenUI Lang 1.0; pair it with a system prompt from lang-core 1.x:
 
 ```html
 <link
   rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/@openuidev/browser-bundle@0.1.0/dist/openui-styles.css"
+  href="https://cdn.jsdelivr.net/npm/@openuidev/browser-bundle@0.2/dist/openui-styles.css"
 />
-<script src="https://cdn.jsdelivr.net/npm/@openuidev/browser-bundle@0.1.0/dist/openui-bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@openuidev/browser-bundle@0.2/dist/openui-bundle.min.js"></script>
 ```
 
 ## Public API
@@ -35,7 +35,7 @@ window.__OpenUI = {
   React,              // react
   createRoot,         // react-dom/client
   Renderer,           // @openuidev/react-lang
-  openuiChatLibrary,  // @openuidev/react-ui/genui-lib
+  openuiChatLibrary,  // @openuidev/react-ui/genui-lib, a Library
 };
 ```
 
@@ -47,20 +47,19 @@ This shape is a **stable public contract**. Any change to the keys or their expo
 <div id="root"></div>
 <script>
   const { React, createRoot, Renderer, openuiChatLibrary } = window.__OpenUI;
-  const { library, schema } = openuiChatLibrary;
 
-  const openuiLangCode = "..."; // from your LLM / backend
+  const response = "..."; // OpenUI Lang from your LLM / backend
 
   createRoot(document.getElementById("root")).render(
-    React.createElement(Renderer, { code: openuiLangCode, library, schema }),
+    React.createElement(Renderer, { response, library: openuiChatLibrary }),
   );
 </script>
 ```
 
 ## Size
 
-- `openui-bundle.min.js`: ~2.2 MB raw / ~650 KB gzipped
-- `openui-styles.css`: ~150 KB raw
+- `openui-bundle.min.js`: ~3.2 MB raw / ~900 KB gzipped
+- `openui-styles.css`: ~320 KB raw / ~35 KB gzipped
 
 All dependencies are inlined; there are no runtime fetches beyond the two files above.
 

@@ -1,0 +1,87 @@
+.rail {
+  --rail-ink: var(--openui-text-neutral-primary);
+  position: relative;
+  max-width: 880px;
+  height: 60px;
+  margin: 72px auto 64px;
+}
+/* each side shows the track on its half only, fading out at the outer edge */
+.side {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+.side[data-state="live"] {
+  clip-path: inset(0 50% 0 0);
+  mask-image: linear-gradient(to right, transparent, #000 35%);
+}
+.side[data-state="struck"] {
+  clip-path: inset(0 0 0 50%);
+  mask-image: linear-gradient(to left, transparent, #000 35%);
+}
+.track {
+  display: flex;
+  width: max-content;
+  animation: railDrift 72s linear infinite;
+}
+.app {
+  position: relative;
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 60px;
+  height: 60px;
+  box-sizing: border-box;
+  margin-right: 32px;
+  border: 1px solid var(--home-hairline);
+  border-radius: 16px;
+  --tile-bg: var(--home-surface-raised);
+  background: var(--tile-bg);
+  box-shadow: var(--home-bevel);
+  color: var(--rail-ink);
+}
+[data-theme="dark"] .app {
+  border-color: rgb(255 255 255 / 0.12);
+  --tile-bg: #0f0f0f;
+  box-shadow: var(--home-bevel-on-dark);
+}
+/* past the line: half strength, struck through corner to corner */
+[data-state="struck"] .app {
+  opacity: 0.5;
+}
+/* a short stroke across the icon and a little beyond, ringed in the tile's
+   own colour so it reads as cutting through the glyph */
+[data-state="struck"] .app::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 38px;
+  height: 1px;
+  border-radius: 1px;
+  background: var(--rail-ink);
+  box-shadow: 0 0 0 2px var(--tile-bg);
+  transform: translate(-50%, -50%) rotate(-45deg);
+}
+.line {
+  position: absolute;
+  top: -16px;
+  bottom: -16px;
+  left: 50%;
+  width: 1px;
+  background: color-mix(in srgb, var(--rail-ink) 24%, transparent);
+}
+/* the track holds two copies, so half its width is one full loop */
+@keyframes railDrift {
+  from {
+    transform: translateX(-50%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .track {
+    animation: none;
+  }
+}
