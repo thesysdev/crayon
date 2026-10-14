@@ -230,7 +230,7 @@ const schema = library.toJSONSchema();
 
 - [React API reference](https://openui.com/docs/api-reference/react-lang)
 - [OpenUI Lang guide](https://openui.com/docs/openui-lang)
-- [Language specification 1.0](https://openui.com/docs/openui-lang/versions/specification-v10)
+- [Language specification 1.0](https://openui.com/docs/openui-lang/specification)
 - [Source on GitHub](https://github.com/thesysdev/openui/tree/main/packages/react-lang)
 
 ## License

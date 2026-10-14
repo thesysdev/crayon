@@ -248,7 +248,7 @@ const schema = library.toJSONSchema();
 ## Documentation
 
 - [OpenUI Lang guide](https://openui.com/docs/openui-lang)
-- [Language specification 0.5](https://openui.com/docs/openui-lang/versions/specification-v05)
+- [Language specification 0.5](https://openui.com/docs/openui-lang/specification/v0.5)
 - [Source on GitHub](https://github.com/thesysdev/openui/tree/main/packages/vue-lang)
 
 ## License

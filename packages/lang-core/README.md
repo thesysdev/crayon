@@ -206,7 +206,7 @@ import type {
 ## Documentation
 
 - [OpenUI Lang guide](https://openui.com/docs/openui-lang)
-- [Language specification 1.0](https://openui.com/docs/openui-lang/versions/specification-v10)
+- [Language specification 1.0](https://openui.com/docs/openui-lang/specification)
 - [Source on GitHub](https://github.com/thesysdev/openui/tree/main/packages/lang-core)
 
 ## License
