@@ -123,30 +123,41 @@ export function FaqSection({
         </p>
       </div>
 
-      <div className={styles.list}>
-        {faqs.map(({ question, answer }, index) => (
-          <details
-            className={styles.item}
-            key={question}
-            name={`${titleId}-accordion`}
-            open={firstOpen && index === 0}
-          >
-            <summary className={styles.question}>
-              <span className={styles.questionText}>{question}</span>
-              {/* Two bars making a plus; the upright one collapses when open,
-                  leaving a minus. */}
-              <span className={styles.marker} aria-hidden="true" />
-            </summary>
-            <div className={styles.answer}>
-              {answer.map((paragraph) => (
-                <p className={styles.paragraph} key={paragraph}>
-                  {paragraph}
-                </p>
-              ))}
-            </div>
-          </details>
-        ))}
-      </div>
+      <FaqList faqs={faqs} name={`${titleId}-accordion`} firstOpen={firstOpen} />
     </section>
+  );
+}
+
+/* The questions on their own, for pages that supply their own heading (blog
+ * posts). Items sharing `name` open one at a time. */
+export function FaqList({
+  faqs,
+  name,
+  firstOpen = false,
+}: {
+  faqs: { question: string; answer: ReactNode[] }[];
+  name: string;
+  firstOpen?: boolean;
+}) {
+  return (
+    <div className={styles.list}>
+      {faqs.map(({ question, answer }, index) => (
+        <details className={styles.item} key={question} name={name} open={firstOpen && index === 0}>
+          <summary className={styles.question}>
+            <span className={styles.questionText}>{question}</span>
+            {/* Two bars making a plus; the upright one collapses when open,
+                leaving a minus. */}
+            <span className={styles.marker} aria-hidden="true" />
+          </summary>
+          <div className={styles.answer}>
+            {answer.map((paragraph, paragraphIndex) => (
+              <p className={styles.paragraph} key={paragraphIndex}>
+                {paragraph}
+              </p>
+            ))}
+          </div>
+        </details>
+      ))}
+    </div>
   );
 }

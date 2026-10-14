@@ -4,6 +4,8 @@ import lastModified from "fumadocs-mdx/plugins/last-modified";
 import { z } from "zod";
 
 const docsPageSchema = pageSchema.extend({
+  // Search title for <title>; the H1 and sidebar keep `title`.
+  seoTitle: z.string().optional(),
   customHeader: z.boolean().optional().default(false),
   // Hides the previous/next page links at the bottom of the page.
   hideFooter: z.boolean().optional().default(false),
@@ -37,6 +39,9 @@ export const blogPosts = defineCollections({
     author: z.string(),
     date: z.string().date().or(z.date()),
     featured: z.boolean().optional(),
+    // Rendered after the post and emitted as FAQPage JSON-LD. Answers are
+    // paragraphs that may use inline code and [links](/path).
+    faq: z.array(z.object({ question: z.string(), answer: z.array(z.string()).min(1) })).optional(),
     /** Social preview image in `public/`, used instead of the cropped cover. */
     ogImage: z.string().optional(),
   }),

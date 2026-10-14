@@ -1,9 +1,15 @@
 import { createContext, useContext, useEffect, useMemo } from "react";
 import { create } from "zustand";
 import { useShallow } from "zustand/react/shallow";
+import { useIsomorphicLayoutEffect } from "../../../Charts/hooks/core/useIsomorphicLayoutEffect";
 
 interface AgentInterfaceState {
   isSidebarOpen: boolean;
+  /**
+   * True once hydrated (set before the first paint). Saved preferences are
+   * read from then on, so server and client first renders match.
+   */
+  isHydrated: boolean;
   isWorkspaceOpen: boolean;
   agentName: string;
   logoUrl: string;
@@ -21,7 +27,10 @@ export const createAgentInterfaceStore = ({
   agentName: string;
 }) =>
   create<AgentInterfaceState>((set) => ({
-    isSidebarOpen: true,
+    // Collapsed until hydrated, so the server and the client's first render
+    // produce the same markup; SidebarContainer then restores the saved choice.
+    isSidebarOpen: false,
+    isHydrated: false,
     isWorkspaceOpen: false,
     agentName: agentName,
     logoUrl: logoUrl,
@@ -54,6 +63,12 @@ export const AgentInterfaceStoreProvider = ({
   agentName: string;
 }) => {
   const shellStore = useMemo(() => createAgentInterfaceStore({ agentName, logoUrl }), []);
+
+  // Hydrated, before paint: SidebarContainer restores the saved sidebar state
+  // and Container reveals its contents.
+  useIsomorphicLayoutEffect(() => {
+    shellStore.setState({ isHydrated: true });
+  }, [shellStore]);
 
   useEffect(() => {
     const { setAgentName, setLogoUrl } = shellStore.getState();
