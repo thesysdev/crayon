@@ -13,8 +13,13 @@ import styles from "./AgentPicker.module.css";
 // on the dark page; marks with colour of their own keep it on both themes.
 /* What each agent button puts on the clipboard. A prompt to paste into an
    agent, not a shell command: it is copied verbatim, with nothing appended. */
-export const AGENT_SETUP_PROMPT =
-  "Visit OpenUI.com/docs and set up my first Generative UI agent using the recommended OpenUI stack.";
+export const AGENT_SETUP_PROMPT = `Create an OpenUI Cloud agent for me.
+Docs: https://www.openui.com/docs/getting-started
+
+1. Scaffold: \`npx @openuidev/cli@latest create --name my-agent --template openui-cloud --backend-framework langgraph\`. Let me sign in or provide my API key when prompted. Never print the key or invent one. The CLI installs dependencies and starts the app.
+2. Open the app's local URL, send one message, and tell me what the server log actually returned.
+
+End with the numbered steps for me to repeat this.`;
 
 export const AGENTS = [
   {
