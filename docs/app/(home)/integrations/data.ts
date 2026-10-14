@@ -84,7 +84,7 @@ const integrationCatalog: Integration[] = [
   {
     slug: "shadcn-ui",
     name: "shadcn/ui",
-    seoTitle: "shadcn/ui generative UI: let LLMs render your shadcn components",
+    seoTitle: "shadcn/ui generative UI: let LLMs render your components",
     logo: "/integration-logos/shadcn-ui.svg",
     category: "design-systems",
     type: "Design system",
@@ -169,7 +169,7 @@ const integrationCatalog: Integration[] = [
   {
     slug: "langchain-langgraph",
     name: "LangChain & LangGraph",
-    seoTitle: "LangGraph generative UI: build a frontend for LangGraph agents",
+    seoTitle: "LangGraph generative UI: a frontend for LangGraph agents",
     logo: "https://raw.githubusercontent.com/langchain-ai/docs/main/src/images/brand/langchain-icon.png",
     category: "ai-frameworks",
     type: "Agent framework adapter",
@@ -265,7 +265,7 @@ const integrationCatalog: Integration[] = [
   {
     slug: "assistant-ui",
     name: "assistant-ui",
-    seoTitle: "assistant-ui + OpenUI: generative UI inside assistant-ui chats",
+    seoTitle: "assistant-ui + OpenUI: generative UI in assistant-ui chats",
     logo: "/integration-logos/assistant-ui.svg",
     category: "frontend-platforms",
     type: "Chat framework",
@@ -314,7 +314,7 @@ const integrationCatalog: Integration[] = [
     slug: "grok-build",
     name: "Grok Build",
     seoTitle: "Grok Build generative UI with OpenUI",
-    logo: "https://media.x.ai/v1/website/spacexai-symbol-black-transparent-6435cf42.png",
+    logo: "/brand-icons/xai.svg",
     category: "ai-frameworks",
     type: "Coding agent",
     summary:
@@ -373,7 +373,7 @@ const integrationCatalog: Integration[] = [
   {
     slug: "open-webui",
     name: "Open WebUI",
-    seoTitle: "Open WebUI generative UI: render rich interfaces in Open WebUI",
+    seoTitle: "Open WebUI generative UI: rich interfaces in Open WebUI",
     logo: "https://raw.githubusercontent.com/open-webui/open-webui/main/backend/open_webui/static/favicon-96x96.png",
     category: "frontend-platforms",
     type: "AI platform",

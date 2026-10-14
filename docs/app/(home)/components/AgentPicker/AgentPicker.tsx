@@ -94,7 +94,7 @@ function AgentButton({
             .replace(/\s+/g, " ")
             .trim()}
           src={agent.mark}
-          alt=""
+          alt={`${agent.label} logo`}
           aria-hidden="true"
           width={20}
           height={20}

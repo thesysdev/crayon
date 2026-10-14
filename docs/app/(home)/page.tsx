@@ -30,6 +30,12 @@ const structuredData = {
       "@id": "https://www.thesys.dev/#organization",
       name: "Thesys",
       url: "https://www.thesys.dev",
+      logo: {
+        "@type": "ImageObject",
+        url: "https://www.thesys.dev/thesys-logo-bw.png",
+        width: 360,
+        height: 360,
+      },
       sameAs: [
         "https://github.com/thesysdev",
         "https://x.com/thesysdev",
@@ -56,6 +62,14 @@ const structuredData = {
         "https://x.com/thesysdev",
         "https://www.linkedin.com/company/thesysdev/",
       ],
+    },
+    {
+      "@type": "WebSite",
+      "@id": `${BASE_URL}/#website`,
+      name: "OpenUI",
+      alternateName: "OpenUI by Thesys",
+      url: BASE_URL,
+      publisher: { "@id": "https://www.thesys.dev/#organization" },
     },
     {
       "@type": "FAQPage",

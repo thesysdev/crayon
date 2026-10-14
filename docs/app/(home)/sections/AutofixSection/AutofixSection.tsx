@@ -50,7 +50,7 @@ export function AutofixSection({
                     <Image
                       className={`${provider.markClass} ${"darkIcon" in provider ? styles.providerLogoLight : ""}`.trim()}
                       src={provider.icon}
-                      alt=""
+                      alt={`${provider.name} logo`}
                       width={18}
                       height={18}
                     />
@@ -58,7 +58,7 @@ export function AutofixSection({
                       <Image
                         className={`${provider.markClass} ${styles.providerLogoDark}`}
                         src={provider.darkIcon}
-                        alt=""
+                        alt={`${provider.name} logo`}
                         width={18}
                         height={18}
                       />
@@ -91,7 +91,7 @@ export function AutofixSection({
             <Image
               className={`${styles.illustrationImage} ${styles.illustrationImageLight}`}
               src="/images/gateway/autofix-illustration-light.webp"
-              alt=""
+              alt="Invalid generated output corrected into valid UI by Autofix"
               width={1940}
               height={636}
               unoptimized
@@ -99,7 +99,7 @@ export function AutofixSection({
             <Image
               className={`${styles.illustrationImage} ${styles.illustrationImageDark}`}
               src="/images/gateway/autofix-illustration-dark.webp"
-              alt=""
+              alt="Invalid generated output corrected into valid UI by Autofix"
               width={1940}
               height={636}
               unoptimized

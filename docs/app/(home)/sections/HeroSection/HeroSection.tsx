@@ -64,6 +64,20 @@ const MOBILE_HERO_IMAGE = {
 } as const;
 
 type HeroTheme = "light" | "dark";
+
+/* Both hero images are in the markup and CSS shows one per breakpoint, but an
+   <img> under display:none still downloads. Each one sits in a <picture> whose
+   <source> swaps in this inline blank wherever its layout is hidden, so a phone
+   never fetches the desktop shot and a desktop never fetches the phone one.
+   These widths must match the breakpoints in HeroSection.module.css. */
+const BLANK_IMAGE =
+  "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
+const DESKTOP_MIN_WIDTH = 1024;
+const DESKTOP_FROM_TABLET_MIN_WIDTH = 900;
+
+function desktopMinWidth(desktopFromTablet: boolean) {
+  return desktopFromTablet ? DESKTOP_FROM_TABLET_MIN_WIDTH : DESKTOP_MIN_WIDTH;
+}
 // ---------------------------------------------------------------------------
 // Buttons
 // ---------------------------------------------------------------------------
@@ -444,6 +458,7 @@ function MobileHero({
   mobileImageCropTopPercent = 0,
   mobilePreviewSlot,
   showPreview,
+  desktopFromTablet,
 }: {
   theme: HeroTheme;
   title: ReactNode;
@@ -469,6 +484,7 @@ function MobileHero({
   mobileImageCropTopPercent?: number;
   mobilePreviewSlot?: ReactNode;
   showPreview: boolean;
+  desktopFromTablet: boolean;
 }) {
   const [platform, setPlatform] = useState<CommandPlatform>("macos");
   const activeCommand = platform === "windows" && secondaryCommand ? secondaryCommand : command;
@@ -552,17 +568,23 @@ function MobileHero({
           style={viewportStyle}
         >
           {mobilePreviewSlot ?? (
-            <img
-              src={mobileHeroImage}
-              alt={mobileImageAlt ?? "OpenUI mobile hero preview"}
-              width={naturalWidth}
-              height={naturalHeight}
-              className={styles.mobileIllustrationImage}
-              style={imageStyle}
-              loading="eager"
-              decoding="async"
-              fetchPriority="high"
-            />
+            <picture className={styles.heroPicture}>
+              <source
+                media={`(min-width: ${desktopMinWidth(desktopFromTablet)}px)`}
+                srcSet={BLANK_IMAGE}
+              />
+              <img
+                src={mobileHeroImage}
+                alt={mobileImageAlt ?? "OpenUI mobile hero preview"}
+                width={naturalWidth}
+                height={naturalHeight}
+                className={styles.mobileIllustrationImage}
+                style={imageStyle}
+                loading="eager"
+                decoding="async"
+                fetchPriority="high"
+              />
+            </picture>
           )}
         </div>
       )}
@@ -583,6 +605,7 @@ function PreviewImage({
   desktopImageHeight,
   widePreview,
   desktopPreviewSlot,
+  desktopFromTablet,
 }: {
   theme: HeroTheme;
   desktopImageOverride?: string;
@@ -592,6 +615,7 @@ function PreviewImage({
   desktopImageHeight?: number;
   widePreview?: boolean;
   desktopPreviewSlot?: ReactNode;
+  desktopFromTablet: boolean;
 }) {
   const desktopHeroImage = desktopImageOverride
     ? theme === "dark"
@@ -612,16 +636,22 @@ function PreviewImage({
           } ${desktopPreviewSlot ? styles.previewFrameSlot : ""}`.trim()}
         >
           {desktopPreviewSlot ?? (
-            <img
-              src={desktopHeroImage}
-              alt={desktopImageAlt ?? "OpenUI desktop hero preview"}
-              width={desktopImageWidth ?? DESKTOP_HERO_IMAGE.width}
-              height={desktopImageHeight ?? DESKTOP_HERO_IMAGE.height}
-              className={styles.previewImage}
-              loading="eager"
-              decoding="async"
-              fetchPriority="high"
-            />
+            <picture className={styles.heroPicture}>
+              <source
+                media={`(max-width: ${desktopMinWidth(desktopFromTablet) - 1}px)`}
+                srcSet={BLANK_IMAGE}
+              />
+              <img
+                src={desktopHeroImage}
+                alt={desktopImageAlt ?? "OpenUI desktop hero preview"}
+                width={desktopImageWidth ?? DESKTOP_HERO_IMAGE.width}
+                height={desktopImageHeight ?? DESKTOP_HERO_IMAGE.height}
+                className={styles.previewImage}
+                loading="eager"
+                decoding="async"
+                fetchPriority="high"
+              />
+            </picture>
           )}
         </div>
       </div>
@@ -805,6 +835,7 @@ export function HeroSection({
         mobileImageCropTopPercent={mobilePreviewImageCropTopPercent}
         mobilePreviewSlot={mobilePreviewSlot}
         showPreview={showPreview}
+        desktopFromTablet={desktopFromTablet}
       />
       {showPreview && (
         <PreviewImage
@@ -816,6 +847,7 @@ export function HeroSection({
           desktopImageHeight={desktopPreviewImageHeight}
           widePreview={widePreview}
           desktopPreviewSlot={desktopPreviewSlot}
+          desktopFromTablet={desktopFromTablet}
         />
       )}
       {showTagline && <Tagline compact={taglineCompact}>{tagline}</Tagline>}

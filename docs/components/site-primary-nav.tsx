@@ -325,7 +325,7 @@ function renderBody(child: NavDropdownChild, layout: "cards" | "list") {
               there's no hydration flash on first paint. */}
           <img
             src={child.preview.light}
-            alt=""
+            alt={`${child.title} preview`}
             aria-hidden="true"
             width={852}
             height={480}
@@ -335,7 +335,7 @@ function renderBody(child: NavDropdownChild, layout: "cards" | "list") {
           />
           <img
             src={child.preview.dark}
-            alt=""
+            alt={`${child.title} preview`}
             aria-hidden="true"
             width={852}
             height={480}

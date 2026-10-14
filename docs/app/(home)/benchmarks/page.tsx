@@ -47,6 +47,7 @@ const structuredData = {
       dateModified: MODEL_BOARD_UPDATED_ISO,
       creator: { "@type": "Organization", name: "OpenUI by Thesys", url: "https://www.openui.com" },
       isBasedOn: LINKS.rawData,
+      license: "https://creativecommons.org/licenses/by/4.0/",
       measurementTechnique: `${BENCHMARK_CANONICAL_URL}/methodology`,
       variableMeasured: [
         "Structural validity percentage",

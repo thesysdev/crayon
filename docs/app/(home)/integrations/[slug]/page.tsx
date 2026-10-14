@@ -1,6 +1,7 @@
 import { Footer } from "@/app/(home)/sections/Footer/Footer";
+import { JsonLd } from "@/components/seo/JsonLd";
 import { createPageMetadata } from "@/lib/page-metadata";
-import { integrationGuide } from "@/lib/source";
+import { BASE_URL, integrationGuide } from "@/lib/source";
 import { ArrowLeft, ArrowRight, ArrowUpRight } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -44,8 +45,25 @@ export default async function IntegrationDetailPage(props: { params: Promise<{ s
   const related = getRelatedIntegrations(integration);
   const Guide = integrationGuide.getPage([slug])?.data.body;
 
+  const breadcrumbs = [
+    { name: "Home", item: BASE_URL },
+    { name: "Integrations", item: `${BASE_URL}/integrations` },
+    { name: integration.name, item: `${BASE_URL}/integrations/${slug}` },
+  ];
+
   return (
     <main className={styles.detailPage}>
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          itemListElement: breadcrumbs.map((crumb, i) => ({
+            "@type": "ListItem",
+            position: i + 1,
+            ...crumb,
+          })),
+        }}
+      />
       <div className={styles.detailHero}>
         <div className={styles.detailHeroInner}>
           <Link className={styles.detailBackLink} href="/integrations">

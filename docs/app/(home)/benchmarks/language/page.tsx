@@ -29,6 +29,7 @@ const structuredData = {
   url: LANGUAGE_BENCHMARK_URL,
   dateModified: MODEL_BOARD_UPDATED_ISO,
   isPartOf: { "@id": `${BENCHMARK_CANONICAL_URL}#dataset` },
+  license: "https://creativecommons.org/licenses/by/4.0/",
   measurementTechnique: `${BENCHMARK_CANONICAL_URL}/methodology`,
   variableMeasured: ["Structural validity percentage", "Cost per task in USD"],
   distribution: [

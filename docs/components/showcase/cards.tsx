@@ -45,9 +45,19 @@ export function ShowcaseGrid({ items }: { items: ShowcaseItem[] }) {
         <article key={item.name} className={styles.featuredCard}>
           <div className={styles.featuredMedia}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img className={styles.imageLight} src={item.image.light} alt="" loading="lazy" />
+            <img
+              className={styles.imageLight}
+              src={item.image.light}
+              alt={item.name}
+              loading="lazy"
+            />
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img className={styles.imageDark} src={item.image.dark} alt="" loading="lazy" />
+            <img
+              className={styles.imageDark}
+              src={item.image.dark}
+              alt={item.name}
+              loading="lazy"
+            />
           </div>
           <div className={styles.featuredBody}>
             <span className={styles.eyebrow}>{item.tagline}</span>

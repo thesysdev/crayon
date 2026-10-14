@@ -67,7 +67,7 @@ export const GATEWAY_PRODUCT: ProductSectionProps = {
     href: "https://console.thesys.dev/keys",
     external: true,
   },
-  secondaryCta: { label: "Learn more", href: "/cloud/gateway" },
+  secondaryCta: { label: "Explore Gateway", href: "/cloud/gateway" },
   tone: "dark",
   shot: "/homepage/gateway",
   fullBleedArt: true,
