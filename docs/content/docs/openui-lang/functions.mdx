@@ -3,7 +3,11 @@ title: Functions
 description: Call built-in and custom @ functions, and define your own with defineFunction.
 ---
 
-Functions start with `@`. The `@` marks a function call, not a component. OpenUI Lang has built-in functions, and a library can add its own. The client runs them, not the model.
+Functions compute values inside a program. The model writes the call, and the renderer runs the code on the client. The numbers come from your data, not from the model.
+
+For example, a ticket dashboard shows "Open tickets: 12". The model writes `@Count(@Filter(tickets.rows, "status", "==", "open"))`. The renderer counts the rows when the query returns and counts again when the rows change. The model never sees the rows.
+
+Function calls start with `@`. The `@` marks a function call, not a component. OpenUI Lang has built-in functions, and a library can add its own.
 
 ## Calling a function
 
@@ -44,11 +48,11 @@ Arguments that are only known at runtime (a `$variable`, a reference, a query re
 
 The React `Renderer` sends these errors to `onError` once the stream has ended.
 
-Custom actions are stricter. Any invalid argument there, optional or not, makes the step a no-op.
+Custom actions are stricter. Any invalid argument there, optional or not, makes the action a no-op.
 
 ### Unknown functions
 
-A call to an `@Name` that is not a built-in, an action step, or a library function reports `unknown-function` and evaluates to `null`. The rest of the statement still renders:
+A call to an `@Name` that is not a built-in function, an action, or a library function reports `unknown-function` and evaluates to `null`. The rest of the statement still renders:
 
 ```text
 root = TextContent("Total: " + @Total(items))
@@ -58,7 +62,7 @@ If the library has no `Total` function, this renders "Total: ".
 
 ## Built-in functions
 
-Built-ins are included in the system prompt when `toolCalls` or `bindings` is enabled, or when you set the `builtinFunctions` prompt option. They are primarily used with `Query` results for data transformation, filtering, and aggregation.
+The system prompt lists the built-ins when `toolCalls` or `bindings` is enabled, or when you set the `builtinFunctions` prompt option. They are mostly used to filter, sort, and aggregate `Query` results.
 
 ### Aggregation
 
@@ -106,14 +110,14 @@ kpi = Card([
 Render a template for every item in an array:
 
 ```text
-@Each(tickets.rows, "t", Tag(t.priority, null, "sm"))
+priorityTags = @Each(tickets.rows, "t", Tag(t.priority, null, "sm"))
 ```
 
 The second argument (`"t"`) is the loop variable name. Use it inside the template.
 
-### Action steps
+### Actions are not functions
 
-`@Run`, `@Set`, `@Reset`, `@ToAssistant`, and `@OpenUrl` are action steps, not functions. They wire button clicks. See [Actions](/docs/openui-lang/actions).
+`@Run`, `@Set`, `@Reset`, `@ToAssistant`, and `@OpenUrl` are actions, not functions. A function computes a value for a prop. An action runs when the user clicks. See [Actions](/docs/openui-lang/actions).
 
 ### Built-in signatures
 
@@ -203,3 +207,59 @@ Pass the library to the `Renderer` from `@openuidev/react-lang`, or to `AgentInt
 ```
 
 The Vue, Svelte, and Angular renderers are on 0.4 and do not run custom functions yet. Parsers built from `library.toJSONSchema()`, including Autofix in `@openuidev/server`, accept the calls.
+
+## Complete example
+
+A sales summary where the renderer computes the percentages.
+
+Your app adds the function to `openuiLibrary` and renders with the result:
+
+```tsx
+"use client";
+
+import { defineFunction, Renderer } from "@openuidev/react-lang";
+import { openuiLibrary } from "@openuidev/react-ui";
+import { z } from "zod/v4";
+
+const percent = defineFunction({
+  name: "Percent",
+  description: "Formats part / total as a percentage",
+  params: z.object({ part: z.number(), total: z.number().default(100) }),
+  returns: z.string(),
+  fn: ({ part, total }) => `${((part / total) * 100).toFixed(1)}%`,
+});
+
+// Create the library once, at module scope.
+const library = openuiLibrary.extend({ functions: { add: [percent] } });
+
+export function Summary({ response }: { response: string }) {
+  return <Renderer library={library} response={response} />;
+}
+```
+
+The model writes:
+
+```text
+root = Stack([header, tbl, summary])
+header = CardHeader("Q3 sales")
+regions = ["North", "South", "West"]
+sales = [42, 75, 120]
+targets = [120, 100, 100]
+tbl = Table([Col("Region", regions), Col("Sales", sales, "number"), Col("Target", targets, "number")])
+summary = TextContent("North reached " + @Percent(42, 120) + " of its target. The team reached " + @Percent(@Sum(sales), @Sum(targets)) + ".")
+```
+
+The user sees a table with three regions and the line "North reached 35.0% of its target. The team reached 74.1%." The renderer computed both numbers. The model only wrote the calls.
+
+## When to use it
+
+Use functions when:
+
+- A value is derived from data: counts, sums, averages, or a filtered list.
+- The value depends on `Query` results or `$variables`, so it must update without the model.
+- Your app formats values in a fixed way, such as currency or percentages. Add a custom function for it.
+
+Do not use them when:
+
+- The function would have side effects, such as writing data or opening a link. Use an [action](/docs/openui-lang/actions) instead.
+- The work is slow or async. `fn` must be pure and synchronous. Use a `Query` for data from your backend.

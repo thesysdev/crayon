@@ -1,37 +1,21 @@
 ---
 title: Message Protocol
-description: Store and stream responses in the OpenUI message format with buildMessage and parseMessage.
+description: Store a response and show it again later, with form values kept, using buildMessage and parseMessage.
 ---
 
-The OpenUI message format carries both directions of a turn: the assistant's content, and the user's context (such as form values and click context) sent back with the next message. When you save a model response so you can show it again later, store it in this format: the response text wrapped in marker lines that start with `]]>openui:`. The same text works while a response streams and after it is stored. Your app writes and reads these lines. The model never sees them.
+import { MessageProtocolDiagram } from "@/components/openui-lang-diagrams";
 
-<Mermaid
-  chart={`
-sequenceDiagram
-    participant S as Server / LLM
-    participant C as Client
-    S->>C: Assistant message: ]]>openui:content (+ ]]>openui:end)
-    Note over C: Renders the program
-    C->>S: User click (@ToAssistant): ]]>openui:content + ]]>openui:context (message, formState, context)
-    S-->>C: On reload: stored messages
-`}
-/>
+The message protocol lets your app store a model response and show it again later, with the user's form values kept. Without it, a reloaded chat shows the generated UI with every field empty.
 
-```text
-]]>openui:content?library=support%401.2.0
-root = Card([title, saveBtn])
-title = TextContent("Order 42")
-saveBtn = Button("Save", @ToAssistant("Save order", {orderId: 42}))
-]]>openui:context
-{"formState":{"note":"rush"}}
-]]>openui:end
-```
+For example, a user fills half of a booking form in a chat and closes the tab. When the user opens the chat again, the form is back with the same dates and guest count. Your app stored the response and the form values together as one message.
 
-| Line                | Meaning                                                                                      |
-| :------------------ | :------------------------------------------------------------------------------------------- |
-| `]]>openui:content` | Starts the content: the program, or prose with fenced programs. Attributes follow `?`.       |
-| `]]>openui:context` | Starts the context: data your app keeps with the message, such as form values. Usually JSON. |
-| `]]>openui:end`     | The stream finished. A stored message without it was cut off.                                |
+Three parties handle a stored message:
+
+- **Your app writes it.** `buildMessage` wraps the response text and the context, such as form values, in marker lines that start with `]]>openui:`.
+- **The Renderer reads it.** Pass the stored message as `response`. The Renderer renders the content and ignores the context.
+- **The model never sees the markers.** Before a stored message goes back to the model as history, your app strips the markers with `parseMessage`.
+
+<MessageProtocolDiagram />
 
 Both functions are exported from `@openuidev/react-lang` and `@openuidev/lang-core`.
 
@@ -76,25 +60,7 @@ const { content, context, attributes, end } = parseMessage(stored);
 | `attributes` | The decoded attributes of the content line.                                                                                   |
 | `end`        | `true` when the message has an `end` line.                                                                                    |
 
-Reading rules:
-
-- A marker counts only at the start of a line. `]]>openui:end` in the middle of a line is ordinary text.
-- With several content sections, the last one wins. A context section before it is ignored.
-- Text before the first marker is the content only when the message has no content marker.
-- Unknown marker kinds are skipped together with their text.
-- Plain text with no markers comes back unchanged as `content`, so older stored responses still read.
-
-## While streaming
-
-Pass `{ streaming: true }` while the response is still arriving:
-
-```ts
-const { content } = parseMessage(partialText, { streaming: true });
-```
-
-A last line that is, or could become, a marker line (for example `]]>open`) is then held back until its newline arrives, so a half-written marker never shows up as content.
-
-## Render a stored message
+## Show a stored message again
 
 The `Renderer` accepts a stored message as `response`. It removes the marker lines and renders the content:
 
@@ -135,6 +101,66 @@ export function StoredMessage({
 ## Send history to the model
 
 Strip the markers before a stored message goes back to the model. For an assistant turn, send `parseMessage(stored).content`. If your app sends context to the model (form values, click data), turn it into plain text in the user turn. The model must never see `]]>openui:` lines.
+
+## Complete example
+
+The `StoredMessage` component above is the whole client side. Your app also:
+
+1. Saves each finished response: `save(buildMessage({ content: responseText, end: true }))`.
+2. Renders it with `<StoredMessage stored={row.message} library={openuiLibrary} save={...} />`, where `save` writes the new message back to the same row.
+3. Sends `parseMessage(row.message).content` as the assistant turn when it builds the history for the next request.
+
+The user fills in a form, reloads the page, and sees the form with the same values. The model sees only the program, never a `]]>openui:` line.
+
+## When to use it
+
+Use the message format when:
+
+- Your app stores chat history and shows generated UI again after a reload.
+- Form values or click context should survive a reload.
+
+Do not use it when:
+
+- Responses are shown once and never stored. Pass the raw text to the `Renderer`.
+- You use `AgentInterface` from `@openuidev/react-ui`. It already stores messages in this format. See [The react-ui chat format](#the-react-ui-chat-format).
+
+## Format
+
+A stored message is the response text with marker lines:
+
+```text
+]]>openui:content?library=support%401.2.0
+root = Card([title, saveBtn])
+title = TextContent("Order 42")
+saveBtn = Button("Save", @ToAssistant("Save order", {orderId: 42}))
+]]>openui:context
+{"formState":{"note":"rush"}}
+]]>openui:end
+```
+
+| Line                | Meaning                                                                                      |
+| :------------------ | :------------------------------------------------------------------------------------------- |
+| `]]>openui:content` | Starts the content: the program, or prose with fenced programs. Attributes follow `?`.       |
+| `]]>openui:context` | Starts the context: data your app keeps with the message, such as form values. Usually JSON. |
+| `]]>openui:end`     | The stream finished. A stored message without it was cut off.                                |
+
+Reading rules:
+
+- A marker counts only at the start of a line. `]]>openui:end` in the middle of a line is ordinary text.
+- With several content sections, the last one wins. A context section before it is ignored.
+- Text before the first marker is the content only when the message has no content marker.
+- Unknown marker kinds are skipped together with their text.
+- Plain text with no markers comes back unchanged as `content`, so older stored responses still read.
+
+## While streaming
+
+Pass `{ streaming: true }` while the response is still arriving:
+
+```ts
+const { content } = parseMessage(partialText, { streaming: true });
+```
+
+A last line that is, or could become, a marker line (for example `]]>open`) is then held back until its newline arrives, so a half-written marker never shows up as content.
 
 ## The react-ui chat format
 
