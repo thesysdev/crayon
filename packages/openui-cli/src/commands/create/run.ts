@@ -10,13 +10,7 @@ import { withSpinner } from "../../lib/spinner";
 import { runCreateExample } from "./lib/create-example";
 import type { CreateAppOptions } from "./lib/create-types";
 import { runDevCommand } from "./lib/dev-server";
-import {
-  buildAppId,
-  requiredApiKeyEnv,
-  resolveChatEnv,
-  resolveCloudEnv,
-  writeEnv,
-} from "./lib/env";
+import { buildAppId, resolveCloudEnv, writeEnv } from "./lib/env";
 import { installProjectDependencies, resolveInstallInvocation } from "./lib/install";
 import { installRequestedSkill, shouldInstallSkill } from "./lib/install-skill";
 import { getStartedMessage } from "./lib/messages";
@@ -32,18 +26,15 @@ import { findCatalogOverlay } from "./lib/templates-catalog";
 
 export async function runCreateApp(options: CreateAppOptions, ctx: CliContext): Promise<void> {
   const tel = new CreateTelemetryClient(ctx.telemetry);
-  const interactive = !options.noInteractive;
+  const interactive = ctx.canPrompt;
+  const agent = ctx.activeAgent;
   const packageManager = resolveInstallPackageManager();
   const t0 = Date.now();
-  tel.registerContext({ interactive, package_manager: packageManager.name });
+  tel.registerContext({ package_manager: packageManager.name });
   tel.trackStarted({
-    interactive,
     has_name_arg: Boolean(options.name),
-    has_template_arg: Boolean(options.template),
     has_backend_framework_arg: Boolean(options.backendFramework),
     has_example_arg: Boolean(options.example),
-    has_api_key_arg: Boolean(options.apiKey),
-    has_auth_arg: Boolean(options.auth),
     no_install: Boolean(options.noInstall),
     immediate_arg: options.immediate,
   });
@@ -52,7 +43,6 @@ export async function runCreateApp(options: CreateAppOptions, ctx: CliContext): 
   const sourceRetryReporter = tel.reportNetworkRetry("source_checkout");
   const catalog = await loadCreateCatalog({
     example: options.example,
-    template: options.template,
     backendFramework: options.backendFramework,
     interactive,
     onRetry: sourceRetryReporter,
@@ -70,6 +60,7 @@ export async function runCreateApp(options: CreateAppOptions, ctx: CliContext): 
     await runCreateExample({
       options,
       interactive,
+      agent,
       packageManager,
       t0,
       name,
@@ -86,9 +77,9 @@ export async function runCreateApp(options: CreateAppOptions, ctx: CliContext): 
   if (!template || !templateEntry) {
     throw new CreateError(
       "args_resolution",
-      "Missing required argument --template",
-      "invalid_input",
-      "MISSING_REQUIRED_ARG",
+      "The OpenUI Cloud template is missing from the template catalog.",
+      "network",
+      "TEMPLATE_NOT_FOUND",
     );
   }
 
@@ -108,16 +99,13 @@ export async function runCreateApp(options: CreateAppOptions, ctx: CliContext): 
   });
 
   tel.trackEnvResolutionStarted({ template, ai_setup: aiSetup });
-  const envResult =
-    template === "openui-self-hosted"
-      ? await resolveChatEnv(interactive)
-      : await resolveCloudEnv(name, options, interactive, tel);
+  const envResult = await resolveCloudEnv(name, options, interactive, agent, tel);
 
   const installSkill = await shouldInstallSkill(options.skill, interactive);
   tel.trackSkillInstalled({ skill_installed: installSkill });
 
   const immediateResolution = resolveImmediate(options.immediate, options.noInstall, interactive);
-  const apiKeyEnv = requiredApiKeyEnv(template);
+  const apiKeyEnv = "THESYS_API_KEY";
   const apiKeyAvailable = envResult.envWritten || Boolean(process.env[apiKeyEnv]?.trim());
   const devStartBlockedByMissingApiKey = immediateResolution.immediate && !apiKeyAvailable;
   tel.trackImmediateSelected({
@@ -140,11 +128,7 @@ export async function runCreateApp(options: CreateAppOptions, ctx: CliContext): 
         packageManager: packageManager.name,
         backendFramework,
       });
-      await writeEnv(
-        targetDir,
-        envResult,
-        template === "openui-cloud" ? buildAppId(name) : undefined,
-      );
+      await writeEnv(targetDir, envResult, buildAppId(name));
     } catch (err) {
       const properties = cliErrorProperties(err, {
         failure_stage: "scaffold",
@@ -220,10 +204,11 @@ export async function runCreateApp(options: CreateAppOptions, ctx: CliContext): 
     getStartedMessage({
       name,
       devCmd,
-      template,
+      dlxCmd: packageManager.dlxCmd,
       backendGettingStarted: overlay?.manifest.gettingStarted,
       skillInstalled,
       envWritten: envResult.envWritten,
+      apiKeyAvailable,
       startDev,
       installCmd,
       dependencyInstalled,

@@ -193,20 +193,11 @@ export function findExample(name: string, examples: ExampleProject[]): ExamplePr
 export function rejectConflictingScaffoldSelectors(opts: {
   example?: string;
   backendFramework?: string;
-  template?: string;
 }): void {
   if (opts.example && opts.backendFramework) {
     throw new CreateError(
       "bad_args",
       "Cannot use --example with --backend-framework. Choose one scaffold selector.",
-      "invalid_input",
-      "CONFLICTING_SCAFFOLD_SELECTORS",
-    );
-  }
-  if (opts.example && opts.template) {
-    throw new CreateError(
-      "bad_args",
-      "Cannot use --example with --template. Choose one scaffold selector.",
       "invalid_input",
       "CONFLICTING_SCAFFOLD_SELECTORS",
     );

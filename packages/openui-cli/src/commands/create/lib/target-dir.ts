@@ -19,6 +19,11 @@ function suggestAvailableName(name: string): string {
   return `${base}-${suffix}`;
 }
 
+/** `name` if that directory is free, otherwise the next free `<name>-<n>`. */
+export function firstAvailableName(name: string): string {
+  return fs.existsSync(path.resolve(process.cwd(), name)) ? suggestAvailableName(name) : name;
+}
+
 /** Resolve a project directory that does not exist yet */
 export async function resolveAvailableTarget(
   requestedName: string,
@@ -41,7 +46,6 @@ export async function resolveAvailableTarget(
     // instead of throwing, so without this the TARGET_EXISTS signal that used
     // to reach analytics via cli_create_failed would disappear for them.
     tel.trackTargetExists({
-      interactive,
       attempt: retries + 1,
       exhausted,
       error_code: "TARGET_EXISTS",

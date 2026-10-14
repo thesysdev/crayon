@@ -4,9 +4,9 @@ export const DEMO_CREDITS_EXHAUSTED_MESSAGE =
   "We're recharging the hosted demo credits. Until then, please download the repo and run it locally to see the live demo.";
 
 export const DEMO_CREDITS_LOCAL_COMMANDS = [
-  "pnpm dlx @openuidev/cli@latest create --name openui-demo --template openui-self-hosted --no-interactive",
+  "pnpm dlx @openuidev/cli@latest create --name openui-demo --no-interactive",
   "cd openui-demo",
-  "# Configure OPENAI_API_KEY in .env.local",
+  "pnpm dlx @openuidev/cli@latest generate-api-key",
   "pnpm dev",
 ] as const;
 
