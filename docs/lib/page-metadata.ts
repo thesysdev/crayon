@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { type OgImage, ogImageMetadata } from "./og/images";
 
-export const SITE_NAME = "OpenUI - The Open Standard for Intelligent UI";
+export const SITE_NAME = "OpenUI - The Open Standard for Generative UI";
 
 /** Site-wide card, used by the homepage and the blog index. */
 export const SITE_OPEN_GRAPH = {
@@ -9,7 +9,7 @@ export const SITE_OPEN_GRAPH = {
   siteName: SITE_NAME,
   images: [
     {
-      url: "/meta-image.png?v=20261008",
+      url: "/meta-image.png?v=20260725-1708",
       type: "image/png",
       width: 1800,
       height: 942,
