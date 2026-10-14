@@ -34,12 +34,3 @@ export function detectAgent(env: NodeJS.ProcessEnv = process.env): DetectedAgent
   if (matches.size > 1) return "ambiguous";
   return [...matches][0] ?? UNKNOWN_AGENT_NAME;
 }
-
-export function resolveAgent(
-  declaredName: string = UNKNOWN_AGENT_NAME,
-  env: NodeJS.ProcessEnv = process.env,
-): string | undefined {
-  if (declaredName !== UNKNOWN_AGENT_NAME) return declaredName;
-  const detected = detectAgent(env);
-  return detected === UNKNOWN_AGENT_NAME ? undefined : detected;
-}

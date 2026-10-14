@@ -1,7 +1,7 @@
 import * as fs from "node:fs";
 
 import { localSourceDir } from "../../lib/checkout";
-import type { CliContext } from "../../lib/context";
+import { activeAgent, canPrompt, type CliContext } from "../../lib/context";
 import { resolveInstallPackageManager } from "../../lib/detect-package-manager";
 import { cliErrorProperties, CreateError, processErrorProperties } from "../../lib/errors";
 import { ensureGitAvailable } from "../../lib/git-preflight";
@@ -32,7 +32,8 @@ import { findCatalogOverlay } from "./lib/templates-catalog";
 
 export async function runCreateApp(options: CreateAppOptions, ctx: CliContext): Promise<void> {
   const tel = new CreateTelemetryClient(ctx.telemetry);
-  const interactive = ctx.interactive;
+  const interactive = canPrompt(ctx);
+  const agent = activeAgent(ctx);
   const packageManager = resolveInstallPackageManager();
   const t0 = Date.now();
   tel.registerContext({ interactive, package_manager: packageManager.name });
@@ -70,7 +71,7 @@ export async function runCreateApp(options: CreateAppOptions, ctx: CliContext): 
     await runCreateExample({
       options,
       interactive,
-      agent: ctx.agent,
+      agent,
       packageManager,
       t0,
       name,
@@ -112,7 +113,7 @@ export async function runCreateApp(options: CreateAppOptions, ctx: CliContext): 
   const envResult =
     template === "openui-self-hosted"
       ? await resolveChatEnv(interactive)
-      : await resolveCloudEnv(name, options, interactive, ctx.agent, tel);
+      : await resolveCloudEnv(name, options, interactive, agent, tel);
 
   const installSkill = await shouldInstallSkill(options.skill, interactive);
   tel.trackSkillInstalled({ skill_installed: installSkill });

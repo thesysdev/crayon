@@ -6,9 +6,9 @@ import { Command } from "commander";
 
 import { commands } from "./commands";
 import { CreateTelemetryClient } from "./commands/create/lib/telemetry";
-import { context as ctx } from "./lib/context";
-import { detectAgent, resolveAgent, UNKNOWN_AGENT_NAME } from "./lib/detect-agent";
-import { canPromptInteractive } from "./lib/detect-tty";
+import { activeAgent, canPrompt, context as ctx } from "./lib/context";
+import { detectAgent, UNKNOWN_AGENT_NAME } from "./lib/detect-agent";
+import { isInteractiveTerminal } from "./lib/detect-tty";
 import { CliCancelledError, cliErrorProperties, CreateError } from "./lib/errors";
 
 let activeCommand = "unknown";
@@ -41,18 +41,20 @@ function buildProgram(): Command {
       telemetry?: boolean;
       verbose?: boolean;
     }>();
-    ctx.agent = resolveAgent(globalOptions.agentName);
+    const detectedAgent = detectAgent();
+    ctx.agent =
+      globalOptions.agentName === UNKNOWN_AGENT_NAME ? undefined : globalOptions.agentName;
+    ctx.detectedAgent = detectedAgent === UNKNOWN_AGENT_NAME ? undefined : detectedAgent;
+    ctx.interactive = actionCommand.opts()["interactive"] as boolean | undefined;
+    ctx.detectedInteractive = isInteractiveTerminal();
     ctx.verbose = Boolean(globalOptions.verbose || actionCommand.optsWithGlobals()["verbose"]);
     ctx.telemetry.init({ cliVersion, flagEnabled: globalOptions.telemetry !== false });
-    const interactiveOption = actionCommand.opts()["interactive"] as boolean | undefined;
-    const noInteractive = interactiveOption === undefined ? null : !interactiveOption;
-    ctx.interactive = canPromptInteractive(noInteractive ?? false, ctx.agent);
     ctx.telemetry.registerRun({
       agent_name: globalOptions.agentName,
-      detected_agent_name: detectAgent(),
-      agent: ctx.agent ?? null,
-      no_interactive_flag: noInteractive,
-      can_prompt: ctx.interactive,
+      detected_agent_name: detectedAgent,
+      agent: activeAgent(ctx) ?? null,
+      no_interactive_flag: ctx.interactive === undefined ? null : !ctx.interactive,
+      can_prompt: canPrompt(ctx),
       cli_run_id: randomUUID(),
       command: actionCommand.name(),
     });
