@@ -9,6 +9,8 @@ spec/fixtures/1.0/
   <area>/<NNN-short-name>/
 ```
 
+Each area folder has a `README.md` that says what the area protects and lists every case with what it checks.
+
 ## The test library
 
 `library.json` is a LibrarySpec ([prompt.md](../../prompt.md), section 2) with `root: "Stack"`, twelve components, one custom function, `@Upper(text)`, which returns the text in upper case, and one custom action, `@CopyToClipboard(text)`. The function has no implementation in the file, so a runner supplies it.
