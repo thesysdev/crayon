@@ -8,11 +8,11 @@ The OpenUI specification is three documents:
 - **[language.md](./language.md)**: the exact rules of the language, for people who build parsers and renderers.
 - **[prompt.md](./prompt.md)**: the LibrarySpec, the system prompt, and the message protocol.
 
-This file explains with examples. The exact rules are in the other two.
+Three roles appear throughout. The **model** writes OpenUI Lang. The **client** parses and renders it (in React, the `Renderer`). The **host** is your app around the client: it calls the model, provides tools, and stores messages.
 
 ## What's new in 1.0
 
-1.0 makes OpenUI ready for production and for other implementations. It adds a written spec with conformance fixtures, a message protocol for streaming and storing responses, rules that keep stored UIs working as a library grows, and custom functions.
+1.0 makes OpenUI ready for production and for other implementations:
 
 - **Conformance fixtures.** Plain-text cases with expected JSON results, so a client in any language can check that it parses, streams, evaluates, and runs actions the same way (`fixtures/1.0/`).
 - **Message protocol.** One format for streamed and stored responses (section 4).
@@ -20,7 +20,6 @@ This file explains with examples. The exact rules are in the other two.
 - **Custom functions and actions.** A library adds its own `@` functions, like `@Percent` (section 2.11), and its own actions, which the host handles.
 - **Extending a library.** `library.extend()` derives a library with components added, replaced, or removed (prompt.md, section 2.8).
 - **Small conveniences.** One action needs no `Action([...])` wrapper, and any value as `@ToAssistant` context.
-- **Fixes.** One clear entry rule for where a program starts.
 
 ## 1. Introduction
 
@@ -90,7 +89,7 @@ sequenceDiagram
     participant User
     App->>Model: system prompt (generated from your library) + user message
     Model->>App: openui-lang, streamed token by token
-    App->>Renderer: stream wrapped in ]]>openui:content ... ]]>openui:end
+    App->>Renderer: the streamed text
     Renderer->>User: page builds up as tokens arrive
     Note over App: stores the message (content, context, end)
     User->>App: action event (click, form submit, @ToAssistant)
@@ -103,7 +102,7 @@ sequenceDiagram
     end
 ```
 
-The app wraps each response in `]]>openui:` lines and stores it that way (section 4). The model never sees those lines. In a chat app, a click becomes a new turn and the model answers with a new message. In an editing surface, the model answers with only the changed statements, and the client merges them into the live page (section 2.6).
+The app wraps each response in `]]>openui:` lines and stores it that way (section 4). The model never sees those lines. In a chat app, a click becomes a new turn and the model answers with a new message. In an editing surface, the model answers with only the changed statements, and the host merges them into the current program (section 2.6).
 
 ## 2. Features
 
@@ -121,7 +120,7 @@ The renderer receives `{ label: "Save changes", action: saveAction, variant: "pr
 
 Rendering starts at the statement named `root`. Everything it reaches renders. A statement nothing reaches is not rendered.
 
-If there is no `root`, the first statement that calls the library's root component is used, with a warning. Otherwise nothing renders and the client reports `no-root` when the stream ends. Rules in language.md, section 2.2.
+This statement is the **entry**. If there is no `root`, the first value statement (never a `$` declaration) whose value calls the library's root component is the entry, with a warning. Each library names its root component in its LibrarySpec. If `root` exists but is not a component, or there is no entry, nothing renders and the client reports `no-root` when the stream ends. Rules in language.md, section 2.2.
 
 ### 2.2 References and hoisting
 
@@ -136,7 +135,7 @@ closedCount = Metric("Closed", 8)
 refreshBtn = Button("Refresh")
 ```
 
-The first line uses `title`, `kpis`, and `refreshBtn` before they exist. This is hoisting. It lets the model write the layout first and the data last.
+The first line uses `title`, `kpis`, and `refreshBtn` before they exist. It lets the model write the layout first and the data last.
 
 A name with no statement yet is unresolved. That means "not yet", not "error": the `Stack` shows one metric until `closedCount` arrives. When two statements bind the same name, the later one wins. Rules in language.md, sections 2.3 and 2.4.
 
@@ -196,11 +195,11 @@ emailField = FormControl("Email", Input("email", "your@email.com", "email", { re
 submitBtn = Button("Submit")
 ```
 
-When a button sends a message, the form values go with it. (These examples use `Input(name, placeholder, type, rules, value)`. Your library's signatures may differ.) Rules in language.md, sections 5.3 and 5.4.
+When a button sends a message, the form values go with it. Rules in language.md, sections 5.3 and 5.4.
 
 ### 2.6 Incremental editing
 
-To change a page, the model sends only the statements that change. The client merges them by name. The page showing:
+To change a page, the model sends a **patch**: only the statements that change. The host merges it into the previous program by name once the patch has finished streaming (in React, with `mergeStatements`). Merging earlier would drop statements a half-written `root` cannot reach yet. The page showing:
 
 ```openui-lang
 root = Card([header, chart])
@@ -230,7 +229,7 @@ status = TextContent(total > 100000 ? "On track" : "Behind target")
 share = @Round(part / total * 100, 1)
 ```
 
-Member access on a list gives that field of every element: if `sales.rows` is a list of objects, `sales.rows.amount` is the list of their amounts. Rules in language.md, sections 1.5 and 3.2.
+Member access on a list gives that field of every element: if `sales.rows` is a list of objects, `sales.rows.amount` is the list of their amounts. Rules in language.md, sections 1.5, 3.2, and 3.3.
 
 ### 2.8 Built-in functions
 
@@ -241,7 +240,7 @@ Built-ins start with `@`:
 - Math: `@Round`, `@Abs`, `@Floor`, `@Ceil`.
 - Iteration: `@Each`.
 
-They nest, and they turn data into props:
+Calls nest, so a filtered, sorted list takes two lines and goes straight into a component:
 
 ```openui-lang
 urgent = @Filter(tickets.rows, "priority", "==", "high")
@@ -261,7 +260,7 @@ search = Input("search", "Search tickets", "text", null, $query)
 label = TextContent("Searching for " + $query)
 ```
 
-Passing `$query` to an input binds it both ways. Typing updates `$query`, and everything that reads it updates too. The model writes this once, and the client runs it with no round trip:
+Passing `$query` to an input binds it both ways. Typing updates `$query`, and everything that reads it updates too.
 
 ```openui-lang
 $tab = "overview"
@@ -269,11 +268,11 @@ picker = Select("tab", [SelectItem("overview", "Overview"), SelectItem("billing"
 body = $tab == "overview" ? overviewPanel : billingPanel
 ```
 
-Every value in a program updates when what it uses changes, not only `$` values. Tool data and derived values use plain names: `tickets = Query(...)`, `openCount = @Count(tickets.rows)`. A `$` variable with no declaration starts as `null`. Rules in language.md, section 5.
+`$` marks what the user or an action can write. Reactivity is not limited to `$`: any statement that reads a `$` variable or a query result updates when that input changes. Tool data and derived values use plain names: `tickets = Query(...)`, `openCount = @Count(tickets.rows)`. A `$` variable with no declaration starts as `null`. Rules in language.md, section 5.
 
 ### 2.10 Queries and mutations
 
-`Query` reads data from a tool your app provides. `Mutation` writes it. The model writes where the data comes from, and your backend supplies it:
+`Query` reads data from a tool your app provides. `Mutation` writes it. The model writes which tool to call. The host provides the tools:
 
 ```openui-lang
 $days = "7"
@@ -281,7 +280,7 @@ data = Query("analytics", { days: $days }, { rows: [] })
 filter = Select("days", [SelectItem("7", "7 days"), SelectItem("30", "30 days")], null, null, $days)
 ```
 
-The arguments are the tool name, its arguments, and a default shown while loading. A `$variable` in the arguments makes the query fetch again when it changes. An optional fourth argument refreshes on a timer in seconds.
+The arguments are the tool name, its arguments, and a default shown while loading. A `$variable` written directly in the arguments makes the query fetch again when it changes. A `$variable` reached only through another statement does not. An optional fourth argument refreshes on a timer in seconds.
 
 A mutation runs only when an action runs it:
 
@@ -290,7 +289,7 @@ createResult = Mutation("create_ticket", { title: $title })
 submitBtn = Button("Create", Action([@Run(createResult), @Run(tickets), @Reset($title)]))
 ```
 
-A mutation result has `status` (`idle`, `loading`, `success`, `error`), `data`, and `error`, so the page can show progress. Name queries without `$`: `tickets = Query(...)`. A `$` name cannot read the result. Rules in language.md, section 6.
+A mutation result has `status` (`idle`, `loading`, `success`, `error`), `data`, and `error`, so the page can show progress. Name queries without `$`: `tickets = Query(...)`. `$tickets = Query(...)` still runs the query, but `$tickets` in an expression reads the state store, not the result. Rules in language.md, section 6.
 
 ### 2.11 Custom functions
 
@@ -300,7 +299,7 @@ A library can add its own functions. The model calls them like built-ins:
 share = TextContent(@Percent(done, total))
 ```
 
-The library declares each one with `defineFunction({ name, description, params, returns, fn })`. The program passes arguments by position, like components, and `fn` receives them as one object keyed by the `params` names. The prompt lists them next to the built-ins, and each client keeps the implementation. Functions are pure and synchronous: same inputs, same output, no side effects. A call to an unknown `@` name evaluates to null and reports `unknown-function`. Rules in language.md, section 3.6, and prompt.md, section 2.5.
+The library declares each one with `defineFunction({ name, description, params, returns, fn })`. The program passes arguments by position, like components, and `fn` receives them as one object keyed by the `params` names. The prompt always lists custom functions. The implementation (`fn`) stays in the host's library and runs in the client, never in the prompt. Functions are pure and synchronous: same inputs, same output, no side effects. A call to an unknown `@` name evaluates to null and reports `unknown-function`. Rules in language.md, section 3.6, and prompt.md, section 2.5.
 
 ### 2.12 Error recovery
 
@@ -311,11 +310,11 @@ Models make mistakes, so the client removes the smallest broken piece and render
   "message": "Unknown component PieChart", "hint": "Available components: BarChart, LineChart, Table" }
 ```
 
-Send the error back to the model, and it can answer with a one-line fix through incremental editing. Meanwhile the user sees the page with one chart missing, not a broken screen. The full error table is in language.md, section 8.2.
+Send the error back to the model, and it can answer with a one-line fix through incremental editing. The full error table is in language.md, section 8.2.
 
 ## 3. Keeping stored UIs working
 
-A stored program has no prop names. `Button("Save", saveAction, "primary")` means what the prop order meant when it was written. Three rules keep stored programs rendering as a library changes:
+A stored program has no prop names. A stored call like `Button("Save", saveAction, "primary")` is only correct while `label, action, variant` is still the prop order. Three rules keep stored programs rendering as a library changes:
 
 1. **Add props only at the end** of a component's prop list.
 2. **Never reorder or remove a prop.** Leave an unused prop in place and ignore it.
@@ -338,8 +337,8 @@ header = Header("Monthly Revenue", "Last 6 months")
 
 - `content` holds the program (or prose).
 - `context` holds JSON the host keeps with the message, such as form values and click data. The host defines its shape.
-- `end` says the stream finished. A stored message without it was cut off.
+- `end` says the stream finished. A stored message without it was cut off. It still renders as far as it got.
 
-The same format works while streaming and in storage. The model never writes or sees these lines: the host strips them before it sends history to the model and before it shows the message. prompt.md, section 6.3, gives the reference format for turning a click into the next user turn.
+The same format works while streaming and in storage. The model never writes or sees these lines: the host strips them before it sends history to the model. The client accepts text with or without them and ignores them when rendering. prompt.md, section 6.3, gives the reference format for turning a click into the next user turn.
 
 The renderer still holds live state while the page is open. The `context` section is how that state is saved: when a stored message is loaded again, the host reads `context` and gives the form values back to the renderer. The full protocol is in prompt.md, section 7.

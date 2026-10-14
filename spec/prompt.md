@@ -337,7 +337,7 @@ Fixtures: `actions/`
 
 ### 6.4 Edit mode
 
-With `editMode` on, the host sends the current program with the request. The model answers with only the changed statements, and the client merges them into the current program. Without `editMode`, every response is a complete program.
+With `editMode` on, the host sends the current program with the request. The model answers with a patch, only the changed statements, and the host merges it into the current program after it finishes streaming. Without `editMode`, every response is a complete program.
 
 The merge uses the same statement boundary rules as parsing ([language.md](./language.md), section 1.4), including ternaries that span several lines. The merge rules are in [language.md](./language.md), section 7.
 

@@ -16,7 +16,7 @@ The grammar uses EBNF: `=` defines, `|` separates alternatives, `[ ]` is optiona
 
 ### 1.2 Source text
 
-The host removes its `]]>openui:` marker lines before passing text to the client ([prompt.md](./prompt.md), section 7). The client then prepares the text in this order:
+The client accepts text with or without the host's `]]>openui:` marker lines ([prompt.md](./prompt.md), section 7) and renders only the content. It then prepares the text in this order:
 
 1. **Fence extraction.** A fence opens only with three backticks at the start of a line, with or without a language tag. If the text has fences, the client joins the contents of every fence with newlines. Text outside fences is prose and is ignored. Quotes in prose outside fences do not shield anything. Inside a fence, backtick runs inside double-quoted strings do not close it. Single-quoted strings do not shield them. Comments are stripped after extraction, so backtick runs inside comments do count. An unterminated fence runs to the end of the text.
 2. **Comment stripping.** `//` and `#` start a comment that runs to the end of the line. Comment markers inside strings, even multi-line ones, are not comments.
@@ -456,14 +456,14 @@ Fixtures: `actions/*-tool-*`
 
 ## 7. Incremental editing
 
-In edit mode, the model gets the current program and answers with only the changed statements. The client merges by name:
+In edit mode, the model gets the current program and answers with a patch: only the changed statements. The host merges the patch into the current program by name:
 
 - A patch statement whose name exists replaces the original. A new name is appended. Names absent from the patch are kept.
 - The merged program has each name once: the last definition wins.
 - A top-level `name = null` in a patch deletes the statement, state declarations included. (Inside one program it is an ordinary binding.) Deleting a state declaration never deletes its store key (section 5.1).
 - After merging, statements `root` cannot reach are removed, unless there is no `root` statement. Reachability is the same as for orphans (section 2.3), so a statement referenced from a query's or mutation's arguments is never removed. State declarations are always kept.
 
-The merge MUST read both texts with sections 1.2 and 1.4, including multi-line ternaries. The host decides when a text is a patch. While streaming, each patched statement is applied as it completes. If the reply is prose plus a fenced patch, only the fenced part is merged.
+The merge MUST read both texts with sections 1.2 and 1.4, including multi-line ternaries. The host decides when a text is a patch, and merges it once the patch has finished streaming. Merging earlier would remove statements that a half-written `root` cannot reach yet. If the reply is prose plus a fenced patch, only the fenced part is merged.
 
 Fixtures: `editing/`
 
