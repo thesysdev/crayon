@@ -217,7 +217,7 @@ The system prompt is a function of the LibrarySpec and the options. The same inp
 
 The entry point is `generateSystemPrompt({ library, promptOptions })`. The flat `generatePrompt(spec)` form is deprecated.
 
-Fixtures: none in `spec/fixtures/1.0/`. A golden-file test generates the prompt for a fixed library and options and compares the bytes to a stored file.
+Fixtures: none in `spec/fixtures/1.0/`.
 
 ### 4.2 Options
 
@@ -252,7 +252,7 @@ The inline mode section teaches that openui-lang goes inside fences, with prose 
 
 Components appear in the order they are listed in `components`. `componentGroups` split the list into titled sections. A group is `{ name, components, notes? }`. Components in no group go under "Other".
 
-Fixtures: none in `spec/fixtures/1.0/`. Covered by the golden-file test in section 4.1.
+Fixtures: none in `spec/fixtures/1.0/`.
 
 ## 5. Component signatures and descriptions
 
@@ -284,7 +284,7 @@ A description SHOULD say what the type does not: units, ranges, and when to use 
 
 Error `hint` fields do not reuse the signature line. They carry a shorter form: prop names only, with required props marked by a star ([language.md](./language.md), section 8.3).
 
-Fixtures: none in `spec/fixtures/1.0/`. Covered by the golden-file test in section 4.1.
+Fixtures: none in `spec/fixtures/1.0/`.
 
 ## 6. The conversation
 

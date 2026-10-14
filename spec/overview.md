@@ -8,18 +8,19 @@ The OpenUI specification is three documents:
 - **[language.md](./language.md)**: the exact rules of the language, for people who build parsers and renderers.
 - **[prompt.md](./prompt.md)**: the LibrarySpec, the system prompt, and the message protocol.
 
-This file explains. The other two define. Where they disagree, language.md and prompt.md are correct.
+This file explains with examples. The exact rules are in the other two.
 
 ## What's new in 1.0
 
-1.0 makes OpenUI ready for production. It adds a message protocol for streaming and storing responses, rules that keep stored UIs working as a library grows, and custom functions. It also brings a batch of fixes and small conveniences.
+1.0 makes OpenUI ready for production and for other implementations. It adds a written spec with conformance fixtures, a message protocol for streaming and storing responses, rules that keep stored UIs working as a library grows, and custom functions.
 
+- **Conformance fixtures.** Plain-text cases with expected JSON results, so a client in any language can check that it parses, streams, evaluates, and runs actions the same way (`fixtures/1.0/`).
 - **Message protocol.** One format for streamed and stored responses (section 4).
-- **Production readiness.** Backward-compatibility rules for libraries (section 3), a LibrarySpec with `id` and `version`, a deterministic system prompt, and conformance fixtures any client can test against.
+- **Stored UIs keep working.** Backward-compatibility rules for libraries (section 3).
 - **Custom functions and actions.** A library adds its own `@` functions, like `@Percent` (section 2.11), and its own actions, which the host handles.
 - **Extending a library.** `library.extend()` derives a library with components added, replaced, or removed (prompt.md, section 2.8).
 - **Small conveniences.** One action needs no `Action([...])` wrapper, and any value as `@ToAssistant` context.
-- **Fixes.** One clear entry rule, streamed results that always match a full parse, and edits that keep multi-line statements whole.
+- **Fixes.** One clear entry rule for where a program starts.
 
 ## 1. Introduction
 
@@ -40,16 +41,18 @@ Every line binds a name to a value. A name can be used before it is defined. The
 ### Quickstart
 
 ```tsx
-import { generateSystemPrompt, Renderer } from "@openuidev/react-lang";
+// Server: send this as the system prompt.
+import { generateSystemPrompt } from "@openuidev/lang-core";
 import { openuiLibrary, openuiPromptOptions } from "@openuidev/react-ui";
 
-// Server: send this as the system prompt.
 const systemPrompt = generateSystemPrompt({
   library: openuiLibrary.toSpec(),
   promptOptions: openuiPromptOptions,
 });
 
 // Client: render the model's text while it streams.
+import { Renderer } from "@openuidev/react-lang";
+
 <Renderer library={openuiLibrary} response={text} isStreaming={isStreaming} />
 ```
 
@@ -61,7 +64,6 @@ The full walkthrough is the [docs quickstart](https://openui.com/docs/openui-lan
 - **Streams by default.** Every partial program is a valid page, so the UI builds up as the model writes.
 - **Forgiving.** A mistake removes the smallest broken piece. The rest of the page still renders.
 - **Interactive without the model.** State, expressions, and actions run in the client, with no round trip to the model.
-- **Your data stays yours.** The page reads and writes data through tools your app provides. Tool data never passes through the model.
 
 ### 1.3 The end-to-end flow
 
@@ -105,7 +107,7 @@ The app wraps each response in `]]>openui:` lines and stores it that way (sectio
 
 ## 2. Features
 
-The features go from simple to advanced. Component names in the examples are illustrative: every library defines its own components. The exact rules are in language.md.
+Component names in the examples are examples only: every library defines its own.
 
 ### 2.1 Components
 
