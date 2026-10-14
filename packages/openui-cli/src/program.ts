@@ -44,11 +44,14 @@ function buildProgram(): Command {
     ctx.agent = resolveAgent(globalOptions.agentName);
     ctx.verbose = Boolean(globalOptions.verbose || actionCommand.optsWithGlobals()["verbose"]);
     ctx.telemetry.init({ cliVersion, flagEnabled: globalOptions.telemetry !== false });
+    const interactiveOption = actionCommand.opts()["interactive"] as boolean | undefined;
+    const noInteractive = interactiveOption === undefined ? null : !interactiveOption;
     ctx.telemetry.registerRun({
       agent_name: globalOptions.agentName,
       detected_agent_name: detectAgent(),
       agent: ctx.agent ?? null,
-      can_prompt: canPromptInteractive(actionCommand.opts()["interactive"] === false, ctx.agent),
+      no_interactive_flag: noInteractive,
+      can_prompt: canPromptInteractive(noInteractive ?? false, ctx.agent),
       cli_run_id: randomUUID(),
       command: actionCommand.name(),
     });
