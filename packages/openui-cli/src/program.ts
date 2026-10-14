@@ -33,14 +33,14 @@ function buildProgram(): Command {
   program.configureHelp({ showGlobalOptions: true });
   program.addHelpText("after", '\nFound a bug or have an idea? Run: openui feedback "<message>"');
 
-  program.hook("preAction", (_thisCommand, actionCommand) => {
+  program.hook("preAction", async (_thisCommand, actionCommand) => {
     activeCommand = actionCommand.name();
     const globalOptions = program.opts<{
       agentName: string;
       telemetry?: boolean;
       verbose?: boolean;
     }>();
-    ctx.initialize({
+    await ctx.initialize({
       agent: globalOptions.agentName,
       interactive: actionCommand.opts()["interactive"] as boolean | undefined,
       verbose: Boolean(globalOptions.verbose || actionCommand.optsWithGlobals()["verbose"]),

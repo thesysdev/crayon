@@ -17,7 +17,7 @@ export type CliContext = {
   initialize(
     this: CliContext,
     passed: { verbose: boolean; agent?: string; interactive?: boolean },
-  ): void;
+  ): Promise<void>;
 };
 
 const isInteractiveTerminal = () => Boolean(process.stdin.isTTY && process.stdout.isTTY);
@@ -34,10 +34,9 @@ export const context: CliContext = {
   cliVersion: undefined,
   detectedInteractive: false,
   canPrompt: false,
-  initialize(passed) {
-    const detected = detectAgent();
+  async initialize(passed) {
     const agent = passed.agent === UNKNOWN_AGENT_NAME ? undefined : passed.agent;
-    const detectedAgentName = detected === UNKNOWN_AGENT_NAME ? undefined : detected;
+    const detectedAgentName = await detectAgent();
     const detectedInteractive = isInteractiveTerminal();
     const activeAgent = agent ?? detectedAgentName;
     const verbose = passed.verbose;
