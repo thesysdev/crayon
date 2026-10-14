@@ -44,6 +44,15 @@ Comparison:
 
 The cases work like [toml-test](https://github.com/toml-lang/toml-test): your implementation reads text and prints JSON, and a small harness diffs it.
 
+There are two kinds of check, and a client can claim either level:
+
+| Level | Files | Needs | Checks |
+| --- | --- | --- | --- |
+| 1. Program | `input.oui` or `chunks.json`, `patch.oui`, `validation.json`, `expected.json` | A parser and evaluator, no UI | Syntax, streaming, entry, references, evaluation, editing, errors, validation rules |
+| 2. Interaction | `interactions.json` | A renderer that runs actions | What a click or typing does: the events the host receives and the final state |
+
+Every case has a level 1 check. A case is also a level 2 check when its folder has `interactions.json`. The area READMEs mark these cases with "+ interactions". A parser, validator, or server-side checker can stop at level 1.
+
 A case is a folder with `input.oui` (or `chunks.json`) and `expected.json`, plus `patch.oui` for editing cases, `interactions.json` for action and form cases, and `validation.json` for validation cases. To test a client:
 
 1. Write an adapter that loads `library.json`, parses `input.oui` with it (or pushes each chunk of `chunks.json`, then ends the stream), evaluates the tree at stream end, and prints the canonical JSON: `root`, `errors` as `{ code, statementId }`, `unresolved`, `orphans`, `incomplete`, `state`, and `statements` for editing cases.
