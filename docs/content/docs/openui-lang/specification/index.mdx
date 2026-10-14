@@ -15,11 +15,11 @@ identifier = Expression
 
 The statement kinds are the same as in v0.5: component or value statements, `$variable` declarations, and `Query` or `Mutation` statements. 1.0 adds these expression forms:
 
-| Form          | Syntax            | Example                                |
-| ------------- | ----------------- | -------------------------------------- |
-| Function call | `@Name(args)`     | `@Percent(done, total)`                |
-| Action step   | `@Step(args)`     | `@ToAssistant("Tell me more")`         |
-| Action        | `Action([steps])` | `Action([@Run(save), @Reset($title)])` |
+| Form            | Syntax              | Example                                |
+| --------------- | ------------------- | -------------------------------------- |
+| Function call   | `@Name(args)`       | `@Percent(done, total)`                |
+| Action          | `@Name(args)`       | `@ToAssistant("Tell me more")`         |
+| Several actions | `Action([actions])` | `Action([@Run(save), @Reset($title)])` |
 
 All other expressions and operators work as in v0.5.
 
@@ -29,7 +29,7 @@ All other expressions and operators work as in v0.5.
 2. **Entry:** the statement named `root`. See [Entry Statement](#entry-statement).
 3. **Positional arguments:** mapped to props, function params, and action params by Zod key order. `null` skips an optional argument.
 4. **Forward references allowed:** a statement can use a name defined later.
-5. **`@` is required** for functions and steps. `Count(x)` is not a call. Only `Action([...])` works without the `@`.
+5. **`@` is required** for functions and actions. `Count(x)` is not a call. Only `Action([...])` works without the `@`.
 6. **Last definition wins:** if two statements share a name, the later one is used.
 
 ## Entry Statement
@@ -56,7 +56,7 @@ The fallback needs the root component name. The `Renderer` takes it from the lib
 
 ## Function Calls
 
-`@Name(args)` calls a built-in function or a custom function from the library. The built-ins are the same as in v0.5. Built-ins are looked up first, and a library cannot reuse a built-in or step name.
+`@Name(args)` calls a built-in function or a custom function from the library. The built-ins are the same as in v0.5. Built-ins are looked up first, and a library cannot reuse the name of a built-in function or action.
 
 Custom function arguments are checked like component props:
 
@@ -67,7 +67,7 @@ Custom function arguments are checked like component props:
 
 Custom functions must be pure and synchronous. The client may call them any number of times, in any order.
 
-A call to an `@Name` that is not a built-in, a step, or a library function reports `unknown-function` and evaluates to `null`. The rest of the statement still renders:
+A call to an `@Name` that is not a built-in function, an action, or a library function reports `unknown-function` and evaluates to `null`. The rest of the statement still renders:
 
 ```text
 root = Card([total])
@@ -78,25 +78,25 @@ See [Functions](/docs/openui-lang/functions).
 
 ## Action Expressions
 
-One step needs no wrapper. Several steps go in `Action([...])` and run in order:
+One action needs no wrapper. Several actions go in `Action([...])` and run in order:
 
 ```text
 askBtn = Button("Tell me more", @ToAssistant("Tell me more about this order"))
 saveBtn = Button("Save", Action([@Run(save), @Run(orders), @Reset($note)]))
 ```
 
-`@ToAssistant("Hi")` is the same as `Action([@ToAssistant("Hi")])`. A nested `Action([...])` is flattened. A plain list of steps, such as `[@Set($a, 1), @ToAssistant("Hi")]`, is not an action. It is plain data, with no error.
+`@ToAssistant("Hi")` is the same as `Action([@ToAssistant("Hi")])`. A nested `Action([...])` is flattened. A plain list of actions, such as `[@Set($a, 1), @ToAssistant("Hi")]`, is not an action. It is plain data, with no error.
 
-### Steps
+### Built-in actions
 
-| Step                              | Description                                                                 |
-| --------------------------------- | --------------------------------------------------------------------------- |
-| `@ToAssistant(message, context?)` | Send a `continue_conversation` event. `context` can be any value            |
-| `@OpenUrl(url)`                   | Send an `open_url` event                                                    |
-| `@Set($var, value)`               | Set a `$variable`. `value` is evaluated when the step runs                  |
-| `@Reset($var1, $var2)`            | Restore `$variables` to declared defaults                                   |
-| `@Run(ref)`                       | Run a Mutation or re-fetch a Query. A failed mutation stops the later steps |
-| `@Name(args)`                     | A custom action. Sends an event with `type: "Name"` and `params`            |
+| Action                            | Description                                                               |
+| --------------------------------- | ------------------------------------------------------------------------- |
+| `@ToAssistant(message, context?)` | Send a `continue_conversation` event. `context` can be any value          |
+| `@OpenUrl(url)`                   | Send an `open_url` event                                                  |
+| `@Set($var, value)`               | Set a `$variable`. `value` is evaluated when the action runs              |
+| `@Reset($var1, $var2)`            | Restore `$variables` to declared defaults                                 |
+| `@Run(ref)`                       | Run a Mutation or re-fetch a Query. A failed mutation stops later actions |
+| `@Name(args)`                     | A custom action. Sends an event with `type: "Name"` and `params`          |
 
 The `context` of `@ToAssistant` reaches the host unchanged in `params.context`:
 
@@ -104,23 +104,23 @@ The `context` of `@ToAssistant` reaches the host unchanged in `params.context`:
 approveBtn = Button("Approve", @ToAssistant("Approve this order", {orderId: 42}))
 ```
 
-Each event carries the form state as of when its step runs.
+Each event carries the form state as of when its action runs.
 
-### Invalid steps
+### Invalid actions
 
-A step that cannot run does nothing, and the other steps still run. A custom action with any invalid argument, required or optional, is a no-op. It does not fall back to a default.
+An action that cannot run does nothing, and the other actions still run. A custom action with any invalid argument, required or optional, is a no-op. It does not fall back to a default.
 
-Only an `@Name(...)` call written in the program creates a custom step. An object, a `$variable`, or a query row shaped like a step never reaches the host as one.
+Only an `@Name(...)` call written in the program creates a custom action. An object, a `$variable`, or a query row shaped like an action never reaches the host as one.
 
 ### Restricted action slots
 
-A prop can accept only some steps. The prompt prints it with the step names:
+A prop can accept only some actions. The prompt prints it with the action names:
 
 ```text
 ShareButton(label: string, share: @CopyToClipboard | @OpenUrl)
 ```
 
-In the JSON Schema, the prop is an `anyOf` of `$ref`s to the step names. A prop that takes any action is `{"$ref": "#/$defs/ActionExpression"}`. In 1.0 the restriction shapes the prompt and the schema only. At runtime the slot accepts any action.
+In the JSON Schema, the prop is an `anyOf` of `$ref`s to the action names. A prop that takes any action is `{"$ref": "#/$defs/ActionExpression"}`. In 1.0 the restriction shapes the prompt and the schema only. At runtime the slot accepts any action.
 
 See [Actions](/docs/openui-lang/actions).
 
@@ -155,7 +155,7 @@ A marker counts only at the start of a line. With several `content` sections, th
 | `type-mismatch`     | Wrong type, enum value, or data in a component-only slot | Default if any, else dropped        |
 | `excess-args`       | More arguments than props or params                      | Extras dropped, still renders       |
 | `inline-reserved`   | `Query` or `Mutation` used inline                        | Evaluates to nothing                |
-| `unknown-function`  | `@Name` is not a built-in, step, or library function     | Call is `null`, statement kept      |
+| `unknown-function`  | `@Name` is not a built-in, action, or library function   | Call is `null`, statement kept      |
 | `no-root`           | No usable entry                                          | Warning with the fallback, or fatal |
 | `parse-failed`      | Text with no statements                                  | Fatal                               |
 | `runtime-error`     | Evaluation or a function call failed                     | The prop or call is `null`          |
