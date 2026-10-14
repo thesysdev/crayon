@@ -1,0 +1,251 @@
+/* The --feat-* tokens come from the IllustratedFeatures grid these sit in. */
+.scene {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 384px;
+  height: 280px;
+  transform-origin: 0 0;
+  /* stage width / 384px as a unitless ratio */
+  transform: scale(tan(atan2(100cqw, 384px)));
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--feat-ink);
+}
+
+/* In a two-across card the stage is 588x360, wider than the scene. Fit the
+   scene to the stage's height instead (360 / 280 of its size) and centre it,
+   which leaves 8% of the stage's width on either side. Phones keep the
+   width-fit above, since every stage there has the scene's own shape. */
+@media (min-width: 768px) {
+  article[data-span="half"] .scene {
+    left: 8cqw;
+    transform: scale(tan(atan2(100cqw, 457.33px)));
+  }
+}
+
+/* ---------- shared screen parts ---------- */
+.screenTitle {
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* the request, as the same user bubble the OUI-1 device illustrations use */
+/* the avatar hangs to the left so the bubble and the card share an edge */
+/* the screen the request produces: photo, place, the booking, one action */
+/* a darker foot on the photo, so the name and details read over it */
+/* name on the left, cuisine, rating and price on the right, over the photo */
+
+/* Two cards fanned into a loose stack: white in light theme, gray in dark. */
+/* the marks are light gray, pressed into the card */
+/* dark theme: gray cards, with the marks a step lighter than the card */
+
+/* ---------- explore ---------- */
+/* cropped by the stage's left edge */
+.searchButton {
+  position: absolute;
+  top: 122px;
+  left: -56px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  width: 136px;
+  height: 36px;
+  box-sizing: border-box;
+  padding-right: 16px;
+  border-radius: 8px;
+  background: var(--feat-ink);
+  color: var(--feat-panel);
+  font-weight: 500;
+}
+/* the dotted line from the button to the screen it leads to */
+.exploreLink {
+  position: absolute;
+  top: 136px;
+  left: 88px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 80px;
+  height: 8px;
+  color: color-mix(in srgb, var(--feat-ink) 55%, transparent);
+}
+/* cropped by the stage's right edge */
+.hotelScreen {
+  position: absolute;
+  top: 40px;
+  left: 176px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 260px;
+  box-sizing: border-box;
+  padding: 12px;
+  border: 1px solid var(--feat-line);
+  border-radius: 12px;
+  background: var(--feat-panel);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.06);
+}
+.hotel {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px;
+  border: 1px solid var(--feat-line);
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.04);
+  white-space: nowrap;
+}
+.hotelPhoto {
+  flex: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  object-fit: cover;
+}
+/* the star sits inline on the text's baseline */
+.hotel small svg {
+  display: inline-block;
+  vertical-align: -1px;
+}
+.hotel b,
+.hotel small {
+  display: block;
+  font-size: 12px;
+}
+.hotel b {
+  font-weight: 500;
+}
+.hotel small {
+  color: var(--feat-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* In the wider two-across stage the scene is centred, so the button and the
+   hotel screen reach further out to keep meeting the stage's edges. */
+@media (min-width: 768px) {
+  article[data-span="half"] .searchButton {
+    left: -92px;
+  }
+  article[data-span="half"] .exploreLink {
+    left: 52px;
+    width: 116px;
+  }
+  article[data-span="half"] .hotelScreen {
+    width: 300px;
+  }
+}
+
+/* ---------- lightspeed ---------- */
+/* this scene carries more text than the others, so it is set a step smaller */
+.sceneSmall,
+.sceneSmall .screenTitle {
+  font-size: 11px;
+  line-height: 15px;
+}
+.fromScreen {
+  position: absolute;
+  top: 57px;
+  left: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 144px;
+  box-sizing: border-box;
+  padding: 12px;
+  border: 1px solid var(--feat-line);
+  border-radius: 12px;
+  background: var(--feat-panel);
+}
+.fromRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 0;
+  white-space: nowrap;
+}
+.fromRow + .fromRow {
+  border-top: 1px solid var(--feat-line);
+  margin-top: -1px;
+}
+.fromRow svg {
+  flex: none;
+  color: var(--feat-muted);
+}
+/* one connector per option, from its row to the screen loaded for it */
+.connectors {
+  position: absolute;
+  inset: 0;
+  width: 384px;
+  height: 280px;
+  overflow: visible;
+  stroke: color-mix(in srgb, var(--feat-ink) 55%, transparent);
+  stroke-width: 1;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+/* three loaded screens in a column: slot 1 in view, 0 and 2 cropped by the
+   stage's top and bottom edges */
+.toScreen {
+  position: absolute;
+  left: 228px;
+  width: 132px;
+  box-sizing: border-box;
+  /* the photo sits inset, its radius the card's less this gap */
+  padding: 6px 6px 0;
+  overflow: hidden;
+  border: 1px solid var(--feat-line);
+  border-radius: 12px;
+  background: var(--feat-panel);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.06);
+}
+/* the outer two stand further right than the one in view */
+.toScreen[data-slot="0"],
+.toScreen[data-slot="2"] {
+  left: 256px;
+}
+.toScreen[data-slot="0"] {
+  top: -56px;
+}
+.toScreen[data-slot="1"] {
+  top: 84px;
+}
+.toScreen[data-slot="2"] {
+  top: 224px;
+}
+.toPhoto {
+  display: block;
+  width: 100%;
+  height: 56px;
+  border-radius: 6px;
+  object-fit: cover;
+}
+.toBody {
+  display: flex;
+  flex-direction: column;
+  padding: 8px 4px 10px;
+  white-space: nowrap;
+}
+.toMeta {
+  color: var(--feat-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.timingChip {
+  position: absolute;
+  left: 190px;
+  top: 140px;
+  transform: translate(-50%, -50%);
+  padding: 3px 7px;
+  border: 1px solid var(--feat-line);
+  border-radius: 999px;
+  background: var(--feat-panel);
+  color: var(--feat-ink);
+  font-size: 9px;
+  font-weight: 500;
+  line-height: 12px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
