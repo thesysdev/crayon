@@ -24,15 +24,21 @@ import { Renderer } from "../Renderer";
 (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
 type Dict = Record<string, unknown>;
-type Schema = { type?: string; properties?: Record<string, Schema>; required?: string[] };
+type Params = { properties?: Dict };
 
 const FIXTURES = path.resolve(
   process.env.OPENUI_FIXTURES ?? path.join(__dirname, "../../../../spec/fixtures/1.0"),
 );
-const readJSON = (...p: string[]) => JSON.parse(fs.readFileSync(path.join(FIXTURES, ...p), "utf8"));
-const spec = readJSON("library.json") as {
+const read = (...p: string[]) => fs.readFileSync(path.join(FIXTURES, ...p), "utf8");
+const dirs = (...p: string[]) =>
+  fs
+    .readdirSync(path.join(FIXTURES, ...p), { withFileTypes: true })
+    .filter((d) => d.isDirectory())
+    .map((d) => d.name)
+    .sort();
+const spec = JSON.parse(read("library.json")) as {
   root: string;
-  schema: { $defs: Record<string, Schema>; actions?: Record<string, { params: Schema }> };
+  schema: { $defs: Record<string, Params>; actions?: Record<string, { params: Params }> };
   components: Record<string, { signature: string; description: string }>;
 };
 
@@ -42,8 +48,15 @@ let clicks = new Map<string, () => unknown>();
 let inputs = new Map<string, (text: string) => void>();
 const live: { store: Store | null } = { store: null };
 
+/** useOpenUI, also keeping the store so the runner can read state at the end. */
+function useCtx() {
+  const ctx = useOpenUI();
+  live.store = ctx.store;
+  return ctx;
+}
+
 const Generic: ComponentRenderer<Dict> = ({ props, renderNode }) => {
-  live.store = useOpenUI().store;
+  useCtx();
   return (
     <div>
       {Object.values(props).map((v, i) => (
@@ -53,52 +66,44 @@ const Generic: ComponentRenderer<Dict> = ({ props, renderNode }) => {
   );
 };
 
-const FormR: ComponentRenderer<Dict> = ({ props, renderNode }) => (
-  <FormNameContext.Provider value={props.name as string}>
-    <form>{renderNode(props.children)}</form>
-  </FormNameContext.Provider>
-);
-
-const InputR: ComponentRenderer<Dict> = ({ props, statementId }) => {
-  const ctx = useOpenUI();
-  live.store = ctx.store;
-  const formName = useFormName();
-  const field = useStateField(props.name as string, props.value);
-  inputs.set(statementId!, (text) =>
-    field.isReactive
-      ? field.setValue(text)
-      : ctx.setFieldValue(formName, "input", props.name as string, text),
-  );
-  return <input readOnly value={String(field.value ?? "")} />;
-};
-
-const ButtonR: ComponentRenderer<Dict> = ({ props, statementId }) => {
-  const ctx = useOpenUI();
-  live.store = ctx.store;
-  const formName = useFormName();
-  clicks.set(statementId!, () =>
-    ctx.triggerAction(props.label as string, formName, props.action as never),
-  );
-  return <button>{String(props.label)}</button>;
-};
-
 const RENDERERS: Record<string, ComponentRenderer<Dict>> = {
-  Form: FormR,
-  Input: InputR,
-  Button: ButtonR,
+  Form: ({ props, renderNode }) => (
+    <FormNameContext.Provider value={props.name as string}>
+      <form>{renderNode(props.children)}</form>
+    </FormNameContext.Provider>
+  ),
+  Input: ({ props, statementId }) => {
+    const ctx = useCtx();
+    const formName = useFormName();
+    const field = useStateField(props.name as string, props.value);
+    // A form field records its componentType; a bound $variable takes the plain value.
+    inputs.set(statementId!, (text) =>
+      field.isReactive
+        ? field.setValue(text)
+        : ctx.setFieldValue(formName, "input", props.name as string, text),
+    );
+    return <input readOnly value={String(field.value ?? "")} />;
+  },
+  Button: ({ props, statementId }) => {
+    const ctx = useCtx();
+    const formName = useFormName();
+    clicks.set(statementId!, () =>
+      ctx.triggerAction(props.label as string, formName, props.action as never),
+    );
+    return <button>{String(props.label)}</button>;
+  },
 };
 
 // ─── The test library from library.json ───
 
-function toZodObject(json: Schema, bindable: Set<string> = new Set()) {
-  const shape: Record<string, z.ZodType> = {};
-  for (const [key, prop] of Object.entries(json.properties ?? {})) {
-    let s: z.ZodType = prop.type === "string" ? z.string() : z.any();
-    if (!json.required?.includes(key)) s = s.optional();
+// Only the prop keys matter here, with the reactive mark on bindable props.
+function props({ properties = {} }: Params, bindable = new Set<string>()) {
+  const shape = Object.keys(properties).map((key) => {
+    const s = z.any();
     if (bindable.has(key)) markReactive(s);
-    shape[key] = s;
-  }
-  return z.object(shape);
+    return [key, s];
+  });
+  return z.object(Object.fromEntries(shape));
 }
 
 const library = {
@@ -107,7 +112,7 @@ const library = {
       defineComponent({
         name,
         description,
-        props: toZodObject(
+        props: props(
           spec.schema.$defs[name],
           new Set([...signature.matchAll(/(\w+)\??: \$binding</g)].map((m) => m[1])),
         ),
@@ -115,7 +120,7 @@ const library = {
       }),
     ),
     actions: Object.entries(spec.schema.actions ?? {}).map(([name, a]) =>
-      defineAction({ name, description: "", params: toZodObject(a.params) }),
+      defineAction({ name, description: "", params: props(a.params) }),
     ) as never,
     root: spec.root,
   }),
@@ -126,6 +131,7 @@ const library = {
 
 const json = (v: unknown) => (v === undefined ? null : JSON.parse(JSON.stringify(v)));
 const same = (a: unknown, b: unknown) => isDeepStrictEqual(json(a), json(b));
+const str = JSON.stringify;
 
 async function settle() {
   for (let i = 0; i < 5; i++) await act(() => new Promise((r) => setTimeout(r, 0)));
@@ -137,7 +143,8 @@ async function runInteractions(
 ) {
   clicks = new Map();
   inputs = new Map();
-  const events: ActionEvent[] = [];
+  live.store = null;
+  const events: Dict[] = [];
   const toolCalls: Dict[] = [];
   const tools: Record<string, (args: Dict) => Promise<unknown>> = {};
   const setTool = (name: string, result: unknown) => {
@@ -157,7 +164,7 @@ async function runInteractions(
           response={program}
           library={library}
           isStreaming={false}
-          onAction={(e) => events.push(e)}
+          onAction={(e: ActionEvent) => events.push(e as unknown as Dict)}
           toolProvider={tools}
         />,
       ),
@@ -181,24 +188,18 @@ async function runInteractions(
 
     // Each expected event is compared on the keys it lists; null means absent or null.
     const want = (expected.events as Dict[]) ?? [];
-    const got = events as unknown as Dict[];
     const eventsOk =
-      want.length === got.length &&
-      want.every((w, k) => Object.entries(w).every(([key, v]) => same(v, got[k][key] ?? null)));
-    if (!eventsOk)
-      diffs.push(`events: expected ${JSON.stringify(want)}, got ${JSON.stringify(json(events))}`);
+      want.length === events.length &&
+      want.every((w, k) => Object.entries(w).every(([key, v]) => same(v, events[k][key])));
+    if (!eventsOk) diffs.push(`events: expected ${str(want)}, got ${str(json(events))}`);
     for (const [key, v] of Object.entries((expected.state as Dict) ?? {})) {
-      const value = live.store?.get(key);
-      if (!same(v, value ?? null))
-        diffs.push(`state ${key}: expected ${JSON.stringify(v)}, got ${JSON.stringify(value)}`);
+      const got = (live.store as Store | null)?.get(key); // set while rendering
+      if (!same(v, got)) diffs.push(`state ${key}: expected ${str(v)}, got ${str(got)}`);
     }
     // Consecutive identical calls count once.
     const calls = toolCalls.filter((c, k) => k === 0 || !same(c, toolCalls[k - 1]));
-    if (expected.toolCalls && !same(expected.toolCalls, calls)) {
-      diffs.push(
-        `toolCalls: expected ${JSON.stringify(expected.toolCalls)}, got ${JSON.stringify(toolCalls)}`,
-      );
-    }
+    if (expected.toolCalls && !same(expected.toolCalls, calls))
+      diffs.push(`toolCalls: expected ${str(expected.toolCalls)}, got ${str(calls)}`);
   } finally {
     await act(async () => root.unmount());
   }
@@ -210,21 +211,14 @@ async function runInteractions(
 const results: Record<string, { status: string; diffs?: string[] }> = {};
 
 describe("OpenUI conformance fixtures (interactions)", () => {
-  const dirs = (dir: string) =>
-    fs
-      .readdirSync(dir, { withFileTypes: true })
-      .filter((d) => d.isDirectory())
-      .map((d) => d.name)
-      .sort();
-  for (const area of dirs(FIXTURES)) {
-    for (const name of dirs(path.join(FIXTURES, area))) {
-      const dir = path.join(FIXTURES, area, name);
-      if (!fs.existsSync(path.join(dir, "interactions.json"))) continue;
+  for (const area of dirs()) {
+    for (const name of dirs(area)) {
+      if (!fs.existsSync(path.join(FIXTURES, area, name, "interactions.json"))) continue;
       const id = `${area}/${name}#interactions`;
       it(id, async () => {
         const diffs = await runInteractions(
-          fs.readFileSync(path.join(dir, "input.oui"), "utf8"),
-          readJSON(area, name, "interactions.json"),
+          read(area, name, "input.oui"),
+          JSON.parse(read(area, name, "interactions.json")),
         );
         results[id] = diffs.length ? { status: "fail", diffs } : { status: "pass" };
         if (diffs.length) expect.fail(`${id}\n  ${diffs.join("\n  ")}`);
