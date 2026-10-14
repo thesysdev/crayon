@@ -3,15 +3,12 @@
 import {
   ArrowRight,
   ArrowUpRight,
-  ArrowsOutLineHorizontal,
   Asterisk,
   Book,
-  Bug,
   ChartPieSlice,
   Code,
   CreditCard,
   DeviceMobileCamera,
-  MagnifyingGlass,
   Monitor,
   PlugsConnected,
   PresentationChart,
@@ -177,36 +174,6 @@ export const PRIMARY_SITE_NAV_ITEMS: NavItem[] = [
             description: "Tools, packages, plugins, and demos from the community",
             ...SITE_NAV_LINKS.community,
             icon: Users,
-          },
-        ],
-      },
-      {
-        label: "Tools",
-        children: [
-          {
-            title: "Compare",
-            description: "See how AI apps look with and without OpenUI",
-            ...SITE_NAV_LINKS.compare,
-            icon: ArrowsOutLineHorizontal,
-          },
-          {
-            title: "OpenUI vs JSON",
-            description:
-              "Compare OpenUI Lang with JSON-based UI generation: 3× faster with up to 67% fewer tokens.",
-            ...SITE_NAV_LINKS.openuiVsJson,
-            icon: Code,
-          },
-          {
-            title: "Debug",
-            description: "Reproduce and diagnose how a response is parsed and rendered.",
-            ...SITE_NAV_LINKS.debug,
-            icon: Bug,
-          },
-          {
-            title: "Inspect",
-            description: "Monitor OpenUI streams, errors, and events in real time.",
-            ...SITE_NAV_LINKS.inspect,
-            icon: MagnifyingGlass,
           },
         ],
       },
