@@ -5,16 +5,16 @@ import { AGENT_SETUP_PROMPT, AgentPicker } from "./components/AgentPicker/AgentP
 import styles from "./page.module.css";
 import { BANNER_END_ANCHOR_ID } from "./sections/CloudBanner/CloudBanner";
 import { CloudSection } from "./sections/CloudSection/CloudSection";
+import { CompatibilitySection } from "./sections/CompatibilitySection/CompatibilitySection";
 import { FAQS, FaqSection } from "./sections/FaqSection/FaqSection";
 import { Footer } from "./sections/Footer/Footer";
-import { HeroSection } from "./sections/HeroSection/HeroSection";
-import { LogoStrip } from "./sections/LogoStrip/LogoStrip";
 import { HeroProof } from "./sections/HeroProof/HeroProof";
-import { CompatibilitySection } from "./sections/CompatibilitySection/CompatibilitySection";
+import { HeroSection } from "./sections/HeroSection/HeroSection";
 import { HowItWorksSection } from "./sections/HowItWorksSection/HowItWorksSection";
-import { WhatItDoesSection } from "./sections/WhatItDoesSection/WhatItDoesSection";
+import { LogoStrip } from "./sections/LogoStrip/LogoStrip";
 import { ShiroPeek } from "./sections/ShiroPeek/ShiroPeek";
 import { TweetWallSection } from "./sections/TweetWallSection/TweetWallSection";
+import { WhatItDoesSection } from "./sections/WhatItDoesSection/WhatItDoesSection";
 
 export const metadata: Metadata = {
   alternates: {

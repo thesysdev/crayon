@@ -264,8 +264,9 @@ function ModelVisual() {
 
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      setChars(MODEL_PROGRAM.length);
-      return;
+      // Show the whole answer at once, set from a frame callback rather than the effect body.
+      const frame = requestAnimationFrame(() => setChars(MODEL_PROGRAM.length));
+      return () => cancelAnimationFrame(frame);
     }
     const id = window.setInterval(() => {
       setChars((c) => {

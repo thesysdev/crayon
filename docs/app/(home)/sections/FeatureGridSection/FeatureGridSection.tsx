@@ -161,40 +161,41 @@ export function FeatureGridSection({
 
   /* An empty feature list drops the grid, leaving only the benchmark header
      (the home page keeps the speed proof without the six-feature grid). */
-  const gridBlock = features.length === 0 && !lead ? null : (
-    <div
-      className={`${styles.grid} ${fadeColumnLines ? styles.gridFadeLines : ""} ${
-        features.length <= desktopColumns ? styles.gridSingleRow : ""
-      } ${flushOuterCards ? styles.gridFlushOuterCards : ""} ${
-        balanceLastRow ? styles.gridBalancedLastRow : ""
-      } ${desktopColumns === 4 ? styles.gridFourColumns : ""}`.trim()}
-    >
-      {lead && <div className={styles.lead}>{lead}</div>}
-      {features.map(({ Icon, icon, title, description }, index) => {
-        const FeatureIcon = Icon ?? (icon ? FEATURE_ICONS[icon] : undefined);
+  const gridBlock =
+    features.length === 0 && !lead ? null : (
+      <div
+        className={`${styles.grid} ${fadeColumnLines ? styles.gridFadeLines : ""} ${
+          features.length <= desktopColumns ? styles.gridSingleRow : ""
+        } ${flushOuterCards ? styles.gridFlushOuterCards : ""} ${
+          balanceLastRow ? styles.gridBalancedLastRow : ""
+        } ${desktopColumns === 4 ? styles.gridFourColumns : ""}`.trim()}
+      >
+        {lead && <div className={styles.lead}>{lead}</div>}
+        {features.map(({ Icon, icon, title, description }, index) => {
+          const FeatureIcon = Icon ?? (icon ? FEATURE_ICONS[icon] : undefined);
 
-        return (
-          <div
-            className={`${styles.feature} ${FeatureIcon ? "" : styles.featureWithPlaceholder}`.trim()}
-            key={title}
-            {...(mobileAccordion ? accordion.getToggleProps(index) : {})}
-          >
-            <span
-              className={`${styles.icon} ${FeatureIcon ? "" : styles.iconPlaceholder}`.trim()}
-              aria-hidden="true"
+          return (
+            <div
+              className={`${styles.feature} ${FeatureIcon ? "" : styles.featureWithPlaceholder}`.trim()}
+              key={title}
+              {...(mobileAccordion ? accordion.getToggleProps(index) : {})}
             >
-              {FeatureIcon && <FeatureIcon size={28} weight="light" />}
-            </span>
-            <h3 className={styles.featureTitle}>{title}</h3>
-            <ExpandChevron className={styles.chevron} />
-            <p className={styles.featureDescription}>
-              <span className={styles.featureDescriptionInner}>{description}</span>
-            </p>
-          </div>
-        );
-      })}
-    </div>
-  );
+              <span
+                className={`${styles.icon} ${FeatureIcon ? "" : styles.iconPlaceholder}`.trim()}
+                aria-hidden="true"
+              >
+                {FeatureIcon && <FeatureIcon size={28} weight="light" />}
+              </span>
+              <h3 className={styles.featureTitle}>{title}</h3>
+              <ExpandChevron className={styles.chevron} />
+              <p className={styles.featureDescription}>
+                <span className={styles.featureDescriptionInner}>{description}</span>
+              </p>
+            </div>
+          );
+        })}
+      </div>
+    );
 
   return (
     <section

@@ -94,7 +94,9 @@ export function ComparisonControls({
   // Read after mount so the server render and the first client render match.
   useEffect(() => {
     const prompt = new URLSearchParams(window.location.search).get(PROMPT_QUERY_PARAM);
-    if (prompt) setText(prompt);
+    if (!prompt) return;
+    const frame = requestAnimationFrame(() => setText(prompt));
+    return () => cancelAnimationFrame(frame);
   }, []);
   const { resolvedTheme, setTheme } = useTheme();
   // Theme is unknown until mounted; gate the icon to avoid hydration mismatch.

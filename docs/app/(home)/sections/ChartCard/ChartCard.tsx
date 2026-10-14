@@ -34,9 +34,7 @@ export function ChartCard() {
             onMouseEnter={() => setHover(index)}
             onMouseLeave={() => setHover(null)}
           >
-            {hover === index && (
-              <span className={styles.barTip}>${region.sales.toFixed(2)}M</span>
-            )}
+            {hover === index && <span className={styles.barTip}>${region.sales.toFixed(2)}M</span>}
             <div className={styles.bars}>
               <span
                 className={`${styles.bar} ${styles.barSales}`}

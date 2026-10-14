@@ -38,10 +38,6 @@ export function BlockRace() {
   useEffect(() => {
     const node = ref.current;
     if (!node) return;
-    if (typeof IntersectionObserver === "undefined") {
-      setStarted(true);
-      return;
-    }
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -57,18 +53,23 @@ export function BlockRace() {
 
   useEffect(() => {
     if (!started) return;
+    // Reduced motion shows the finished race; otherwise it restarts from empty.
+    // Both are set from a frame callback rather than the effect body.
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      setFilled(SLOTS);
-      return;
+      const frame = requestAnimationFrame(() => setFilled(SLOTS));
+      return () => cancelAnimationFrame(frame);
     }
-    setFilled(0);
+    const frame = requestAnimationFrame(() => setFilled(0));
     const id = window.setInterval(() => {
       setFilled((f) => {
         if (f + 1 >= SLOTS) window.clearInterval(id);
         return Math.min(SLOTS, f + 1);
       });
     }, BLOCK_MS);
-    return () => window.clearInterval(id);
+    return () => {
+      cancelAnimationFrame(frame);
+      window.clearInterval(id);
+    };
   }, [started, run]);
 
   const done = filled >= SLOTS;
@@ -96,10 +97,7 @@ export function BlockRace() {
           const isOpenui = bar.id === "openui";
           const count = finished ? bar.total : shown * BLOCK_TOKENS;
           return (
-            <li
-              key={bar.id}
-              className={`${styles.bar} ${isOpenui ? styles.barOpenui : ""}`.trim()}
-            >
+            <li key={bar.id} className={`${styles.bar} ${isOpenui ? styles.barOpenui : ""}`.trim()}>
               <div className={styles.label}>
                 <span className={styles.name}>
                   {bar.label}

@@ -1,6 +1,6 @@
-import { SITE_NAV_LINKS } from "@/lib/site-nav-links";
 import { EXAMPLES_REPO_URL } from "@/lib/examples-catalog";
 import { labProjects } from "@/lib/lab-projects";
+import { SITE_NAV_LINKS } from "@/lib/site-nav-links";
 import { LinkCardGrid, ShowcaseGrid, type ShowcaseItem } from "./cards";
 
 const PLAYGROUND: ShowcaseItem[] = [

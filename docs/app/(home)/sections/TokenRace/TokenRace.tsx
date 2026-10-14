@@ -1,10 +1,6 @@
 "use client";
 
-import {
-  DECODE_TOKENS_PER_SECOND,
-  speedScenarios,
-  type SpeedFormatId,
-} from "@/lib/benchmark-data";
+import { DECODE_TOKENS_PER_SECOND, speedScenarios, type SpeedFormatId } from "@/lib/benchmark-data";
 import { Check, RotateCcw } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import styles from "./TokenRace.module.css";
@@ -47,10 +43,6 @@ export function TokenRace({
   useEffect(() => {
     const node = ref.current;
     if (!node) return;
-    if (typeof IntersectionObserver === "undefined") {
-      setStarted(true);
-      return;
-    }
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -67,8 +59,9 @@ export function TokenRace({
   useEffect(() => {
     if (!started) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      setElapsed(LONGEST_MS);
-      return;
+      // Show the finished race, set from a frame callback rather than the effect body.
+      const frame = requestAnimationFrame(() => setElapsed(LONGEST_MS));
+      return () => cancelAnimationFrame(frame);
     }
     let frame = 0;
     const t0 = performance.now();
