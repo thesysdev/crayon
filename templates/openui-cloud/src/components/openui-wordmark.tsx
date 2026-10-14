@@ -1,11 +1,11 @@
-type BrandProps = { mode: "light" | "dark" };
+type OpenUIWordmarkProps = { mode: "light" | "dark" };
 
 // "OpenUI" wordmark on its own, no mascot. Used in the expanded sidebar.
-export function BrandWordmark({ mode }: BrandProps) {
+export function OpenUIWordmark({ mode }: OpenUIWordmarkProps) {
   return (
     <div className="openui-agent-sidebar-header__agent-name">
       <img
-        src={mode === "dark" ? "/brand-wordmark-text-dark.svg" : "/brand-wordmark-text.svg"}
+        src={mode === "dark" ? "/openui-wordmark-dark.svg" : "/openui-wordmark.svg"}
         alt="OpenUI"
       />
     </div>

@@ -1,21 +1,25 @@
 "use client";
 
+import { OpenUIWordmark } from "@/components/openui-wordmark";
 import { usePersistedModel } from "@/hooks/use-persisted-model";
 import { MODEL_OPTIONS } from "@/lib/models";
-import { OPENUI_LOGOS, STARTERS } from "@/lib/starters";
+import { OPENUI_LOGO, PROMPT_TEMPLATES } from "@/lib/starters";
 import {
   AgentInterface,
-  ModelSwitcher,
   fetchLLM,
+  ModelSwitcher,
   openuiLibrary,
   useOpenuiCloudStorage,
-  useSystemThemeMode,
+  useThemeModePreference,
   vercelAIAdapter,
   vercelAIMessageFormat,
+  WelcomeMascot,
 } from "@openuidev/react-ui";
 
 export default function CloudChat() {
-  const mode = useSystemThemeMode();
+  // Follows the system theme until the footer toggle is first used, then
+  // remembers the choice.
+  const { setPreference, mode } = useThemeModePreference();
   const [selectedModel, setSelectedModel] = usePersistedModel();
   // The route returns the AI SDK's native UIMessage stream, so the browser
   // decodes it with the SDK's own adapter and message format.
@@ -32,20 +36,21 @@ export default function CloudChat() {
     features: { artifact: false },
   });
 
-  const logoPath = mode === "dark" ? OPENUI_LOGOS.DARK : OPENUI_LOGOS.LIGHT;
-
   return (
     <AgentInterface
       storage={storage}
       llm={llm}
       componentLibrary={openuiLibrary}
-      logoUrl={logoPath}
+      logoUrl={OPENUI_LOGO}
       theme={{ mode }}
-      starters={STARTERS}
     >
+      <AgentInterface.SidebarHeader agentName={<OpenUIWordmark mode={mode} />} />
+      <AgentInterface.SidebarFooter>
+        <AgentInterface.ThemeModeToggle mode={mode} onModeChange={setPreference} />
+      </AgentInterface.SidebarFooter>
       <AgentInterface.MobileHeader
         agentName=""
-        actions={
+        logo={
           <ModelSwitcher
             models={MODEL_OPTIONS}
             value={selectedModel}
@@ -64,8 +69,10 @@ export default function CloudChat() {
         }
       />
       <AgentInterface.Welcome
-        title="Good to see you"
-        description="What's on your mind today?"
+        image={<WelcomeMascot />}
+        title="What's on your mind today?"
+        promptTemplates={PROMPT_TEMPLATES}
+        starterVariant="card"
         glowAnimation
       />
     </AgentInterface>

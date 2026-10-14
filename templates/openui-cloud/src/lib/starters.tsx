@@ -2,19 +2,16 @@ import { PromptTemplate } from "@openuidev/react-ui";
 import {
   Car,
   Code,
-  Coffee,
   Flag,
-  Plane,
   Rocket,
   Scale,
   Search,
   TreePalm,
-  Trophy,
   Zap,
 } from "lucide-react";
 
 // One mark for both themes: the mascot reads on light and dark surfaces.
-export const OPENUI_LOGO = "/brand-logo.svg";
+export const OPENUI_LOGO = "/openui-logo.svg";
 
 export const PROMPT_TEMPLATES: PromptTemplate[] = [
   {
@@ -60,23 +57,5 @@ export const PROMPT_TEMPLATES: PromptTemplate[] = [
         icon: <TreePalm size={16} />,
       },
     ],
-  },
-];
-
-export const STARTERS = [
-  {
-    displayText: "Relive the FIFA World Cup 2026",
-    prompt: "Relive the FIFA World Cup 2026.",
-    icon: <Trophy size={16} />,
-  },
-  {
-    displayText: "Explore global coffee trends",
-    prompt: "Explore global coffee trends.",
-    icon: <Coffee size={16} />,
-  },
-  {
-    displayText: "Help me plan my next vacation",
-    prompt: "Help me plan my next vacation.",
-    icon: <Plane size={16} />,
   },
 ];
