@@ -11,12 +11,12 @@ Svelte 5 bindings for OpenUI Lang. Define model-renderable Svelte components, ge
 ## Install
 
 ```bash
-npm install @openuidev/svelte-lang
+npm install @openuidev/svelte-lang zod
 # or
-pnpm add @openuidev/svelte-lang
+pnpm add @openuidev/svelte-lang zod
 ```
 
-**Peer dependencies:** `svelte >=5.0.0`
+**Peer dependencies:** `svelte >=5.0.0`, `zod ^3.25.0 || ^4.0.0`
 
 ## Overview
 

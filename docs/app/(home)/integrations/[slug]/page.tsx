@@ -1,12 +1,12 @@
 import { Footer } from "@/app/(home)/sections/Footer/Footer";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { createPageMetadata } from "@/lib/page-metadata";
-import { BASE_URL } from "@/lib/source";
+import { BASE_URL, integrationGuide } from "@/lib/source";
 import { ArrowLeft, ArrowRight, ArrowUpRight } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { CopyCommand } from "../copy-command";
+import { CopyCommand, CopyPrompt } from "../copy-command";
 import {
   getIntegrationCategory,
   getIntegrationPageMetadata,
@@ -14,8 +14,10 @@ import {
   integrationBySlug,
   integrations,
 } from "../data";
+import { guideComponents } from "../guide-components";
 import { IntegrationLogo } from "../integration-logo";
 import styles from "../page.module.css";
+import { integrationPrompt } from "../prompt";
 
 export const dynamicParams = false;
 
@@ -42,6 +44,9 @@ export default async function IntegrationDetailPage(props: { params: Promise<{ s
 
   const category = getIntegrationCategory(integration.category);
   const related = getRelatedIntegrations(integration);
+  const guide = integrationGuide.getPage([slug]);
+  const Guide = guide?.data.body;
+  const prompt = integrationPrompt(integration, await guide?.data.getText("raw"));
 
   const breadcrumbs = [
     { name: "Home", item: BASE_URL },
@@ -75,6 +80,7 @@ export default async function IntegrationDetailPage(props: { params: Promise<{ s
               <h1>{integration.name}</h1>
             </div>
             <p>{integration.summary}</p>
+            <CopyPrompt prompt={prompt} />
           </div>
         </div>
       </div>
@@ -99,21 +105,6 @@ export default async function IntegrationDetailPage(props: { params: Promise<{ s
                 </div>
               </section>
             ) : null}
-
-            <section className={styles.flowSection}>
-              <h2>Integration steps</h2>
-              <ol className={styles.flowList}>
-                {integration.steps.map((step, index) => (
-                  <li key={step.title}>
-                    <span className={styles.flowNumber}>{index + 1}</span>
-                    <div>
-                      <h3>{step.title}</h3>
-                      <p>{step.description}</p>
-                    </div>
-                  </li>
-                ))}
-              </ol>
-            </section>
           </article>
 
           <aside className={styles.resourceSidebar}>
@@ -168,6 +159,10 @@ export default async function IntegrationDetailPage(props: { params: Promise<{ s
             </div>
           </aside>
         </div>
+
+        {/* Example and steps from content/integrations/<slug>.mdx, full width below the
+            sidebar grid so each step's text can sit beside its code. */}
+        {Guide ? <Guide components={guideComponents} /> : null}
 
         <div className={styles.detailBackRow}>
           <Link href={`/integrations#${category.id}`}>
