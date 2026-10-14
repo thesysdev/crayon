@@ -94,7 +94,7 @@ export class Telemetry {
       ci: isCi(),
       stdin_is_tty: Boolean(process.stdin.isTTY),
       stdout_is_tty: Boolean(process.stdout.isTTY),
-      detected_interactive: opts.detectedInteractive,
+      is_interactive_terminal: opts.detectedInteractive,
       detected_agent_name: opts.detectedAgentName,
     };
     try {
