@@ -6,7 +6,7 @@ import { ArrowLeft, ArrowRight, ArrowUpRight } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { CopyCommand } from "../copy-command";
+import { CopyCommand, CopyPrompt } from "../copy-command";
 import {
   getIntegrationCategory,
   getIntegrationPageMetadata,
@@ -17,6 +17,7 @@ import {
 import { guideComponents } from "../guide-components";
 import { IntegrationLogo } from "../integration-logo";
 import styles from "../page.module.css";
+import { integrationPrompt } from "../prompt";
 
 export const dynamicParams = false;
 
@@ -43,7 +44,9 @@ export default async function IntegrationDetailPage(props: { params: Promise<{ s
 
   const category = getIntegrationCategory(integration.category);
   const related = getRelatedIntegrations(integration);
-  const Guide = integrationGuide.getPage([slug])?.data.body;
+  const guide = integrationGuide.getPage([slug]);
+  const Guide = guide?.data.body;
+  const prompt = integrationPrompt(integration, await guide?.data.getText("raw"));
 
   const breadcrumbs = [
     { name: "Home", item: BASE_URL },
@@ -77,6 +80,7 @@ export default async function IntegrationDetailPage(props: { params: Promise<{ s
               <h1>{integration.name}</h1>
             </div>
             <p>{integration.summary}</p>
+            <CopyPrompt prompt={prompt} />
           </div>
         </div>
       </div>
