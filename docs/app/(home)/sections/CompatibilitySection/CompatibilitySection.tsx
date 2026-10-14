@@ -10,64 +10,15 @@ interface StackRow {
   items: StackChipItem[];
 }
 
-/* The four compatibility groups, ordered the way the stack is drawn top to
-   bottom: the model at the top, then the service that calls it, the library it
-   renders with, and the client the user touches at the base. The diagram draws
+/* The three compatibility groups, ordered the way the stack is drawn top to
+   bottom: the agent backend at the top, then the library it renders with, and
+   the client the user touches at the base. The diagram draws
    one StackLayerRow per group, in this order, and runs that group's own logos
    past it.
 
    Every entry needs a real mark. Anything with no logo to be found is left out
    rather than stood in for by a related company's. */
 const STACK_ROWS: StackRow[] = [
-  {
-    /* OpenAI, xAI and DeepSeek are local files: Simple Icons carries no OpenAI
-       mark, and its "x" is the social network, not xAI. */
-    label: "LLMs",
-    items: [
-      {
-        name: "OpenAI",
-        iconKind: "image",
-        localSrc: "/brand-icons/openai.svg",
-        iconColor: "000000",
-        badgeClassName: `${stackChipStyles.badgeWhite} ${stackChipStyles.badgeWithBorder}`,
-      },
-      {
-        name: "Anthropic",
-        iconKind: "image",
-        slug: "anthropic",
-        iconColor: "ffffff",
-        badgeClassName: stackChipStyles.badgeAnthropic,
-      },
-      {
-        name: "Gemini",
-        iconKind: "image",
-        slug: "googlegemini",
-        iconColor: "000000",
-        badgeClassName: `${stackChipStyles.badgeWhite} ${stackChipStyles.badgeWithBorder}`,
-      },
-      {
-        name: "DeepSeek",
-        iconKind: "image",
-        localSrc: "/brand-icons/deepseek.svg",
-        iconColor: "ffffff",
-        badgeClassName: stackChipStyles.badgeDeepSeek,
-      },
-      {
-        name: "xAI",
-        iconKind: "image",
-        localSrc: "/brand-icons/xai.svg",
-        iconColor: "ffffff",
-        badgeClassName: stackChipStyles.badgeBlack,
-      },
-      {
-        name: "Mistral",
-        iconKind: "image",
-        slug: "mistralai",
-        iconColor: "ffffff",
-        badgeClassName: stackChipStyles.badgeMistral,
-      },
-    ],
-  },
   {
     /* Llama, LlamaIndex and Mastra are absent: no logo could be found for any of
        them, and a row is better short than wrong. */
@@ -244,7 +195,7 @@ export function CompatibilitySection({ embedded = false }: { embedded?: boolean 
               puts this band's claim into crawlable body text. One clause per
               row above it, in the same order. */}
           <SectionHeader
-            caption="Generative UI that renders in any client framework, uses any component library, and runs on any agent backend or model."
+            caption="Generative UI that renders in any client framework, uses any component library, and runs on any agent backend."
             title="...and works with your stack."
             titleId="favorite-stack-title"
           />

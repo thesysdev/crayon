@@ -54,9 +54,6 @@ At the center of OpenUI is **OpenUI Lang**: a compact, streaming-first language 
 
 ```bash
 npx @openuidev/cli@latest create --name genui-chat-app
-cd genui-chat-app
-echo "OPENAI_API_KEY=sk-your-key-here" > .env
-npm run dev
 ```
 
 This is the fastest way to start with OpenUI. The scaffolded app gives you an end-to-end starting point with streaming, built-in UI, and OpenUI Lang support.

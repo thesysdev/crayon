@@ -26,7 +26,7 @@ const GATEWAY_EXAMPLE = `const client = new OpenAI({
 const response = await client.chat.completions.create({
   model: "openai/gpt-5",
   messages: [
-    { role: "system", content: generatePrompt({ thesys: true }) },
+    { role: "system", content: generatePrompt({ cloud: true }) },
     ...messages,
   ],
 });`;

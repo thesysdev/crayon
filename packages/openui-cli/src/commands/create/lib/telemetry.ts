@@ -63,13 +63,9 @@ export class CreateTelemetryClient extends Telemetry {
   }
 
   trackStarted(props: {
-    interactive: boolean;
     has_name_arg: boolean;
-    has_template_arg: boolean;
     has_backend_framework_arg: boolean;
     has_example_arg: boolean;
-    has_api_key_arg: boolean;
-    has_auth_arg: boolean;
     no_install: boolean;
     immediate_arg: boolean | undefined;
   }) {
@@ -160,11 +156,8 @@ export class CreateTelemetryClient extends Telemetry {
     this.capture("cli_dev_command_failed", props);
   }
 
-  trackCloudAuthStarted(props: { auth_method?: string }) {
-    this.capture("cli_cloud_auth_started", {
-      ...createFunnelProps("cloud_auth_started"),
-      ...props,
-    });
+  trackCloudAuthStarted() {
+    this.capture("cli_cloud_auth_started", createFunnelProps("cloud_auth_started"));
   }
 
   trackCloudAuthMethod(props: { auth_method: string; auth_succeeded: boolean }) {
@@ -257,12 +250,7 @@ export class CreateTelemetryClient extends Telemetry {
     this.capture("cli_target_name_retried", props);
   }
 
-  trackTargetExists(props: {
-    interactive: boolean;
-    attempt: number;
-    exhausted: boolean;
-    error_code: string;
-  }) {
+  trackTargetExists(props: { attempt: number; exhausted: boolean; error_code: string }) {
     this.capture("cli_target_exists", props);
   }
 }

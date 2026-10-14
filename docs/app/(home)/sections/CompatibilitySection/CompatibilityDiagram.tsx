@@ -5,9 +5,9 @@ import { StackLayerRow } from "./StackLayerRow";
 
 type StackGroup = { label: string; items: StackChipItem[] };
 
-/* Four rows of square cells, one per layer, their bands drifting inward in step
- * so the rows read as one grid rather than four strips. The centre of the grid
- * is a single column, drawn over all four rows, naming each layer.
+/* Rows of square cells, one per layer, their bands drifting inward in step
+ * so the rows read as one grid rather than separate strips. The centre of the grid
+ * is a single column, drawn over every row, naming each layer.
  */
 export function CompatibilityDiagram({ groups }: { groups: StackGroup[] }) {
   return (

@@ -2,9 +2,6 @@ name: CLI scaffold end to end
 description: Scaffold a template with the packed CLI, then install and build the generated app.
 
 inputs:
-  template:
-    description: Template key passed to `openui create --template`.
-    required: true
   backend-framework:
     description: Overlay key passed to `openui create --backend-framework`.
     required: false
@@ -94,9 +91,7 @@ runs:
         npm exec --yes --package="${{ steps.cli-package.outputs.path }}" --
         openui --no-telemetry create
         --name generated-app
-        --template ${{ inputs.template }}
         --backend-framework ${{ inputs.backend-framework }}
-        --api-key sk-test
         --no-interactive
         --no-skill
 
@@ -107,13 +102,12 @@ runs:
       env:
         OPENUI_DEBUG: "1"
         OPENUI_SOURCE_DIR: ${{ github.workspace }}
+        THESYS_API_KEY: "sk-test"
       run: >-
         pnpm dlx "${{ steps.cli-package.outputs.path }}"
         --no-telemetry create
         --name generated-app
-        --template ${{ inputs.template }}
         --backend-framework ${{ inputs.backend-framework }}
-        --api-key sk-test
         --no-interactive
         --no-skill
 
@@ -146,6 +140,5 @@ runs:
       working-directory: ${{ runner.temp }}/cli-e2e/generated-app
       run: ${{ inputs.package-manager }} run build
       env:
-        OPENAI_API_KEY: sk-test
         THESYS_API_KEY: sk-test
         DEMO_USER_ID: test-user
