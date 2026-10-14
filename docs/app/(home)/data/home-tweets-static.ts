@@ -17,17 +17,6 @@ export type StaticTweet = {
 
 export const STATIC_TWEETS: StaticTweet[] = [
   {
-    "id": "2102288655276490901",
-    "name": "Xuan Huang · 黄玄",
-    "handle": "Huxpro",
-    "verified": true,
-    "avatar": "/tweets/avatar-Huxpro.jpg",
-    "text": "This. We came to a similar conclusion at @LynxJS_org, at least for now.",
-    "date": "Sep 22, 2026",
-    "likes": 20,
-    "replies": 0
-  },
-  {
     "id": "2105153144506503199",
     "name": "Lynx",
     "handle": "LynxJS_org",
@@ -74,21 +63,6 @@ export const STATIC_TWEETS: StaticTweet[] = [
     "date": "Mar 18, 2026",
     "likes": 25,
     "replies": 1
-  },
-  {
-    "id": "2105153183068889236",
-    "name": "Lynx",
-    "handle": "LynxJS_org",
-    "verified": true,
-    "avatar": "/tweets/avatar-LynxJS_org.jpg",
-    "text": "🤖 OpenUI + more Skills!\n\nLynx GenUI now speaks OpenUI: agents stream compact expressions, and we turns them into native UI. \n\n3 New Agent Skills: lynx-a2ui, lynx-openui, lynx-api-docs.",
-    "date": "Sep 30, 2026",
-    "likes": 7,
-    "replies": 3,
-    "media": {
-      "type": "photo",
-      "url": "/tweets/media-2105153183068889236.jpg"
-    }
   },
   {
     "id": "2100211596886704477",

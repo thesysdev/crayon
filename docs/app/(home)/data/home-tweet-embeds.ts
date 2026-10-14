@@ -5,12 +5,10 @@ export type HomeTweetEmbed = {
 
 /** Official X tweet IDs used to render real embeds via widgets.createTweet(). */
 export const HOME_TWEETS: HomeTweetEmbed[] = [
-  { id: "2102288655276490901", conversation: "none" }, // Huxpro, creator of Lynx
   { id: "2105153144506503199", conversation: "none" }, // LynxJS_org, Lynx 4.0 ships OpenUI
   { id: "2098624943218913364", conversation: "none" }, // tom_doerr
   { id: "2073104523670049265", conversation: "none" }, // mastra
   { id: "2034082798051443052", conversation: "none" }, // shadcn
-  { id: "2105153183068889236", conversation: "none" }, // LynxJS_org, Lynx GenUI speaks OpenUI
   { id: "2100211596886704477", conversation: "none" }, // DanKornas
   { id: "2031845364286783776", conversation: "none" }, // ctatedev
   { id: "2102835411651273135", conversation: "none" }, // waynesutton, Convex
