@@ -5,7 +5,7 @@ description: How OpenUI Lang evolved from static UI generation to interactive, d
 
 ## v0.5 → 1.0
 
-1.0 lets a library grow with its own functions, actions, and `library.extend`, adds a message format for storing responses, and sets one rule for where a program starts. One action step no longer needs `Action([...])`. See [What's New in 1.0](/docs/openui-lang/whats-new).
+1.0 lets a library grow with its own functions, actions, and `library.extend`, adds a message format for storing responses, and sets one rule for where a program starts. One action no longer needs `Action([...])`. See [What's New in 1.0](/docs/openui-lang/whats-new).
 
 ## v0.1 → v0.5
 
@@ -43,7 +43,7 @@ The LLM generates code that **connects to your tools**. The runtime fetches data
 
 ```text
 $days = "7"
-filter = Select("days", $days, [SelectItem("7", "7 days"), SelectItem("30", "30 days")])
+filter = Select("days", [SelectItem("7", "7 days"), SelectItem("30", "30 days")], null, null, $days)
 data = Query("analytics", {days: $days}, {rows: []})
 chart = LineChart(data.rows.day, [Series("Revenue", data.rows.revenue)])
 kpi = Card([TextContent("Total", "small"), TextContent("" + @Sum(data.rows.revenue), "large-heavy")])
@@ -65,7 +65,7 @@ Declare variables, bind them to inputs, and reference them in expressions. A cha
 
 ```text
 $search = ""
-searchBox = Input("search", $search, "Search...")
+searchBox = Input("search", "Search...", "text", null, $search)
 filtered = @Filter(data.rows, "title", "contains", $search)
 ```
 
