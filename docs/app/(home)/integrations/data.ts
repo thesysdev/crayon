@@ -13,6 +13,7 @@ export interface Integration {
   name: string;
   /** Search title for <title>; the H1 keeps `name`. */
   seoTitle: string;
+  seoDescription?: string;
   logo: string;
   category: IntegrationCategoryId;
   type: string;
@@ -170,6 +171,8 @@ const integrationCatalog: Integration[] = [
     slug: "langchain-langgraph",
     name: "LangChain & LangGraph",
     seoTitle: "LangGraph generative UI: a frontend for LangGraph agents",
+    seoDescription:
+      "Connect LangChain and LangGraph agents to OpenUI with a stream transformer. Render agent responses as interactive cards, tables, charts and forms.",
     logo: "https://raw.githubusercontent.com/langchain-ai/docs/main/src/images/brand/langchain-icon.png",
     category: "ai-frameworks",
     type: "Agent framework adapter",
@@ -197,6 +200,8 @@ const integrationCatalog: Integration[] = [
     slug: "vercel-ai-sdk",
     name: "Vercel AI SDK",
     seoTitle: "Vercel AI SDK generative UI with OpenUI",
+    seoDescription:
+      "Add generative UI to Vercel AI SDK apps with OpenUI. Stream interactive components using vercelAIAdapter(), with support for AI SDK v6 and v7.",
     logo: "/integration-logos/vercel.svg",
     category: "ai-frameworks",
     type: "AI SDK adapter",
@@ -225,6 +230,8 @@ const integrationCatalog: Integration[] = [
     slug: "google-adk",
     name: "Google ADK",
     seoTitle: "Google ADK agent UI: render rich interfaces with OpenUI",
+    seoDescription:
+      "Build a generative UI frontend for Google ADK agents with OpenUI. Map TypeScript ADK events to AG-UI and stream interactive components to your app.",
     logo: "/integration-logos/google.svg",
     category: "ai-frameworks",
     type: "Agent SDK",
@@ -266,6 +273,8 @@ const integrationCatalog: Integration[] = [
     slug: "assistant-ui",
     name: "assistant-ui",
     seoTitle: "assistant-ui + OpenUI: generative UI in assistant-ui chats",
+    seoDescription:
+      "Add generative UI to assistant-ui chats with the OpenUI toolkit. Render cards, tables, charts and forms while assistant-ui manages the conversation.",
     logo: "/integration-logos/assistant-ui.svg",
     category: "frontend-platforms",
     type: "Chat framework",
@@ -293,6 +302,8 @@ const integrationCatalog: Integration[] = [
     slug: "ag-ui",
     name: "AG-UI",
     seoTitle: "AG-UI frontend: render AG-UI streams as generative UI",
+    seoDescription:
+      "Connect any AG-UI SSE endpoint to OpenUI with agUIAdapter(). Render generative UI with support for text messages, tool calls, tool results and run errors.",
     logo: "/integration-logos/ag-ui.svg",
     category: "ai-frameworks",
     type: "Agent protocol",
@@ -432,6 +443,8 @@ const integrationCatalog: Integration[] = [
     slug: "vue",
     name: "Vue 3",
     seoTitle: "Generative UI for Vue",
+    seoDescription:
+      "Build generative UI in Vue 3 with OpenUI. Register single-file components with Zod schemas and render streamed interfaces using @openuidev/vue-lang.",
     logo: "/integration-logos/vue.svg",
     category: "frontend-platforms",
     type: "Native runtime",
@@ -451,6 +464,8 @@ const integrationCatalog: Integration[] = [
     slug: "angular",
     name: "Angular",
     seoTitle: "Generative UI for Angular",
+    seoDescription:
+      "Build generative UI in Angular with OpenUI. Register standalone components with Zod schemas and stream interfaces using @openuidev/angular-lang.",
     logo: "/integration-logos/angular.svg",
     category: "frontend-platforms",
     type: "Native runtime",
@@ -491,6 +506,8 @@ const integrationCatalog: Integration[] = [
     slug: "svelte",
     name: "Svelte 5",
     seoTitle: "Generative UI for Svelte",
+    seoDescription:
+      "Build generative UI in Svelte 5 with OpenUI. Register components with Zod schemas and render streamed interfaces using @openuidev/svelte-lang.",
     logo: "/integration-logos/svelte.svg",
     category: "frontend-platforms",
     type: "Native runtime",
@@ -558,8 +575,8 @@ export function getIntegrationPageMetadata(integration: Integration): PageMetada
   return {
     pathname: `/integrations/${integration.slug}`,
     title: { absolute: `${integration.seoTitle} | OpenUI` },
-    description: integration.summary,
-    openGraph: { title: `${integration.name} × OpenUI` },
+    description: integration.seoDescription ?? integration.summary,
+    openGraph: { title: `${integration.name} × OpenUI`, description: integration.summary },
     // Remote logos are skipped so the build never fetches from third-party hosts.
     ogImage: { partnerLogo: integration.logo.startsWith("/") ? integration.logo : undefined },
   };
