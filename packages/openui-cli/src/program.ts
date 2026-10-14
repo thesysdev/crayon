@@ -49,10 +49,10 @@ function buildProgram(): Command {
       cliVersion,
       flagEnabled: globalOptions.telemetry !== false,
       detectedInteractive: ctx.detectedInteractive,
+      detectedAgentName: ctx.detectedAgentName ?? UNKNOWN_AGENT_NAME,
     });
     ctx.telemetry.registerRun({
       agent_name: globalOptions.agentName,
-      detected_agent_name: ctx.detectedAgentName ?? UNKNOWN_AGENT_NAME,
       can_prompt: ctx.canPrompt,
       ...(ctx.interactive === undefined ? {} : { interactive: ctx.interactive }),
       cli_run_id: randomUUID(),
