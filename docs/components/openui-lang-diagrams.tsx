@@ -367,7 +367,7 @@ export function QueryFlowDiagram() {
 
       <Arrow marker={m} x1={604} y1={90} x2={804} y2={90} />
       <Label x={704} y={78} code>
-        toolProvider.callTool
+        toolProvider
       </Label>
       <Arrow marker={m} x1={806} y1={140} x2={606} y2={140} />
       <Label x={704} y={162} code>
