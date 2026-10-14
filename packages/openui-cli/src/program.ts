@@ -8,6 +8,7 @@ import { commands } from "./commands";
 import { CreateTelemetryClient } from "./commands/create/lib/telemetry";
 import { context as ctx } from "./lib/context";
 import { detectAgent, resolveAgent, UNKNOWN_AGENT_NAME } from "./lib/detect-agent";
+import { canPromptInteractive } from "./lib/detect-tty";
 import { CliCancelledError, cliErrorProperties, CreateError } from "./lib/errors";
 
 let activeCommand = "unknown";
@@ -46,6 +47,8 @@ function buildProgram(): Command {
     ctx.telemetry.registerRun({
       agent_name: globalOptions.agentName,
       detected_agent_name: detectAgent(),
+      agent: ctx.agent ?? null,
+      can_prompt: canPromptInteractive(actionCommand.opts()["interactive"] === false, ctx.agent),
       cli_run_id: randomUUID(),
       command: actionCommand.name(),
     });

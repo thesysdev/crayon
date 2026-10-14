@@ -128,6 +128,10 @@ export class Telemetry {
   registerRun(props: {
     agent_name: string;
     detected_agent_name: string;
+    /** Resolved agent (declared or detected), null for a human. */
+    agent: string | null;
+    /** Whether this run may prompt: a terminal, no --no-interactive, and no agent. */
+    can_prompt: boolean;
     cli_run_id: string;
     command: string;
   }) {
