@@ -1,41 +1,28 @@
-import librarySpec from "@/generated/spec.json";
-import { promptOptions } from "@/lib/prompt-options";
-import { generateSystemPrompt } from "@openuidev/lang-core";
-import OpenAI from "openai";
-import type { ChatCompletionMessageParam } from "openai/resources/chat/completions";
+import { graph } from "@/agent";
 
-const client = new OpenAI();
+export const runtime = "nodejs";
 
-export async function POST(req: Request) {
-  try {
-    const { messages } = (await req.json()) as {
-      messages: ChatCompletionMessageParam[];
-    };
+/**
+ * Runs the LangGraph agent from src/agent/agent.ts in-process and returns its
+ * native `messages`-mode SSE stream untransformed. The browser converts
+ * outgoing messages with `langGraphMessageFormat` and parses the stream with
+ * `langGraphAdapter()`, so no conversion happens here. Nothing is stored
+ * server-side, so the full conversation history is sent as graph input.
+ */
+export async function POST(request: Request) {
+  const { messages } = (await request.json()) as {
+    messages: { type: string; content: string }[];
+  };
 
-    // .asResponse() forwards the SDK's raw SSE response untouched — the client
-    // parses it with openAIAdapter().
-    return await client.chat.completions
-      .create(
-        {
-          model: process.env.OPENAI_MODEL ?? "gpt-5.2",
-          messages: [
-            {
-              role: "system",
-              content: generateSystemPrompt({
-                library: librarySpec,
-                promptOptions,
-              }),
-            },
-            ...messages,
-          ],
-          stream: true,
-        },
-        { signal: req.signal }, // propagate browser aborts
-      )
-      .asResponse();
-  } catch (err) {
-    console.error(err);
-    const message = err instanceof Error ? err.message : "Unknown error";
-    return Response.json({ error: message }, { status: 500 });
-  }
+  const stream = await graph.stream(
+    { messages },
+    { streamMode: "messages", encoding: "text/event-stream", signal: request.signal },
+  );
+
+  return new Response(stream, {
+    headers: {
+      "Content-Type": "text/event-stream",
+      "Cache-Control": "no-cache, no-transform",
+    },
+  });
 }

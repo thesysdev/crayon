@@ -1,6 +1,8 @@
-import { ShowcaseGrid, type ShowcaseItem } from "./cards";
+import { EXAMPLES_REPO_URL } from "@/lib/examples-catalog";
+import { labProjects } from "@/lib/lab-projects";
+import { LinkCardGrid, ShowcaseGrid, type ShowcaseItem } from "./cards";
 
-const DEMOS: ShowcaseItem[] = [
+const PLAYGROUND: ShowcaseItem[] = [
   {
     name: "OpenUI Chat",
     tagline: "Chat assistant",
@@ -27,7 +29,7 @@ const DEMOS: ShowcaseItem[] = [
   },
   {
     name: "OpenUI vs JSON",
-    tagline: "Playground",
+    tagline: "Tokens",
     description:
       "Generate UI from a prompt and watch OpenUI Lang stream against JSON, with up to 67% fewer tokens.",
     image: { light: "/nav/vsjson-light.webp", dark: "/nav/vsjson-dark.webp" },
@@ -35,6 +37,74 @@ const DEMOS: ShowcaseItem[] = [
   },
 ];
 
-export function Demos() {
-  return <ShowcaseGrid items={DEMOS} />;
+export function Playground() {
+  return <ShowcaseGrid items={PLAYGROUND} />;
+}
+
+const FEATURED_PROJECTS: ShowcaseItem[] = [
+  {
+    name: "F1 Dashboard",
+    tagline: "Live race data",
+    description:
+      "Ask about any race, driver or team and get charts, tables and timing from OpenF1, next to live standings dashboards.",
+    image: { light: "/nav/f1-dashboard-light.webp", dark: "/nav/f1-dashboard-dark.webp" },
+    links: [
+      { label: "Open demo", href: "/demo/f1-dashboard" },
+      { label: "GitHub", href: "https://github.com/thesysdev/openui-f1-dashboard", external: true },
+    ],
+  },
+  {
+    name: "Trip Planner",
+    tagline: "Travel agent",
+    description:
+      "Plan a trip as visual spreads, a day-by-day itinerary on a map, a moodboard and a journal, with live hotel prices from trivago.",
+    image: { light: "/nav/trip-planner-light.webp", dark: "/nav/trip-planner-dark.webp" },
+    links: [
+      { label: "Open demo", href: "/demo/trip-planner" },
+      { label: "GitHub", href: "https://github.com/thesysdev/openui-trip-planner", external: true },
+    ],
+  },
+  {
+    name: "OpenClaw OS",
+    tagline: "Agent workspace",
+    description:
+      "The default workspace for OpenClaw. Agents generate interactive apps and artifacts that stay updated with live data.",
+    image: { light: "/nav/openclaw-light.webp", dark: "/nav/openclaw-dark.webp" },
+    links: [
+      { label: "Website", href: "/openclaw-os" },
+      { label: "GitHub", href: "https://github.com/thesysdev/openclaw-os", external: true },
+    ],
+  },
+  {
+    name: "AppLess",
+    tagline: "Phone OS concept",
+    description:
+      "An experimental phone with no apps. Ask for what you need and OpenUI streams a native interface for it on iOS and Android.",
+    image: { light: "/nav/appless-light.webp", dark: "/nav/appless-dark.webp" },
+    links: [{ label: "GitHub", href: "https://github.com/thesysdev/appless", external: true }],
+  },
+];
+
+export function FeaturedProjects() {
+  return <ShowcaseGrid items={FEATURED_PROJECTS} />;
+}
+
+export function CommunityProjects() {
+  // Community work that was merged into `examples/` already has a card on the Integrations page.
+  const projects = labProjects.filter(
+    (project) =>
+      project.status === "Community" &&
+      !project.links.some((link) => link.href.startsWith(EXAMPLES_REPO_URL)),
+  );
+
+  return (
+    <LinkCardGrid
+      items={projects.map((project) => ({
+        name: project.name,
+        description: project.description,
+        tag: project.type,
+        links: project.links.map((link) => ({ ...link, external: true })),
+      }))}
+    />
+  );
 }

@@ -1,5 +1,5 @@
+import { createPageMetadata } from "@/lib/page-metadata";
 import { ArrowUpRight } from "lucide-react";
-import type { Metadata } from "next";
 import { BevelButton } from "../../components/Button/BevelButton";
 import { FadedDither } from "../../components/FadedDither/FadedDither";
 import styles from "../../page.module.css";
@@ -10,6 +10,7 @@ import { GatewayReliabilityOpenIllustration } from "../../sections/ProductIllust
 import { CloudCtaSection } from "../CloudCtaSection";
 import { FaqSection } from "./FaqSection";
 import { IntegrateSection } from "./IntegrateSection";
+import page from "./metadata";
 import gatewayStyles from "./page.module.css";
 import { PricingSection } from "./PricingSection";
 import { RepairSection } from "./RepairSection";
@@ -18,19 +19,7 @@ import { SecuritySection } from "./SecuritySection";
 import { UsageSection } from "./UsageSection";
 import { WhySection } from "./WhySection";
 
-export const metadata: Metadata = {
-  title: { absolute: "OpenUI Gateway | Production reliability for Generative UI" },
-  description:
-    "An OpenAI-compatible API that validates model output against your component library and repairs it as it streams.",
-  alternates: { canonical: "/cloud/gateway" },
-  openGraph: {
-    title: "OpenUI Gateway | Production reliability for Generative UI",
-    description:
-      "Add production reliability to OpenUI with validation, streaming repair, model routing, and provider fallbacks through an OpenAI-compatible API.",
-    url: "/cloud/gateway",
-    type: "website",
-  },
-};
+export const metadata = createPageMetadata(page);
 
 export default function GatewayPage() {
   return (

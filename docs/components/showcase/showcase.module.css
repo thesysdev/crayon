@@ -5,14 +5,8 @@
   margin: 1.25rem 0 0;
 }
 
-/* At most two columns, so four featured cards form a 2x2 grid instead of 3 + 1. */
-.featuredGrid {
-  grid-template-columns: repeat(
-    auto-fit,
-    minmax(min(100%, max(22rem, calc((100% - 1rem) / 2))), 1fr)
-  );
-}
-
+/* Image and text cards share one grid: three columns on wide screens, fewer as it narrows. */
+.featuredGrid,
 .grid {
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 18rem), 1fr));
 }
@@ -101,6 +95,39 @@
 
 .featuredCard .cardTitle {
   font-size: 1.125rem !important;
+}
+
+.cardIdentity {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.cardLogo,
+.cardLogoDark {
+  width: 1.25rem;
+  height: 1.25rem;
+  flex-shrink: 0;
+  margin: 0 !important;
+  object-fit: contain;
+}
+
+:global(.dark) .cardLogoDark {
+  filter: invert(1);
+}
+
+/* Integration cards share the grid's rows through subgrid, so the logo row, description, and
+   links line up across every card in a row. */
+.exampleCard {
+  display: grid;
+  grid-row: span 3;
+  grid-template-rows: subgrid;
+  row-gap: 0.75rem;
+}
+
+.exampleCard .cardDescription,
+.exampleCard .cardLinks {
+  margin-top: 0 !important;
 }
 
 .cardDescription {
@@ -225,18 +252,6 @@
   width: 0.875rem;
   height: 0.875rem;
   color: var(--docs-text-muted);
-}
-
-.categories {
-  display: flex;
-  flex-direction: column;
-  gap: 2.25rem;
-  margin-top: 1.5rem;
-}
-
-.categoryTitle {
-  margin: 0 !important;
-  scroll-margin-top: 7rem;
 }
 
 .categoryDescription {

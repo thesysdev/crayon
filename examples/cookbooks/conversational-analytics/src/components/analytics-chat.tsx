@@ -2,17 +2,18 @@
 
 import {
   AgentInterface,
-  agUIAdapter,
   fetchLLM,
   openAIMessageFormat,
+  openAIReadableStreamAdapter,
+  useOpenuiCloudStorage,
   type ThemeProps,
 } from "@openuidev/react-ui";
 import { library } from "../library";
 
-// Send the thread's messages in Chat Completions format and read the route's AG-UI events.
+// Send the thread's messages in Chat Completions format and read the runner's stream from the route.
 const llm = fetchLLM({
   url: "/api/chat",
-  streamAdapter: agUIAdapter(),
+  streamAdapter: openAIReadableStreamAdapter(),
   messageFormat: openAIMessageFormat,
 });
 
@@ -36,10 +37,18 @@ const starters = [
 ];
 
 export default function AnalyticsChat() {
+  // Store threads as Gateway conversations, which the browser reaches with a short-lived token
+  // from /api/frontend-token. The chat route appends each turn to the thread's conversation, so
+  // a thread opened again loads its messages.
+  const storage = useOpenuiCloudStorage({
+    token: "/api/frontend-token",
+    features: { artifact: false },
+  });
   return (
     <div className="analytics-app">
       <AgentInterface
         llm={llm}
+        storage={storage}
         componentLibrary={library}
         agentName="Data analyst"
         theme={theme}

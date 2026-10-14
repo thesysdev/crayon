@@ -1,5 +1,6 @@
 // define library
-export { tagSchemaId } from "@openuidev/lang-core";
+export { action, defineAction, defineFunction, steps, tagSchemaId } from "@openuidev/lang-core";
+export type { ActionRef, DefinedAction, DefinedFunction } from "@openuidev/lang-core";
 export { createLibrary, defineComponent } from "./library";
 export type {
   ComponentGroup,
@@ -8,14 +9,21 @@ export type {
   DefinedComponent,
   Library,
   LibraryDefinition,
+  LibraryExtension,
   PromptOptions,
   SubComponentOf,
   ToolDescriptor,
 } from "./library";
 
 // openui-lang renderer
-export { Renderer } from "./Renderer";
-export type { RendererProps } from "./Renderer";
+export { Renderer, useRendererQuery } from "./Renderer";
+export type {
+  RendererContentSlotProps,
+  RendererProps,
+  RendererQueryState,
+  RendererRetryProps,
+  RendererSlotProps,
+} from "./Renderer";
 
 // openui-lang action types
 export { ACTION_STEPS, BuiltinActionType } from "@openuidev/lang-core";
@@ -24,12 +32,17 @@ export type {
   ActionPlan,
   ActionStep,
   ElementNode,
+  LibraryActionEvent,
   OpenUIError,
   ParseResult,
 } from "@openuidev/lang-core";
 
 // openui-lang parser (server-side use)
 export { createParser, createStreamingParser } from "@openuidev/lang-core";
+
+// Message protocol: marker lines around a stored response
+export { buildMessage, parseMessage } from "@openuidev/lang-core";
+export type { BuildMessageInput, ParseMessageOptions, ParsedMessage } from "@openuidev/lang-core";
 
 // Standalone prompt generation (no Zod deps — usable on backend)
 export { generatePrompt, generateSystemPrompt } from "@openuidev/lang-core";
@@ -86,3 +99,12 @@ export {
   validate,
 } from "@openuidev/lang-core";
 export type { ParsedRule, ValidatorFn } from "@openuidev/lang-core";
+
+export type { ResponseMetadata } from "./responseBundle";
+export { WithPreviewRenderer, useRendererPreview } from "./WithPreviewRenderer";
+export type {
+  PreviewButtonProps,
+  PreviewContentProps,
+  RendererPreviewState,
+  WithPreviewRendererProps,
+} from "./WithPreviewRenderer";

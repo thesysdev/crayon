@@ -47,7 +47,7 @@ const model = new OpenAI();
 export async function POST(request: Request) {
   const { messages } = await request.json();
   const source = await model.chat.completions.create(
-    { model: "openai/gpt-5.5", messages, stream: true },
+    { model: "gpt-5.5", messages, stream: true },
     { signal: request.signal },
   );
 
@@ -131,3 +131,27 @@ chatCompletionMessagesToItems([
   { role: "assistant", content: "hi" },
 ]);
 ```
+
+### LangGraph
+
+Import `storeLangGraphHistory` from `@openuidev/server/langgraph`. Pass completed
+`BaseMessage` instances from `@langchain/core/messages`, the message types used
+by LangGraph. This entry point requires the optional `@langchain/core` peer
+dependency; other server entry points do not.
+
+```ts
+import { storeLangGraphHistory } from "@openuidev/server/langgraph";
+
+await storeLangGraphHistory({
+  apiKey: process.env.THESYS_API_KEY!,
+  conversationId: threadId,
+  messages: newTurnMessages,
+});
+```
+
+Store only the new turn, including tool calls and results. Passing the full
+replayed history or individual streaming chunks creates duplicate items.
+The conversation must already exist. System/developer instructions are skipped;
+text and user `image_url` blocks are supported. Use `langGraphMessagesToItems`
+for conversion without a network request. `apiBaseUrl` and `fetch` work as in
+`storeChatCompletionHistory`; storage failures reject the returned promise.

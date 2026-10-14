@@ -1,5 +1,6 @@
 import type { ScaleLinear } from "d3-scale";
 
+import { FadeFollower } from "../../shared/core/spring";
 import type { ChartData } from "../../types";
 import { CHART_CLASS_PREFIX } from "../../utils/constants";
 import { entranceProps } from "../../utils/entranceUtils";
@@ -46,11 +47,15 @@ export function RadarSeries<T extends ChartData>({
   hoveredIndex,
   animate,
 }: RadarSeriesProps<T>) {
+  const series = dataKeys.map((key) => ({
+    key,
+    color: colorMap[key] ?? "#000",
+    vertices: computeVertices(data, key, numAxes, radialScale),
+  }));
+
   return (
     <g className={`${CHART_CLASS_PREFIX}-radar-chart-series`}>
-      {dataKeys.map((key, seriesIdx) => {
-        const color = colorMap[key] ?? "#000";
-        const vertices = computeVertices(data, key, numAxes, radialScale);
+      {series.map(({ key, color, vertices }, seriesIdx) => {
         const points = vertices.map((v) => `${v.x},${v.y}`).join(" ");
 
         const { className: animationClass, animationDelay } = entranceProps(
@@ -95,6 +100,27 @@ export function RadarSeries<T extends ChartData>({
           </g>
         );
       })}
+      {/* The hovered axis gets an active dot where each series crosses it (the
+          Recharts radar's activeDot). Like the line/area crosshair dots they stay
+          mounted, glide from axis to axis and fade in and out. Vertex dots, when
+          on, show the hover themselves. */}
+      {!showDots && (
+        <g className={`${CHART_CLASS_PREFIX}-radar-chart-active-dots`}>
+          {series.map(({ key, color, vertices }) => {
+            const v = hoveredIndex !== null ? vertices[hoveredIndex] : undefined;
+            return (
+              <FadeFollower key={key} x={v?.x ?? 0} y={v?.y ?? 0} visible={v !== undefined}>
+                <circle r={4} className={`${CHART_CLASS_PREFIX}-radar-chart-active-dot-outer`} />
+                <circle
+                  r={2}
+                  fill={color}
+                  className={`${CHART_CLASS_PREFIX}-radar-chart-active-dot-inner`}
+                />
+              </FadeFollower>
+            );
+          })}
+        </g>
+      )}
     </g>
   );
 }

@@ -111,9 +111,17 @@ Each step covers one part of the example, in the order a request flows through i
 trivago's server speaks MCP over HTTP at `https://mcp.trivago.com/mcp`. Its `trivago-accommodation-search` tool takes a destination, dates, guests, and optional filters for stars, guest rating, and amenities. The example calls it with the MCP TypeScript SDK and keeps only the structured hotel list:
 
 ```ts title="src/lib/trivago.ts"
-export async function searchAccommodations(search: AccommodationSearch, signal?: AbortSignal) {
-  const client = new Client({ name: "openui-booking-assistant", version: "0.1.0" });
-  await client.connect(new StreamableHTTPClientTransport(serverUrl), { signal });
+export async function searchAccommodations(
+  search: AccommodationSearch,
+  signal?: AbortSignal,
+) {
+  const client = new Client({
+    name: "openui-booking-assistant",
+    version: "0.1.0",
+  });
+  await client.connect(new StreamableHTTPClientTransport(serverUrl), {
+    signal,
+  });
   try {
     const result = await client.callTool(
       { name: "trivago-accommodation-search", arguments: search },
@@ -155,10 +163,11 @@ Give Gateway a function tool named `search_stays`. It takes every detail of the 
 Currencies, guest ratings, and amenities are enums of the values trivago accepts. Your server validates the arguments again, rejecting a check-in in the past or more rooms than adults, and maps them to trivago's filters. trivago has no price filter, so the tool applies the budget itself:
 
 ```ts title="src/lib/tools/search-stays.ts"
-// trivago has no price filter, so apply the budget here and report what it left out.
+// trivago has no price filter, so apply the budget and track what it drops.
 const inBudget = found.filter(
   (stay) =>
-    args.max_price_per_night === null || amount(stay.price_per_night) <= args.max_price_per_night,
+    args.max_price_per_night === null ||
+    amount(stay.price_per_night) <= args.max_price_per_night,
 );
 const overBudget = found.filter((stay) => !inBudget.includes(stay));
 ```
@@ -167,49 +176,31 @@ The result holds the top six stays and, when the budget left some out, how many 
 
 ### 3. Choose the components
 
-Use the built-in form controls, a few components for summaries and messages, and one component of your own:
+Use the chat library, React UI's built-in library for Agent Interface answers. It has the form controls, summaries, and messages a booking needs, so the example replaces only its date picker:
 
 ```ts title="src/library.ts"
+import { createLibrary } from "@openuidev/react-lang";
+import { openuiChatLibrary } from "@openuidev/react-ui/genui-lib";
+import { DatePicker } from "./components/date-picker";
+
 export const library = createLibrary({
-  root: "Stack",
-  components: [
-    ...[
-      "Stack",
-      "CardHeader",
-      "TextContent",
-      "Callout",
-      "Table",
-      "Col",
-      "Form",
-      "FormControl",
-      "Input",
-      "Select",
-      "SelectItem",
-      "Chips",
-      "ChipItem",
-      "OptionCards",
-      "OptionCard",
-      "Image",
-      "Buttons",
-      "Button",
-    ].map((name) => openuiLibrary.components[name]),
-    DatePicker,
-    openuiChatLibrary.components.FollowUpBlock,
-    openuiChatLibrary.components.FollowUpItem,
-  ],
+  root: openuiChatLibrary.root,
+  componentGroups: openuiChatLibrary.componentGroups,
+  components: Object.values({ ...openuiChatLibrary.components, DatePicker }),
 });
 ```
 
-`Form` groups the fields and checks their validation rules when the person clicks a primary button. `Chips` covers short choices, such as stars and amenities. `OptionCards` shows the stays as selectable cards, each with an `Image` of the hotel. By default, an option card shows its image as a small thumbnail; one CSS rule in [styles.css](https://github.com/thesysdev/openui/blob/main/examples/cookbooks/booking-assistant/src/app/styles.css) stretches it across the card.
+Every answer is one `Card`. `Form` groups the fields and checks their validation rules when the person clicks a primary button. `Chips` covers short choices, such as stars and amenities. `OptionCards` shows the stays as selectable cards, each with an `Image` of the hotel. By default, an option card shows its image as a small thumbnail; one CSS rule in [styles.css](https://github.com/thesysdev/openui/blob/main/examples/cookbooks/booking-assistant/src/app/styles.css) stretches it across the card.
 
 React UI's own `DatePicker` stores JavaScript `Date` objects. The model can only write text, so it cannot prefill one, and a submitted `Date` reaches the model as a UTC timestamp that can fall on the day before. The example replaces it with a component that has the same name and props but reads and writes `YYYY-MM-DD` strings:
 
 ```tsx title="src/components/date-picker.tsx"
 export const DatePicker = defineComponent({
   name: "DatePicker",
-  props: openuiLibrary.components.DatePicker.props,
+  props: openuiChatLibrary.components.DatePicker.props,
   description:
-    "A single date. Prefill it by passing a YYYY-MM-DD string as value; the form submits YYYY-MM-DD.",
+    "A single date. Prefill it by passing a YYYY-MM-DD string as value; " +
+    "the form submits YYYY-MM-DD.",
   component: ({ props }) => {
     const field = useStateField(props.name, props.value);
     return (
@@ -223,7 +214,7 @@ export const DatePicker = defineComponent({
 });
 ```
 
-Reusing the built-in props keeps `DatePicker` valid inside `FormControl`, and the new description tells the model the format. The [complete component](https://github.com/thesysdev/openui/blob/main/examples/cookbooks/booking-assistant/src/components/date-picker.tsx) also registers validation rules and closes the calendar once a date is picked. Generate the server specification from the library with `npm run generate`, which also runs before development and builds.
+Spreading it after the chat library's components replaces the built-in `DatePicker`, which has the same name. Reusing the built-in props keeps it valid inside `FormControl`, and the new description tells the model the format. The [complete component](https://github.com/thesysdev/openui/blob/main/examples/cookbooks/booking-assistant/src/components/date-picker.tsx) also registers validation rules and closes the calendar once a date is picked. Generate the server specification from the library with `npm run generate`, which also runs before development and builds.
 
 ### 4. Describe the booking flow
 
@@ -235,27 +226,43 @@ The model prefills a field by passing its value, such as the date `"2026-10-02"`
 
 > Submitted form state contains only the fields the user changed. For every field missing from it, use the value you prefilled in that form.
 
-Agent Interface sends the whole conversation with every turn, so the model still sees its own form from the previous turn and can fill in the gaps. The remaining rules describe the stay cards, the summary, and the hand-off. Each stay card's value is the stay's booking link, so choosing a card sends the link back with the form, and the summary's **Continue to booking** button opens it with `@OpenUrl`. One example program for each step, the trip form, the stay cards, and the summary, shows the model how the components fit together.
+Agent Interface sends the whole conversation with every turn, so the model still sees its own form from the previous turn and can fill in the gaps. The remaining rules describe the stay cards, the summary, and the hand-off. Each stay card's value is the stay's booking link, so choosing a card sends the link back with the form, and the summary's **Continue to booking** button opens it with `@OpenUrl`. One OpenUI Lang example for each step, the trip form, the stay cards, and the summary, shows the model how the components fit together.
 
 ### 5. Connect Agent Interface
 
-Agent Interface provides the sidebar, composer, tool timeline, and stop control. Connect generation to the local chat route with `fetchLLM`. It sends the thread's messages in Chat Completions format and reads the route's stream with `agUIAdapter()`:
+Agent Interface provides the sidebar, composer, tool timeline, and stop control. Connect generation to the local chat route with `fetchLLM`. It sends the thread's messages in Chat Completions format and reads the route's stream with `openAIReadableStreamAdapter()`:
 
 ```tsx title="src/components/booking-chat.tsx"
 const llm = fetchLLM({
   url: "/api/chat",
-  streamAdapter: agUIAdapter(),
+  streamAdapter: openAIReadableStreamAdapter(),
   messageFormat: openAIMessageFormat,
 });
+
+const storage = useOpenuiCloudStorage({
+  token: "/api/frontend-token",
+  features: { artifact: false },
+});
+
+<AgentInterface
+  llm={llm}
+  storage={storage}
+  componentLibrary={library}
+  agentName="Stay finder"
+/>;
 ```
 
-Chat Completions does not store conversations, so Agent Interface keeps each thread in the browser and sends its messages with every turn. Threads last until the page reloads. To keep them longer, pass a `storage` adapter backed by your database; see [Connect a backend](/docs/agent/reference/self-hosting).
+Chat Completions does not store conversations, so the chat route loads each thread's earlier turns from Gateway, with their searches and results, and sends them with every turn.
 
-The chat route runs the same [function-tool loop](https://github.com/thesysdev/openui/blob/main/examples/cookbooks/booking-assistant/src/lib/tool-loop.ts) as the [conversational analytics cookbook](/cookbooks/conversational-analytics#5-stream-the-answer), streaming AG-UI events so Agent Interface shows each search and its result. It forwards only user messages and assistant answers from the browser and drops tool calls and results, so later steps rely on what the stay cards show, including the booking link in each card's value. A submitted form arrives as one message with the button label and the form's values, so the route accepts user messages of up to 4,000 characters.
+<Callout type="info" title="Thread storage">
+
+`useOpenuiCloudStorage()` keeps the thread list in Gateway, and the chat route saves each turn, tool calls included, with [`storeChatCompletionHistory()`](/docs/api-reference/server#conversation-history), so threads and their messages stay after a reload.
+
+</Callout>
+
+The [chat route](https://github.com/thesysdev/openui/blob/main/examples/cookbooks/booking-assistant/src/app/api/chat/route.ts) runs `search_stays` whenever the model asks for a search and streams the answer to Agent Interface as the model writes it, so **Behind the scenes** shows each search. Earlier turns come from the Gateway conversation, with their searches and results, so later steps can use the stays a search returned.
 
 The example also customizes Agent Interface with a theme from `createTheme`, a logo, starters for four different trips, and a thread header that credits trivago. See [Welcome and starters](/docs/agent/customize/welcome-and-starters).
-
-This example calls Gateway directly from a Next.js route, but the tool and prompt can also run on an agent framework such as LangGraph, the Vercel AI SDK, Mastra, or Google ADK. Agent Interface stays the same and reads the framework's stream with the matching adapter. See our [LangGraph Platform](/docs/agent/agent-runtimes/langgraph-platform), [Vercel AI SDK](/docs/agent/agent-runtimes/vercel-ai-sdk), and [Vercel Eve](/docs/agent/agent-runtimes/vercel-eve) integrations, or the [Mastra](https://github.com/thesysdev/openui/tree/main/examples/agent-frameworks/mastra) and [Google ADK](https://github.com/thesysdev/openui/tree/main/examples/agent-frameworks/google-adk) examples.
 
 ## Verify it works
 
@@ -266,7 +273,8 @@ In the browser:
 3. Fill it in again and search. Open **Form data** above your message to see the values that were sent, and expand **Behind the scenes** to see the `search_stays` call.
 4. Ask for **“under $100 a night”**, and confirm the reply says how many stays were over budget and the cheapest price among them.
 5. Pick a stay, check the summary, and click **Continue to booking**. trivago should open the stay for your dates and guests.
-6. Switch your operating system between light and dark mode, and confirm the theme follows.
+6. Reload the page and open an earlier thread. Confirm its messages load.
+7. Switch your operating system between light and dark mode, and confirm the theme follows.
 
 Generated layouts can vary. Hotels, prices, photos, and links should always come from a search result, and prices can change between searches.
 
@@ -276,10 +284,22 @@ To use another MCP server, keep the `search_stays` contract and replace `searchA
 
 The form pattern carries over to anything that needs a few details before an action: a restaurant reservation, a support ticket, a travel request. Describe the details, their controls, and which are required, and keep the action behind a summary. Before relying on a third-party MCP server in production, check its terms and plan for it being slow or unavailable.
 
-This example runs locally without authentication, and its chat route accepts browser requests only from its own page. Before deploying it, add authentication and rate limits. See the [example README](https://github.com/thesysdev/openui/tree/main/examples/cookbooks/booking-assistant) for the implementation notes.
+This example calls Gateway directly from a Next.js route, but the tool and prompt can also run on an agent framework such as LangGraph, the Vercel AI SDK, Mastra, or Google ADK. Agent Interface stays the same and reads the framework's stream with the matching adapter. See our [LangGraph Platform](/docs/build-agents/frameworks/langgraph), [Vercel AI SDK](/docs/build-agents/frameworks/vercel-ai-sdk), and [Vercel Eve](/docs/build-agents/frameworks/vercel-eve) integrations, or the [Mastra](https://github.com/thesysdev/openui/tree/main/examples/agent-frameworks/mastra) and [Google ADK](https://github.com/thesysdev/openui/tree/main/examples/agent-frameworks/google-adk) examples.
 
-- [Agent Interface quickstart](/docs/agent/getting-started/quickstart)
-- [Gateway Chat Completions API](/docs/gateway/api/chat-completions)
-- [Connect a backend](/docs/agent/reference/self-hosting)
+This example runs locally without authentication. Before deploying it, add [authentication](/docs/gateway/authentication), limits on request size, and rate limits. See the [example README](https://github.com/thesysdev/openui/tree/main/examples/cookbooks/booking-assistant) for the implementation notes.
+
+## References
+
+- [`@openuidev/react-ui`](/docs/api-reference/react-ui): `AgentInterface` and the chat library.
+- [`@openuidev/react-headless`](/docs/api-reference/react-headless): `fetchLLM()`, `openAIReadableStreamAdapter()`, and `useOpenuiCloudStorage()`, which the example imports through `@openuidev/react-ui`.
+- [`@openuidev/react-lang`](/docs/api-reference/react-lang): `createLibrary()` and `defineComponent()`.
+- [`@openuidev/lang-core`](/docs/openui-lang/system-prompts): `generateSystemPrompt()`.
+- [`@openuidev/server`](/docs/api-reference/server#conversation-history): `storeChatCompletionHistory()`.
+- [`@openuidev/cli`](/docs/api-reference/cli): `openui generate`.
+- [OpenAI SDK](https://github.com/openai/openai-node): `runTools()` and `toReadableStream()`.
+- [MCP TypeScript SDK](https://github.com/modelcontextprotocol/typescript-sdk): the Streamable HTTP client that calls trivago's MCP server.
+- [Gateway Chat Completions API](/docs/gateway/api/chat-completions).
+- [Agent Interface quickstart](/docs/agent/getting-started/quickstart).
+- [Connect a backend](/docs/agent/reference/self-hosting).
 
 Hotels, prices, and photos: [trivago MCP](https://mcp.trivago.com/docs), fetched live for each search.

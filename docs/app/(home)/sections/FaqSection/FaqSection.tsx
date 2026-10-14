@@ -1,3 +1,4 @@
+import { BRIEFS, tokens } from "@/lib/benchmark-data";
 import type { ReactNode } from "react";
 import styles from "./FaqSection.module.css";
 
@@ -7,12 +8,23 @@ export type MarketingFaq = {
   answer: string[];
 };
 
-const FAQS: MarketingFaq[] = [
+const fewerOutputTokensThan = (format: "jsonRender" | "a2ui") =>
+  Math.round((1 - tokens.outputPerScreen.openui / tokens.outputPerScreen[format]) * 100);
+
+export const FAQS: MarketingFaq[] = [
   {
     question: "What should I use to build a Generative UI app?",
     answer: [
       "Start with OpenUI, the free and open-source framework for Generative UI.",
       "For production, we recommend adding OpenUI Gateway for reliability and OpenUI Observability for monitoring and product analytics.",
+    ],
+  },
+  {
+    question: "What is OpenUI Lang?",
+    answer: [
+      "OpenUI Lang is a compact, streaming-first language that LLMs write to build interfaces from your own components.",
+      "It is not JSON. Each line defines one component, such as root = Stack([header, chart]), so the interface renders while the response is still streaming.",
+      `Across the same ${BRIEFS} interfaces in our benchmark, OpenUI Lang averaged ${tokens.outputPerScreen.openui.toLocaleString("en-US")} output tokens per screen: ${fewerOutputTokensThan("jsonRender")}% fewer than json-render and ${fewerOutputTokensThan("a2ui")}% fewer than A2UI, both JSON formats.`,
     ],
   },
   {
@@ -111,30 +123,41 @@ export function FaqSection({
         </p>
       </div>
 
-      <div className={styles.list}>
-        {faqs.map(({ question, answer }, index) => (
-          <details
-            className={styles.item}
-            key={question}
-            name={`${titleId}-accordion`}
-            open={firstOpen && index === 0}
-          >
-            <summary className={styles.question}>
-              <span className={styles.questionText}>{question}</span>
-              {/* Two bars making a plus; the upright one collapses when open,
-                  leaving a minus. */}
-              <span className={styles.marker} aria-hidden="true" />
-            </summary>
-            <div className={styles.answer}>
-              {answer.map((paragraph) => (
-                <p className={styles.paragraph} key={paragraph}>
-                  {paragraph}
-                </p>
-              ))}
-            </div>
-          </details>
-        ))}
-      </div>
+      <FaqList faqs={faqs} name={`${titleId}-accordion`} firstOpen={firstOpen} />
     </section>
+  );
+}
+
+/* The questions on their own, for pages that supply their own heading (blog
+ * posts). Items sharing `name` open one at a time. */
+export function FaqList({
+  faqs,
+  name,
+  firstOpen = false,
+}: {
+  faqs: { question: string; answer: ReactNode[] }[];
+  name: string;
+  firstOpen?: boolean;
+}) {
+  return (
+    <div className={styles.list}>
+      {faqs.map(({ question, answer }, index) => (
+        <details className={styles.item} key={question} name={name} open={firstOpen && index === 0}>
+          <summary className={styles.question}>
+            <span className={styles.questionText}>{question}</span>
+            {/* Two bars making a plus; the upright one collapses when open,
+                leaving a minus. */}
+            <span className={styles.marker} aria-hidden="true" />
+          </summary>
+          <div className={styles.answer}>
+            {answer.map((paragraph, paragraphIndex) => (
+              <p className={styles.paragraph} key={paragraphIndex}>
+                {paragraph}
+              </p>
+            ))}
+          </div>
+        </details>
+      ))}
+    </div>
   );
 }

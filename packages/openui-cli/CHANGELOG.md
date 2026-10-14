@@ -1,5 +1,25 @@
 # @openuidev/cli
 
+## 0.5.2
+
+### Patch Changes
+
+- [#1336](https://github.com/thesysdev/openui/pull/1336) [`adc0234`](https://github.com/thesysdev/openui/commit/adc023433e0ebfd4e1fd33a48b12ee8b2cace8bb) Thanks [@AbhinRustagi](https://github.com/AbhinRustagi)! - Offer browser sign-in and API key generation when scaffolding OpenUI examples. Read the primary key and destination from the example catalog's nested `env` object, including backend `.env` files and `.env.local`, and preserve other environment settings.
+
+- [#1342](https://github.com/thesysdev/openui/pull/1342) [`9aa0771`](https://github.com/thesysdev/openui/commit/9aa077167a9788fb5c053732f01d63bae0894ec4) Thanks [@devin-ai-integration](https://github.com/apps/devin-ai-integration)! - Let `create --example` scaffold from other `thesysdev` GitHub repositories, and add Open Intelligent UI to the example catalog.
+
+## 0.5.1
+
+### Patch Changes
+
+- [#1322](https://github.com/thesysdev/openui/pull/1322) [`6fb4741`](https://github.com/thesysdev/openui/commit/6fb4741c261cafcefa012c962b00b3686756a4a3) Thanks [@AbhinRustagi](https://github.com/AbhinRustagi)! - Make LangGraph the default starter using Chat Completions and remove the minimal OpenAI SDK template. Persist completed turns in Cloud starters with the published server package.
+
+## 0.5.0
+
+### Minor Changes
+
+- [#1266](https://github.com/thesysdev/openui/pull/1266) [`17be496`](https://github.com/thesysdev/openui/commit/17be4966d31ac92b86a9670feeac5c48d08c1277) Thanks [@devin-ai-integration](https://github.com/apps/devin-ai-integration)! - Add `openui feedback` command for sending anonymous feedback.
+
 ## 0.4.1
 
 ### Patch Changes

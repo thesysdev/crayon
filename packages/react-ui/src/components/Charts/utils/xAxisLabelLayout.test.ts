@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { ANGLED_LABEL_ROTATION, layoutXAxisLabels } from "./xAxisLabelLayout";
+import { wrapLabelLines } from "./labelWrap";
+import { ANGLED_LABEL_ROTATION, fullLabelWidth, layoutXAxisLabels } from "./xAxisLabelLayout";
 
 // Deterministic stand-in for canvas text metrics: width == 10px per character.
 const ctx = {
@@ -26,6 +27,7 @@ describe("layoutXAxisLabels — condensed", () => {
       labelWidth: 92,
       maxLines: 1,
       height: 30,
+      slotWidth: 100,
     });
   });
 
@@ -94,7 +96,14 @@ describe("layoutXAxisLabels — condensed", () => {
 describe("layoutXAxisLabels — scrolling", () => {
   it("draws every label at its category width, never rotated", () => {
     const out = layout([LONG], { condensed: false, variant: "angled", slotWidth: 70 });
-    expect(out).toEqual({ angle: 0, interval: 1, labelWidth: 70, maxLines: 1, height: 30 });
+    expect(out).toEqual({
+      angle: 0,
+      interval: 1,
+      labelWidth: 70,
+      maxLines: 1,
+      height: 30,
+      slotWidth: 70,
+    });
   });
 
   it("reserves the wrapped line count for multiLine", () => {
@@ -102,5 +111,139 @@ describe("layoutXAxisLabels — scrolling", () => {
     const out = layout([LONG], { condensed: false, variant: "multiLine", slotWidth: 150 });
     expect(out.maxLines).toBe(3);
     expect(out.height).toBe(3 * LINE + 13);
+  });
+});
+
+describe("layoutXAxisLabels — scrolling, full labels", () => {
+  const scroll = (labels: string[], opts: Partial<Parameters<typeof layoutXAxisLabels>[2]> = {}) =>
+    layout(labels, {
+      condensed: false,
+      variant: "multiLine",
+      slotWidth: 72,
+      visibleWidth: 1000,
+      ...opts,
+    });
+  /** The label as the axis draws it at the layout's width and line count. */
+  const drawn = (label: string, out: ReturnType<typeof layoutXAxisLabels>) =>
+    wrapLabelLines(ctx, label, out.labelWidth, out.maxLines);
+
+  it("keeps the density width when every label already fits", () => {
+    const out = scroll(["Jan", "Feb", "Mar"]);
+    expect(out.slotWidth).toBe(72);
+    expect(out.maxLines).toBe(1);
+  });
+
+  it("widens the category until a long label wraps in full", () => {
+    const out = scroll([LONG, "Jan"]);
+    // The narrowest 3-line wrap is 180px ("Category Name That"), + the 8px gap.
+    expect(out.slotWidth).toBe(188);
+    expect(out.maxLines).toBe(3);
+    expect(drawn(LONG, out)).toEqual(["Extremely Long", "Category Name That", "Needs Truncation"]);
+  });
+
+  // Wraps into 3 lines from 130px ("Response Time"), 2 lines from 160px.
+  const CSRT = "Customer Support Response Time";
+
+  it("sizes a bar chart's category so the label fits under the band", () => {
+    const out = scroll([CSRT], { labelShare: 0.8 });
+    expect(out.labelWidth).toBeCloseTo(out.slotWidth * 0.8);
+    expect(out.labelWidth).toBeGreaterThanOrEqual(130);
+    expect(drawn(CSRT, out).join(" ")).toBe(CSRT);
+  });
+
+  it("fits the lines a short band holds", () => {
+    // (45 − 13 padding) / 15 → 2 lines, so the label needs a wider category.
+    const out = scroll([CSRT], { maxHeight: 45 });
+    expect(out.maxLines).toBe(2);
+    expect(drawn(CSRT, out)).toEqual(["Customer Support", "Response Time"]);
+  });
+
+  it("fits single-line labels on one line", () => {
+    const out = scroll(["Customer Support"], { variant: "singleLine" });
+    expect(out.slotWidth).toBe(168);
+    expect(out.maxLines).toBe(1);
+  });
+
+  it("grows a category to at most three times its usual width", () => {
+    // 200px + the 8px gap fits under 3 × 72 = 216px; 220px doesn't, so it truncates.
+    expect(scroll(["Twenty characters ok"], { variant: "singleLine" }).slotWidth).toBe(208);
+    expect(scroll(["Twenty-two characters!"], { variant: "singleLine" }).slotWidth).toBe(72);
+  });
+
+  it("never grows a category past half the visible width", () => {
+    // A 300px plot keeps at least two 150px categories in view.
+    const narrow = { variant: "singleLine" as const, visibleWidth: 300 };
+    expect(scroll(["Fourteen chars"], narrow).slotWidth).toBe(148);
+    expect(scroll(["Sixteen chars ok"], narrow).slotWidth).toBe(72);
+  });
+
+  it("never lets the gap between labels make a chart that fits scroll", () => {
+    // Four 160px labels fit a 660px plot at 165px each, just not with the 8px gap.
+    const out = scroll(Array(4).fill("Sixteen chars ok"), {
+      variant: "singleLine",
+      visibleWidth: 660,
+    });
+    expect(out.slotWidth).toBe(165);
+  });
+
+  it("truncates, without widening for, a label that can't show in full", () => {
+    // One 370px word would fit this 1000px plot on one line, but not a
+    // category three times the usual width: it breaks mid-word and truncates.
+    const WORD = "SinglePointDataSetForTestingEdgeCases";
+    const out = scroll([WORD, "Jan"]);
+    expect(out.slotWidth).toBe(72);
+    expect(drawn(WORD, out).at(-1)).toMatch(/…$/);
+  });
+
+  it("leaves the condensed layout's categories alone", () => {
+    expect(layout([LONG], { slotWidth: 60, visibleWidth: 1000 }).slotWidth).toBe(60);
+  });
+
+  it("sizes for the widest label that shows in full, wherever it sits", () => {
+    const labels = ["Jan", CSRT, LONG, "Customer Support", "SinglePointDataSetForTestingEdgeCases"];
+    const out = scroll(labels);
+    // LONG sets the width on its own (see above); the 370px word can't show in full.
+    expect(out.slotWidth).toBe(scroll([LONG]).slotWidth);
+    expect(scroll([...labels].reverse())).toEqual(out);
+    expect(scroll([...labels.slice(2), ...labels.slice(0, 2)])).toEqual(out);
+  });
+
+  it("measures a long category list a bounded number of times per label", () => {
+    let measures = 0;
+    const counting = {
+      measureText: (s: string) => {
+        measures++;
+        return { width: s.length * 10 };
+      },
+    } as unknown as CanvasRenderingContext2D;
+    const labels = Array.from({ length: 1000 }, (_, i) => `Region ${i} Support Tickets`);
+    const out = layoutXAxisLabels(counting, labels, {
+      variant: "multiLine",
+      slotWidth: 72,
+      maxHeight: 120,
+      lineHeight: LINE,
+      condensed: false,
+      visibleWidth: 1000,
+    });
+    expect(out.slotWidth).toBeGreaterThan(72);
+    // Only the labels that raise the width are searched; the rest are checked
+    // once or twice (the full search on every label took ~130 per label).
+    expect(measures / labels.length).toBeLessThan(40);
+  });
+});
+
+describe("fullLabelWidth", () => {
+  it("is the one-line width when only one line is allowed", () => {
+    expect(fullLabelWidth(ctx, LONG, 1)).toBe(500);
+  });
+
+  it("is the narrowest width that wraps the label into the allowed lines", () => {
+    expect(fullLabelWidth(ctx, LONG, 3)).toBe(180);
+    expect(fullLabelWidth(ctx, LONG, 2)).toBe(260);
+  });
+
+  it("never breaks a word", () => {
+    expect(fullLabelWidth(ctx, "Revenue", 3)).toBe(70);
+    expect(fullLabelWidth(ctx, "Q1 Revenue", 3)).toBe(70);
   });
 });

@@ -13,6 +13,7 @@ import {
   DgScoreboard,
   DgSpeedArc,
 } from "@/components/charts/diffusion-charts";
+import { CodeBlockTabs } from "@/components/code-block-tabs";
 import { DocsCard } from "@/components/docs-card";
 import { FakeVisual } from "@/components/fake-visual";
 import { Mermaid } from "@/components/mermaid";
@@ -21,11 +22,19 @@ import { TweetEmbed } from "@/components/tweet-embed";
 import * as TabsComponents from "fumadocs-ui/components/tabs";
 import defaultMdxComponents from "fumadocs-ui/mdx";
 import type { MDXComponents } from "mdx/types";
+import type { AnchorHTMLAttributes } from "react";
+
+// Next.js <Link> does not scroll to same-page anchors, so "#" links use a plain <a>.
+export function MdxLink(props: AnchorHTMLAttributes<HTMLAnchorElement>) {
+  return props.href?.startsWith("#") ? <a {...props} /> : <defaultMdxComponents.a {...props} />;
+}
 
 export function getMDXComponents(components?: MDXComponents): MDXComponents {
   return {
     ...defaultMdxComponents,
     ...TabsComponents,
+    a: MdxLink,
+    CodeBlockTabs,
     Card: DocsCard,
     TweetEmbed,
     FakeVisual,
