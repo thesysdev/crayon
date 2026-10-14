@@ -581,7 +581,7 @@ Fixtures: `streaming/001-worked-example`
 
 ## Appendix B. Conformance fixtures
 
-A client claims conformance by passing a tagged fixture release. If the prose and the fixtures disagree, that is a spec bug, and the next release fixes both.
+A client claims conformance by passing the fixtures for its version, such as `spec/fixtures/1.0/`. If the prose and the fixtures disagree, that is a spec bug, and the next release fixes both.
 
 ```text
 spec/fixtures/<version>/<area>/<NNN-short-name>/
