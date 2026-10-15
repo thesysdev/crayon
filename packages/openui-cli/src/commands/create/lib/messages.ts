@@ -59,10 +59,16 @@ export function getStartedMessage(o: {
 }): string {
   const envNote = o.envWritten ? "✅ .env created with your OpenUI Cloud API key + base URL." : "";
 
-  // Without a key the app can't answer yet, so the key step replaces the usual
-  // next steps and goes last, where it's read.
+  // Without a key the app can't answer yet, so the key step replaces the usual run steps.
   const nextStep = !o.apiKeyAvailable
-    ? ""
+    ? [
+        "Next, add your OpenUI API key. This signs you in and writes THESYS_API_KEY to .env:",
+        "",
+        ...cdStep(o.dir),
+        ...(o.dependencyInstalled ? [] : [`> ${o.installCmd}`]),
+        `> ${o.dlxCmd} @openuidev/cli@latest generate-api-key`,
+        `> ${o.devCmd} run dev`,
+      ].join("\n")
     : o.startDev
       ? `Starting the development server in "${o.name}"...\n\n> ${o.devCmd} run dev`
       : [
@@ -70,17 +76,6 @@ export function getStartedMessage(o: {
           ...(o.dependencyInstalled ? [] : [`> ${o.installCmd}`]),
           `> ${o.devCmd} run dev`,
         ].join("\n");
-
-  const keyStep = o.apiKeyAvailable
-    ? ""
-    : [
-        "Next, add your OpenUI API key. This signs you in and writes THESYS_API_KEY to .env:",
-        "",
-        ...cdStep(o.dir),
-        ...(o.dependencyInstalled ? [] : [`> ${o.installCmd}`]),
-        `> ${o.dlxCmd} @openuidev/cli@latest generate-api-key`,
-        `> ${o.devCmd} run dev`,
-      ].join("\n");
 
   const deployHint = `Share a preview:\n> ${o.dlxCmd} @openuidev/cli@latest deploy`;
   const feedbackHint = `Found a bug or have an idea?\n> ${o.dlxCmd} @openuidev/cli@latest feedback "<message>"`;
@@ -95,7 +90,6 @@ export function getStartedMessage(o: {
     o.skillHint ? skillInstallHint() : "",
     deployHint,
     feedbackHint,
-    keyStep,
     o.agentReadmePath ? agentReadmeNote(o.agentReadmePath) : "",
   ]
     .filter(Boolean)
