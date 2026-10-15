@@ -2,12 +2,18 @@ import * as path from "node:path";
 
 import { resolveInstallPackageManager } from "../../../lib/detect-package-manager";
 import { CliCancelledError, cliErrorProperties, CreateError } from "../../../lib/errors";
+import { writeAgentsGuide } from "../../../lib/scaffold";
 import { withSpinner } from "../../../lib/spinner";
 import type { CreateAppOptions, EnvResult } from "./create-types";
 import { resolveCloudEnv, writeEnvVar } from "./env";
 import type { ExampleProject } from "./examples-catalog";
-import { installRequestedSkill, shouldInstallSkill } from "./install-skill";
-import { missingCloudKeyNote } from "./messages";
+import {
+  agentReadmeNote,
+  cdStep,
+  missingCloudKeyNote,
+  readmePath,
+  skillInstallHint,
+} from "./messages";
 import {
   exampleDevCommand,
   exampleLayout,
@@ -24,6 +30,8 @@ export async function runCreateExample(params: {
   packageManager: ReturnType<typeof resolveInstallPackageManager>;
   t0: number;
   name: string;
+  /** What to `cd` into: the project folder, or `.` when created in place. */
+  dir: string;
   targetDir: string;
   example: ExampleProject;
   tel: CreateTelemetryClient;
@@ -36,6 +44,7 @@ export async function runCreateExample(params: {
     packageManager,
     t0,
     name,
+    dir,
     targetDir,
     example,
     tel,
@@ -51,8 +60,6 @@ export async function runCreateExample(params: {
   tel.trackEnvResolutionStarted({ example: example.name });
   const envResult = await resolveExampleEnv(example, name, options, interactive, agent, tel);
 
-  const installSkill = await shouldInstallSkill(options.skill, false);
-  tel.trackSkillInstalled({ skill_installed: installSkill });
   tel.trackImmediateSelected({
     immediate: false,
     dependency_install_requested: false,
@@ -63,14 +70,18 @@ export async function runCreateExample(params: {
   tel.trackScaffoldStarted({ example: example.name });
   let layout: ExampleLayout | undefined;
   try {
-    const runScaffold = () =>
-      scaffoldExample({
+    const onRetry = tel.reportNetworkRetry("source_checkout");
+    const runScaffold = async () => {
+      const scaffolded = await scaffoldExample({
         example,
         targetDir,
         name,
         packageManager: packageManager.name,
-        onRetry: tel.reportNetworkRetry("source_checkout"),
+        onRetry,
       });
+      if (!options.noSkill) await writeAgentsGuide(targetDir, { onRetry });
+      return scaffolded;
+    };
     layout = verbose ? await runScaffold() : await withSpinner("Scaffolding...", runScaffold);
     if (!verbose) {
       console.info("✓ Scaffolded");
@@ -127,39 +138,36 @@ export async function runCreateExample(params: {
     skip_reason: "not_immediate",
   });
 
-  const skillInstalled = await installRequestedSkill({
-    enabled: installSkill,
-    verbose,
-    targetDir,
-    tel,
-    printFailureLog: true,
-  });
-
   tel.trackCreateSucceeded({
     example: example.name,
     duration_ms: Date.now() - t0,
-    skill_installed: skillInstalled,
     env_written: envResult.envWritten,
     auth_method: envResult.authMethod,
     auth_succeeded: envResult.authSucceeded,
     dependency_installed: false,
   });
-  const envNote = exampleEnvNote(example.env, envResult.envWritten, name, packageManager.dlxCmd);
-  const skillMessage = skillInstalled
-    ? "The OpenUI agent skill was installed.\nAI coding assistants will use it to help you build with OpenUI.\n"
-    : "";
+  const agentReadme = agent ? readmePath(targetDir) : undefined;
+  const envNote = exampleEnvNote(example.env, envResult.envWritten, dir, packageManager.dlxCmd);
   const nextStep = isNestedExample(layout)
     ? nestedExampleNextSteps({
-        name,
+        name: dir,
         targetDir,
         layout,
         runCmd: packageManager.runCmd,
         installCmd,
       })
-    : [`> cd ${name}`, `> ${installCmd}`, `> ${packageManager.runCmd} run dev`].join("\n");
+    : [...cdStep(dir), `> ${installCmd}`, `> ${packageManager.runCmd} run dev`].join("\n");
 
   console.info(
-    `\n${[skillMessage.trim(), "Done!", envNote, nextStep].filter(Boolean).join("\n\n")}\n`,
+    `\n${[
+      "Done!",
+      envNote,
+      nextStep,
+      options.noSkill ? skillInstallHint() : "",
+      agentReadme ? agentReadmeNote(agentReadme) : "",
+    ]
+      .filter(Boolean)
+      .join("\n\n")}\n`,
   );
 }
 

@@ -90,7 +90,8 @@ export function createEveLLM(storage: KVStorage = getClientStorage()): ChatLLM {
     const deliverBody: Record<string, unknown> = { message: latestUserText(messages) };
     const delivered = await fetch(deliverPath, {
       method: "POST",
-      headers: { "content-type": "application/json" },
+      // The thread id tells the Eve agent which OpenUI Cloud conversation to save to.
+      headers: { "content-type": "application/json", "x-openui-thread-id": threadId },
       body: JSON.stringify(deliverBody),
       signal,
     });

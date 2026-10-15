@@ -48,7 +48,7 @@ npx @openuidev/cli@latest deploy
 Scaffolds a generative UI agent with Next.js and your choice of agent framework. No account or API key is needed to scaffold; add the key afterwards with `openui generate-api-key`.
 
 ```bash
-openui create [options]
+openui create [directory] [options]
 ```
 
 Options:
@@ -56,7 +56,7 @@ Options:
 - `-n, --name <string>`: Project name (default: `openui-agent`)
 - `--backend-framework <framework>`: `langgraph` (default), `vercel-ai-sdk`, or `vercel-eve`
 - `-e, --example <example>`: Scaffold an OpenUI example instead (see below)
-- `--skill` / `--no-skill`: Install or skip the OpenUI agent skill for AI coding assistants
+- `--no-skill`: Skip the [OpenUI agent skill](https://www.openui.com/docs/mcp#install-via-the-skills-cli-recommended) for AI coding assistants
 - `--no-install`: Scaffold without installing dependencies
 - `-i, --immediate` / `--no-immediate`: Start, or don't start, the development server after installing
 - `--no-interactive`: Never prompt; use defaults for anything not passed
@@ -75,10 +75,13 @@ In a terminal, `create` prompts for anything you didn't pass, installs dependenc
 
 When nobody can answer prompts (`--no-interactive`, no terminal attached, or a coding agent running the CLI), it takes the defaults instead: `langgraph` and `openui-agent` (or the next free `openui-agent-<n>`). It installs dependencies without starting the server, skips Cloud sign-in, and ends with the `generate-api-key` command to run next. An explicit `--name` that already exists is an error.
 
+Pass `.` as the directory (`openui create .`) to scaffold into the current folder instead; it must be empty apart from editor or agent folders such as `.git`, `.vscode` or `.claude`, and the project is named after the folder.
+
 Examples:
 
 ```bash
 openui create
+openui create .
 openui create --name my-app --backend-framework vercel-ai-sdk
 openui create --name my-app --example shadcn
 openui create --no-interactive --name my-app
@@ -158,6 +161,16 @@ openui generate ./src/library.ts --json-schema
 openui generate ./src/library.ts --export myLibrary --prompt-options myPromptOptions
 ```
 
+### `openui setup-agent`
+
+Adds OpenUI instructions for coding agents to an existing project. It appends the [OpenUI skill](https://github.com/thesysdev/skills) to `AGENTS.md`, or creates the file. Running it again refreshes the OpenUI instructions and leaves the rest of the file alone. Projects made with `create` already have it.
+
+```bash
+openui setup-agent [directory]
+```
+
+`directory` defaults to the current folder.
+
 ### `openui feedback`
 
 Sends anonymous feedback to the OpenUI team. It isn't linked to your account, device, or IP address, and it's sent even when telemetry is disabled. Don't include personal data, secrets, or code.
@@ -179,7 +192,7 @@ openui --agent-name codex feedback --category bug "Renderer throws when a stream
 
 Coding agents should pass `--agent-name` with their stable, lowercase kebab-case product slug, such as `codex`, `claude-code`, `cline`, `factory-droid`, or `pi`. Don't pass a model version, user name, or session ID. Humans can omit it.
 
-`create` never waits on a prompt when an agent runs it, whether or not `--agent-name` is passed. It takes the non-interactive defaults and prints any follow-up commands at the end.
+`create` never waits on a prompt when an agent runs it, whether or not `--agent-name` is passed. It takes the non-interactive defaults, prints any follow-up commands at the end, and points the agent at the new project's README to get started.
 
 ## Telemetry
 
