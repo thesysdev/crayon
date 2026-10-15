@@ -4,8 +4,10 @@ import { generateSystemPrompt } from "@openuidev/lang-core";
 import { createAgent } from "langchain";
 import { z } from "zod";
 import librarySpec from "./generated/spec.json";
-import { promptOptions } from "./lib/prompt-options";
 import { getWeather, WEATHER_TOOL_DESCRIPTION } from "./lib/tools/get-weather";
+
+// The generated spec carries the library and its prompt options; generateSystemPrompt takes them separately.
+const { promptOptions, ...library } = librarySpec;
 
 const getWeatherTool = tool(
   async ({ location }, config) =>
@@ -34,5 +36,5 @@ const model = new ChatOpenAI({
 export const graph = createAgent({
   model,
   tools: [getWeatherTool],
-  systemPrompt: generateSystemPrompt({ library: librarySpec, promptOptions }),
+  systemPrompt: generateSystemPrompt({ library, promptOptions }),
 });

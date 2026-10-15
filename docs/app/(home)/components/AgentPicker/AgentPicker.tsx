@@ -5,7 +5,7 @@ import { Check } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import styles from "./AgentPicker.module.css";
 
-// Coding agents the create flow can install the OpenUI skill for. The first one
+// Coding agents shown in the hero's agent picker. The first one
 // is the anchor: it is always visible, and the rest slide out from under it.
 // `slug` is the CLI's --agent-name value. `wideMark` is for marks drawn small in
 // their own box, which need a nudge to sit at the same visual weight as the

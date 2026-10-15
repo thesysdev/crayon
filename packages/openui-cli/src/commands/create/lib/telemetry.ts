@@ -21,11 +21,6 @@ const createFunnelSteps = {
   cloud_auth_failed: "0425",
   cloud_auth_cancelled: "0426",
   env_written: "0430",
-  skill_prompt_resolved: "0500",
-  skill_install_started: "0510",
-  skill_install_finished: "0520",
-  skill_install_failed: "0525",
-  skill_install_cancelled: "0526",
   dependency_install_started: "0600",
   dependency_install_succeeded: "0610",
   dependency_install_failed: "0620",
@@ -93,13 +88,6 @@ export class CreateTelemetryClient extends Telemetry {
   trackEnvResolutionStarted(props: { template?: string; ai_setup?: string; example?: string }) {
     this.capture("cli_env_resolution_started", {
       ...createFunnelProps("env_resolution_started"),
-      ...props,
-    });
-  }
-
-  trackSkillInstalled(props: { skill_installed: boolean }) {
-    this.capture("cli_skill_installed", {
-      ...createFunnelProps("skill_prompt_resolved"),
       ...props,
     });
   }
@@ -210,38 +198,6 @@ export class CreateTelemetryClient extends Telemetry {
   trackDependencyInstallFailed(props: Record<string, unknown>) {
     this.capture("cli_dependency_install_failed", {
       ...createFunnelProps("dependency_install_failed"),
-      ...props,
-    });
-  }
-
-  trackSkillInstallStarted(props: { skill_installed: boolean }) {
-    this.capture("cli_skill_install_started", {
-      ...createFunnelProps("skill_install_started"),
-      ...props,
-    });
-  }
-
-  trackSkillInstallFinished(props: {
-    skill_installed: boolean;
-    duration_ms: number;
-    exit_code: number | null;
-  }) {
-    this.capture("cli_skill_install_finished", {
-      ...createFunnelProps("skill_install_finished"),
-      ...props,
-    });
-  }
-
-  trackSkillInstallCancelled(props: Record<string, unknown>) {
-    this.capture("cli_skill_install_cancelled", {
-      ...createFunnelProps("skill_install_cancelled"),
-      ...props,
-    });
-  }
-
-  trackSkillInstallFailed(props: Record<string, unknown>) {
-    this.capture("cli_skill_install_failed", {
-      ...createFunnelProps("skill_install_failed"),
       ...props,
     });
   }

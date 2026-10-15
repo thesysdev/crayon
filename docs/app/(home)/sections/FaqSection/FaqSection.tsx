@@ -20,6 +20,13 @@ export const FAQS: MarketingFaq[] = [
     ],
   },
   {
+    question: "How can I set up my coding agent to use OpenUI?",
+    answer: [
+      "Run npx @openuidev/cli@latest setup-agent in your project. It adds OpenUI instructions to AGENTS.md, or creates the file, so Codex, Cursor, Claude Code, and other coding agents know how to build with OpenUI.",
+      "Run it again any time to refresh the instructions. Projects created with npx @openuidev/cli@latest create already include them.",
+    ],
+  },
+  {
     question: "What is OpenUI Lang?",
     answer: [
       "OpenUI Lang is a compact, streaming-first language that LLMs write to build interfaces from your own components.",
