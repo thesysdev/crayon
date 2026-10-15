@@ -90,9 +90,7 @@ export default function Layout({ children }: LayoutProps<"/">) {
       </head>
       <body className="flex flex-col min-h-screen">
         <PHProvider>
-          <RootProvider theme={{ defaultTheme: "light", enableSystem: false }}>
-            {children}
-          </RootProvider>
+          <RootProvider theme={{ defaultTheme: "light" }}>{children}</RootProvider>
         </PHProvider>
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-MZ0TZ82NM2"
