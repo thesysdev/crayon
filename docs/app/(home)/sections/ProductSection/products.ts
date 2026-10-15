@@ -134,7 +134,8 @@ export const LANG_PRODUCT: ProductSectionProps = {
   fullBleedArt: true,
   bareStage: true,
   stageAspectRatio: "1120 / 560",
-  /* Taller on a phone, where the three agent panels stack. */
-  stageMobileAspectRatio: "2 / 3",
+  /* Taller on a phone, where the three agent panels stack (the closed two
+     are thin rows, so the open one still gets most of the height). */
+  stageMobileAspectRatio: "3 / 4",
   cards: [],
 };

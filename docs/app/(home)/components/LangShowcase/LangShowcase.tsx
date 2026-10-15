@@ -49,8 +49,8 @@ const AGENTS: Agent[] = [
     mascotAlt: "Shiro in a bucket hat",
     demo: SITE_NAV_LINKS.tripPlanner.href,
     answer: {
-      src: "/homepage/agents/travel-kyoto.gif",
-      playMs: 5640,
+      src: "/homepage/agents/travel-kyoto-november.gif",
+      playMs: 4680,
       alt: "The Travel agent's answer streaming in: Kyoto in November, taken slowly, with temple and garden picks and three November date windows to choose from.",
       width: 1100,
       height: 2138,
