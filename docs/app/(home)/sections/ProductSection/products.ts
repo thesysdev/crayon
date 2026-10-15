@@ -119,3 +119,22 @@ export const OBSERVABILITY_PRODUCT: ProductSectionProps = {
     },
   ],
 };
+
+/* The open-source band ("OpenUI" / "Open Source"), restored under the logo
+   carousel on the home page. */
+export const LANG_PRODUCT: ProductSectionProps = {
+  name: "OpenUI",
+  tag: "Open Source",
+  headline: "A framework for agent-driven interfaces.",
+  /* No description: the headline stands alone. */
+  secondaryCta: { label: "View docs", href: "/docs/openui-lang" },
+  tone: "light",
+  /* The stage is live HTML (LangShowcase, passed as art from page.tsx): the
+     KALLAX answer streams as OpenUI Lang beside its rendered preview. */
+  fullBleedArt: true,
+  bareStage: true,
+  stageAspectRatio: "1120 / 560",
+  /* Taller on a phone, where the three agent panels stack. */
+  stageMobileAspectRatio: "2 / 3",
+  cards: [],
+};
