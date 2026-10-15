@@ -138,7 +138,7 @@ export default function HomePage() {
              move <LogoStrip /> back down by the tweet wall, restore
              <WhatItDoesSection /> below and the contentSectionTight class. */
         />
-        <LogoStrip />
+        <LogoStrip title="Loved by 50,000+ developers from" />
       </div>
       <div className={styles.contentSection}>
         <div className={styles.contentShell}>
