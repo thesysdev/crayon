@@ -3,14 +3,19 @@
   flex-direction: column;
   gap: clamp(2.25rem, 4.5vw, 3.25rem);
   width: 100%;
+  /* Taller, so the fold reads at the same scale as the hero above it. */
+  padding-block: clamp(2rem, 6vw, 6rem);
 }
 
+/* Same measure and gutters as the home fold (hero + comparison), so the
+   edges line up: a 75rem content box inside 3vw gutters capped at 2.5rem. */
 .container {
+  --fold-gutter: clamp(1.25rem, 3vw, 2.5rem);
   box-sizing: border-box;
   width: 100%;
-  max-width: var(--home-container-max);
+  max-width: calc(var(--home-container-max) + 2 * var(--fold-gutter));
   margin-inline: auto;
-  padding-inline: var(--home-container-gutter);
+  padding-inline: var(--fold-gutter);
 }
 
 /* ── Plain-language cards ── */
@@ -20,8 +25,9 @@
 .cards {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  max-width: 72rem;
-  margin: 0 auto;
+  /* Full width of the fold-sized container. */
+  max-width: none;
+  margin: 0;
   padding: 0;
   overflow: hidden;
   border: 1px solid var(--openui-border-default);
@@ -33,7 +39,7 @@
 .card {
   display: flex;
   flex-direction: column;
-  padding: 1.75rem 1.5rem 1.625rem;
+  padding: clamp(2rem, 4vw, 3.25rem) 1.75rem clamp(2rem, 4vw, 3rem);
 }
 
 .card + .card {
@@ -73,15 +79,17 @@
   font-weight: 600;
   letter-spacing: -0.01em;
   color: var(--openui-text-neutral-primary);
+  text-align: center;
 }
 
 .cardDescription {
   margin: 0;
+  text-align: center;
   font-family: var(--home-font-text);
   font-size: 0.9375rem;
   line-height: 1.5;
   color: var(--openui-text-neutral-secondary);
-  text-wrap: pretty;
+  text-wrap: balance;
 }
 
 .cardNames {

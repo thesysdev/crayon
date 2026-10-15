@@ -1,11 +1,8 @@
 "use client";
 
 import { FoldHeader } from "../../components/FoldHeader/FoldHeader";
-import {
-  StackChip,
-  stackChipStyles,
-  type StackChipItem,
-} from "../../components/StackChip/StackChip";
+import { LogoBubbles } from "../../components/LogoBubbles/LogoBubbles";
+import { stackChipStyles, type StackChipItem } from "../../components/StackChip/StackChip";
 import styles from "./CompatibilitySection.module.css";
 
 interface StackRow {
@@ -28,7 +25,7 @@ const STACK_ROWS: StackRow[] = [
     /* OpenAI, xAI and DeepSeek are local files: Simple Icons carries no OpenAI
        mark, and its "x" is the social network, not xAI. */
     label: "LLMs",
-    title: "Any AI model",
+    title: "Your model",
     description: "Closed or open, hosted or running on your own machine.",
     items: [
       {
@@ -73,13 +70,27 @@ const STACK_ROWS: StackRow[] = [
         iconColor: "ffffff",
         badgeClassName: stackChipStyles.badgeMistral,
       },
+      {
+        name: "Qwen",
+        iconKind: "image",
+        slug: "qwen",
+        iconColor: "6950ef",
+        badgeClassName: `${stackChipStyles.badgeWhite} ${stackChipStyles.badgeWithBorder}`,
+      },
+      {
+        name: "Ollama",
+        iconKind: "image",
+        slug: "ollama",
+        iconColor: "000000",
+        badgeClassName: `${stackChipStyles.badgeWhite} ${stackChipStyles.badgeWithBorder}`,
+      },
     ],
   },
   {
     /* Llama, LlamaIndex and Mastra are absent: no logo could be found for any of
        them, and a row is better short than wrong. */
     label: "Backend",
-    title: "The agent you already have",
+    title: "Your agents",
     description: "Add it to your existing agent code. No rewrite needed.",
     items: [
       {
@@ -117,12 +128,33 @@ const STACK_ROWS: StackRow[] = [
         iconColor: "ffffff",
         badgeClassName: stackChipStyles.badgeCloudflare,
       },
+      {
+        name: "CrewAI",
+        iconKind: "image",
+        slug: "crewai",
+        iconColor: "ffffff",
+        badgeClassName: stackChipStyles.badgeCrewAi,
+      },
+      {
+        name: "n8n",
+        iconKind: "image",
+        slug: "n8n",
+        iconColor: "ea4b71",
+        badgeClassName: `${stackChipStyles.badgeWhite} ${stackChipStyles.badgeWithBorder}`,
+      },
+      {
+        name: "Haystack",
+        iconKind: "image",
+        slug: "haystack",
+        iconColor: "0eaf9c",
+        badgeClassName: `${stackChipStyles.badgeWhite} ${stackChipStyles.badgeWithBorder}`,
+      },
     ],
   },
   {
     label: "UI library",
-    title: "Your own components",
-    description: "Answers use your design system, so they look like your product.",
+    title: "Your components",
+    description: "Bring your own design system and component library.",
     items: [
       {
         name: "OpenUI Design system",
@@ -182,7 +214,7 @@ const STACK_ROWS: StackRow[] = [
   },
   {
     label: "Clients",
-    title: "Your app",
+    title: "Your framework",
     description: "Works in the web framework you build with today.",
     items: [
       {
@@ -234,6 +266,13 @@ const STACK_ROWS: StackRow[] = [
         iconColor: "ffffff",
         badgeClassName: stackChipStyles.badgeBlack,
       },
+      {
+        name: "Astro",
+        iconKind: "image",
+        slug: "astro",
+        iconColor: "ffffff",
+        badgeClassName: stackChipStyles.badgeBlack,
+      },
     ],
   },
 ];
@@ -246,24 +285,18 @@ export function CompatibilitySection() {
       <FoldHeader
         id="integrations-title"
         title="Works with the tools you already use."
-        subtitle="Swap the model, keep the UI."
+        subtitle="Works with any model, any frontend framework, and any design system or component library you already use."
       />
       <div className={styles.container}>
         <ul className={styles.cards}>
-          {STACK_ROWS.map((row) => (
+          {STACK_ROWS.map((row, index) => (
             <li key={row.label} className={styles.card}>
-              {/* Logos lead each column as its picture; the names follow in
-                  text, so nothing depends on recognising a mark. */}
-              <div className={styles.cardLogos} aria-hidden="true">
-                {row.items.map((item) => (
-                  <span key={item.name} className={styles.cardLogo} title={item.name}>
-                    <StackChip item={item} iconOnly />
-                  </span>
-                ))}
-              </div>
+              {/* Logos lead each column as its picture. */}
+              <LogoBubbles items={row.items} stagger={index} />
               <h3 className={styles.cardTitle}>{row.title}</h3>
               <p className={styles.cardDescription}>{row.description}</p>
-              <p className={styles.cardNames}>{row.items.map((item) => item.name).join(" · ")}</p>
+              {/* The names stay for screen readers; the logos carry them visually. */}
+              <p className="sr-only">{row.items.map((item) => item.name).join(", ")}</p>
             </li>
           ))}
         </ul>
