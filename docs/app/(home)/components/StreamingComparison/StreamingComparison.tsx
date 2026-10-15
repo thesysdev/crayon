@@ -174,6 +174,8 @@ export function StreamingComparison({ example }: { example: ComparisonExample })
 
   useEffect(() => {
     if (reducedMotion) {
+      // Reduced motion shows the finished answer at once instead of streaming it.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setProgress(longest);
       return;
     }
@@ -676,7 +678,8 @@ function SegmentView({
     case "donut": {
       const total = block.slices.reduce((sum, slice) => sum + slice.value, 0) || 1;
       const circumference = 2 * Math.PI * 38;
-      let offset = 0;
+      const lengths = block.slices.map((slice) => (slice.value / total) * circumference);
+      const offsets = lengths.map((_, k) => lengths.slice(0, k).reduce((sum, l) => sum + l, 0));
       return (
         <figure className={`${styles.chart} ${styles.pop}`}>
           {block.title ? (
@@ -686,9 +689,8 @@ function SegmentView({
           <div className={styles.donutRow}>
             <svg viewBox="0 0 100 100" className={styles.donut} aria-hidden="true">
               {block.slices.map((slice, k) => {
-                const length = (slice.value / total) * circumference;
-                const dash = `${Math.max(0, length - 1.5)} ${circumference}`;
-                const node = (
+                const dash = `${Math.max(0, lengths[k] - 1.5)} ${circumference}`;
+                return (
                   <circle
                     key={slice.label}
                     cx="50"
@@ -698,12 +700,10 @@ function SegmentView({
                     stroke={slice.color ?? PALETTE[k % PALETTE.length]}
                     strokeWidth="14"
                     strokeDasharray={dash}
-                    strokeDashoffset={-offset}
+                    strokeDashoffset={-offsets[k]}
                     transform="rotate(-90 50 50)"
                   />
                 );
-                offset += length;
-                return node;
               })}
             </svg>
           </div>

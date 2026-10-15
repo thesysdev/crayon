@@ -19,14 +19,12 @@ import { FAQS, FaqSection } from "./sections/FaqSection/FaqSection";
 import { Footer } from "./sections/Footer/Footer";
 import { HeroProof } from "./sections/HeroProof/HeroProof";
 import { HeroSection } from "./sections/HeroSection/HeroSection";
-import { HowItWorksSection } from "./sections/HowItWorksSection/HowItWorksSection";
 import { LogoStrip } from "./sections/LogoStrip/LogoStrip";
-import { ProductSection } from "./sections/ProductSection/ProductSection";
 import { LangHeadline } from "./sections/ProductSection/LangHeadline";
 import { LANG_PRODUCT } from "./sections/ProductSection/products";
+import { ProductSection } from "./sections/ProductSection/ProductSection";
 import { ShiroPeek } from "./sections/ShiroPeek/ShiroPeek";
 import { TweetWallSection } from "./sections/TweetWallSection/TweetWallSection";
-import { WhatItDoesSection } from "./sections/WhatItDoesSection/WhatItDoesSection";
 
 /* The examples under the hero's comparison, one per tab. */
 const COMPARISON_TABS: ComparisonTab[] = [

@@ -26,6 +26,8 @@ export function CountUp({
     if (!el || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     if (!("IntersectionObserver" in window)) return;
 
+    // The server renders the final number; reset to 0 only once we know it can animate.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setShown(0);
     let frame = 0;
     let timer = 0;

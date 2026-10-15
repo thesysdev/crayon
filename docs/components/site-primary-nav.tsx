@@ -1,5 +1,6 @@
 "use client";
 
+import { SITE_NAV_LINKS } from "@/lib/site-nav-links";
 import {
   ArrowRight,
   ArrowUpRight,
@@ -18,7 +19,6 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { SITE_NAV_LINKS } from "@/lib/site-nav-links";
 import styles from "./site-primary-nav.module.css";
 
 type NavLeaf = {
@@ -128,7 +128,8 @@ export const PRIMARY_SITE_NAV_ITEMS: NavItem[] = [
           },
           {
             title: "F1 Dashboard",
-            description: "Explore races, drivers, and teams with live standings and interactive charts.",
+            description:
+              "Explore races, drivers, and teams with live standings and interactive charts.",
             ...SITE_NAV_LINKS.f1Dashboard,
             icon: ChartPieSlice,
           },

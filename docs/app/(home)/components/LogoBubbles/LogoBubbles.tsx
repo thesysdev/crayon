@@ -51,17 +51,20 @@ export function LogoBubbles({ items, stagger = 0 }: { items: StackChipItem[]; st
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     let interval: number | undefined;
-    const start = window.setTimeout(() => {
-      interval = window.setInterval(() => {
-        if (document.hidden) return;
-        setLayout((prev) => {
-          const next = (prev.hub + 1) % prev.slots.length;
-          const swapped = [...prev.slots];
-          [swapped[prev.hub], swapped[next]] = [prev.slots[next], prev.slots[prev.hub]];
-          return { slots: swapped, hub: next };
-        });
-      }, HOLD_MS);
-    }, picks === 0 ? stagger * STAGGER_MS : 0);
+    const start = window.setTimeout(
+      () => {
+        interval = window.setInterval(() => {
+          if (document.hidden) return;
+          setLayout((prev) => {
+            const next = (prev.hub + 1) % prev.slots.length;
+            const swapped = [...prev.slots];
+            [swapped[prev.hub], swapped[next]] = [prev.slots[next], prev.slots[prev.hub]];
+            return { slots: swapped, hub: next };
+          });
+        }, HOLD_MS);
+      },
+      picks === 0 ? stagger * STAGGER_MS : 0,
+    );
 
     return () => {
       window.clearTimeout(start);
