@@ -1,7 +1,6 @@
 // One mark for both themes: the mascot reads on light and dark surfaces.
 export const OPENUI_LOGO = "/openui-logo.svg";
 
-// Each starter shows off generated UI from facts the model already knows, no tools needed.
 // No icon: starters show the default lightbulb.
 export const STARTERS = [
   {
