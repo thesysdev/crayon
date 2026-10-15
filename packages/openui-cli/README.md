@@ -56,7 +56,7 @@ Options:
 - `-n, --name <string>`: Project name (default: `openui-agent`)
 - `--backend-framework <framework>`: `langgraph` (default), `vercel-ai-sdk`, or `vercel-eve`
 - `-e, --example <example>`: Scaffold an OpenUI example instead (see below)
-- `--no-skill`: Don't add `AGENTS.md` (a copy of the OpenUI skill for coding agents) to the project; the CLI suggests `npx skills add thesysdev/skills` instead
+- `--no-skill`: Skip the [OpenUI agent skill](https://www.openui.com/docs/mcp#install-via-the-skills-cli-recommended) for AI coding assistants
 - `--no-install`: Scaffold without installing dependencies
 - `-i, --immediate` / `--no-immediate`: Start, or don't start, the development server after installing
 - `--no-interactive`: Never prompt; use defaults for anything not passed
