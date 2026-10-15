@@ -41,12 +41,7 @@ export async function renderOgCard(card: OgCardData) {
   const logo = await publicImage("/shiro-logo.svg");
   const node =
     card.template === "home" ? (
-      <OgHome
-        logo={logo}
-        art={await publicImage(card.art)}
-        title={card.title}
-        tagline={card.tagline}
-      />
+      <OgHome mascot={logo} grain={await publicImage("/og-grain.png")} title={card.title} />
     ) : card.template === "cover" ? (
       <OgCover
         src={await publicImage(card.cover)}

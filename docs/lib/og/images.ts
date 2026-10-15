@@ -17,8 +17,8 @@ export function publicFileExists(path: string) {
 function cardAssets(card: OgCardData) {
   const assets = ["/shiro-logo.svg"];
   if (card.template === "cover") assets.push(card.cover);
-  else if (card.template === "home") assets.push(card.art);
-  else if (card.partnerLogo) assets.push(card.partnerLogo);
+  else if (card.template === "home") assets.push("/og-grain.png");
+  else if (card.template === "card" && card.partnerLogo) assets.push(card.partnerLogo);
   return assets;
 }
 
@@ -39,11 +39,11 @@ export function ogImagePath({ path, card }: OgImage) {
 }
 
 /**
- * Blog covers are photographic, so they ship as JPEG to stay small (WhatsApp drops previews for
- * large images). Text cards stay PNG for crisp type.
+ * Blog covers are photographic and the homepage card is covered in grain, so both ship as JPEG
+ * to stay small (WhatsApp drops previews for large images). Text cards stay PNG for crisp type.
  */
 export function ogImageFormat(card: OgCardData) {
-  return card.template === "cover" ? "jpeg" : "png";
+  return card.template === "cover" || card.template === "home" ? "jpeg" : "png";
 }
 
 export function ogImageMetadata(image: OgImage) {

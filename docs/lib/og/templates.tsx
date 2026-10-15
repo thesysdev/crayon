@@ -6,11 +6,33 @@
  * `display: "flex"`, and images must be data URIs (see `publicImage` in `./render`).
  */
 
+import {
+  CalendarDays,
+  ChartColumn,
+  ChevronsUpDown,
+  ClipboardList,
+  GalleryHorizontal,
+  Hash,
+  ImageIcon,
+  Info,
+  List,
+  ListOrdered,
+  type LucideIcon,
+  MessagesSquare,
+  MousePointerClick,
+  PanelsTopLeft,
+  SlidersHorizontal,
+  Sparkles,
+  SquareStack,
+  Table,
+  TextCursorInput,
+} from "lucide-react";
+
 /**
  * Part of every OG image URL's `?v=` hash, so link-preview caches refetch after a design change.
  * Bump this whenever you change anything in this file that affects the rendered output.
  */
-export const TEMPLATE_VERSION = 1;
+export const TEMPLATE_VERSION = 2;
 
 export const OG_SIZE = { width: 1200, height: 630 };
 
@@ -26,11 +48,12 @@ export type OgCardData =
       partnerLogo?: string;
     }
   | {
-      /** Site-wide card for the homepage and blog index: tagline over product artwork. */
+      /**
+       * Site-wide card for the homepage and blog index: Shiro over a wall of component names.
+       * `title` is only the alt text.
+       */
       template: "home";
       title: string;
-      tagline: string;
-      art: string;
     }
   | {
       template: "cover";
@@ -76,7 +99,7 @@ export function OgCard({ logo, eyebrow, title, description, partnerLogo }: OgCar
     >
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-          <img alt="" src={logo} width={46} height={44} />
+          <img alt="" src={logo} width={55} height={44} />
           <span style={{ fontSize: 32, fontWeight: 600, letterSpacing: "-0.02em" }}>OpenUI</span>
         </div>
         {eyebrow && (
@@ -90,7 +113,7 @@ export function OgCard({ logo, eyebrow, title, description, partnerLogo }: OgCar
           <div style={{ display: "flex", alignItems: "center", gap: 20, marginBottom: 16 }}>
             <img alt="" src={partnerLogo} width={72} height={72} style={{ objectFit: "contain" }} />
             <span style={{ fontSize: 40, color: COLORS.secondary }}>×</span>
-            <img alt="" src={logo} width={76} height={72} />
+            <img alt="" src={logo} width={90} height={72} />
           </div>
         )}
         <span
@@ -123,52 +146,6 @@ export function OgCard({ logo, eyebrow, title, description, partnerLogo }: OgCar
     </div>
   );
 }
-
-type OgHomeProps = { logo: string; art: string; title: string; tagline: string };
-
-/** Homepage card: the hero's two-tone headline above the product artwork, which bleeds off the bottom. */
-export function OgHome({ logo, art, title, tagline }: OgHomeProps) {
-  return (
-    <div
-      style={{
-        display: "flex",
-        position: "relative",
-        ...OG_SIZE,
-        backgroundColor: COLORS.background,
-        fontFamily: "Inter",
-      }}
-    >
-      <img
-        alt=""
-        src={art}
-        style={{ position: "absolute", top: HOME_ART_TOP, left: -40, width: 1280, height: 503 }}
-      />
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          position: "absolute",
-          top: 56,
-          left: 72,
-          gap: 4,
-          fontSize: 60,
-          fontWeight: 600,
-          lineHeight: 1.1,
-          letterSpacing: "-0.03em",
-        }}
-      >
-        <div style={{ display: "flex", alignItems: "center", gap: 18, color: COLORS.primary }}>
-          <img alt="" src={logo} width={67} height={64} />
-          <span>{title}</span>
-        </div>
-        <span style={{ color: COLORS.secondary }}>{tagline}</span>
-      </div>
-    </div>
-  );
-}
-
-/** Where the homepage artwork starts; its own top margin leaves room for the headline. */
-const HOME_ART_TOP = 170;
 
 /**
  * Height of the cover art. The art fills the top of the image, and the title sits on the dark
@@ -231,7 +208,7 @@ export function OgCover({ src, logo, title, author }: OgCoverProps) {
             color: COLORS.primary,
           }}
         >
-          <img alt="" src={logo} width={38} height={36} />
+          <img alt="" src={logo} width={45} height={36} />
           <span style={{ fontSize: 28, fontWeight: 600, letterSpacing: "-0.02em" }}>OpenUI</span>
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 12, color: "#ffffff" }}>
@@ -253,6 +230,133 @@ export function OgCover({ src, logo, title, author }: OgCoverProps) {
             </span>
           )}
         </div>
+      </div>
+    </div>
+  );
+}
+
+/** Component names for the homepage card's background wall, each shown after its icon. */
+const WALL_ITEMS: { label: string; Icon: LucideIcon }[] = [
+  { label: "Open standard of Generative UI", Icon: Sparkles },
+  { label: "Charts", Icon: ChartColumn },
+  { label: "Buttons", Icon: MousePointerClick },
+  { label: "Forms", Icon: ClipboardList },
+  { label: "Tables", Icon: Table },
+  { label: "Cards", Icon: SquareStack },
+  { label: "Tabs", Icon: PanelsTopLeft },
+  { label: "Date Pickers", Icon: CalendarDays },
+  { label: "Carousels", Icon: GalleryHorizontal },
+  { label: "Accordions", Icon: ChevronsUpDown },
+  { label: "Sliders", Icon: SlidersHorizontal },
+  { label: "Callouts", Icon: Info },
+  { label: "Steps", Icon: ListOrdered },
+  { label: "Images", Icon: ImageIcon },
+  { label: "Follow-up Blocks", Icon: MessagesSquare },
+  { label: "Inputs", Icon: TextCursorInput },
+  { label: "Lists", Icon: List },
+  { label: "Tags", Icon: Hash },
+];
+
+const WALL_ROWS = 9;
+const WALL_ROW_HEIGHT = 72;
+const WALL_GAP = 40;
+const WALL_FONT_SIZE = 40;
+const WALL_ICON_SIZE = 34;
+const WALL_ICON_GAP = 12;
+
+function wallRowOffset(row: number) {
+  return row % 2 ? -260 : -60;
+}
+
+/** The wall is a plain grey close to the background, so it reads as texture behind Shiro. */
+const HOME_COLORS = { background: "#141414", wall: "#2c2c2c" };
+
+/** One row of the wall: the item list rotated by `row`, so no column lines up. */
+function wallRow(row: number) {
+  const start = (row * 5) % WALL_ITEMS.length;
+  return [...WALL_ITEMS.slice(start), ...WALL_ITEMS.slice(0, start)];
+}
+
+function TextWall() {
+  return (
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        position: "absolute",
+        top: 0,
+        left: 0,
+        ...OG_SIZE,
+        overflow: "hidden",
+      }}
+    >
+      {Array.from({ length: WALL_ROWS }, (_, row) => (
+        <div
+          key={row}
+          style={{
+            display: "flex",
+            gap: WALL_GAP,
+            height: WALL_ROW_HEIGHT,
+            alignItems: "center",
+            marginLeft: wallRowOffset(row),
+            fontSize: WALL_FONT_SIZE,
+            fontWeight: 400,
+            whiteSpace: "pre",
+            color: HOME_COLORS.wall,
+          }}
+        >
+          {wallRow(row).map(({ label, Icon }) => (
+            <div
+              key={label}
+              style={{ display: "flex", alignItems: "center", gap: WALL_ICON_GAP, flexShrink: 0 }}
+            >
+              <Icon size={WALL_ICON_SIZE} strokeWidth={1.75} color={HOME_COLORS.wall} />
+              <span>{label}</span>
+            </div>
+          ))}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+type OgHomeProps = { mascot: string; grain: string; title: string };
+
+/**
+ * Homepage card: Shiro centred on a dark wall of component names with their icons, under a
+ * layer of film grain like the blog covers. The wall runs behind Shiro and his white face
+ * covers it. Shiro is never recoloured.
+ */
+export function OgHome({ mascot, grain, title }: OgHomeProps) {
+  return (
+    <div
+      style={{
+        display: "flex",
+        position: "relative",
+        ...OG_SIZE,
+        overflow: "hidden",
+        backgroundColor: HOME_COLORS.background,
+        fontFamily: "Inter",
+      }}
+    >
+      <TextWall />
+
+      {/* Film grain over the wall, drawn at 2x so each speck is 2px. */}
+      <img alt="" src={grain} style={{ position: "absolute", top: 0, left: 0, ...OG_SIZE }} />
+
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          position: "absolute",
+          top: 0,
+          left: 0,
+          ...OG_SIZE,
+        }}
+      >
+        <img alt={title} src={mascot} width={300} height={240} />
       </div>
     </div>
   );

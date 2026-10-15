@@ -6,12 +6,7 @@ export const SITE_NAME = "OpenUI - The Open Standard for Generative UI";
 /** Site-wide card, used by the homepage and the blog index. */
 export const SITE_OG_IMAGE: OgImage = {
   path: "/home",
-  card: {
-    template: "home",
-    title: "OpenUI",
-    tagline: "Open Standard for Generative UI",
-    art: "/homepage/openui-lang-light.webp",
-  },
+  card: { template: "home", title: "OpenUI, the open standard for Generative UI" },
 };
 
 export const SITE_OPEN_GRAPH = {
