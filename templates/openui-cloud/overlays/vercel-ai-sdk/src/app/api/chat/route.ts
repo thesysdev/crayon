@@ -15,6 +15,9 @@ import { storeTurn } from "@/lib/history";
 import { resolveRequestedModel } from "@/lib/models";
 import { appTools } from "@/lib/tools";
 
+// The generated spec carries the library and its prompt options; generateSystemPrompt takes them separately.
+const { promptOptions, ...library } = librarySpec;
+
 export const runtime = "nodejs";
 
 const apiKey = requiredEnv("THESYS_API_KEY");
@@ -52,7 +55,7 @@ export async function POST(req: Request) {
 
   const result = streamText({
     model: openai.chat(model),
-    system: generateSystemPrompt({ cloud: true, library: librarySpec }),
+    system: generateSystemPrompt({ cloud: true, library, promptOptions }),
     messages: modelMessages,
     tools: appTools,
     stopWhen: stepCountIs(5),
