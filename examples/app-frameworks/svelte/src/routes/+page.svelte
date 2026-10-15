@@ -42,6 +42,9 @@
   });
 
   $effect(() => {
+    // Read the messages (including the one still streaming) so this re-runs as they change.
+    void chat.messages.length;
+    void JSON.stringify(chat.messages.at(-1));
     messagesEnd?.scrollIntoView({ behavior: "smooth" });
   });
 
