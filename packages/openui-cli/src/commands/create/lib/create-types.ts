@@ -10,7 +10,6 @@ export interface CreateAppOptions {
   backendFramework?: OverlayName;
   example?: string;
   noInstall?: boolean;
-  /** `--no-skill`: leave AGENTS.md out of the project. */
   noSkill?: boolean;
   immediate?: boolean;
   envFile?: string;

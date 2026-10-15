@@ -12,11 +12,6 @@ export function shouldCopyTemplatePath(templateDir: string, src: string): boolea
   return ![OVERLAYS_DIR, "node_modules", ".next", ".turbo", "dist"].includes(top);
 }
 
-/** `--no-skill`: drop the coding-agent guide that templates and examples ship. */
-export function removeAgentsGuide(projectDir: string) {
-  fs.rmSync(path.join(projectDir, "AGENTS.md"), { force: true });
-}
-
 export function restoreDotfiles(projectDir: string) {
   // Templates ship `gitignore` un-dotted: npm silently strips `.gitignore`
   // files (at any depth) from published packages, so a dotted copy never

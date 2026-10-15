@@ -2,7 +2,7 @@ import * as path from "node:path";
 
 import { resolveInstallPackageManager } from "../../../lib/detect-package-manager";
 import { CliCancelledError, cliErrorProperties, CreateError } from "../../../lib/errors";
-import { removeAgentsGuide } from "../../../lib/scaffold";
+import { writeAgentsGuide } from "../../../lib/scaffold";
 import { withSpinner } from "../../../lib/spinner";
 import type { CreateAppOptions, EnvResult } from "./create-types";
 import { resolveCloudEnv, writeEnvVar } from "./env";
@@ -70,16 +70,19 @@ export async function runCreateExample(params: {
   tel.trackScaffoldStarted({ example: example.name });
   let layout: ExampleLayout | undefined;
   try {
-    const runScaffold = () =>
-      scaffoldExample({
+    const onRetry = tel.reportNetworkRetry("source_checkout");
+    const runScaffold = async () => {
+      const scaffolded = await scaffoldExample({
         example,
         targetDir,
         name,
         packageManager: packageManager.name,
-        onRetry: tel.reportNetworkRetry("source_checkout"),
+        onRetry,
       });
+      if (!options.noSkill) await writeAgentsGuide(targetDir, { onRetry });
+      return scaffolded;
+    };
     layout = verbose ? await runScaffold() : await withSpinner("Scaffolding...", runScaffold);
-    if (options.noSkill) removeAgentsGuide(targetDir);
     if (!verbose) {
       console.info("✓ Scaffolded");
     }
