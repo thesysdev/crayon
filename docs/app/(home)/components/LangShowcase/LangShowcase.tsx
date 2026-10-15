@@ -59,10 +59,10 @@ const AGENTS: Agent[] = [
     mascotAlt: "Shiro in a bucket hat",
     demo: SITE_NAV_LINKS.tripPlanner.href,
     answer: {
-      src: "/homepage/agents/travel-answer.png",
-      alt: "The Travel agent's answer: four slow days in Kyoto in November, with Eikan-dō, Philosopher's Walk and Arashiyama, and three November date windows to pick from.",
-      width: 1400,
-      height: 2040,
+      src: "/homepage/agents/travel-kyoto.gif",
+      alt: "The Travel agent's answer streaming in: Kyoto in November, taken slowly, with temple and garden picks and three November date windows to choose from.",
+      width: 1100,
+      height: 2138,
     },
   },
 ];
@@ -133,7 +133,7 @@ export function LangShowcase() {
             </div>
 
             <div id={`agent-${agent.id}`} className={styles.card} aria-hidden={!isOpen}>
-              {seen && agent.answer && (
+              {seen && isOpen && agent.answer && (
                 <div className={styles.answerClip}>
                   <Image
                     className={styles.answer}
