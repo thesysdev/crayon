@@ -1,5 +1,11 @@
 # @openuidev/cli
 
+## 0.5.3
+
+### Patch Changes
+
+- [#1411](https://github.com/thesysdev/openui/pull/1411) [`60ab506`](https://github.com/thesysdev/openui/commit/60ab506ce3edb552680fb231cc5b360d6ae16127) Thanks [@AbhinRustagi](https://github.com/AbhinRustagi)! - Stop `create` from hanging or failing when a coding agent or a non-interactive shell runs it. Agents are detected from `--agent-name` or, via `@vercel/detect-agent` plus a few extra markers, from the environment their harness sets. With nobody to answer prompts, a plain `create` now takes the defaults (OpenUI Cloud template, LangGraph, `openui-agent` or the next free name) instead of erroring on a missing template arg, skips Cloud sign-in, and ends with a `generate-api-key` hint that uses the invoking package manager.
+
 ## 0.5.2
 
 ### Patch Changes

@@ -114,6 +114,111 @@ function latestOpenUIVersions(manifests) {
   );
 }
 
+const registryCache = new Map();
+
+function registryView(spec, field) {
+  const key = `${spec} ${field}`;
+  if (!registryCache.has(key)) {
+    const result = spawnSync("pnpm", ["view", spec, field, "--json"], {
+      cwd: repoRoot,
+      encoding: "utf8",
+    });
+
+    if (result.error) throw result.error;
+    if (result.status !== 0) {
+      // A range with no published match is an answer; any other failure (network,
+      // rate limit) must stop the run, or the app would lose its constraint.
+      let error;
+      try {
+        error = JSON.parse(result.stdout).error;
+      } catch {}
+      if (error?.code !== "E404" || !error.summary?.startsWith("No match found")) {
+        throw new Error(`pnpm view ${spec} ${field} failed: ${error?.summary ?? result.stderr}`);
+      }
+    }
+    registryCache.set(
+      key,
+      result.status === 0 && result.stdout.trim() ? JSON.parse(result.stdout) : undefined,
+    );
+  }
+
+  return registryCache.get(key);
+}
+
+function compareVersions(left, right) {
+  const [a, b] = [left, right].map((version) => version.split(".").map(Number));
+  return a[0] - b[0] || a[1] - b[1] || a[2] - b[2];
+}
+
+// Prereleases and versions above the latest tag are never picked.
+function highestVersionInRanges(name, ranges, latest) {
+  const [first, ...rest] = ranges.map((range) =>
+    [registryView(`${name}@${range}`, "version") ?? []].flat(),
+  );
+  const versions = first.filter(
+    (version) =>
+      !version.includes("-") &&
+      compareVersions(version, latest) <= 0 &&
+      rest.every((matches) => matches.includes(version)),
+  );
+  return versions.sort(compareVersions).at(-1);
+}
+
+// Keep each OpenUI package inside the ranges the app's other OpenUI packages
+// declare, so an app follows the lang-core its renderer was built for.
+function applicationOpenUIVersions(application, latestVersions) {
+  const names = openUIDependencyNames(application.manifest);
+  const versions = new Map(latestVersions);
+
+  // Lowering one package can change the ranges it declares, so repeat until
+  // nothing moves. A conflict only counts once the versions have settled.
+  let conflicts = [];
+  for (let pass = 1, changed = true; changed; pass++) {
+    if (pass > 10) {
+      const pending = conflicts.length > 0 ? `; no version satisfies ${conflicts.join("; ")}` : "";
+      throw new Error(`${application.path}: OpenUI versions did not settle after 10 passes${pending}`);
+    }
+    changed = false;
+    const ranges = new Map();
+    conflicts = [];
+
+    for (const name of names) {
+      for (const field of ["dependencies", "peerDependencies"]) {
+        const declared = registryView(`${name}@${versions.get(name)}`, field) ?? {};
+        for (const [dependency, range] of Object.entries(declared)) {
+          if (names.includes(dependency) && dependency !== name) {
+            ranges.set(dependency, [...(ranges.get(dependency) ?? []), range]);
+          }
+        }
+      }
+    }
+
+    // A package nothing constrains any more goes back to latest.
+    for (const name of names) {
+      if (!ranges.has(name) && versions.get(name) !== latestVersions.get(name)) {
+        versions.set(name, latestVersions.get(name));
+        changed = true;
+      }
+    }
+
+    for (const [name, nameRanges] of ranges) {
+      const version = highestVersionInRanges(name, nameRanges, latestVersions.get(name));
+      if (!version) {
+        conflicts.push(`${name} (${nameRanges.join(", ")})`);
+      } else if (version !== versions.get(name)) {
+        versions.set(name, version);
+        changed = true;
+      }
+    }
+
+    if (!changed && conflicts.length > 0) {
+      throw new Error(`${application.path}: no version satisfies ${conflicts.join("; ")}`);
+    }
+  }
+
+  return versions;
+}
+
 function pinOpenUIDependencyVersions(manifest, latestVersions, { preserveRange = false } = {}) {
   let changed = false;
 
@@ -251,7 +356,11 @@ function manageExamples() {
     if (command === "update") {
       const manifest = readJson(application.manifestPath);
       if (openUIDependencyNames(manifest).length > 0) {
-        if (pinOpenUIDependencyVersions(manifest, versions)) {
+        const applicationVersions = applicationOpenUIVersions(
+          { ...application, manifest },
+          versions,
+        );
+        if (pinOpenUIDependencyVersions(manifest, applicationVersions)) {
           writeJson(application.manifestPath, manifest);
         }
         runPnpm(application, ["install", "--lockfile-only", "--fix-lockfile"]);
