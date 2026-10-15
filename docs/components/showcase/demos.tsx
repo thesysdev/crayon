@@ -48,6 +48,11 @@ const FEATURED_PROJECTS: ShowcaseItem[] = [
     tagline: "Interactive answers",
     description:
       "An open-source recreation of ChatGPT’s Intelligent UI experience, with maps, photographs, and editable itineraries rendered with OpenUI.",
+    // The final frame of the homepage KALLAX demo (public/homepage/agents).
+    image: {
+      light: "/nav/open-intelligent-ui-light.png",
+      dark: "/nav/open-intelligent-ui-dark.png",
+    },
     links: [{ label: "GitHub", href: SITE_NAV_LINKS.openIntelligentUi.href, external: true }],
   },
   {
