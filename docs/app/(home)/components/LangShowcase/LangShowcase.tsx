@@ -62,7 +62,6 @@ const AGENTS: Agent[] = [
     mascot: "/homepage/shiro/shiro-woodworker.svg",
     mascotAlt: "Shiro the woodworker",
     demo: SITE_NAV_LINKS.openIntelligentUi.href,
-    cta: "View on GitHub",
     answer: {
       src: "/homepage/agents/ikea-kallax.gif",
       playMs: 14250,

@@ -9,7 +9,7 @@ export const SITE_NAV_LINKS = {
   apiReference: { href: "/docs/api-reference" },
   demos: { href: "/demos", newTab: false },
   documentation: { href: "/docs", newTab: false },
-  openIntelligentUi: { href: "https://github.com/thesysdev/open-intelligent-ui", newTab: true },
+  openIntelligentUi: { href: "https://www.openui.com/demo/intelligent-ui" },
   /* Absolute, not /demo/...: these demos are proxied from openui.com only, so a
      relative link on a preview deployment would land on the preview's own
      vercel.app host instead of the demo. */

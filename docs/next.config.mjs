@@ -11,6 +11,7 @@ const withMDX = createMDX();
 const proxiedDemos = {
   "f1-dashboard": "https://openui-f1-dashboard.vercel.app",
   "trip-planner": "https://openui-trip-planner.vercel.app",
+  "intelligent-ui": "https://open-intelligent-ui.vercel.app",
 };
 
 /** @type {import('next').NextConfig} */

@@ -37,7 +37,10 @@ const FEATURED_PROJECTS: ShowcaseItem[] = [
       light: "/nav/open-intelligent-ui-light.png",
       dark: "/nav/open-intelligent-ui-dark.png",
     },
-    links: [{ label: "GitHub", href: SITE_NAV_LINKS.openIntelligentUi.href, external: true }],
+    links: [
+      { label: "Open demo", href: SITE_NAV_LINKS.openIntelligentUi.href },
+      { label: "GitHub", href: "https://github.com/thesysdev/open-intelligent-ui", external: true },
+    ],
   },
   {
     name: "F1 Dashboard",
