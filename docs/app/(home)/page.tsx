@@ -2,6 +2,15 @@ import { SITE_OPEN_GRAPH } from "@/lib/page-metadata";
 import { BASE_URL } from "@/lib/source";
 import type { Metadata } from "next";
 import { AGENT_SETUP_PROMPT, AgentPicker } from "./components/AgentPicker/AgentPicker";
+import { LangShowcase } from "./components/LangShowcase/LangShowcase";
+import {
+  type ComparisonTab,
+  ComparisonTabs,
+} from "./components/StreamingComparison/ComparisonTabs";
+import { AD_SPEND } from "./components/StreamingComparison/examples/adSpend";
+import { PARIS_HOTELS } from "./components/StreamingComparison/examples/parisHotels";
+import { SALES_DASHBOARD } from "./components/StreamingComparison/examples/salesDashboard";
+import { TRIP_FORM } from "./components/StreamingComparison/examples/tripForm";
 import styles from "./page.module.css";
 import { BANNER_END_ANCHOR_ID } from "./sections/CloudBanner/CloudBanner";
 import { CloudSection } from "./sections/CloudSection/CloudSection";
@@ -12,9 +21,20 @@ import { HeroProof } from "./sections/HeroProof/HeroProof";
 import { HeroSection } from "./sections/HeroSection/HeroSection";
 import { HowItWorksSection } from "./sections/HowItWorksSection/HowItWorksSection";
 import { LogoStrip } from "./sections/LogoStrip/LogoStrip";
+import { ProductSection } from "./sections/ProductSection/ProductSection";
+import { LangHeadline } from "./sections/ProductSection/LangHeadline";
+import { LANG_PRODUCT } from "./sections/ProductSection/products";
 import { ShiroPeek } from "./sections/ShiroPeek/ShiroPeek";
 import { TweetWallSection } from "./sections/TweetWallSection/TweetWallSection";
 import { WhatItDoesSection } from "./sections/WhatItDoesSection/WhatItDoesSection";
+
+/* The examples under the hero's comparison, one per tab. */
+const COMPARISON_TABS: ComparisonTab[] = [
+  { id: "charts", label: "Charts", example: AD_SPEND },
+  { id: "cards", label: "Cards", example: PARIS_HOTELS },
+  { id: "dashboards", label: "Dashboards", example: SALES_DASHBOARD },
+  { id: "forms", label: "Forms", example: TRIP_FORM },
+];
 
 export const metadata: Metadata = {
   alternates: {
@@ -98,16 +118,12 @@ export default function HomePage() {
           the last two so they never interrupt that story. */}
       <div className={styles.heroShell}>
         <HeroSection
+          /* The hero as it was on main. The "Open Standard for Generative UI"
+             hero with the shuffling outcome line is parked in
+             _saved/generative-ui-hero/ for reuse. */
           align="left"
           desktopFromTablet
-          subtitle={
-            <>
-              Open Standard for Generative UI
-              <span className={styles.heroOutcome}>
-                Make your AI apps and agents respond with intelligent UI, not just text.
-              </span>
-            </>
-          }
+          subtitle="Open Standard for Generative UI"
           showPlaygroundButton={false}
           showTagline={false}
           commandTrailing={<AgentPicker command={AGENT_SETUP_PROMPT} />}
@@ -115,20 +131,30 @@ export default function HomePage() {
              the star count already. Dropping githubRepoUrl takes the desktop
              button; the mobile banner defaults on, so it is turned off here. */
           showGitHubBanner={false}
-          /* Just the hero: what OpenUI is and how to start. The demo fold
-             follows straight after, starting within the first screen. */
-          showPreview={false}
+          /* The Without / With OpenUI demo, streamed live in HTML. Swap the
+             example for any config in components/StreamingComparison/examples. */
+          desktopPreviewSlot={<ComparisonTabs tabs={COMPARISON_TABS} initial={1} />}
+          mobilePreviewSlot={<ComparisonTabs tabs={COMPARISON_TABS} initial={1} />}
+          /* TEMP: the live compare demo is back in the hero, as on main.
+             To return to the screenshot showcase, set showPreview={false},
+             move <LogoStrip /> back down by the tweet wall, restore
+             <WhatItDoesSection /> below and the contentSectionTight class. */
         />
+        <LogoStrip />
       </div>
-      {/* The demo fold sits tight under the hero, so it starts halfway down
-          the first screen. */}
-      <div className={`${styles.contentSection} ${styles.contentSectionTight}`}>
+      <div className={styles.contentSection}>
         <div className={styles.contentShell}>
-          {/* Fold 2: what it does. */}
-          <WhatItDoesSection />
+          {/* The open-source band, directly under the logo carousel. */}
+          <div className={styles.langBand}>
+            <ProductSection {...LANG_PRODUCT} headline={<LangHeadline />} art={<LangShowcase />} />
+          </div>
 
-          {/* Fold 3: how it works. */}
-          <HowItWorksSection />
+          {/* Fold 2: what it does. TEMP: hidden while the hero demo is back. */}
+          {/* <WhatItDoesSection /> */}
+
+          {/* Fold 3: how it works. Hidden for now (the component is kept for
+              reuse); its subtitle moved to the integrations fold below. */}
+          {/* <HowItWorksSection /> */}
 
           {/* Fold 4: integrations. */}
           <CompatibilitySection />
@@ -142,7 +168,6 @@ export default function HomePage() {
             <ShiroPeek />
             <CloudSection />
           </div>
-          <LogoStrip />
           <TweetWallSection />
 
           {/* Fold 5: FAQ. */}
