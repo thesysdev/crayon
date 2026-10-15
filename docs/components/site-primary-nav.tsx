@@ -150,6 +150,13 @@ export const PRIMARY_SITE_NAV_ITEMS: NavItem[] = [
         label: "Lab projects",
         children: [
           {
+            title: "AppLess",
+            description: "An open-source concept for an OS without any apps",
+            ...SITE_NAV_LINKS.appless,
+            icon: DeviceMobileCamera,
+            tag: "New",
+          },
+          {
             title: "OUI-1",
             description: "An open-weight model built to generate interfaces with OpenUI Lang.",
             ...SITE_NAV_LINKS.oui1,
@@ -161,13 +168,6 @@ export const PRIMARY_SITE_NAV_ITEMS: NavItem[] = [
             description: "A power-packed workspace for your OpenClaw agents",
             ...SITE_NAV_LINKS.openClawOs,
             icon: Monitor,
-          },
-          {
-            title: "AppLess",
-            description: "An open-source concept for an OS without any apps",
-            ...SITE_NAV_LINKS.appless,
-            icon: DeviceMobileCamera,
-            tag: "New",
           },
           {
             title: "By community",
