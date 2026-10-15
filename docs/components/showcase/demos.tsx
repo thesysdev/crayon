@@ -28,22 +28,6 @@ export function Playground() {
 
 const FEATURED_PROJECTS: ShowcaseItem[] = [
   {
-    name: "OpenUI Chat",
-    tagline: "Chat assistant",
-    description:
-      "A ChatGPT-like assistant powered by OpenUI Cloud. Start a live conversation or replay a curated one.",
-    image: { light: "/nav/chat-light.webp", dark: "/nav/chat-dark.webp" },
-    links: [{ label: "Open demo", href: "/chat" }],
-  },
-  {
-    name: "AI Dashboards",
-    tagline: "Live GitHub data",
-    description:
-      "Enter a GitHub username and ask questions about their activity. Each answer is an interactive dashboard.",
-    image: { light: "/nav/dashboard-light.webp", dark: "/nav/dashboard-dark.webp" },
-    links: [{ label: "Open demo", href: "/demo/github" }],
-  },
-  {
     name: "Open Intelligent UI",
     tagline: "Interactive answers",
     description:
@@ -76,6 +60,22 @@ const FEATURED_PROJECTS: ShowcaseItem[] = [
       { label: "Open demo", href: SITE_NAV_LINKS.tripPlanner.href },
       { label: "GitHub", href: "https://github.com/thesysdev/openui-trip-planner", external: true },
     ],
+  },
+  {
+    name: "OpenUI Chat",
+    tagline: "Chat assistant",
+    description:
+      "A ChatGPT-like assistant powered by OpenUI Cloud. Start a live conversation or replay a curated one.",
+    image: { light: "/nav/chat-light.webp", dark: "/nav/chat-dark.webp" },
+    links: [{ label: "Open demo", href: "/chat" }],
+  },
+  {
+    name: "AI Dashboards",
+    tagline: "Live GitHub data",
+    description:
+      "Enter a GitHub username and ask questions about their activity. Each answer is an interactive dashboard.",
+    image: { light: "/nav/dashboard-light.webp", dark: "/nav/dashboard-dark.webp" },
+    links: [{ label: "Open demo", href: "/demo/github" }],
   },
   {
     name: "AppLess",
