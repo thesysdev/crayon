@@ -161,6 +161,16 @@ openui generate ./src/library.ts --json-schema
 openui generate ./src/library.ts --export myLibrary --prompt-options myPromptOptions
 ```
 
+### `openui setup-agent`
+
+Adds OpenUI instructions for coding agents to an existing project. It appends the [OpenUI skill](https://github.com/thesysdev/skills) to `AGENTS.md`, or creates the file. Running it again refreshes the OpenUI instructions and leaves the rest of the file alone. Projects made with `create` already have it.
+
+```bash
+openui setup-agent [directory]
+```
+
+`directory` defaults to the current folder.
+
 ### `openui feedback`
 
 Sends anonymous feedback to the OpenUI team. It isn't linked to your account, device, or IP address, and it's sent even when telemetry is disabled. Don't include personal data, secrets, or code.
