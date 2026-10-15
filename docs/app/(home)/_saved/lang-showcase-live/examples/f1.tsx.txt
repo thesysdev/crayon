@@ -1,0 +1,140 @@
+"use client";
+
+import { useState } from "react";
+import styles from "../LangShowcase.module.css";
+import { Block, type Example, Segmented, type Segment } from "../stream";
+
+/* A race recap: the result and the championship after it, behind one
+   segmented control. The 2024 Monaco Grand Prix and the standings it left. */
+
+const PROMPT = "Who won in Monaco, and how does the championship look now?";
+
+const TEAMS: Record<string, string> = {
+  Ferrari: "#e8002d",
+  McLaren: "#ff8000",
+  Mercedes: "#27f4d2",
+  "Red Bull": "#3671c6",
+};
+
+const RESULT = [
+  { pos: 1, driver: "Charles Leclerc", team: "Ferrari", gap: "1:23:15.554" },
+  { pos: 2, driver: "Oscar Piastri", team: "McLaren", gap: "+7.152s" },
+  { pos: 3, driver: "Carlos Sainz", team: "Ferrari", gap: "+7.585s" },
+  { pos: 4, driver: "Lando Norris", team: "McLaren", gap: "+8.650s" },
+  { pos: 5, driver: "George Russell", team: "Mercedes", gap: "+13.309s" },
+];
+
+const STANDINGS = [
+  { driver: "Max Verstappen", team: "Red Bull", points: 169 },
+  { driver: "Charles Leclerc", team: "Ferrari", points: 138 },
+  { driver: "Lando Norris", team: "McLaren", points: 113 },
+  { driver: "Carlos Sainz", team: "Ferrari", points: 108 },
+  { driver: "Sergio Pérez", team: "Red Bull", points: 107 },
+];
+
+const TABS = ["Race", "Championship"] as const;
+type Tab = (typeof TABS)[number];
+
+const SEGMENTS: Segment[] = [
+  { id: "root", code: `root = Col([head, tabs, $tab == "Race" ? result : table])\n` },
+  { id: "state", code: `$tab = "Race"\n` },
+  {
+    id: "head",
+    code: `head = Col([
+  Title("Monaco Grand Prix 2024", "lg"),
+  Text("Leclerc wins at home from pole, his first in Monaco.", "md", "muted")
+])\n`,
+  },
+  { id: "tabs", code: `tabs = SegmentedControl($tab, ["Race", "Championship"])\n` },
+  {
+    id: "result",
+    code: `result = Col(@Each(race, "r", Row([
+  Text(r.pos, "sm", "muted"), Box([], null, null, null, r.color, "full", null, 3, 16),
+  Text(r.driver, "sm", null, "semibold"), Caption(r.team), Spacer(), Text(r.gap, "sm")
+])))\n`,
+  },
+  { id: "race", code: `race = [\n` },
+  ...RESULT.map((r, i) => ({
+    id: `r${i}`,
+    code: `  {pos: ${r.pos}, driver: "${r.driver}", team: "${r.team}", gap: "${r.gap}"}${i < RESULT.length - 1 ? "," : ""}\n`,
+  })),
+  { id: "raceEnd", code: `]\n` },
+  {
+    id: "table",
+    code: `table = Chart("bar", @Each(standings, "s", {label: s.driver, value: s.points}))\n`,
+  },
+  { id: "standings", code: `standings = [\n` },
+  ...STANDINGS.map((s, i) => ({
+    id: `s${i}`,
+    code: `  {driver: "${s.driver}", team: "${s.team}", points: ${s.points}}${i < STANDINGS.length - 1 ? "," : ""}\n`,
+  })),
+  { id: "standingsEnd", code: `]` },
+];
+
+function F1Answer({ has }: { has: (id: string) => boolean }) {
+  const [tab, setTab] = useState<Tab>("Race");
+  const leader = STANDINGS[0].points;
+
+  return has("root") ? (
+    <div className={styles.answer}>
+      <Block ready={has("head")} lines={2}>
+        <h4 className={styles.title}>Monaco Grand Prix 2024</h4>
+        <p className={styles.muted}>Leclerc wins at home from pole, his first in Monaco.</p>
+      </Block>
+
+      <Block ready={has("tabs")} lines={1}>
+        <Segmented label="Show" options={TABS} value={tab} onChange={setTab} />
+      </Block>
+
+      {tab === "Race" ? (
+        <ol className={styles.rows}>
+          {RESULT.map((r, i) =>
+            has(`r${i}`) ? (
+              <li key={r.driver} className={`${styles.row} ${styles.enter}`}>
+                <span className={styles.rowPos}>{r.pos}</span>
+                <span className={styles.teamBar} style={{ background: TEAMS[r.team] }} />
+                <span className={styles.rowMain}>
+                  <strong>{r.driver}</strong>
+                  <span className={styles.caption}>{r.team}</span>
+                </span>
+                <span className={styles.rowEnd}>{r.gap}</span>
+              </li>
+            ) : has("result") ? (
+              <li key={r.driver} className={styles.skeletonRow} aria-hidden="true" />
+            ) : null,
+          )}
+        </ol>
+      ) : (
+        <ol className={styles.rows}>
+          {STANDINGS.map((s, i) =>
+            has(`s${i}`) ? (
+              <li key={s.driver} className={`${styles.row} ${styles.enter}`}>
+                <span className={styles.rowPos}>{i + 1}</span>
+                <span className={styles.rowMain}>
+                  <strong>{s.driver}</strong>
+                  <span className={styles.points}>
+                    <i style={{ width: `${(s.points / leader) * 100}%`, background: TEAMS[s.team] }} />
+                  </span>
+                </span>
+                <span className={styles.rowEnd}>{s.points} pts</span>
+              </li>
+            ) : (
+              <li key={s.driver} className={styles.skeletonRow} aria-hidden="true" />
+            ),
+          )}
+        </ol>
+      )}
+    </div>
+  ) : null;
+}
+
+export const F1: Example = {
+  id: "f1",
+  label: "F1 agent",
+  accent: "#e51f24",
+  prompt: PROMPT,
+  mascot: "/homepage/shiro/shiro-f1.svg",
+  mascotAlt: "Shiro in a racing helmet",
+  segments: SEGMENTS,
+  Answer: F1Answer,
+};
