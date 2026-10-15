@@ -9,6 +9,7 @@ import { rejectConflictingImmediateFlags } from "./lib/resolve";
 import { runCreateApp } from "./run";
 
 export const createCommand = new Command("create")
+  .summary("Scaffold a generative UI agent with Next.js and your choice of agent framework")
   .description(
     "Scaffold a generative UI agent with Next.js and your choice of agent framework.\n" +
       "No account or API key is needed to scaffold. Add the key afterwards:\n" +
