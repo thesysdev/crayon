@@ -1,5 +1,5 @@
 ---
-"@openuidev/cli": patch
+"@openuidev/cli": minor
 ---
 
-Remove the agent-skill installation step from `create`, along with its `--skill` and `--no-skill` flags. When a coding agent runs `create`, the closing message now ends by pointing it at the new project's README, which links to the OpenUI skill for coding agents.
+Remove the agent-skill step and its `--skill` / `--no-skill` flags from `create`. Agent runs now end by pointing to the project README.
