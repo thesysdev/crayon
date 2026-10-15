@@ -84,7 +84,7 @@ export default function Layout({ children }: LayoutProps<"/">) {
     >
       <body className="flex flex-col min-h-screen">
         <PHProvider>
-          <RootProvider theme={{ defaultTheme: "system", enableSystem: true }}>
+          <RootProvider theme={{ defaultTheme: "light", enableSystem: false }}>
             {children}
           </RootProvider>
         </PHProvider>
