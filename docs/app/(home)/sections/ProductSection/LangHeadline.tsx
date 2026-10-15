@@ -1,11 +1,4 @@
-import {
-  ChartColumn,
-  FileText,
-  LayoutDashboard,
-  Presentation,
-  Table2,
-  TextCursorInput,
-} from "lucide-react";
+import { ChartColumn, LayoutDashboard, Table2, TextCursorInput } from "lucide-react";
 import { ShufflingWord } from "../../components/ShufflingWord/ShufflingWord";
 import styles from "./LangHeadline.module.css";
 
@@ -18,8 +11,6 @@ const AGENT_OUTPUTS = [
   { label: "Tables", icon: <Table2 aria-hidden /> },
   { label: "Forms", icon: <TextCursorInput aria-hidden /> },
   { label: "Dashboards", icon: <LayoutDashboard aria-hidden /> },
-  { label: "Reports", icon: <FileText aria-hidden /> },
-  { label: "Slides", icon: <Presentation aria-hidden /> },
 ];
 
 export function LangHeadline() {
