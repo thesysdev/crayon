@@ -23,7 +23,7 @@ const PLAYGROUND: ShowcaseItem[] = [
 ];
 
 export function Playground() {
-  return <ShowcaseGrid items={PLAYGROUND} />;
+  return <ShowcaseGrid items={PLAYGROUND} clickable />;
 }
 
 const FEATURED_PROJECTS: ShowcaseItem[] = [
@@ -86,7 +86,7 @@ const FEATURED_PROJECTS: ShowcaseItem[] = [
 ];
 
 export function FeaturedProjects() {
-  return <ShowcaseGrid items={FEATURED_PROJECTS} />;
+  return <ShowcaseGrid items={FEATURED_PROJECTS} clickable />;
 }
 
 export function CommunityProjects() {
@@ -99,6 +99,7 @@ export function CommunityProjects() {
 
   return (
     <LinkCardGrid
+      clickable
       items={projects.map((project) => ({
         name: project.name,
         description: project.description,
