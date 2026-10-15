@@ -154,9 +154,15 @@ function applicationOpenUIVersions(application, latestVersions) {
   const names = openUIDependencyNames(application.manifest);
   const versions = new Map(latestVersions);
 
-  for (let changed = true; changed;) {
+  // Lowering one package can change the ranges it declares, so repeat until
+  // nothing moves. A conflict only counts once the versions have settled.
+  for (let pass = 1, changed = true; changed; pass++) {
+    if (pass > 10) {
+      throw new Error(`${application.path}: OpenUI versions did not settle after 10 passes`);
+    }
     changed = false;
     const ranges = new Map();
+    const conflicts = [];
 
     for (const name of names) {
       for (const field of ["dependencies", "peerDependencies"]) {
@@ -172,14 +178,15 @@ function applicationOpenUIVersions(application, latestVersions) {
     for (const [name, nameRanges] of ranges) {
       const version = highestVersionInRanges(name, nameRanges);
       if (!version) {
-        throw new Error(
-          `${application.path}: no ${name} version satisfies ${nameRanges.join(", ")}`,
-        );
-      }
-      if (version !== versions.get(name)) {
+        conflicts.push(`${name} (${nameRanges.join(", ")})`);
+      } else if (version !== versions.get(name)) {
         versions.set(name, version);
         changed = true;
       }
+    }
+
+    if (!changed && conflicts.length > 0) {
+      throw new Error(`${application.path}: no version satisfies ${conflicts.join("; ")}`);
     }
   }
 
@@ -312,10 +319,7 @@ function manageExamples() {
   const applications = findManifests(examplesRoot)
     .map(applicationFromManifest)
     .sort((left, right) => left.path.localeCompare(right.path));
-  const versions =
-    command === "update"
-      ? latestOpenUIVersions(applications.map(({ manifest }) => manifest))
-      : new Map();
+  const versions = command === "update" ? latestOpenUIVersions(applications.map(({ manifest }) => manifest)) : new Map();
 
   for (const application of applications) {
     if (command === "install") {
@@ -360,8 +364,8 @@ function manageTemplates() {
     .filter((template) => !template.path.includes("/overlays/"))
     .sort((left, right) => left.path.localeCompare(right.path));
   const overlayManifests = templates.flatMap((template) =>
-    findOverlayDirectories(template.directory).map(
-      (overlayDir) => readJson(join(overlayDir, "manifest.json")).packageJson ?? {},
+    findOverlayDirectories(template.directory).map((overlayDir) =>
+      readJson(join(overlayDir, "manifest.json")).packageJson ?? {},
     ),
   );
   const versions = latestOpenUIVersions([
