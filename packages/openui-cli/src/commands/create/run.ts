@@ -201,7 +201,7 @@ export async function runCreateApp(options: CreateAppOptions, ctx: CliContext): 
       installCmd,
       dependencyInstalled,
       agentReadmePath: agent ? readmePath(targetDir) : undefined,
-      skillHint: interactive,
+      skillHint: options.noSkill,
     }),
   );
 

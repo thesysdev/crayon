@@ -151,7 +151,7 @@ export async function runCreateExample(params: {
       "Done!",
       envNote,
       nextStep,
-      interactive ? skillInstallHint() : "",
+      options.noSkill ? skillInstallHint() : "",
       agentReadme ? agentReadmeNote(agentReadme) : "",
     ]
       .filter(Boolean)

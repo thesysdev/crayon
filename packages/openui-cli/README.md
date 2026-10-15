@@ -56,7 +56,7 @@ Options:
 - `-n, --name <string>`: Project name (default: `openui-agent`)
 - `--backend-framework <framework>`: `langgraph` (default), `vercel-ai-sdk`, or `vercel-eve`
 - `-e, --example <example>`: Scaffold an OpenUI example instead (see below)
-- `--no-skill`: Don't add `AGENTS.md`, the coding-agent guide, to the project
+- `--no-skill`: Don't add `AGENTS.md`, the coding-agent guide, to the project; the CLI suggests `npx skills add thesysdev/skills` instead
 - `--no-install`: Scaffold without installing dependencies
 - `-i, --immediate` / `--no-immediate`: Start, or don't start, the development server after installing
 - `--no-interactive`: Never prompt; use defaults for anything not passed
@@ -71,7 +71,7 @@ Backend frameworks:
 
 Examples are loaded from [OpenUI Examples](https://github.com/thesysdev/openui/blob/main/examples). Pass `--example <name>` with any catalog folder name; it can't be combined with `--backend-framework`.
 
-In a terminal, `create` prompts for anything you didn't pass, installs dependencies, starts the development server, and suggests installing the OpenUI skill for your coding agent with `npx skills add thesysdev/skills`.
+In a terminal, `create` prompts for anything you didn't pass, installs dependencies, and starts the development server.
 
 When nobody can answer prompts (`--no-interactive`, no terminal attached, or a coding agent running the CLI), it takes the defaults instead: `langgraph` and `openui-agent` (or the next free `openui-agent-<n>`). It installs dependencies without starting the server, skips Cloud sign-in, and ends with the `generate-api-key` command to run next. An explicit `--name` that already exists is an error.
 
