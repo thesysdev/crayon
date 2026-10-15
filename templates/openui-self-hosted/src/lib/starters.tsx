@@ -1,18 +1,20 @@
 // One mark for both themes: the mascot reads on light and dark surfaces.
 export const OPENUI_LOGO = "/openui-logo.svg";
 
+// Each starter shows off generated UI from facts the model already knows, no tools needed.
 // No icon: starters show the default lightbulb.
 export const STARTERS = [
   {
-    displayText: "What's the weather in Berlin?",
-    prompt: "What's the weather in Berlin?",
+    displayText: "Compare breakfast nutrition",
+    prompt:
+      "Compare the nutrition of common breakfast foods: oatmeal, eggs, Greek yogurt, avocado toast, and a banana.",
   },
   {
-    displayText: "Relive the FIFA World Cup 2026",
-    prompt: "Relive the FIFA World Cup 2026.",
+    displayText: "See how compound interest grows",
+    prompt: "Explain how compound interest works using $10,000 invested at 7% for 30 years.",
   },
   {
-    displayText: "Help me plan my next vacation",
-    prompt: "Help me plan my next vacation.",
+    displayText: "Help me pick a car",
+    prompt: "Help me pick the right type of car for my lifestyle. Ask me a few questions first.",
   },
 ];

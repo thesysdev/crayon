@@ -3,7 +3,7 @@
 import { OpenUIWordmark } from "@/components/openui-wordmark";
 import { usePersistedModel } from "@/hooks/use-persisted-model";
 import { MODEL_OPTIONS } from "@/lib/models";
-import { OPENUI_LOGO, PROMPT_TEMPLATES, STARTERS } from "@/lib/starters";
+import { OPENUI_LOGO, STARTERS } from "@/lib/starters";
 import {
   AgentInterface,
   fetchLLM,
@@ -73,7 +73,6 @@ export default function CloudChat() {
       <AgentInterface.Welcome
         image={<WelcomeMascot />}
         title="What's on your mind today?"
-        promptTemplates={PROMPT_TEMPLATES}
         starterVariant="card"
         glowAnimation
       />
