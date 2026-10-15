@@ -7,7 +7,7 @@ export const STARTERS = [
 
 Include these sections in order:
 
-1. EmailHeaderCenteredNav with logo (https://www.openui.com/favicon.svg, "OpenUI", height 42) and 3 nav links: "Documentation", "GitHub", "Examples"
+1. EmailHeaderCenteredNav with logo (https://www.openui.com/shiro-logo.svg, "OpenUI", height 42) and 3 nav links: "Documentation", "GitHub", "Examples"
 2. EmailDivider
 3. EmailImage hero banner (https://www.openui.com/meta-image.png, "OpenUI — The Open Standard for Generative UI", 600)
 4. EmailHeading "The Open Standard for Generative UI" (level 1)
@@ -30,9 +30,9 @@ Include these sections in order:
     with language "typescript"
 16. EmailDivider
 17. EmailFeatureList titled "How OpenUI works" with description "From component definition to rendered UI in 4 steps." and 3 items:
-    - (https://www.openui.com/favicon.svg, "Define", "Define your components", "Register components with defineComponent and Zod schemas. OpenUI generates the system prompt automatically.")
-    - (https://www.openui.com/favicon.svg, "Generate", "LLM generates OpenUI Lang", "The AI responds in a lightweight, token-efficient format purpose-built for UI generation.")
-    - (https://www.openui.com/favicon.svg, "Render", "Render in real-time", "The Renderer parses and displays components with streaming support — no flash of empty content.")
+    - (https://www.openui.com/shiro-logo.svg, "Define", "Define your components", "Register components with defineComponent and Zod schemas. OpenUI generates the system prompt automatically.")
+    - (https://www.openui.com/shiro-logo.svg, "Generate", "LLM generates OpenUI Lang", "The AI responds in a lightweight, token-efficient format purpose-built for UI generation.")
+    - (https://www.openui.com/shiro-logo.svg, "Render", "Render in real-time", "The Renderer parses and displays components with streaming support — no flash of empty content.")
 18. EmailDivider
 19. EmailList titled "Get started in 3 steps" with 3 items:
     - "Scaffold your project" / "Run npx @openuidev/cli create to set up a new project with React, TypeScript, and your choice of LLM provider."
@@ -45,7 +45,7 @@ Include these sections in order:
 25. EmailCustomerReview titled "Loved by developers" with totalReviews 2800, rating5: 2240, rating4: 392, rating3: 112, rating2: 28, rating1: 28, button "Leave a Review", href https://github.com/thesysdev/openui, color #50D4E2
 27. EmailSurveyRating with question "How was your experience with OpenUI?" and description "Your feedback helps us build a better developer tool." and color #50D4E2
 31. EmailDivider
-32. EmailFooterCentered with logo (https://www.openui.com/favicon.svg, "OpenUI"), company "OpenUI", tagline "The open standard for Generative UI", address "Built by Thesys · San Francisco, CA", contact "hello@openui.com", and 3 social icons:
+32. EmailFooterCentered with logo (https://www.openui.com/shiro-logo.svg, "OpenUI"), company "OpenUI", tagline "The open standard for Generative UI", address "Built by Thesys · San Francisco, CA", contact "hello@openui.com", and 3 social icons:
     - (https://react.email/static/facebook-logo.png, "Facebook", https://facebook.com/openui)
     - (https://react.email/static/x-logo.png, "X", https://x.com/thesaboratorio)
     - (https://react.email/static/instagram-logo.png, "Instagram", https://instagram.com/openui)`,
