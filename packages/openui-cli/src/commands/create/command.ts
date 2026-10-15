@@ -1,6 +1,7 @@
 import { Command } from "commander";
 
 import { context } from "../../lib/context";
+import { CreateError } from "../../lib/errors";
 import { rejectConflictingScaffoldSelectors } from "./lib/examples-catalog";
 import { printCreateHelp } from "./lib/help";
 import { rejectConflictingImmediateFlags } from "./lib/resolve";
@@ -13,6 +14,7 @@ export const createCommand = new Command("create")
       "No account or API key is needed to scaffold. Add the key afterwards:\n" +
       "  openui generate-api-key",
   )
+  .argument("[directory]", "Folder to create the project in; . uses the current folder")
   .option("-n, --name <string>", "Project name (default: openui-agent)")
   .option("--backend-framework <framework>", "Backend framework to use (default: langgraph)")
   .option("-e, --example <example>", "Create from an example in examples/examples.json")
@@ -24,22 +26,33 @@ export const createCommand = new Command("create")
   .helpOption(false)
   .option("-h, --help", "display help for command")
   .action(
-    async (options: {
-      name?: string;
-      backendFramework?: string;
-      example?: string;
-      skill: boolean;
-      interactive: boolean;
-      install: boolean;
-      immediate?: boolean;
-      help?: boolean;
-    }) => {
+    async (
+      directory: string | undefined,
+      options: {
+        name?: string;
+        backendFramework?: string;
+        example?: string;
+        skill: boolean;
+        interactive: boolean;
+        install: boolean;
+        immediate?: boolean;
+        help?: boolean;
+      },
+    ) => {
       if (options.help) {
         await printCreateHelp(createCommand);
         return;
       }
 
       rejectConflictingImmediateFlags(context.argv.slice(2));
+      if (directory && options.name) {
+        throw new CreateError(
+          "bad_args",
+          "Pass the project folder either as an argument or with --name, not both.",
+          "invalid_input",
+          "CONFLICTING_NAME_ARGS",
+        );
+      }
       rejectConflictingScaffoldSelectors({
         example: options.example,
         backendFramework: options.backendFramework,
@@ -47,7 +60,7 @@ export const createCommand = new Command("create")
 
       await runCreateApp(
         {
-          name: options.name,
+          name: directory ?? options.name,
           backendFramework: options.backendFramework,
           example: options.example,
           noInstall: !options.install,

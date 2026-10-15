@@ -7,7 +7,13 @@ import { withSpinner } from "../../../lib/spinner";
 import type { CreateAppOptions, EnvResult } from "./create-types";
 import { resolveCloudEnv, writeEnvVar } from "./env";
 import type { ExampleProject } from "./examples-catalog";
-import { agentReadmeNote, missingCloudKeyNote, readmePath, skillInstallHint } from "./messages";
+import {
+  agentReadmeNote,
+  cdStep,
+  missingCloudKeyNote,
+  readmePath,
+  skillInstallHint,
+} from "./messages";
 import {
   exampleDevCommand,
   exampleLayout,
@@ -24,6 +30,8 @@ export async function runCreateExample(params: {
   packageManager: ReturnType<typeof resolveInstallPackageManager>;
   t0: number;
   name: string;
+  /** What to `cd` into: the project folder, or `.` when created in place. */
+  dir: string;
   targetDir: string;
   example: ExampleProject;
   tel: CreateTelemetryClient;
@@ -36,6 +44,7 @@ export async function runCreateExample(params: {
     packageManager,
     t0,
     name,
+    dir,
     targetDir,
     example,
     tel,
@@ -135,16 +144,16 @@ export async function runCreateExample(params: {
     dependency_installed: false,
   });
   const agentReadme = agent ? readmePath(targetDir) : undefined;
-  const envNote = exampleEnvNote(example.env, envResult.envWritten, name, packageManager.dlxCmd);
+  const envNote = exampleEnvNote(example.env, envResult.envWritten, dir, packageManager.dlxCmd);
   const nextStep = isNestedExample(layout)
     ? nestedExampleNextSteps({
-        name,
+        name: dir,
         targetDir,
         layout,
         runCmd: packageManager.runCmd,
         installCmd,
       })
-    : [`> cd ${name}`, `> ${installCmd}`, `> ${packageManager.runCmd} run dev`].join("\n");
+    : [...cdStep(dir), `> ${installCmd}`, `> ${packageManager.runCmd} run dev`].join("\n");
 
   console.info(
     `\n${[

@@ -4,6 +4,11 @@ import * as path from "node:path";
 import { THESYS_KEYS_URL } from "../../../lib/auth/mint";
 import { DEFAULT_ENV_FILE } from "../../../lib/env";
 
+/** `cd` into the project, or nothing when it was created in the current folder. */
+export function cdStep(dir: string): string[] {
+  return dir === "." ? [] : [`> cd ${dir}`];
+}
+
 export function missingCloudKeyNote(
   projectDir: string,
   dlxCmd: string,
@@ -12,7 +17,7 @@ export function missingCloudKeyNote(
   const fileArg = envFile === DEFAULT_ENV_FILE ? "" : ` --file ${envFile}`;
   return [
     `[!] No OpenUI Cloud API key added. Sign in and write one to ${envFile} with:`,
-    `> cd ${projectDir}`,
+    ...cdStep(projectDir),
     `> ${dlxCmd} @openuidev/cli@latest generate-api-key${fileArg}`,
     `(or create one at ${THESYS_KEYS_URL} and set THESYS_API_KEY yourself)`,
   ].join("\n");
@@ -36,6 +41,8 @@ export function skillInstallHint(): string {
 
 export function getStartedMessage(o: {
   name: string;
+  /** What to `cd` into: the project folder, or `.` when created in place. */
+  dir: string;
   devCmd: string;
   dlxCmd: string;
   backendGettingStarted?: string;
@@ -59,7 +66,7 @@ export function getStartedMessage(o: {
     : o.startDev
       ? `Starting the development server in "${o.name}"...\n\n> ${o.devCmd} run dev`
       : [
-          `> cd ${o.name}`,
+          ...cdStep(o.dir),
           ...(o.dependencyInstalled ? [] : [`> ${o.installCmd}`]),
           `> ${o.devCmd} run dev`,
         ].join("\n");
@@ -69,7 +76,7 @@ export function getStartedMessage(o: {
     : [
         "Next, add your OpenUI API key. This signs you in and writes THESYS_API_KEY to .env:",
         "",
-        `> cd ${o.name}`,
+        ...cdStep(o.dir),
         ...(o.dependencyInstalled ? [] : [`> ${o.installCmd}`]),
         `> ${o.dlxCmd} @openuidev/cli@latest generate-api-key`,
         `> ${o.devCmd} run dev`,

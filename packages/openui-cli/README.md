@@ -48,7 +48,7 @@ npx @openuidev/cli@latest deploy
 Scaffolds a generative UI agent with Next.js and your choice of agent framework. No account or API key is needed to scaffold; add the key afterwards with `openui generate-api-key`.
 
 ```bash
-openui create [options]
+openui create [directory] [options]
 ```
 
 Options:
@@ -75,10 +75,13 @@ In a terminal, `create` prompts for anything you didn't pass, installs dependenc
 
 When nobody can answer prompts (`--no-interactive`, no terminal attached, or a coding agent running the CLI), it takes the defaults instead: `langgraph` and `openui-agent` (or the next free `openui-agent-<n>`). It installs dependencies without starting the server, skips Cloud sign-in, and ends with the `generate-api-key` command to run next. An explicit `--name` that already exists is an error.
 
+Pass `.` as the directory (`openui create .`) to scaffold into the current folder instead; it must be empty apart from editor or agent folders such as `.git`, `.vscode` or `.claude`, and the project is named after the folder.
+
 Examples:
 
 ```bash
 openui create
+openui create .
 openui create --name my-app --backend-framework vercel-ai-sdk
 openui create --name my-app --example shadcn
 openui create --no-interactive --name my-app

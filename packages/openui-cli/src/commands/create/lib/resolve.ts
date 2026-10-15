@@ -10,7 +10,7 @@ import {
   rejectConflictingScaffoldSelectors,
   type ExampleProject,
 } from "./examples-catalog";
-import { firstAvailableName, resolveAvailableTarget } from "./target-dir";
+import { firstAvailableName, resolveAvailableTarget, resolveCurrentDirTarget } from "./target-dir";
 import type { CreateTelemetryClient } from "./telemetry";
 import {
   DEFAULT_TEMPLATE_KEY,
@@ -78,6 +78,18 @@ export async function loadCreateCatalog(params: {
 }
 
 export async function resolveProjectIdentity(
+  requestedName: string | undefined,
+  interactive: boolean,
+  tel: CreateTelemetryClient,
+): Promise<{ name: string; targetDir: string; dir: string }> {
+  if (requestedName === "." || requestedName === "./") {
+    return { ...resolveCurrentDirTarget(), dir: "." };
+  }
+  const target = await resolveNamedTarget(requestedName, interactive, tel);
+  return { ...target, dir: target.name };
+}
+
+async function resolveNamedTarget(
   requestedName: string | undefined,
   interactive: boolean,
   tel: CreateTelemetryClient,

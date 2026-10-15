@@ -46,7 +46,7 @@ export async function runCreateApp(options: CreateAppOptions, ctx: CliContext): 
     interactive,
     onRetry: sourceRetryReporter,
   });
-  const { name, targetDir } = await resolveProjectIdentity(options.name, interactive, tel);
+  const { name, targetDir, dir } = await resolveProjectIdentity(options.name, interactive, tel);
 
   const selected = await resolveCreateSelection({
     backendFramework: options.backendFramework,
@@ -63,6 +63,7 @@ export async function runCreateApp(options: CreateAppOptions, ctx: CliContext): 
       packageManager,
       t0,
       name,
+      dir,
       targetDir,
       example: selected.example,
       tel,
@@ -192,6 +193,7 @@ export async function runCreateApp(options: CreateAppOptions, ctx: CliContext): 
   console.info(
     getStartedMessage({
       name,
+      dir,
       devCmd,
       dlxCmd: packageManager.dlxCmd,
       backendGettingStarted: overlay?.manifest.gettingStarted,
