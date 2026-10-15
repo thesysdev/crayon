@@ -6,7 +6,7 @@ import { withSpinner } from "../../../lib/spinner";
 import type { CreateAppOptions, EnvResult } from "./create-types";
 import { resolveCloudEnv, writeEnvVar } from "./env";
 import type { ExampleProject } from "./examples-catalog";
-import { agentReadmeNote, missingCloudKeyNote, readmePath } from "./messages";
+import { agentReadmeNote, missingCloudKeyNote, readmePath, skillInstallHint } from "./messages";
 import {
   exampleDevCommand,
   exampleLayout,
@@ -145,7 +145,13 @@ export async function runCreateExample(params: {
     : [`> cd ${name}`, `> ${installCmd}`, `> ${packageManager.runCmd} run dev`].join("\n");
 
   console.info(
-    `\n${["Done!", envNote, nextStep, agentReadme ? agentReadmeNote(agentReadme) : ""]
+    `\n${[
+      "Done!",
+      envNote,
+      nextStep,
+      interactive ? skillInstallHint() : "",
+      agentReadme ? agentReadmeNote(agentReadme) : "",
+    ]
       .filter(Boolean)
       .join("\n\n")}\n`,
   );

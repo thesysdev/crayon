@@ -29,6 +29,11 @@ export function agentReadmeNote(readmePath: string): string {
   return `Coding agent: read the project README to get started:\n> ${readmePath}`;
 }
 
+/** For people at a terminal: how to give their coding agent the OpenUI skill. */
+export function skillInstallHint(): string {
+  return "Using a coding agent? Install the OpenUI skill:\n> npx skills add thesysdev/skills";
+}
+
 export function getStartedMessage(o: {
   name: string;
   devCmd: string;
@@ -42,6 +47,8 @@ export function getStartedMessage(o: {
   dependencyInstalled: boolean;
   /** Set for agent runs: the scaffolded README to point the agent at. */
   agentReadmePath?: string;
+  /** Interactive runs: suggest installing the OpenUI skill. */
+  skillHint?: boolean;
 }): string {
   const envNote = o.envWritten ? "✅ .env created with your OpenUI Cloud API key + base URL." : "";
 
@@ -78,6 +85,7 @@ export function getStartedMessage(o: {
     envNote,
     frameworkNote,
     nextStep,
+    o.skillHint ? skillInstallHint() : "",
     deployHint,
     feedbackHint,
     keyStep,
