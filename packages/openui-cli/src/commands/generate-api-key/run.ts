@@ -1,9 +1,10 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 
-import { assertValidApiKeyName, mintCloudApiKey } from "../../lib/auth/mint";
+import { assertValidApiKeyName, CloudAuthError, mintCloudApiKey } from "../../lib/auth/mint";
 import { AuthTelemetryClient } from "../../lib/auth/telemetry";
 import type { CliContext } from "../../lib/context";
+import { resolveInstallPackageManager } from "../../lib/detect-package-manager";
 import { assertValidEnvVarName, DEFAULT_ENV_FILE, upsertEnvVar } from "../../lib/env";
 import { GenerateApiKeyTelemetryClient } from "./lib/telemetry";
 
@@ -46,6 +47,19 @@ export async function runGenerateApiKey(
     env_file: path.basename(file),
     env_key: envKey,
   });
+
+  // The sign-in happens in a browser and needs a person at the terminal;
+  // without one this would wait on a callback that never arrives.
+  if (!ctx.detectedInteractive) {
+    const { dlxCmd } = resolveInstallPackageManager();
+    const fileArg = file === DEFAULT_ENV_FILE ? "" : ` --file ${file}`;
+    throw new CloudAuthError(
+      "method_resolution",
+      "INTERACTIVE_REQUIRED",
+      "generate-api-key signs you in through a browser, so it needs an interactive shell. " +
+        `Run this command yourself in a terminal:\n\n> ${dlxCmd} @openuidev/cli@latest generate-api-key${fileArg}`,
+    );
+  }
 
   const apiKey = await mintCloudApiKey(projectName, authTel);
 

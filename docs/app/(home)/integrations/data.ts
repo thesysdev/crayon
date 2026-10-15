@@ -1,3 +1,5 @@
+import type { PageMetadataInput } from "@/lib/page-metadata";
+
 export type IntegrationCategoryId = "ai-frameworks" | "design-systems" | "frontend-platforms";
 
 export interface IntegrationLink {
@@ -6,23 +8,22 @@ export interface IntegrationLink {
   kind: "Docs" | "Example" | "Guide" | "GitHub" | "npm" | "Website" | "Plugin";
 }
 
-export interface IntegrationStep {
-  title: string;
-  description: string;
-}
-
 export interface Integration {
   slug: string;
   name: string;
+  /** Search title for <title>; the H1 keeps `name`. */
+  seoTitle: string;
+  seoDescription?: string;
   logo: string;
   category: IntegrationCategoryId;
   type: string;
   summary: string;
   howItWorks: string;
-  steps: IntegrationStep[];
   install?: string;
   links: IntegrationLink[];
 }
+
+// Each page's example and steps live in content/integrations/<slug>.mdx.
 
 export interface IntegrationCategory {
   id: IntegrationCategoryId;
@@ -84,30 +85,16 @@ const integrationCatalog: Integration[] = [
   {
     slug: "shadcn-ui",
     name: "shadcn/ui",
+    seoTitle: "shadcn/ui generative UI: let LLMs render your components",
     logo: "/integration-logos/shadcn-ui.svg",
     category: "design-systems",
     type: "Design system",
     summary:
-      "Wrap shadcn/ui components in an OpenUI library and let the model compose them as streaming interfaces.",
+      "To add generative UI to shadcn/ui, wrap your shadcn/ui components in an OpenUI library and let the model compose them as streaming interfaces.",
     howItWorks:
       "Each shadcn component is registered with defineComponent and a Zod prop schema. createLibrary produces both the prompt vocabulary and the renderer mapping used by the example chat app.",
-    steps: [
-      {
-        title: "Wrap your shadcn/ui components",
-        description:
-          "Register each component with defineComponent and a Zod prop schema, then combine them with createLibrary. The example library covers 45+ components, including cards, tables, charts, forms, and dialogs.",
-      },
-      {
-        title: "Generate the library spec",
-        description:
-          "Run openui generate --spec on the library file. The chat route passes that spec to generateSystemPrompt({ cloud: true }), so the model can only call components the client can render.",
-      },
-      {
-        title: "Render the responses",
-        description:
-          "Pass the library to Renderer from @openuidev/react-lang wherever your app shows model output. For a ready-made chat app, the example passes it to AgentInterface as componentLibrary instead.",
-      },
-    ],
+    install:
+      "npm install @openuidev/react-ui @openuidev/react-headless @openuidev/react-lang @openuidev/lang-core zod",
     links: [
       {
         label: "Integration guide",
@@ -121,30 +108,16 @@ const integrationCatalog: Integration[] = [
   {
     slug: "material-ui",
     name: "Material UI",
+    seoTitle: "Material UI (MUI) generative UI with OpenUI",
     logo: "/integration-logos/mui.svg",
     category: "design-systems",
     type: "Design system",
     summary:
-      "Expose Material UI components to a model without replacing your existing React design system.",
+      "To add generative UI to Material UI, expose your Material UI components to a model through OpenUI without replacing your existing React design system.",
     howItWorks:
       "The example wraps Material UI components with OpenUI definitions, generates a constrained component prompt, and renders model output back into the same Material UI primitives.",
-    steps: [
-      {
-        title: "Map MUI components to OpenUI",
-        description:
-          "Wrap Material UI components with defineComponent and Zod schemas, and export them through createLibrary. Charts use @mui/x-charts.",
-      },
-      {
-        title: "Generate the library spec",
-        description:
-          "Run openui generate --spec on src/library.ts. The chat route sends that spec to OpenUI Cloud and runs app-owned tools with runChatToolLoop.",
-      },
-      {
-        title: "Render inside your MUI theme",
-        description:
-          "Render responses with Renderer, or with AgentInterface as the example does, inside your MUI ThemeProvider. Generated components then use the app's theme and light or dark mode.",
-      },
-    ],
+    install:
+      "npm install @openuidev/react-ui @openuidev/react-headless @openuidev/react-lang @openuidev/lang-core zod",
     links: [
       exampleLink("design-systems/material-ui"),
       {
@@ -158,30 +131,16 @@ const integrationCatalog: Integration[] = [
   {
     slug: "handsontable",
     name: "Handsontable",
+    seoTitle: "Handsontable generative UI with OpenUI",
     logo: "https://raw.githubusercontent.com/handsontable/handsontable/develop/docs/public/favicon.png",
     category: "design-systems",
     type: "Data grid",
     summary:
-      "Connect a live Handsontable spreadsheet to OpenUI so agent tools can analyze and update its data.",
+      "To add generative UI to Handsontable, connect a live Handsontable spreadsheet to OpenUI so agent tools can analyze and update its data.",
     howItWorks:
       "The maintained example shares table state between Handsontable and a custom OpenUI SpreadsheetTable component. Tool calls update the server-side data, and the rendered component synchronizes those results back into the live grid.",
-    steps: [
-      {
-        title: "Share the table state",
-        description:
-          "Keep the table in a server-side store that both the grid and the chat route use. Edits made in Handsontable sync back to the server through POST /api/table.",
-      },
-      {
-        title: "Give the model spreadsheet tools",
-        description:
-          "Expose tools such as get_table_data, update_cells, add_rows, and set_formula. After a write, the model responds with a SpreadsheetTable component.",
-      },
-      {
-        title: "Sync results into the grid",
-        description:
-          "The Renderer draws SpreadsheetTable from the custom library, and the useSpreadsheetSync hook pushes the new data into the live Handsontable instance.",
-      },
-    ],
+    install:
+      "npm install @openuidev/react-ui @openuidev/react-headless @openuidev/react-lang @openuidev/lang-core zod handsontable @handsontable/react-wrapper hyperformula",
     links: [
       exampleLink("miscellaneous/handsontable"),
       { label: "Handsontable", href: "https://handsontable.com", kind: "Website" },
@@ -190,33 +149,18 @@ const integrationCatalog: Integration[] = [
   {
     slug: "react-email",
     name: "React Email",
+    seoTitle: "Generate React Email templates with an LLM",
     logo: "/integration-logos/react-email.svg",
     category: "design-systems",
     type: "Email component library",
     summary:
-      "Generate, preview, and export email-safe interfaces with OpenUI's React Email component package.",
+      "To generate React Email templates with an LLM, use OpenUI's React Email component package to generate, preview, and export email-safe interfaces.",
     howItWorks:
       "@openuidev/react-email provides 44 OpenUI component definitions, an emailLibrary, and prompt rules. OpenUI Lang streams into a React Email preview, which @react-email/render can convert to email-compatible HTML.",
-    install: "npm install @openuidev/react-email @openuidev/react-lang",
-    steps: [
-      {
-        title: "Import the email library",
-        description:
-          "Use emailLibrary from @openuidev/react-email. It covers 44 email-safe components, including headers, feature grids, pricing cards, and checkout tables.",
-      },
-      {
-        title: "Generate the email prompt",
-        description:
-          "Build the system prompt from emailLibrary and emailPromptOptions, so the model composes emails only from those components.",
-      },
-      {
-        title: "Preview and export HTML",
-        description:
-          "Stream the response into Renderer from @openuidev/react-lang for a live preview, then convert the email to client-compatible HTML with @react-email/render.",
-      },
-    ],
+    install: "npm install @openuidev/react-email @openuidev/react-lang @react-email/render",
     links: [
-      ...packageLinks("@openuidev/react-email", "react-email", "/docs/api-reference/react-email"),
+      { label: "React Email API reference", href: "/docs/api-reference/react-email", kind: "Docs" },
+      ...packageLinks("@openuidev/react-email", "react-email"),
       exampleLink("miscellaneous/react-email"),
       { label: "React Email", href: "https://react.email", kind: "Website" },
     ],
@@ -226,31 +170,17 @@ const integrationCatalog: Integration[] = [
   {
     slug: "langchain-langgraph",
     name: "LangChain & LangGraph",
+    seoTitle: "LangGraph generative UI: a frontend for LangGraph agents",
+    seoDescription:
+      "Let your LangChain or LangGraph agent answer with interactive charts, tables and forms. Use OpenUI to build a visual frontend beyond text-only chat.",
     logo: "https://raw.githubusercontent.com/langchain-ai/docs/main/src/images/brand/langchain-icon.png",
     category: "ai-frameworks",
     type: "Agent framework adapter",
     summary:
-      "Connect LangChain and LangGraph to OpenUI through first-party server and stream adapters.",
+      "To give a LangGraph or LangChain agent a generative UI frontend, add the @openuidev/langchain stream transformer to your graph and render the stream with OpenUI. The agent's responses show up as interactive components instead of plain text.",
     howItWorks:
       "The @openuidev/langchain package transforms LangGraph protocol-v2 events into AG-UI on the server, then agUIAdapter() consumes the stream on the client. If your backend already returns native LangGraph named-event SSE, use the bundled langGraphAdapter() and langGraphMessageFormat instead.",
     install: "npm install @openuidev/langchain @langchain/langgraph",
-    steps: [
-      {
-        title: "Add the stream transformer",
-        description:
-          "Add openUIStreamTransformer from @openuidev/langchain/transformer to your graph's streamTransformers, and give the agent the generated OpenUI system prompt.",
-      },
-      {
-        title: "Expose an AG-UI route",
-        description:
-          "Return createLangChainStreamResponse(request, options) from a server route. It starts a protocol-v2 run and relays the output as AG-UI SSE while the API key and deployment URL stay on the server.",
-      },
-      {
-        title: "Connect your chat UI",
-        description:
-          "Point fetchLLM at the route with agUIAdapter(), then pass it to AgentInterface for a ready-made chat app or to ChatProvider from @openuidev/react-headless for your own UI. For native LangGraph named-event SSE, use langGraphAdapter() with langGraphMessageFormat instead.",
-      },
-    ],
     links: [
       ...packageLinks("@openuidev/langchain", "langchain", "/docs/api-reference/langchain"),
       {
@@ -269,31 +199,17 @@ const integrationCatalog: Integration[] = [
   {
     slug: "vercel-ai-sdk",
     name: "Vercel AI SDK",
+    seoTitle: "Vercel AI SDK generative UI with OpenUI",
+    seoDescription:
+      "Build a Vercel AI SDK chat app that answers with more than text. Use OpenUI to stream interactive charts, tables and forms alongside the conversation.",
     logo: "/integration-logos/vercel.svg",
     category: "ai-frameworks",
     type: "AI SDK adapter",
     summary:
-      "Connect Vercel AI SDK UIMessage streams to OpenUI with OpenUI's bundled first-party adapter and message format.",
+      "To add generative UI to a Vercel AI SDK app, return the UIMessage stream from streamText() and render it with OpenUI's vercelAIAdapter(). It works with AI SDK v6 and v7 and handles text, tool calls and multi-step runs.",
     howItWorks:
       "Return the UIMessage SSE produced by streamText().toUIMessageStreamResponse(), then use vercelAIAdapter() with vercelAIMessageFormat on the client. OpenUI validates AI SDK v6 or v7 chunks and maps streamed text, tool inputs, tool results, multi-step lifecycles, and errors into AG-UI events.",
     install: "npm install @openuidev/react-ui ai",
-    steps: [
-      {
-        title: "Stream with streamText",
-        description:
-          "Call streamText with the generated OpenUI system prompt and your AI SDK tools, then return toUIMessageStreamResponse() from the route.",
-      },
-      {
-        title: "Configure the adapter",
-        description:
-          "Create the client connection with fetchLLM({ streamAdapter: vercelAIAdapter(), messageFormat: vercelAIMessageFormat }).",
-      },
-      {
-        title: "Connect your chat UI",
-        description:
-          "Pass that llm to AgentInterface for a ready-made chat app, or to ChatProvider from @openuidev/react-headless to build your own UI. Either way, streamed text, tool calls, and multi-step runs arrive as the same chat events.",
-      },
-    ],
     links: [
       {
         label: "Vercel AI adapter",
@@ -313,30 +229,18 @@ const integrationCatalog: Integration[] = [
   {
     slug: "google-adk",
     name: "Google ADK",
+    seoTitle: "Google ADK agent UI: render rich interfaces with OpenUI",
+    seoDescription:
+      "Build a frontend for your Google ADK agent with OpenUI. Let users explore its answers through interactive charts, tables and forms, not just text.",
     logo: "/integration-logos/google.svg",
     category: "ai-frameworks",
     type: "Agent SDK",
     summary:
-      "Bridge Google ADK for TypeScript run events into OpenUI with tools and multi-turn sessions.",
+      "To give a Google ADK agent a UI, run it in a server route that maps ADK run events to AG-UI, then render the stream with OpenUI. The example uses ADK for TypeScript with tools and multi-turn sessions.",
     howItWorks:
       "A Google ADK Agent and FunctionTool run in a Next.js route. The route maps ADK runAsync events to AG-UI SSE, which agUIAdapter() parses on the client.",
-    steps: [
-      {
-        title: "Define the agent",
-        description:
-          "Create an ADK Agent with FunctionTool tools and use the generated OpenUI system prompt as its instruction. The example calls OpenUI Cloud through adk-llm-bridge's Custom() model adapter.",
-      },
-      {
-        title: "Bridge events to AG-UI",
-        description:
-          "Run the agent with a Runner whose sessions are keyed by chat thread, and map text, functionCall, and functionResponse parts to AG-UI text and tool events.",
-      },
-      {
-        title: "Connect your chat UI",
-        description:
-          "Create an llm with fetchLLM and agUIAdapter(), then pass it to AgentInterface for a ready-made chat app or to ChatProvider from @openuidev/react-headless for your own UI.",
-      },
-    ],
+    install:
+      "npm install @google/adk adk-llm-bridge @openuidev/react-ui @openuidev/react-headless @openuidev/react-lang @openuidev/lang-core zod",
     links: [
       exampleLink("agent-frameworks/google-adk"),
       { label: "Google ADK", href: "https://github.com/google/adk-js", kind: "GitHub" },
@@ -345,30 +249,16 @@ const integrationCatalog: Integration[] = [
   {
     slug: "mastra",
     name: "Mastra",
+    seoTitle: "Mastra generative UI: build a frontend for Mastra agents",
     logo: "/integration-logos/mastra.svg",
     category: "ai-frameworks",
     type: "Agent framework",
     summary:
-      "Connect a Mastra agent to OpenUI over AG-UI and render its streamed output as typed interfaces.",
+      "To build a UI for a Mastra agent, connect it to OpenUI over AG-UI and render its streamed output as typed interfaces.",
     howItWorks:
       "Mastra owns the agent and tools, the AG-UI transport serializes the run as SSE, and OpenUI's agUIAdapter drives the chat state and component renderer on the client.",
-    steps: [
-      {
-        title: "Build the Mastra agent",
-        description:
-          "Define the Agent with createTool tools and the generated OpenUI instructions. The example registers a custom Mastra gateway that routes model calls through OpenUI Cloud.",
-      },
-      {
-        title: "Stream AG-UI events",
-        description:
-          "Wrap the agent with MastraAgent from @ag-ui/mastra in a server route and stream its AG-UI events to the browser as SSE.",
-      },
-      {
-        title: "Connect your chat UI",
-        description:
-          "Create an llm with fetchLLM and agUIAdapter(), then pass it to AgentInterface for a ready-made chat app or to ChatProvider from @openuidev/react-headless for your own UI.",
-      },
-    ],
+    install:
+      "npm install @mastra/core @ag-ui/mastra @ag-ui/core @openuidev/react-ui @openuidev/react-lang @openuidev/lang-core zod",
     links: [
       exampleLink("agent-frameworks/mastra"),
       {
@@ -382,32 +272,19 @@ const integrationCatalog: Integration[] = [
   {
     slug: "assistant-ui",
     name: "assistant-ui",
+    seoTitle: "assistant-ui + OpenUI: generative UI in assistant-ui chats",
+    seoDescription:
+      "Add interactive charts, tables and forms to your assistant-ui chat app with OpenUI, while keeping your existing chat interface and conversation flow.",
     logo: "/integration-logos/assistant-ui.svg",
     category: "frontend-platforms",
     type: "Chat framework",
     summary:
-      "Render streaming OpenUI programs as assistant-ui Tool UI while assistant-ui retains its conversation lifecycle.",
+      "To add generative UI to an assistant-ui chat, register the @openuidev/assistant-ui toolkit so the model can render cards, tables, charts and forms as Tool UI. assistant-ui keeps control of the conversation lifecycle.",
     howItWorks:
       "The @openuidev/assistant-ui toolkit registers display and human-input tools, generates matching model instructions, renders partial OpenUI Lang, and sends validated form actions back through assistant-ui's tool result flow.",
     install: "npm install @openuidev/assistant-ui @assistant-ui/react",
-    steps: [
-      {
-        title: "Register the OpenUI toolkit",
-        description:
-          "Inside AssistantRuntimeProvider, add openuiIntegration.toolkit through AuiConfig and pass openuiIntegration.instructions to useAssistantInstructions.",
-      },
-      {
-        title: "Let the model call the OpenUI tools",
-        description:
-          "present_openui renders complete cards, tables, and charts. prompt_openui renders forms and choices, and completes only when the user submits a result.",
-      },
-      {
-        title: "Bring your own components",
-        description:
-          "Call createOpenUIIntegration with your own library so the tool schemas, model instructions, and renderers share one component vocabulary.",
-      },
-    ],
     links: [
+      { label: "assistant-ui guide", href: "/docs/build-agents/assistant-ui", kind: "Docs" },
       ...packageLinks("@openuidev/assistant-ui", "assistant-ui"),
       {
         label: "assistant-ui guide",
@@ -424,30 +301,16 @@ const integrationCatalog: Integration[] = [
   {
     slug: "ag-ui",
     name: "AG-UI",
+    seoTitle: "AG-UI frontend: render AG-UI streams as generative UI",
+    seoDescription:
+      "Build a frontend for agents that use the AG-UI protocol. OpenUI lets them answer with interactive charts, tables and forms instead of text-only chat.",
     logo: "/integration-logos/ag-ui.svg",
     category: "ai-frameworks",
     type: "Agent protocol",
     summary:
-      "Consume standard AG-UI event streams in OpenUI chat surfaces with the built-in agUIAdapter.",
+      "OpenUI works as a frontend for AG-UI: point it at any AG-UI SSE endpoint and agUIAdapter() renders the event stream as generative UI. Text message, tool call, tool result and run error events are supported.",
     howItWorks:
-      "Point fetchLLM or a direct ChatLLM implementation at an AG-UI SSE endpoint and use agUIAdapter() as the stream adapter. OpenUI maps supported lifecycle, text, tool, and error events into its chat runtime.",
-    steps: [
-      {
-        title: "Prompt your agent for OpenUI Lang",
-        description:
-          "Give the agent a system prompt generated from the same component library the client renders, so its text output is valid OpenUI Lang.",
-      },
-      {
-        title: "Serve AG-UI events",
-        description:
-          "Expose the agent as an SSE endpoint that emits standard AG-UI run lifecycle, text message, tool call, and error events.",
-      },
-      {
-        title: "Connect the adapter",
-        description:
-          "Point fetchLLM, or your own ChatLLM implementation, at that endpoint with agUIAdapter() as the stream adapter. Pass it to AgentInterface for a ready-made chat app, or to ChatProvider from @openuidev/react-headless for your own UI.",
-      },
-    ],
+      "Point fetchLLM or a direct ChatLLM implementation at an AG-UI SSE endpoint and use agUIAdapter() as the stream adapter. OpenUI maps text message, tool call, tool result and run error events into its chat runtime, and the run ends when the stream closes.",
     links: [
       {
         label: "Adapters and formats",
@@ -461,30 +324,14 @@ const integrationCatalog: Integration[] = [
   {
     slug: "grok-build",
     name: "Grok Build",
-    logo: "https://media.x.ai/v1/website/spacexai-symbol-black-transparent-6435cf42.png",
+    seoTitle: "Grok Build generative UI with OpenUI",
+    logo: "/brand-icons/xai.svg",
     category: "ai-frameworks",
     type: "Coding agent",
     summary:
-      "Use OpenUI as a generative UI frontend for persistent Grok Build coding-agent sessions.",
+      "To build a UI for Grok Build, use OpenUI as a generative UI frontend for persistent Grok Build coding-agent sessions.",
     howItWorks:
-      "The maintained local harness talks to Grok Build through its official Agent Client Protocol stdio mode, injects the generated OpenUI rules, and maps reasoning, text, tools, and interactions into AG-UI events for AgentInterface. As shipped, it is an unauthenticated single-user harness and needs authentication, sandboxing, and a stricter permission policy before networked deployment.",
-    steps: [
-      {
-        title: "Install and sign in to Grok Build",
-        description:
-          "Put the grok CLI on your PATH and run grok login. In non-interactive environments, set XAI_API_KEY instead.",
-      },
-      {
-        title: "Start the harness on a workspace",
-        description:
-          "Launch the example with the project directory Grok Build should work in. It runs one grok agent stdio process and opens a separate ACP session for each OpenUI thread, with the OpenUI prompt added as session rules.",
-      },
-      {
-        title: "Answer questions and approve plans in the browser",
-        description:
-          "Grok's clarifying questions and plan approvals appear as browser dialogs, and your answers go back over ACP so the same turn can continue.",
-      },
-    ],
+      "The maintained local harness talks to Grok Build through its official Agent Client Protocol stdio mode, injects the generated OpenUI rules, and maps reasoning, text, and tools into AG-UI events for AgentInterface. Grok's questions and plan approvals reach the browser over a separate interactions route and open as dialogs. As shipped, it is an unauthenticated single-user harness and needs authentication, sandboxing, and a stricter permission policy before networked deployment.",
     links: [
       exampleLink("harnesses/grok-build", "OpenUI harness"),
       { label: "Grok Build", href: "https://github.com/xai-org/grok-build", kind: "GitHub" },
@@ -493,30 +340,14 @@ const integrationCatalog: Integration[] = [
   {
     slug: "vercel-eve",
     name: "Vercel Eve",
+    seoTitle: "Vercel Eve generative UI with OpenUI",
     logo: "https://raw.githubusercontent.com/vercel/eve/main/.github/assets/eve.svg",
     category: "ai-frameworks",
     type: "Coding agent",
     summary:
-      "Connect Vercel Eve's resumable agent sessions to OpenUI while preserving Eve's native runtime.",
+      "To build a UI for Vercel Eve, connect Eve's resumable agent sessions to OpenUI while preserving Eve's native runtime.",
     howItWorks:
       "The maintained harness delivers turns over Eve's native session protocol, resumes its event stream from a stored cursor, and translates Eve text, tool, and failure events into AG-UI for AgentInterface. The example uses an unauthenticated local Eve channel; a deployed version must configure channel authentication and appropriate tool permissions.",
-    steps: [
-      {
-        title: "Add the OpenUI instructions",
-        description:
-          "Add an Eve instruction that injects the generated OpenUI Lang prompt when each session starts, alongside the agent's own identity and tools.",
-      },
-      {
-        title: "Deliver turns over Eve's session protocol",
-        description:
-          "Send each turn through Eve's HTTP channel and store the session cursor per OpenUI thread, so the NDJSON event stream can resume where it stopped.",
-      },
-      {
-        title: "Map events with eveAdapter()",
-        description:
-          "Use eveAdapter() from @openuidev/react-headless as the llm's stream protocol. It converts Eve text, tool call, and failure events into AG-UI for AgentInterface or your own UI built on ChatProvider.",
-      },
-    ],
     links: [
       {
         label: "Integration guide",
@@ -530,30 +361,14 @@ const integrationCatalog: Integration[] = [
   {
     slug: "pi-coding-agent",
     name: "Pi Coding Agent",
+    seoTitle: "Pi Coding Agent generative UI with OpenUI",
     logo: "/integration-logos/pi.svg",
     category: "ai-frameworks",
     type: "Coding agent",
     summary:
-      "Embed the Pi coding-agent SDK behind OpenUI and render its answers, reasoning, and tool activity.",
+      "To build a UI for Pi Coding Agent, embed the Pi coding-agent SDK behind OpenUI and render its answers, reasoning, and tool activity.",
     howItWorks:
       "The maintained local harness embeds @earendil-works/pi-coding-agent in a Next.js route, injects the prompt generated from OpenUI's component library, and converts Pi text, reasoning, and tool events into an OpenAI-compatible stream consumed by openAIReadableStreamAdapter(). It exposes real filesystem and shell tools, so the shipped unauthenticated harness must not be exposed to a network as-is.",
-    steps: [
-      {
-        title: "Embed the Pi SDK",
-        description:
-          "Create one Pi AgentSession per chat thread with createAgentSession in a Node.js route. Point its model at OpenUI Cloud and append the generated OpenUI prompt.",
-      },
-      {
-        title: "Translate Pi events",
-        description:
-          "Write Pi text deltas to delta.content and its reasoning and tool executions to delta.tool_calls, one OpenAI chat.completion.chunk per NDJSON line.",
-      },
-      {
-        title: "Render with the NDJSON adapter",
-        description:
-          "Parse the stream with openAIReadableStreamAdapter(), then render the answers, reasoning, and tool activity with AgentInterface or your own UI built on ChatProvider.",
-      },
-    ],
     links: [
       {
         label: "Integration guide",
@@ -569,30 +384,14 @@ const integrationCatalog: Integration[] = [
   {
     slug: "open-webui",
     name: "Open WebUI",
+    seoTitle: "Open WebUI generative UI: rich interfaces in Open WebUI",
     logo: "https://raw.githubusercontent.com/open-webui/open-webui/main/backend/open_webui/static/favicon-96x96.png",
     category: "frontend-platforms",
     type: "AI platform",
     summary:
-      "Render charts, forms, tables, cards, and follow-ups directly inside Open WebUI conversations.",
+      "To add generative UI to Open WebUI, install the OpenUI plugin to render charts, forms, tables, cards, and follow-ups directly inside Open WebUI conversations.",
     howItWorks:
-      "The plugin gives the model a render_openui tool and returns a self-contained HTML response. A sandboxed iframe loads the OpenUI browser bundle and renders the generated program inline.",
-    steps: [
-      {
-        title: "Install the tool",
-        description:
-          "Import the plugin from the Open WebUI community site, or create a tool in Admin > Tools and paste in the plugin's tool.py.",
-      },
-      {
-        title: "Enable it for a model",
-        description:
-          "Turn the tool on for the models or chats that should render UI. The model calls render_openui when an answer needs a chart, form, table, or card.",
-      },
-      {
-        title: "Choose where the bundle loads from",
-        description:
-          "The cdn_base_url valve sets where the OpenUI browser bundle loads from. By default it is the latest @openuidev/browser-bundle on jsDelivr.",
-      },
-    ],
+      "The plugin gives the model a render_openui tool and returns a self-contained HTML response. Open WebUI shows it as an inline iframe embed, which loads the OpenUI browser bundle and renders the generated program.",
     links: [
       {
         label: "Plugin source",
@@ -612,31 +411,15 @@ const integrationCatalog: Integration[] = [
   {
     slug: "lynx",
     name: "Lynx",
+    seoTitle: "Lynx generative UI with OpenUI",
     logo: "/integration-logos/lynx.svg",
     category: "frontend-platforms",
     type: "Cross-platform runtime",
     summary:
-      "Render streaming OpenUI Lang as cross-platform interfaces through Lynx's native rendering pipeline.",
+      "To add generative UI to Lynx, render streaming OpenUI Lang as cross-platform interfaces through Lynx's native rendering pipeline.",
     howItWorks:
       "@lynx-js/genui/openui incrementally parses OpenUI Lang, maps registered expressions to ReactLynx components, and renders them through Lynx's native pipeline while the host application owns its component definitions, tools, and actions.",
     install: "npm install @lynx-js/genui @lynx-js/react @lynx-js/lynx-ui",
-    steps: [
-      {
-        title: "Create the library",
-        description:
-          "Build a component library with createOpenUiLibrary() from @lynx-js/genui/openui, and import the renderer stylesheet from @lynx-js/genui/openui/styles/renderer.css.",
-      },
-      {
-        title: "Generate the agent instructions",
-        description:
-          "On the server, build the system prompt with buildOpenUiSystemPrompt() from @lynx-js/genui/openui/prompt.",
-      },
-      {
-        title: "Render with OpenUiRenderer",
-        description:
-          "Pass the full text received so far, not just the latest delta, to OpenUiRenderer with the library. Handle host-side effects such as navigation in onAction.",
-      },
-    ],
     links: [
       {
         label: "OpenUI integration guide",
@@ -659,32 +442,19 @@ const integrationCatalog: Integration[] = [
   {
     slug: "vue",
     name: "Vue 3",
+    seoTitle: "Generative UI for Vue",
+    seoDescription:
+      "Build AI-powered interfaces in Vue 3 with OpenUI. Let AI use your Vue components to show interactive charts, tables and forms instead of plain text.",
     logo: "/integration-logos/vue.svg",
     category: "frontend-platforms",
     type: "Native runtime",
     summary:
-      "Define model-renderable Vue components and render streamed OpenUI Lang with @openuidev/vue-lang.",
+      "To build generative UI in Vue, register Vue 3 single-file components with Zod schemas and render streamed OpenUI Lang with @openuidev/vue-lang. The Renderer component takes the response as a prop, and composables such as useTriggerAction connect your components to it.",
     howItWorks:
-      "Vue component definitions and Zod schemas form a shared library for prompt generation and rendering. The Vue Renderer updates progressively as OpenUI Lang arrives.",
-    install: "npm install @openuidev/vue-lang",
-    steps: [
-      {
-        title: "Define Vue components",
-        description:
-          "Register each Vue component with defineComponent and a Zod prop schema, then combine them with createLibrary.",
-      },
-      {
-        title: "Generate the system prompt",
-        description:
-          "Build the prompt from the same library with library.prompt(), or with generateSystemPrompt on the server, so the model only calls components the renderer knows.",
-      },
-      {
-        title: "Render the stream",
-        description:
-          "Bind the streamed text to the Renderer component's response prop along with library and is-streaming. Handle button and form actions with on-action.",
-      },
-    ],
+      "Each SFC declares a props prop for the parsed values and a renderNode prop for nested content, and defineComponent pairs it with a Zod schema whose key order sets the positional arguments in OpenUI Lang. Renderer reports back through callback props such as onAction, onStateUpdate and onError rather than emitted events. Inside it, composables like useTriggerAction, useSetFieldValue and useIsStreaming give components access to actions, form state and streaming status.",
+    install: "npm install @openuidev/vue-lang zod",
     links: [
+      { label: "Vue Lang API reference", href: "/docs/api-reference/vue-lang", kind: "Docs" },
       ...packageLinks("@openuidev/vue-lang", "vue-lang"),
       exampleLink("app-frameworks/vue"),
       { label: "Vue", href: "https://vuejs.org", kind: "Website" },
@@ -693,37 +463,24 @@ const integrationCatalog: Integration[] = [
   {
     slug: "angular",
     name: "Angular",
+    seoTitle: "Generative UI for Angular",
+    seoDescription:
+      "Build AI-powered interfaces in Angular with OpenUI. Let AI use your Angular components to show interactive charts, tables and forms instead of plain text.",
     logo: "/integration-logos/angular.svg",
     category: "frontend-platforms",
     type: "Native runtime",
     summary:
-      "Define model-renderable Angular components and render streamed OpenUI Lang with @openuidev/angular-lang.",
+      "To build generative UI in Angular, register standalone components with Zod schemas and render streamed OpenUI Lang with the <openui-renderer> component from @openuidev/angular-lang. Results reach your app through outputs such as (action) and (error).",
     howItWorks:
-      "Standalone Angular components and Zod schemas form one library for prompt generation and rendering. The openui-renderer component resolves streamed statements into those components, and injection helpers give them access to actions, form state, and query loading.",
+      "Each registered component accepts props, renderNode and statementId inputs, and defineComponent pairs its class with a Zod schema. The <openui-renderer> component takes response, library and isStreaming inputs, emits (action), (stateUpdate), (parseResult) and (error) outputs, and runs Query() and mutation calls through a toolProvider. Inside it, injection helpers such as injectTriggerAction and injectIsStreaming expose actions and streaming state, the latter as a Signal.",
     install: "npm install @openuidev/angular-lang zod rxjs",
-    steps: [
-      {
-        title: "Define Angular components",
-        description:
-          "Write standalone components that accept props, renderNode, and statementId inputs. Register each one with defineComponent and a Zod schema, then combine them with createLibrary.",
-      },
-      {
-        title: "Generate the system prompt",
-        description:
-          "Call library.prompt() in the app, or share the Zod schemas with a Node backend and use @openuidev/lang-core so the server never imports Angular classes.",
-      },
-      {
-        title: "Render with openui-renderer",
-        description:
-          "Import Renderer and bind response, library, and isStreaming. Handle the (action), (stateUpdate), and (error) outputs, and pass a toolProvider to run Query and Mutation calls.",
-      },
-    ],
     links: [
-      ...packageLinks(
-        "@openuidev/angular-lang",
-        "angular-lang",
-        "/docs/api-reference/angular-lang",
-      ),
+      {
+        label: "Angular Lang API reference",
+        href: "/docs/api-reference/angular-lang",
+        kind: "Docs",
+      },
+      ...packageLinks("@openuidev/angular-lang", "angular-lang"),
       exampleLink("app-frameworks/angular"),
       { label: "Angular", href: "https://angular.dev", kind: "Website" },
     ],
@@ -731,30 +488,15 @@ const integrationCatalog: Integration[] = [
   {
     slug: "react-native",
     name: "React Native",
+    seoTitle: "Generative UI for React Native",
     logo: "/integration-logos/react.svg",
     category: "frontend-platforms",
     type: "Mobile framework",
     summary:
-      "Render model-generated interfaces in a native mobile chat application with a dedicated component library.",
+      "To add generative UI to a React Native app, render model-generated interfaces in a native mobile chat application with a dedicated component library.",
     howItWorks:
-      "The reference project pairs a React Native chat app with a backend that prompts for OpenUI Lang. Native component definitions map the same structured response model to mobile views and actions.",
-    steps: [
-      {
-        title: "Describe the components on the backend",
-        description:
-          "Define the component vocabulary (Card, Text, and chart components) with defineComponent and createLibrary in a Node-compatible file, with renderers set to null. The CLI compiles it into the system prompt.",
-      },
-      {
-        title: "Stream plain text",
-        description:
-          "Return raw text/plain chunks from the chat route instead of SSE, so the mobile app can read the stream without a browser EventSource.",
-      },
-      {
-        title: "Render native components",
-        description:
-          "Use Renderer from @openuidev/react-lang in the Expo app with a library that maps the same component names to native views and charts.",
-      },
-    ],
+      "The reference project pairs a React Native chat app with a backend that prompts for OpenUI Lang. Native component definitions map the same component names to mobile views and charts, and the app renders the streamed text as it arrives.",
+    install: "npm install @openuidev/react-lang zod",
     links: [
       exampleLink("app-frameworks/react-native"),
       { label: "React Native", href: "https://reactnative.dev", kind: "Website" },
@@ -763,32 +505,19 @@ const integrationCatalog: Integration[] = [
   {
     slug: "svelte",
     name: "Svelte 5",
+    seoTitle: "Generative UI for Svelte",
+    seoDescription:
+      "Build AI-powered interfaces in Svelte 5 with OpenUI. Let AI use your Svelte components to show interactive charts, tables and forms instead of plain text.",
     logo: "/integration-logos/svelte.svg",
     category: "frontend-platforms",
     type: "Native runtime",
     summary:
-      "Define Svelte components, generate prompts, and render streamed OpenUI Lang with @openuidev/svelte-lang.",
+      "To build generative UI in Svelte, register Svelte 5 components with Zod schemas and render streamed OpenUI Lang with @openuidev/svelte-lang. Components read parsed values with $props() and render nested output through a renderNode snippet.",
     howItWorks:
-      "Svelte component definitions and Zod schemas become one component library. The package generates the model prompt and its Renderer resolves streamed statements into Svelte components.",
-    install: "npm install @openuidev/svelte-lang",
-    steps: [
-      {
-        title: "Define Svelte components",
-        description:
-          "Pair each .svelte component with defineComponent and a Zod prop schema, then combine them with createLibrary.",
-      },
-      {
-        title: "Generate the system prompt",
-        description:
-          "Build the prompt from the same library with library.prompt(), or with generateSystemPrompt on the server, so the model only calls components the renderer knows.",
-      },
-      {
-        title: "Render the stream",
-        description:
-          "Pass the streamed text, the library, and isStreaming to the Renderer component. It resolves each statement into a Svelte component as it arrives.",
-      },
-    ],
+      "Each .svelte component receives the parsed values as props and a renderNode snippet that it renders with {@render}. Renderer takes callbacks such as onAction and onStateUpdate as ordinary props, and context helpers like getTriggerAction and getIsStreaming give components access to actions and streaming state. The Svelte runtime covers components, simple actions and form state; unlike the React, Vue and Angular runtimes, it does not yet run Query() calls, Action([...]) step plans or $variable state.",
+    install: "npm install @openuidev/svelte-lang zod",
     links: [
+      { label: "Svelte Lang API reference", href: "/docs/api-reference/svelte-lang", kind: "Docs" },
       ...packageLinks("@openuidev/svelte-lang", "svelte-lang"),
       exampleLink("app-frameworks/svelte"),
       { label: "Svelte", href: "https://svelte.dev", kind: "Website" },
@@ -840,4 +569,15 @@ export function getRelatedIntegrations(integration: Integration, limit = 3): Int
   return getIntegrationsByCategory(integration.category)
     .filter((item) => item.slug !== integration.slug)
     .slice(0, limit);
+}
+
+export function getIntegrationPageMetadata(integration: Integration): PageMetadataInput {
+  return {
+    pathname: `/integrations/${integration.slug}`,
+    title: { absolute: `${integration.seoTitle} | OpenUI` },
+    description: integration.seoDescription ?? integration.summary,
+    openGraph: { title: `${integration.name} × OpenUI`, description: integration.summary },
+    // Remote logos are skipped so the build never fetches from third-party hosts.
+    ogImage: { partnerLogo: integration.logo.startsWith("/") ? integration.logo : undefined },
+  };
 }

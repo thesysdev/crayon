@@ -1,7 +1,8 @@
 import { RootProvider } from "fumadocs-ui/provider/next";
 import type { Metadata } from "next";
-import { Geist_Mono, Inter } from "next/font/google";
+import { Geist, Geist_Mono, Inter } from "next/font/google";
 import Script from "next/script";
+import { SITE_NAME, SITE_OPEN_GRAPH } from "../lib/page-metadata";
 import { BASE_URL } from "../lib/source";
 import "./global.css";
 import { PHProvider } from "./providers";
@@ -10,28 +11,34 @@ const inter = Inter({
   subsets: ["latin"],
 });
 
+// Only the OpenUI wordmark uses Geist, so it is not preloaded ahead of the
+// fonts and images the first paint actually needs.
+const geist = Geist({
+  variable: "--font-geist",
+  subsets: ["latin"],
+  preload: false,
+});
+
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
 
-const SITE_TITLE = "OpenUI - The Open Standard for Intelligent UI";
+const SITE_TITLE = SITE_NAME;
 const SITE_DESCRIPTION =
-  "OpenUI is the open standard for Intelligent UI. Full-stack, framework-agnostic Generative UI built on OpenUI Lang, a streaming-first language with first-party runtimes for React, Vue, Svelte, and Angular, and up to 67% fewer tokens than JSON.";
-const SITE_IMAGE = "/meta-image.png?v=20261008";
+  "Open-source infrastructure for AI apps and agents to respond with interactive UI, not just text. Build with your own components, models and design system.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
   title: {
     default: SITE_TITLE,
-    template: `%s | ${SITE_TITLE}`,
+    template: "%s | OpenUI",
   },
   description: SITE_DESCRIPTION,
   applicationName: SITE_TITLE,
   referrer: "origin-when-cross-origin",
   keywords: [
     "OpenUI",
-    "Intelligent UI",
     "Generative UI",
     "AI UI",
     "OpenUI Lang",
@@ -49,26 +56,9 @@ export const metadata: Metadata = {
     shortcut: "/shiro-logo.svg",
     apple: "/shiro-logo.svg",
   },
-  openGraph: {
-    type: "website",
-    url: "/",
-    siteName: SITE_TITLE,
-    title: SITE_TITLE,
-    description: SITE_DESCRIPTION,
-    images: [
-      {
-        url: SITE_IMAGE,
-        width: 1800,
-        height: 942,
-        alt: "OpenUI preview",
-      },
-    ],
-  },
+  openGraph: SITE_OPEN_GRAPH,
   twitter: {
     card: "summary_large_image",
-    title: SITE_TITLE,
-    description: SITE_DESCRIPTION,
-    images: [SITE_IMAGE],
   },
   robots: {
     index: true,
@@ -83,18 +73,24 @@ export const metadata: Metadata = {
   },
 };
 
+/** Square Shiro mark for `og:logo`, which Next's Metadata API has no field for. */
+const OG_LOGO = `${BASE_URL}/shiro-og-logo.png`;
+
 export default function Layout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${inter.className} ${geistMono.variable}`}
+      className={`${inter.className} ${geist.variable} ${geistMono.variable}`}
       // Lets Next.js skip smooth scrolling on route changes; in-page anchors still scroll smoothly.
       data-scroll-behavior="smooth"
       suppressHydrationWarning
     >
+      <head>
+        <meta property="og:logo" content={OG_LOGO} />
+      </head>
       <body className="flex flex-col min-h-screen">
         <PHProvider>
-          <RootProvider theme={{ defaultTheme: "system", enableSystem: true }}>
+          <RootProvider theme={{ defaultTheme: "light", enableSystem: false }}>
             {children}
           </RootProvider>
         </PHProvider>

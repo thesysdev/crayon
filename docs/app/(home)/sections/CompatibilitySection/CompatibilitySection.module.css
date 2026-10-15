@@ -1,220 +1,165 @@
 .section {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(2.25rem, 4.5vw, 3.25rem);
   width: 100%;
-  padding-inline: var(--home-section-padding-inline);
-  overflow: hidden;
+  /* Taller, so the fold reads at the same scale as the hero above it. */
+  padding-block: clamp(2rem, 6vw, 6rem);
 }
 
+/* Same measure and gutters as the home fold (hero + comparison), so the
+   edges line up: a 75rem content box inside 3vw gutters capped at 2.5rem. */
 .container {
-  max-width: 84rem;
+  --fold-gutter: clamp(1.25rem, 3vw, 2.5rem);
+  box-sizing: border-box;
+  width: 100%;
+  max-width: calc(var(--home-container-max) + 2 * var(--fold-gutter));
   margin-inline: auto;
+  padding-inline: var(--fold-gutter);
 }
 
-.stack {
-  display: flex;
-  flex-direction: column;
-  gap: 2.75rem;
-  align-items: center;
-}
+/* ── Plain-language cards ── */
 
-/* The heading sits under the diagram, reading on from it, so the gap goes
-   above it. */
-.header {
-  max-width: 46rem;
-  margin: clamp(2.5rem, 5vw, 4rem) auto clamp(1rem, 2vw, 1.5rem);
-  text-align: center;
-}
-
-/* The caption, and the only <p> SectionHeader renders here since this header
-   passes no subtitle. Narrower than the heading above it, and balanced so the
-   two lines come out close to even. */
-.header p {
-  max-width: 32rem;
-  margin-inline: auto;
-  text-wrap: balance;
-}
-
-.title {
+/* One panel, four columns split by hairlines: the same rhythm as the feature
+   grid above, rather than four separate boxes. */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  /* Full width of the fold-sized container. */
+  max-width: none;
   margin: 0;
-  text-align: center;
-  font-family: var(--home-font-display);
-  font-size: var(--home-title-size);
-  font-weight: var(--home-title-weight);
-  line-height: var(--home-title-leading);
-  letter-spacing: var(--home-title-tracking);
-  text-wrap: balance;
-  color: var(--openui-text-neutral-primary);
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid var(--openui-border-default);
+  border-radius: 20px;
+  background: var(--openui-foreground);
+  list-style: none;
 }
 
-.titleAccent {
-  color: var(--openui-text-neutral-secondary);
-}
-
-.headerText {
+.card {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 0.75rem;
+  padding: clamp(2rem, 4vw, 3.25rem) 1.75rem clamp(2rem, 4vw, 3rem);
 }
 
-.description {
-  margin: 0;
-  max-width: 40rem;
-  text-align: center;
-  font-family: var(--home-font-text);
-  font-size: var(--home-body-size);
-  line-height: 1.6;
-  color: var(--openui-text-neutral-secondary);
-  text-wrap: pretty;
+.card + .card {
+  border-left: 1px solid var(--openui-border-default);
 }
 
-/* Icon tile shown beside the title on mobile only. */
-.titleIcon {
-  display: none;
-}
+.cardLogos {
+  --stack-logo-size: 34px;
+  --stack-logo-glyph: 18px;
 
-.rows {
-  display: flex;
-  width: 100%;
-  max-width: 56rem;
-  margin-inline: auto;
-  flex-direction: column;
-  gap: 0.5rem;
-  padding-block: 1rem;
-  align-items: stretch;
-}
-
-.row {
-  display: flex;
-  width: 100%;
-  flex-direction: column;
-  justify-content: center;
-  gap: 0.375rem;
-}
-
-/* Was display:none. The rows showed a line of logos with nothing naming what
-   they were, so neither someone skimming nor an agent parsing the page could
-   tell the model row from the design-library one. The label is the claim; the
-   logos underneath are the evidence for it. */
-.label {
-  display: block;
-  font-family: var(--home-font-text);
-  font-size: 0.9375rem;
-  font-weight: 500;
-  line-height: 1.4;
-  color: var(--openui-text-neutral-primary);
-}
-
-/* Wraps in place. This used to be a fixed-width track slid by rAF behind a
-   masked viewport; with the animation gone the row simply lays out and wraps,
-   and .chipsViewport is no longer rendered. */
-.chips {
-  display: flex;
-  width: 100%;
-  flex-direction: row;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.chipRow {
   display: flex;
   flex-wrap: nowrap;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  padding-left: 4px;
 }
 
-/* Embedded variant (opt-in via `embedded` prop): tuned for FeatureGridSection. */
-.section[data-variant="embedded"] .title {
-  font-size: clamp(1.25rem, 2.5vw, 1.5rem);
-  letter-spacing: -0.4px;
+/* Overlapping marks, each ringed in the panel colour so the overlap reads as a
+   stack rather than a collision. */
+.cardLogo {
+  display: flex;
+  margin-left: -4px;
+  border-radius: 999px;
+  box-shadow: 0 0 0 2px var(--openui-foreground);
+  transition: transform 150ms ease;
 }
 
-.section[data-variant="embedded"] .stack {
-  gap: 2.5rem;
+.cardLogo:hover {
+  position: relative;
+  z-index: 1;
+  transform: translateY(-3px);
 }
 
-.section[data-variant="embedded"] .chips {
-  gap: 1rem;
+.cardTitle {
+  margin: 0 0 0.375rem;
+  font-family: var(--home-font-display);
+  font-size: 1.125rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--openui-text-neutral-primary);
+  text-align: center;
 }
 
-.section[data-variant="embedded"] .rows {
-  gap: 1rem;
+.cardDescription {
+  margin: 0;
+  text-align: center;
+  font-family: var(--home-font-text);
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: var(--openui-text-neutral-secondary);
+  text-wrap: balance;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .chips {
-    transform: none !important;
+.cardNames {
+  margin: auto 0 0;
+  padding-top: 1.25rem;
+  font-family: var(--home-font-text);
+  font-size: 0.8125rem;
+  line-height: 1.55;
+  color: var(--openui-text-neutral-tertiary, var(--openui-text-neutral-secondary));
+}
+
+@media (max-width: 1023px) {
+  .cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .card:nth-child(3) {
+    border-left: 0;
+  }
+
+  .card:nth-child(n + 3) {
+    border-top: 1px solid var(--openui-border-default);
   }
 }
 
-@media (min-width: 1024px) {
-  .section {
-    padding-inline: 2rem;
-  }
-
-  .stack {
-    gap: 2.5rem;
-  }
-
-  .rows {
-    padding-block: 1.5rem;
-  }
-}
-
-/* Embedded variant (opt-in via `embedded` prop): mobile layout for FeatureGridSection. */
+/* Phones: a swipeable row of separate cards, one per view with the next
+   peeking in at the edge. The row bleeds to the screen edges so cards scroll
+   under them, and snaps to the same 16px gutter it starts at. */
 @media (max-width: 767px) {
-  /* The only `__section`-suffixed class is the root itself, so target it directly. */
-  .section[data-variant="embedded"] {
-    padding-inline: 0;
+  .cards {
+    display: flex;
+    gap: 0.75rem;
+    margin-inline: calc(-1 * var(--fold-gutter));
+    padding: 0.25rem 1rem 0.5rem;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: 1rem;
+    scrollbar-width: none;
+    border: 0;
+    border-radius: 0;
+    background: none;
   }
 
-  .section[data-variant="embedded"] .stack {
-    gap: 2rem;
-    align-items: stretch;
-  }
-
-  /* Standalone centered section on mobile (not a feature-style row): centered
-     title + description, icon tile removed. */
-  .section[data-variant="embedded"] .header {
-    align-items: center;
-    justify-content: center;
-  }
-
-  .section[data-variant="embedded"] .titleIcon {
+  .cards::-webkit-scrollbar {
     display: none;
   }
 
-  .section[data-variant="embedded"] .headerText {
-    align-items: center;
-    width: 100%;
-    gap: 0.5rem;
+  .card {
+    flex: 0 0 82%;
+    padding: 1.75rem 1.25rem;
+    scroll-snap-align: start;
+    border: 1px solid var(--openui-border-default);
+    border-radius: 20px;
+    background: var(--openui-foreground);
   }
 
-  .section[data-variant="embedded"] .title {
-    /* Match the section's "Renders 3x faster" heading on mobile: use the home
-       title token instead of the smaller embedded size. */
-    font-size: var(--home-title-size);
-    letter-spacing: var(--home-title-tracking);
-    text-align: center;
+  .card + .card {
+    border-left: 1px solid var(--openui-border-default);
   }
 
-  .section[data-variant="embedded"] .description {
-    max-width: none;
-    text-align: center;
-    font-size: 0.875rem;
-    line-height: 1.5;
+  .card:nth-child(3) {
+    border-left: 1px solid var(--openui-border-default);
   }
 
-  /* Chips span edge to edge; rows break out of the section padding. */
-  .section[data-variant="embedded"] .rows {
-    gap: 0.375rem;
-    width: auto;
-    max-width: none;
-    margin-inline: -1.25rem;
+  .card:nth-child(n + 3) {
+    border-top: 1px solid var(--openui-border-default);
   }
 
-  .section[data-variant="embedded"] .chips {
-    gap: 0.375rem;
+  .cardLogos {
+    margin-bottom: 1rem;
   }
 }

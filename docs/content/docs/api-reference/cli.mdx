@@ -1,9 +1,9 @@
 ---
 title: "@openuidev/cli"
-description: API reference for the OpenUI CLI to scaffold apps, mint Gateway API keys, and generate system prompts or library specs, and deploy projects.
+description: API reference for the OpenUI CLI to scaffold apps, mint Gateway API keys, generate system prompts or library specs, and deploy projects.
 ---
 
-A command-line tool for scaffolding OpenUI chat apps, minting OpenUI Gateway API key, and generating system prompts, JSON schemas, or serialized library specs from library definitions, and deploying those apps.
+A command-line tool for scaffolding OpenUI apps, minting OpenUI Gateway API keys, generating system prompts and library specs from a component library, and deploying apps.
 
 ## Installation
 
@@ -43,204 +43,123 @@ yarn global add @openuidev/cli
 npm install -g @openuidev/cli
 ```
 
+## Global options
+
+Available on every command.
+
+| Flag                  | Description                                                                                                   |
+| --------------------- | ------------------------------------------------------------------------------------------------------------- |
+| `--agent-name <name>` | Coding agents: declare your product slug, e.g. `codex` or `claude-code` (see [Coding agents](#coding-agents)) |
+| `--verbose`           | Stream full command logs                                                                                      |
+| `--no-telemetry`      | Disable anonymous usage analytics (`DO_NOT_TRACK=1` also works)                                               |
+| `-V, --version`       | Print the CLI version                                                                                         |
+| `-h, --help`          | Show help for a command                                                                                       |
+
 ## `create`
 
-Scaffolds a new Next.js app pre-configured with OpenUI Chat.
+Scaffolds a generative UI agent with Next.js and your choice of agent framework. No account or API key is needed to scaffold; add the key afterwards with [`generate-api-key`](#generate-api-key).
 
 ```
-openui create [options]
+openui create [directory] [options]
 ```
 
 **Options**
 
-| Flag                              | Description                                                                  |
-| --------------------------------- | ---------------------------------------------------------------------------- |
-| `-n, --name <string>`             | Project name (interactive default: `openui-agent`)                           |
-| `-t, --template <template>`       | AI backend: `openui-cloud` (Gateway; recommended) or `openui-self-hosted`    |
-| `--backend-framework <framework>` | Backend integration: `langgraph` (default), `vercel-ai-sdk`, or `vercel-eve` |
-| `-e, --example <example>`         | Scaffold any example from the OpenUI Repository                              |
-| `--api-key <key>`                 | OpenUI Gateway API key; skips sign-in for the Gateway setup                  |
-| `--auth <method>`                 | Gateway auth method: `oauth` or `skip`; `manual` is deprecated               |
-| `--skill`                         | Install the OpenUI agent skill for AI coding assistants                      |
-| `--no-skill`                      | Skip installing the OpenUI agent skill                                       |
-| `--no-install`                    | Scaffold without running dependency installation                             |
-| `-i, --immediate`                 | Start the development server after installing dependencies                   |
-| `--no-immediate`                  | Install dependencies without starting the development server                 |
-| `--no-interactive`                | Fail instead of prompting for missing input                                  |
-| `--agent-name <name>`             | Declare the invoking coding-agent slug (default: `unknown`)                  |
+| Flag                              | Description                                                                                              |
+| --------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| `-n, --name <string>`             | Project name (default: `openui-agent`)                                                                   |
+| `--backend-framework <framework>` | Backend framework: `langgraph` (default), `vercel-ai-sdk`, or `vercel-eve`                               |
+| `-e, --example <example>`         | Scaffold an [OpenUI example](https://github.com/thesysdev/openui/blob/main/examples) instead             |
+| `--no-skill`                      | Skip the [OpenUI agent skill](/docs/mcp#install-via-the-skills-cli-recommended) for AI coding assistants |
+| `--no-install`                    | Scaffold without installing dependencies                                                                 |
+| `-i, --immediate`                 | Start the development server after installing                                                            |
+| `--no-immediate`                  | Install dependencies without starting the development server                                             |
+| `--no-interactive`                | Never prompt; use defaults for anything not passed                                                       |
 
-When run interactively (default), the CLI prompts for any missing options, including the backend framework or an example, then asks whether to start the development server after installing dependencies with the detected package manager. The start prompt defaults to yes; answering no preserves the existing install-and-exit behavior and prints the `cd` and dev commands. For most prototypes and evaluations, start with **OpenUI Gateway, the recommended default**: hosted models, managed conversation history and streaming, built-in tools, and ready-to-use reports and presentations without operating the model, storage, or artifact infrastructure. Choose **self-hosted** when owning the OpenAI-compatible provider, AI route, and persistence is a requirement.
+`--example` cannot be combined with `--backend-framework`. `--immediate` and `--no-immediate` cannot be used together.
 
-`openui-cloud` remains the CLI template identifier for the Gateway-backed setup.
+**Interactive and non-interactive runs**
 
-In non-interactive mode, dependencies are installed without starting the long-running development server. Pass `--immediate` to install, start, and open the app, or `--no-install` to scaffold only.
+In a terminal, `create` prompts for anything you didn't pass: the project name, a backend framework or example, and Gateway sign-in. It then installs dependencies and starts the development server.
 
-`--immediate` and `--no-immediate` are mutually exclusive; passing both exits with an error.
+When nobody can answer prompts, `create` takes the defaults instead: `langgraph` and the name `openui-agent` (or `openui-agent-2`, `-3`, … if that directory exists). This happens when you pass `--no-interactive`, when there's no terminal attached (CI, scripts), or when a coding agent runs the CLI. In that mode it:
 
-**What it does**
+- installs dependencies but doesn't start the development server (pass `--immediate` to start it)
+- skips Gateway sign-in and ends with the `generate-api-key` command to run next
 
-1. Resolves the project name, picks a backend-framework overlay or an OpenUI example
-2. Copies the selected Next.js template or example into `<name>/`
-3. Rewrites `workspace:*` dependency versions to `latest`
-4. Writes the relevant `.env` values, including Thesys sign-in/API-key setup for OpenUI Gateway
-5. Optionally installs the [OpenUI agent skill](/docs/mcp#install-via-the-skills-cli-recommended) for AI coding assistants (e.g. Claude, Cursor, Copilot)
-6. Auto-detects your package manager (npm, pnpm, yarn, bun)
-7. Installs dependencies unless skipped, then optionally starts the development server in the generated directory
+An explicit `--name` that already exists is an error in non-interactive runs.
+
+Pass `.` as the directory (`openui create .`) to scaffold into the current folder instead; it must be empty apart from editor or agent folders such as `.git`, `.vscode` or `.claude`, and the project is named after the folder.
 
 **Backend frameworks**
 
-| Value           | OpenUI Gateway route                  | Self-hosted route                  |
-| --------------- | ------------------------------------- | ---------------------------------- |
-| `langgraph`     | LangGraph + Gateway Chat Completions  | LangGraph + your provider          |
-| `vercel-ai-sdk` | Vercel AI SDK Next.js agent + Gateway | Vercel AI SDK `streamText()` route |
-| `vercel-eve`    | Vercel Eve agent + Gateway provider   | Vercel Eve agent + your provider   |
-
-LangGraph is the default backend and lives directly in both base templates. Vercel AI SDK and Eve apply overlays with their own route/page files, dependencies, and deployment configuration. Both LangGraph variants run the agent inside the Next.js `/api/chat` route and stream native LangGraph events to `langGraphAdapter()`. They do not require a separate Agent Server. Vercel AI SDK uses `streamText()` and `vercelAIAdapter()`. Eve wraps Next.js with `withEve()` and uses its native `/eve/v1/session*` protocol with `eveAdapter()`.
-
-The framework owns orchestration and application tool execution. Gateway-backed templates use OpenUI Gateway as their Chat Completions model provider; self-hosted templates use the configured OpenAI-compatible provider. `pnpm dev` starts the app for every variant, including the embedded Eve server when selected.
-
-Every backend includes a `get_weather` example backed by Open-Meteo. Ask “What’s the weather in Berlin?” to verify the selected framework’s native multi-step tool loop.
+| Value           | Description                                |
+| --------------- | ------------------------------------------ |
+| `langgraph`     | LangGraph agent                            |
+| `vercel-ai-sdk` | Vercel AI SDK agent                        |
+| `vercel-eve`    | Eve agent rendered through Agent Interface |
 
 **OpenUI examples**
 
-Interactive `openui create` lists starter templates and featured [OpenUI examples](https://github.com/thesysdev/openui/blob/main/examples). `--example <name>` skips both menus. `--example` cannot be combined with `--template` or `--backend-framework`. Any other folder name in the catalog works the same way.
-
-**Conversation storage**
-
-The default Gateway-backed LangGraph template uses Gateway for durable conversation history. The browser reads history through `useOpenuiCloudStorage()` with a short-lived frontend token. The `threadId` sent to `/api/chat` is the Gateway conversation ID. After a successful turn, `storeLangGraphHistory()` saves the new user message, assistant messages, tool calls, and tool results together. Replayed history is excluded. The browser sends the full history back to the in-process graph on subsequent turns.
-
-The Gateway-backed Vercel AI SDK and Eve overlays include the Cloud storage reader, but do not currently write completed turns to that store. Add server-side persistence before relying on conversation history surviving a reload. Eve keeps a browser-side mapping from each Gateway `threadId` to an Eve session cursor for follow-ups.
-
-The self-hosted variants do not configure durable storage. `AgentInterface` keeps messages in memory for the current page session; refreshing the page loses them. LangGraph and Vercel AI SDK send that history to `/api/chat`. Eve maps follow-ups onto its session protocol. Pass a storage implementation to `AgentInterface` and back it with your own database when persistence is required; add a LangGraph checkpointer when graph state, interrupts, or resumable runs must persist independently.
-
-**Agent skill**
-
-When run interactively, `openui create` asks whether to install the OpenUI agent skill. The skill teaches AI coding assistants how to build with OpenUI Lang — covering component definitions, system prompts, the Renderer, and debugging.
-
-Pass `--skill` or `--no-skill` to skip the prompt. In `--no-interactive` mode the skill is skipped unless `--skill` is explicitly passed.
+Loaded from [OpenUI examples](https://github.com/thesysdev/openui/blob/main/examples). Pass `--example <name>` with any catalog folder name; it can't be combined with `--backend-framework`.
 
 **Examples**
 
 ```bash tab="pnpm" tab-group="pkg"
-# Interactive — prompts for project name, AI setup, env setup, and skill installation
+# Prompt for anything not passed
 pnpx @openuidev/cli@latest create
 
-# Select an AI setup explicitly
-pnpx @openuidev/cli@latest create --name my-app --template openui-cloud
-pnpx @openuidev/cli@latest create --name my-app --template openui-self-hosted
-pnpx @openuidev/cli@latest create --name my-app --template openui-cloud --immediate
-
-# Select a backend framework explicitly
-pnpx @openuidev/cli@latest create --name my-app --template openui-cloud --backend-framework langgraph
-pnpx @openuidev/cli@latest create --name my-app --template openui-cloud --backend-framework vercel-ai-sdk
-pnpx @openuidev/cli@latest create --name my-app --template openui-cloud --backend-framework vercel-eve
-pnpx @openuidev/cli@latest create --name my-app --template openui-self-hosted --backend-framework langgraph
-pnpx @openuidev/cli@latest create --name my-app --template openui-self-hosted --backend-framework vercel-ai-sdk
-pnpx @openuidev/cli@latest create --name my-app --template openui-self-hosted --backend-framework vercel-eve
-
-# Select an example
+# Pick a backend framework, or start from an example
+pnpx @openuidev/cli@latest create --name my-app --backend-framework vercel-ai-sdk
 pnpx @openuidev/cli@latest create --name my-app --example shadcn
-pnpx @openuidev/cli@latest create --name my-app --example mastra
-pnpx @openuidev/cli@latest create --name my-app --example vue
 
-# Non-interactive
-pnpx @openuidev/cli@latest create --no-interactive --name my-app --template openui-cloud --auth skip
-
-# Explicitly install or skip the agent skill
-pnpx @openuidev/cli@latest create --name my-app --skill
-pnpx @openuidev/cli@latest create --name my-app --no-skill
+# Never prompt, then add the key
+pnpx @openuidev/cli@latest create --no-interactive --name my-app
+cd my-app && pnpx @openuidev/cli@latest generate-api-key
 ```
 
 ```bash tab="bun" tab-group="pkg"
-# Interactive — prompts for project name, AI setup, env setup, and skill installation
+# Prompt for anything not passed
 bunx @openuidev/cli@latest create
 
-# Select an AI setup explicitly
-bunx @openuidev/cli@latest create --name my-app --template openui-cloud
-bunx @openuidev/cli@latest create --name my-app --template openui-self-hosted
-
-# Select a backend framework explicitly
-bunx @openuidev/cli@latest create --name my-app --template openui-cloud --backend-framework langgraph
-bunx @openuidev/cli@latest create --name my-app --template openui-cloud --backend-framework vercel-ai-sdk
-bunx @openuidev/cli@latest create --name my-app --template openui-cloud --backend-framework vercel-eve
-bunx @openuidev/cli@latest create --name my-app --template openui-self-hosted --backend-framework langgraph
-bunx @openuidev/cli@latest create --name my-app --template openui-self-hosted --backend-framework vercel-ai-sdk
-bunx @openuidev/cli@latest create --name my-app --template openui-self-hosted --backend-framework vercel-eve
-
-# Select an example
+# Pick a backend framework, or start from an example
+bunx @openuidev/cli@latest create --name my-app --backend-framework vercel-ai-sdk
 bunx @openuidev/cli@latest create --name my-app --example shadcn
-bunx @openuidev/cli@latest create --name my-app --example mastra
-bunx @openuidev/cli@latest create --name my-app --example vue
 
-# Non-interactive
-bunx @openuidev/cli@latest create --no-interactive --name my-app --template openui-cloud --auth skip
-
-# Explicitly install or skip the agent skill
-bunx @openuidev/cli@latest create --name my-app --skill
-bunx @openuidev/cli@latest create --name my-app --no-skill
+# Never prompt, then add the key
+bunx @openuidev/cli@latest create --no-interactive --name my-app
+cd my-app && bunx @openuidev/cli@latest generate-api-key
 ```
 
 ```bash tab="yarn" tab-group="pkg"
-# Interactive — prompts for project name, AI setup, env setup, and skill installation
+# Prompt for anything not passed
 yarn dlx @openuidev/cli@latest create
 
-# Select an AI setup explicitly
-yarn dlx @openuidev/cli@latest create --name my-app --template openui-cloud
-yarn dlx @openuidev/cli@latest create --name my-app --template openui-self-hosted
-
-# Select a backend framework explicitly
-yarn dlx @openuidev/cli@latest create --name my-app --template openui-cloud --backend-framework langgraph
-yarn dlx @openuidev/cli@latest create --name my-app --template openui-cloud --backend-framework vercel-ai-sdk
-yarn dlx @openuidev/cli@latest create --name my-app --template openui-cloud --backend-framework vercel-eve
-yarn dlx @openuidev/cli@latest create --name my-app --template openui-self-hosted --backend-framework langgraph
-yarn dlx @openuidev/cli@latest create --name my-app --template openui-self-hosted --backend-framework vercel-ai-sdk
-yarn dlx @openuidev/cli@latest create --name my-app --template openui-self-hosted --backend-framework vercel-eve
-
-# Select an example
+# Pick a backend framework, or start from an example
+yarn dlx @openuidev/cli@latest create --name my-app --backend-framework vercel-ai-sdk
 yarn dlx @openuidev/cli@latest create --name my-app --example shadcn
-yarn dlx @openuidev/cli@latest create --name my-app --example mastra
-yarn dlx @openuidev/cli@latest create --name my-app --example vue
 
-# Non-interactive
-yarn dlx @openuidev/cli@latest create --no-interactive --name my-app --template openui-cloud --auth skip
-
-# Explicitly install or skip the agent skill
-yarn dlx @openuidev/cli@latest create --name my-app --skill
-yarn dlx @openuidev/cli@latest create --name my-app --no-skill
+# Never prompt, then add the key
+yarn dlx @openuidev/cli@latest create --no-interactive --name my-app
+cd my-app && yarn dlx @openuidev/cli@latest generate-api-key
 ```
 
 ```bash tab="npm" tab-group="pkg"
-# Interactive — prompts for project name, AI setup, env setup, and skill installation
+# Prompt for anything not passed
 npx @openuidev/cli@latest create
 
-# Select an AI setup explicitly
-npx @openuidev/cli@latest create --name my-app --template openui-cloud
-npx @openuidev/cli@latest create --name my-app --template openui-self-hosted
-
-# Select a backend framework explicitly
-npx @openuidev/cli@latest create --name my-app --template openui-cloud --backend-framework langgraph
-npx @openuidev/cli@latest create --name my-app --template openui-cloud --backend-framework vercel-ai-sdk
-npx @openuidev/cli@latest create --name my-app --template openui-cloud --backend-framework vercel-eve
-npx @openuidev/cli@latest create --name my-app --template openui-self-hosted --backend-framework langgraph
-npx @openuidev/cli@latest create --name my-app --template openui-self-hosted --backend-framework vercel-ai-sdk
-npx @openuidev/cli@latest create --name my-app --template openui-self-hosted --backend-framework vercel-eve
-
-# Select an example
+# Pick a backend framework, or start from an example
+npx @openuidev/cli@latest create --name my-app --backend-framework vercel-ai-sdk
 npx @openuidev/cli@latest create --name my-app --example shadcn
-npx @openuidev/cli@latest create --name my-app --example mastra
-npx @openuidev/cli@latest create --name my-app --example vue
 
-# Non-interactive
-npx @openuidev/cli@latest create --no-interactive --name my-app --template openui-cloud --auth skip
-
-# Explicitly install or skip the agent skill
-npx @openuidev/cli@latest create --name my-app --skill
-npx @openuidev/cli@latest create --name my-app --no-skill
+# Never prompt, then add the key
+npx @openuidev/cli@latest create --no-interactive --name my-app
+cd my-app && npx @openuidev/cli@latest generate-api-key
 ```
 
 ## `deploy`
 
-Deploys an OpenUI project. The default supported platform is **Vercel**.
+Deploys an OpenUI project to Vercel.
 
 ```
 openui deploy [dir] [options]
@@ -254,16 +173,13 @@ openui deploy [dir] [options]
 
 **Options**
 
-| Flag               | Description                                                                   |
-| ------------------ | ----------------------------------------------------------------------------- |
-| `-y, --yes`        | Skip confirmation prompts (also saves missing env keys to the Vercel project) |
-| `--skip-env`       | Do not pass or save local `.env` / `.env.local` values                        |
-| `--no-interactive` | Skip prompts (implies `--yes`)                                                |
-| `--verbose`        | Stream full Vercel build logs (hidden by default; failures print a log tail)  |
+| Flag               | Description                                                               |
+| ------------------ | ------------------------------------------------------------------------- |
+| `-y, --yes`        | Skip confirmation prompts and save missing env keys to the Vercel project |
+| `--skip-env`       | Don't pass or save local `.env` / `.env.local` values                     |
+| `--no-interactive` | Skip prompts (implies `--yes`)                                            |
 
-Extra flags after `deploy` are forwarded as-is to the target deployment platform, which validates them. `--skip-env` is OpenUI-specific so it does not collide with the target platform's env specific args.
-
-Unlinked projects are linked to the platform first. Allowlisted keys from `.env` / `.env.local` that are missing on different deployment environments can be saved to the project (auto-accepted with `--yes`). Build logs are quiet by default; use `--verbose` to stream them.
+Any other flags, such as `--prod`, are passed through to Vercel. Unlinked projects are linked first. Build logs are hidden unless you pass `--verbose`; failures always print the end of the log.
 
 ```bash tab="pnpm" tab-group="pkg"
 # Preview deploy from the project directory
@@ -272,7 +188,7 @@ pnpx @openuidev/cli@latest deploy
 # Production deploy
 pnpx @openuidev/cli@latest deploy --prod --yes
 
-# Deploy a specific directory without forwarding local env
+# Deploy a specific directory without local env
 pnpx @openuidev/cli@latest deploy ./my-app --skip-env
 ```
 
@@ -283,7 +199,7 @@ bunx @openuidev/cli@latest deploy
 # Production deploy
 bunx @openuidev/cli@latest deploy --prod --yes
 
-# Deploy a specific directory without forwarding local env
+# Deploy a specific directory without local env
 bunx @openuidev/cli@latest deploy ./my-app --skip-env
 ```
 
@@ -294,7 +210,7 @@ yarn dlx @openuidev/cli@latest deploy
 # Production deploy
 yarn dlx @openuidev/cli@latest deploy --prod --yes
 
-# Deploy a specific directory without forwarding local env
+# Deploy a specific directory without local env
 yarn dlx @openuidev/cli@latest deploy ./my-app --skip-env
 ```
 
@@ -305,13 +221,13 @@ npx @openuidev/cli@latest deploy
 # Production deploy
 npx @openuidev/cli@latest deploy --prod --yes
 
-# Deploy a specific directory without forwarding local env
+# Deploy a specific directory without local env
 npx @openuidev/cli@latest deploy ./my-app --skip-env
 ```
 
 ## `generate-api-key`
 
-Signs in with Thesys in the browser, mints an OpenUI Gateway API key, and writes it to a project env file.
+Signs in with Thesys in the browser, mints an OpenUI Gateway API key, and writes it to an env file in the current project. It needs an interactive terminal; without one it exits with the command to run yourself.
 
 ```
 openui generate-api-key [options]
@@ -319,41 +235,37 @@ openui generate-api-key [options]
 
 **Options**
 
-| Flag                  | Description                                                                                        |
-| --------------------- | -------------------------------------------------------------------------------------------------- |
-| `-f, --file <path>`   | Env file to write (default: `.env`)                                                                |
-| `-k, --key <name>`    | Environment variable name (default: `THESYS_API_KEY`)                                              |
-| `-n, --name <string>` | Name of the minted key in the Thesys console (default: `package.json` name, or the directory name) |
+| Flag                  | Description                                                                                     |
+| --------------------- | ----------------------------------------------------------------------------------------------- |
+| `-f, --file <path>`   | Env file to write (default: `.env`)                                                             |
+| `-k, --key <name>`    | Environment variable name (default: `THESYS_API_KEY`)                                           |
+| `-n, --name <string>` | Name of the key in the Thesys console (default: the `package.json` name, or the directory name) |
 
 **Examples**
 
 ```bash tab="pnpm" tab-group="pkg"
 pnpx @openuidev/cli@latest generate-api-key
 pnpx @openuidev/cli@latest generate-api-key --file .env.local
-pnpx @openuidev/cli@latest generate-api-key --file .env.local --key THESYS_API_KEY
 ```
 
 ```bash tab="bun" tab-group="pkg"
 bunx @openuidev/cli@latest generate-api-key
 bunx @openuidev/cli@latest generate-api-key --file .env.local
-bunx @openuidev/cli@latest generate-api-key --file .env.local --key THESYS_API_KEY
 ```
 
 ```bash tab="yarn" tab-group="pkg"
 yarn dlx @openuidev/cli@latest generate-api-key
 yarn dlx @openuidev/cli@latest generate-api-key --file .env.local
-yarn dlx @openuidev/cli@latest generate-api-key --file .env.local --key THESYS_API_KEY
 ```
 
 ```bash tab="npm" tab-group="pkg"
 npx @openuidev/cli@latest generate-api-key
 npx @openuidev/cli@latest generate-api-key --file .env.local
-npx @openuidev/cli@latest generate-api-key --file .env.local --key THESYS_API_KEY
 ```
 
 ## `generate`
 
-Generates the system prompt **and** the serialized library spec from a file that exports a `createLibrary()` result. A single run emits both artifacts — they derive from the same `Library` instance, so they can never drift apart. Use the spec with `generateSystemPrompt` in backend routes; the prompt file supports static or legacy integrations.
+Generates the system prompt **and** the serialized library spec from a file that exports a `createLibrary()` result. Use the spec with `generateSystemPrompt` in backend routes; the prompt file supports static or legacy integrations.
 
 ```
 openui generate [entry] [options]
@@ -372,100 +284,77 @@ openui generate [entry] [options]
 | `-o, --out <file>`        | Write the prompt to `<file>`; the spec uses the same basename with a `.spec.json` extension |
 | `--json-schema`           | Output only the JSON schema; it is not the input to `generateSystemPrompt`                  |
 | `--spec`                  | Output only the serialized library spec                                                     |
-| `--export <name>`         | Name of the export to use (auto-detected by default)                                        |
-| `--prompt-options <name>` | Name of the `PromptOptions` export to use (auto-detected by default)                        |
-| `--no-interactive`        | Fail instead of prompting for missing `entry`                                               |
-| `--agent-name <name>`     | Declare the invoking coding-agent slug (default: `unknown`)                                 |
+| `--export <name>`         | Name of the library export to use                                                           |
+| `--prompt-options <name>` | Name of the `PromptOptions` export to use                                                   |
+| `--no-interactive`        | Fail instead of prompting for a missing `entry`                                             |
+
+Without `--export`, the CLI uses an export named `library`, then the `default` export, then any export that is a library. Without `--prompt-options`, it uses an export named `promptOptions`, then `options`, then any export whose name ends with `PromptOptions`.
 
 **Examples**
 
 ```bash tab="pnpm" tab-group="pkg"
-# Print system prompt to stdout
+# Print the system prompt to stdout
 pnpx @openuidev/cli@latest generate ./src/library.ts
 
-# Write both artifacts; use the sibling .spec.json file with generateSystemPrompt
+# Write the prompt and its .spec.json alongside it
 pnpx @openuidev/cli@latest generate ./src/library.ts --out ./src/generated/system-prompt.txt
 
-# Output JSON schema for external tooling (not generateSystemPrompt)
-pnpx @openuidev/cli@latest generate ./src/library.ts --json-schema
-
-# Output only the spec file
+# Output only the spec or the JSON schema
 pnpx @openuidev/cli@latest generate ./src/library.ts --spec
+pnpx @openuidev/cli@latest generate ./src/library.ts --json-schema
 
 # Explicit export names
 pnpx @openuidev/cli@latest generate ./src/library.ts --export myLibrary --prompt-options myOptions
 ```
 
 ```bash tab="bun" tab-group="pkg"
-# Print system prompt to stdout
+# Print the system prompt to stdout
 bunx @openuidev/cli@latest generate ./src/library.ts
 
-# Write both artifacts; use the sibling .spec.json file with generateSystemPrompt
+# Write the prompt and its .spec.json alongside it
 bunx @openuidev/cli@latest generate ./src/library.ts --out ./src/generated/system-prompt.txt
 
-# Output JSON schema for external tooling (not generateSystemPrompt)
-bunx @openuidev/cli@latest generate ./src/library.ts --json-schema
-
-# Output only the spec file
+# Output only the spec or the JSON schema
 bunx @openuidev/cli@latest generate ./src/library.ts --spec
+bunx @openuidev/cli@latest generate ./src/library.ts --json-schema
 
 # Explicit export names
 bunx @openuidev/cli@latest generate ./src/library.ts --export myLibrary --prompt-options myOptions
 ```
 
 ```bash tab="yarn" tab-group="pkg"
-# Print system prompt to stdout
+# Print the system prompt to stdout
 yarn dlx @openuidev/cli@latest generate ./src/library.ts
 
-# Write both artifacts; use the sibling .spec.json file with generateSystemPrompt
+# Write the prompt and its .spec.json alongside it
 yarn dlx @openuidev/cli@latest generate ./src/library.ts --out ./src/generated/system-prompt.txt
 
-# Output JSON schema for external tooling (not generateSystemPrompt)
-yarn dlx @openuidev/cli@latest generate ./src/library.ts --json-schema
-
-# Output only the spec file
+# Output only the spec or the JSON schema
 yarn dlx @openuidev/cli@latest generate ./src/library.ts --spec
+yarn dlx @openuidev/cli@latest generate ./src/library.ts --json-schema
 
 # Explicit export names
 yarn dlx @openuidev/cli@latest generate ./src/library.ts --export myLibrary --prompt-options myOptions
 ```
 
 ```bash tab="npm" tab-group="pkg"
-# Print system prompt to stdout
+# Print the system prompt to stdout
 npx @openuidev/cli@latest generate ./src/library.ts
 
-# Write both artifacts; use the sibling .spec.json file with generateSystemPrompt
+# Write the prompt and its .spec.json alongside it
 npx @openuidev/cli@latest generate ./src/library.ts --out ./src/generated/system-prompt.txt
 
-# Output JSON schema for external tooling (not generateSystemPrompt)
-npx @openuidev/cli@latest generate ./src/library.ts --json-schema
-
-# Output only the spec file
+# Output only the spec or the JSON schema
 npx @openuidev/cli@latest generate ./src/library.ts --spec
+npx @openuidev/cli@latest generate ./src/library.ts --json-schema
 
 # Explicit export names
 npx @openuidev/cli@latest generate ./src/library.ts --export myLibrary --prompt-options myOptions
 ```
 
-### Export auto-detection
+### `PromptOptions`
 
-The CLI bundles the entry file with esbuild before evaluating it. CSS, SVG, image, and font imports are stubbed automatically.
-
-If `--export` is not provided, the CLI searches the module's exports in this order:
-
-1. An export named `library`
-2. The `default` export
-3. Any export whose value has both a `.prompt()` method and a `.toJSONSchema()` method
-
-If `--prompt-options` is not provided, the CLI looks for:
-
-1. An export named `promptOptions`
-2. An export named `options`
-3. Any export whose name ends with `PromptOptions` (case-insensitive)
-
-A valid `PromptOptions` value has at least one of: `examples` (string array), `additionalRules` (string array), or `preamble` (string).
-
-### `PromptOptions` type
+Export a `PromptOptions` object next to your library to customize the generated system prompt.
 
 ```ts
 interface PromptOptions {
@@ -482,9 +371,7 @@ interface PromptOptions {
 }
 ```
 
-Built-in functions (`@Count`, `@Filter`, `@Sort`, `@Each`, etc.) are included in the prompt only when `toolCalls` or `bindings` is enabled. For static UI examples without data fetching, they are omitted to keep the prompt focused.
-
-Pass this as a named export alongside your library to customise the generated system prompt without hard-coding it into `createLibrary`.
+Built-in functions (`@Count`, `@Filter`, `@Sort`, `@Each`, etc.) are included in the prompt only when `toolCalls` or `bindings` is enabled.
 
 ```ts
 // src/library.ts
@@ -499,54 +386,76 @@ export const promptOptions: PromptOptions = {
 };
 ```
 
+## `setup-agent`
+
+Adds OpenUI instructions for coding agents to an existing project. It appends the [OpenUI skill](https://github.com/thesysdev/skills) to `AGENTS.md`, or creates the file. Running it again refreshes the OpenUI instructions and leaves the rest of the file alone. Projects made with `create` already have it.
+
+```
+openui setup-agent [directory]
+```
+
+`directory` defaults to the current folder.
+
 ```bash tab="pnpm" tab-group="pkg"
-pnpx @openuidev/cli@latest generate ./src/library.ts --out src/generated/system-prompt.txt
+pnpx @openuidev/cli@latest setup-agent
 ```
 
 ```bash tab="bun" tab-group="pkg"
-bunx @openuidev/cli@latest generate ./src/library.ts --out src/generated/system-prompt.txt
+bunx @openuidev/cli@latest setup-agent
 ```
 
 ```bash tab="yarn" tab-group="pkg"
-yarn dlx @openuidev/cli@latest generate ./src/library.ts --out src/generated/system-prompt.txt
+yarn dlx @openuidev/cli@latest setup-agent
 ```
 
 ```bash tab="npm" tab-group="pkg"
-npx @openuidev/cli@latest generate ./src/library.ts --out src/generated/system-prompt.txt
+npx @openuidev/cli@latest setup-agent
 ```
 
-## Coding-agent attribution
+## `feedback`
 
-When a coding agent invokes any CLI command, it should pass `--agent-name` using its stable,
-lowercase kebab-case product slug. Examples include `codex`, `claude-code`, `cline`,
-`factory-droid`, and `pi`. Do not pass a model/version, user name, session ID, or another unique
-value. Humans can omit the option; its default is `unknown`.
+Sends anonymous feedback to the OpenUI team. It isn't linked to your account, device, or IP address, and it's sent even when telemetry is disabled. Don't include personal data, secrets, or code.
 
-Usage analytics include two independent properties: `agent_name`, declared through the option,
-and `detected_agent_name`, inferred best-effort from known product environment markers. Either
-value can be spoofed, inherited, missing, or ambiguous, so neither should be treated as an
-authentication or security signal. Every invocation gets an ephemeral, unpersisted `cli_run_id` so
-its events can be correlated. For `create`, analytics also include `package_manager`, the
-immediate-start selection, and best-effort dev-command start and result events. For `deploy`, analytics include the target (currently `vercel`), production vs preview, whether
-local env was passed (true/false), CLI resolution source, and process status — not env
-values, project paths, or command output.
-Failure events use
-bounded `failure_stage`, `error_class`, and `error_code` values instead of raw error messages.
-Dependency failures distinguish peer, registry, network, install-script, workspace, and
-package-compatibility errors. Process failures include duration, exit code, and signal; Gateway-auth
-failures include a bounded auth substage and HTTP status when known; cancellations use separate
-events. Dev-command events contain status, duration, exit code, and signal—not project paths,
-command output, code, or environment values. Use `--no-telemetry` or `DO_NOT_TRACK=1` to disable
-collection.
+```
+openui feedback [options] <message...>
+```
+
+**Options**
+
+| Flag                        | Description                          |
+| --------------------------- | ------------------------------------ |
+| `-c, --category <category>` | `bug`, `feature`, `docs`, or `other` |
+
+```bash tab="pnpm" tab-group="pkg"
+pnpx @openuidev/cli@latest feedback --category docs "The streaming guide doesn't cover partial components"
+```
+
+```bash tab="bun" tab-group="pkg"
+bunx @openuidev/cli@latest feedback --category docs "The streaming guide doesn't cover partial components"
+```
+
+```bash tab="yarn" tab-group="pkg"
+yarn dlx @openuidev/cli@latest feedback --category docs "The streaming guide doesn't cover partial components"
+```
+
+```bash tab="npm" tab-group="pkg"
+npx @openuidev/cli@latest feedback --category docs "The streaming guide doesn't cover partial components"
+```
+
+## Coding agents
+
+Coding agents should pass `--agent-name` with their stable, lowercase kebab-case product slug, such as `codex`, `claude-code`, `cline`, `factory-droid`, or `pi`. Don't pass a model version, user name, or session ID. Humans can omit it.
+
+`create` never waits on a prompt when an agent runs it, whether or not `--agent-name` is passed: it takes its [non-interactive defaults](#create) and prints any follow-up commands, such as `generate-api-key`, at the end. Its last line points the agent at the new project's README to get started.
+
+## Telemetry
+
+The CLI sends usage analytics: which commands and flags are used, and bounded failure codes. Browser sign-in may link usage to your Thesys account ID. It never sends code, prompts, API keys, env values, project paths, or command output. Disable it with `--no-telemetry` or `DO_NOT_TRACK=1`.
 
 ## See also
 
 <Cards>
   <Card title="@openuidev/react-lang" href="/docs/api-reference/react-lang">
-    `createLibrary`, `PromptOptions`, and the `Library` interface that `openui generate` read.
+    `createLibrary`, `PromptOptions`, and the `Library` interface that `openui generate` reads.
   </Card>
 </Cards>
-
-The backend framework picker shows examples marked `featured: true`
-in `examples/examples.json`, in catalog order. Select “More OpenUI Examples →” for the
-complete catalog, or pass any catalog name through `--example`.

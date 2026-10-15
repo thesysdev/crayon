@@ -10,7 +10,7 @@ export function IntegrationLogo({ integration, className }: IntegrationLogoProps
     <span className={className} aria-hidden="true">
       {/* Brand marks are intentionally rendered at their intrinsic aspect ratio. */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img alt="" src={integration.logo ?? "/favicon.svg"} />
+      <img alt={`${integration.name} logo`} src={integration.logo ?? "/shiro-logo.svg"} />
     </span>
   );
 }

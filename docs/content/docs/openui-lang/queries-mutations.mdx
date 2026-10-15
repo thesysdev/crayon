@@ -1,16 +1,17 @@
 ---
 title: Queries & Mutations
-description: Fetch and write data from your tools - the LLM generates the wiring, the runtime executes it.
+description: Fetch and write data from your tools. The model writes the wiring, the runtime runs it.
 ---
 
-<img
-  src="/images/openui-lang/query-flow.png"
-  alt="Data flow: openui-lang code → Runtime → Your Tools → Live data back to components"
-/>
+import { QueryFlowDiagram } from "@/components/openui-lang-diagrams";
 
-OpenUI Lang connects to your backend through **tools**. A tool is any function your server
-exposes (a database query, an API call, a calculation). The LLM generates `Query` and `Mutation`
-statements that call these tools. The runtime executes them directly and feeds the results into your UI.
+Queries and mutations connect a generated UI to your backend. The model writes which tool to call and where the result goes. The runtime calls your tools directly, without the model.
+
+For example, a support agent asks for "a table of open tickets with a form to add one". The model writes one `Query` that lists tickets and one `Mutation` that creates a ticket. The table fills from your API, and each new ticket appears in it after the user submits the form. No click goes through the model.
+
+<QueryFlowDiagram />
+
+A **tool** is any function your app exposes: a database query, an API call, or a calculation. The model generates `Query` and `Mutation` statements that call these tools. The runtime runs them and feeds the results into your UI.
 
 ## Reading data with Query
 
@@ -20,44 +21,44 @@ data = Query("list_tickets", {}, {rows: []})
 
 What each argument means:
 
-1. `"list_tickets"` - the tool name (matches what your server exposes)
-2. `{}` - arguments to pass to the tool
-3. `{rows: []}` - default value (what renders before the tool responds)
+1. `"list_tickets"`: the tool name. It matches a tool your `toolProvider` exposes.
+2. `{}`: the arguments passed to the tool.
+3. `{rows: []}`: the default value. The UI renders it until the tool responds.
 
-The default value is important - it lets the UI render immediately while data loads.
+The default value lets the UI render while the data loads.
 
 ## Using Query results
 
-Query results are just data. Access fields with dot notation:
+Query results are data. Access fields with dot notation:
 
 ```text
 tbl = Table([Col("Title", data.rows.title), Col("Status", data.rows.status)])
 chart = LineChart(data.rows.day, [Series("Views", data.rows.views)])
 ```
 
-`data.rows.title` extracts the `title` field from every row - like a column pluck.
+`data.rows.title` takes the `title` field from every row, like a column pluck.
 
 ### Reactive queries
 
-Pass a `$variable` in the query args - the query re-runs when the variable changes:
+Pass a `$variable` in the query arguments. The query runs again when the variable changes:
 
 ```text
 $days = "7"
 data = Query("analytics", {days: $days}, {rows: []})
-filter = Select("days", $days, [SelectItem("7", "7 days"), SelectItem("30", "30 days")])
+filter = Select("days", [SelectItem("7", "7 days"), SelectItem("30", "30 days")], null, null, $days)
 ```
 
-User picks "30" → `$days` updates → Query re-fetches with `{days: "30"}` → chart updates.
+The user picks "30", `$days` updates, the Query fetches again with `{days: "30"}`, and the chart updates.
 
 ### Auto-refresh
 
-Add a fourth argument for periodic refresh (in seconds):
+A fourth argument sets a refresh interval in seconds:
 
 ```text
 health = Query("get_server_health", {}, {cpu: 0, memory: 0}, 30)
 ```
 
-This re-fetches every 30 seconds - great for monitoring dashboards.
+This fetches the data again every 30 seconds.
 
 ## Writing data with Mutation
 
@@ -65,37 +66,103 @@ This re-fetches every 30 seconds - great for monitoring dashboards.
 createResult = Mutation("create_ticket", {title: $title, priority: $priority})
 ```
 
-Mutations are NOT executed on page load. They only run when triggered by `@Run`:
+A Mutation does not run when the page loads. It runs only when an action runs it with `@Run`:
 
 ```text
 submitBtn = Button("Create", Action([@Run(createResult), @Run(tickets), @Reset($title)]))
 ```
 
-This button does three things in order:
+This button runs three actions in order:
 
-1. `@Run(createResult)` - executes the mutation (creates the ticket)
-2. `@Run(tickets)` - re-fetches the tickets query (refreshes the table)
-3. `@Reset($title)` - clears the form
+1. `@Run(createResult)` runs the mutation and creates the ticket.
+2. `@Run(tickets)` fetches the tickets query again, so the table refreshes.
+3. `@Reset($title)` clears the title field.
+
+If the mutation fails, the actions after it do not run.
 
 ### Error handling
 
-Check `result.status` for mutation feedback:
+Check `result.status` to show feedback. Assign each check to a statement and place it in the layout:
 
 ```text
-createResult.status == "error" ? Callout("error", "Failed", createResult.error) : null
-createResult.status == "success" ? Callout("success", "Created", "Ticket added.") : null
+createError = createResult.status == "error" ? Callout("error", "Failed", createResult.error) : null
+createDone = createResult.status == "success" ? Callout("success", "Created", "Ticket added.") : null
 ```
 
 ## How tools connect to the runtime
 
-The Renderer accepts a `toolProvider` prop that handles tool execution. Pass a function map or an [MCP](https://modelcontextprotocol.io/docs/getting-started/intro) client:
+The `Renderer` takes a `toolProvider` prop that runs the tools. Pass a function map or an [MCP](https://modelcontextprotocol.io/docs/getting-started/intro) client. The `Renderer` is a client component, so these functions run in the browser. Point them at your API routes:
 
 ```tsx
 // Function map
-<Renderer toolProvider={{
-  list_tickets: async (args) => fetch('/api/tickets').then(r => r.json()),
-}} response={code} library={library} />
+<Renderer
+  toolProvider={{
+    list_tickets: async () => fetch("/api/tickets").then((r) => r.json()),
+  }}
+  response={code}
+  library={library}
+/>
 
 // Or an MCP client
 <Renderer toolProvider={mcpClient} response={code} library={library} />
 ```
+
+## Complete example
+
+A ticket tracker with a create form and a table.
+
+Your app gives the renderer two tools. Each calls an API route on your server:
+
+```tsx
+"use client";
+
+import { Renderer } from "@openuidev/react-lang";
+import { openuiLibrary } from "@openuidev/react-ui";
+
+export function Tickets({ response }: { response: string }) {
+  return (
+    <Renderer
+      library={openuiLibrary}
+      response={response}
+      toolProvider={{
+        list_tickets: async () => fetch("/api/tickets").then((r) => r.json()),
+        create_ticket: async (args) =>
+          fetch("/api/tickets", { method: "POST", body: JSON.stringify(args) }).then((r) =>
+            r.json(),
+          ),
+      }}
+    />
+  );
+}
+```
+
+The model writes:
+
+```text
+root = Stack([CardHeader("Tickets"), form, createError, tbl])
+$title = ""
+$priority = "medium"
+tickets = Query("list_tickets", {}, {rows: []})
+createResult = Mutation("create_ticket", {title: $title, priority: $priority})
+form = Form("create", Buttons([submitBtn]), [titleField, priorityField])
+titleField = FormControl("Title", Input("title", "Ticket title", "text", {required: true}, $title))
+priorityField = FormControl("Priority", Select("priority", [SelectItem("low", "Low"), SelectItem("medium", "Medium"), SelectItem("high", "High")], null, null, $priority))
+submitBtn = Button("Create", Action([@Run(createResult), @Run(tickets), @Reset($title, $priority)]), "primary")
+createError = createResult.status == "error" ? Callout("error", "Could not create the ticket", createResult.error) : null
+tbl = Table([Col("Title", tickets.rows.title), Col("Priority", tickets.rows.priority)])
+```
+
+The user sees a form and a table with the current tickets. The user types a title, picks a priority, and clicks "Create". The renderer calls `create_ticket`, then `list_tickets`, and the new ticket appears in the table. The form clears. If `create_ticket` fails, an error callout appears above the table.
+
+## When to use it
+
+Use queries and mutations when:
+
+- The UI shows data that lives in your systems, such as tickets, orders, or metrics.
+- The data changes after the response, and the UI should show the latest rows.
+- The user creates, updates, or deletes records from the UI.
+
+Do not use them when:
+
+- The data is small and fixed when the model answers. The model can write the values into the program.
+- The result needs the model to reason about it. Call the tool on your backend before the model answers, or use `@ToAssistant`.

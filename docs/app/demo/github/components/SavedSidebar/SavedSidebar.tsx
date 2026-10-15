@@ -32,7 +32,7 @@ export function SavedSidebar({
           >
             <img
               src={`https://github.com/${d.username}.png?size=32`}
-              alt=""
+              alt={`${d.username} avatar`}
               className="saved-sidebar-avatar"
             />
             <div className="saved-sidebar-item-text">

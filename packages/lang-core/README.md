@@ -25,24 +25,26 @@ pnpm add @openuidev/lang-core
 - **Evaluate** reactive expressions, `$variables`, and query results at runtime
 - **Merge** incremental edits into existing programs
 
-If you're building a framework-specific app, use `@openuidev/react-lang`, `@openuidev/vue-lang` or `@openuidev/svelte-lang` instead. It re-exports everything from this package plus framework-specific components and hooks.
+For a React app, use `@openuidev/react-lang`, which re-exports the parts you need plus the renderer and hooks. `@openuidev/vue-lang`, `@openuidev/svelte-lang` and `@openuidev/angular-lang` stay on lang-core 0.4 for now.
 
 ## Quick Start
 
 ### Parse OpenUI Lang
 
+Parsers take a library's JSON Schema: `library.toJSONSchema()`, or the `schema` field of a `.spec.json` from `openui generate`.
+
 ```ts
 import { createParser } from "@openuidev/lang-core";
 
-const parser = createParser(libraryJsonSchema);
+const parser = createParser(libraryJsonSchema, "Stack");
 const result = parser.parse(`
 root = Stack([header, content])
 header = CardHeader("Hello")
 content = TextContent("World")
 `);
 
-console.log(result.root);       // ElementNode tree
-console.log(result.meta);       // { incomplete, unresolved, statementCount, validationErrors }
+console.log(result.root); // ElementNode tree
+console.log(result.meta); // { incomplete, unresolved, orphaned, statementCount, errors }
 ```
 
 ### Streaming parser
@@ -50,12 +52,12 @@ console.log(result.meta);       // { incomplete, unresolved, statementCount, val
 ```ts
 import { createStreamingParser } from "@openuidev/lang-core";
 
-const sp = createStreamingParser(libraryJsonSchema);
+const sp = createStreamingParser(libraryJsonSchema, "Stack");
 
-// Feed chunks as they arrive from the LLM
+// Feed chunks as they arrive from the LLM; `set` takes the full text so far
 const result1 = sp.set("root = Stack([header])\n");
-const result2 = sp.set("root = Stack([header])\nheader = CardHeader(\"Hello\")\n");
-// result2.root now resolves the forward reference
+const result2 = sp.set("root = Stack([header])\nheader = CardHeader(\"Hello\")\n", true);
+// result2.root now resolves the forward reference; `true` marks the stream complete
 ```
 
 ### Generate a system prompt
@@ -124,9 +126,16 @@ const merged = mergeStatements(original, patch);
 
 | Export | Description |
 | :--- | :--- |
-| `createParser(schema)` | One-shot parser for complete text |
-| `createStreamingParser(schema)` | Incremental parser for streaming input |
-| `parse(input, schema)` | Convenience one-shot parse |
+| `createParser(schema, rootName?)` | One-shot parser for complete text |
+| `createStreamingParser(schema, rootName?)` | Incremental parser: `push(chunk)`, `set(fullText, complete?)`, `getResult()` |
+
+### Library and messages
+
+| Export | Description |
+| :--- | :--- |
+| `createLibrary(definition)` | A library from components, functions and actions; `prompt()`, `toSpec()`, `toJSONSchema()`, `extend()` |
+| `defineComponent` / `defineFunction` / `defineAction` | Define a component, an `@Name(...)` [function](https://openui.com/docs/openui-lang/functions), or a custom [action](https://openui.com/docs/openui-lang/actions) step |
+| `buildMessage(input)` / `parseMessage(raw)` | Write and read a stored message ([message protocol](https://openui.com/docs/openui-lang/message-protocol)) |
 
 ### Prompt Generation
 
@@ -174,6 +183,7 @@ sending it.
 | `createStore()` | Reactive store for `$variables` and form state |
 | `evaluate(ast, context)` | Evaluate an AST node to a concrete value |
 | `evaluateElementProps(root, context)` | Recursively evaluate all props in an element tree |
+| `evaluateRoot(result, context)` | Evaluate the entry of a `ParseResult` |
 | `extractToolResult(result)` | Extract data from an MCP `callTool` response |
 | `mergeStatements(original, patch)` | Merge incremental edits by statement name |
 
@@ -196,7 +206,7 @@ import type {
 ## Documentation
 
 - [OpenUI Lang guide](https://openui.com/docs/openui-lang)
-- [Language specification](https://openui.com/docs/openui-lang/specification-v05)
+- [Language specification 1.0](https://openui.com/docs/openui-lang/specification)
 - [Source on GitHub](https://github.com/thesysdev/openui/tree/main/packages/lang-core)
 
 ## License

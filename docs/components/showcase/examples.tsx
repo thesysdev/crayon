@@ -25,7 +25,7 @@ export function ExampleCategory({ id }: { id: ExampleCategoryId }) {
               {/* Brand marks keep their intrinsic aspect ratio, as on the integrations page. */}
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                alt=""
+                alt={`${example.name} logo`}
                 src={example.logo}
                 className={example.logoIsDark ? styles.cardLogoDark : styles.cardLogo}
               />

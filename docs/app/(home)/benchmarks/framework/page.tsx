@@ -6,29 +6,20 @@ import {
   formatSummaryRows,
 } from "@/lib/benchmark-agent-data";
 import { BRIEFS, LINKS, MODELS, RUNS_PER_FORMAT, RUNS_TOTAL } from "@/lib/benchmark-data";
-import type { Metadata } from "next";
+import { createPageMetadata } from "@/lib/page-metadata";
 import { BenchmarkDetailPage } from "../BenchmarkDetailPage";
+import page from "./metadata";
 
-export const metadata: Metadata = {
-  title: "Generative UI framework benchmark | OpenUI",
-  description:
-    "Compare OpenUI, Google A2UI, and Vercel json-render across six models and 46 interface briefs, with exact server-rendered results and downloads.",
+export const metadata = createPageMetadata(page, {
   alternates: {
-    canonical: "/benchmarks/framework",
     types: {
       "application/json": "/benchmarks/framework/data.json",
       "text/csv": "/benchmarks/framework/data.csv",
       "text/markdown": "/benchmarks/framework/agent.md",
     },
   },
-  openGraph: {
-    type: "article",
-    url: "/benchmarks/framework",
-    title: "Generative UI framework benchmark",
-    description: "OpenUI versus Google A2UI versus Vercel json-render under one condition.",
-    modifiedTime: BENCHMARK_UPDATED_ISO,
-  },
-};
+  openGraph: { type: "article", modifiedTime: BENCHMARK_UPDATED_ISO },
+});
 
 const structuredData = {
   "@context": "https://schema.org",
@@ -41,6 +32,7 @@ const structuredData = {
   dateModified: BENCHMARK_UPDATED_ISO,
   isPartOf: { "@id": `${BENCHMARK_CANONICAL_URL}#dataset` },
   isBasedOn: LINKS.rawData,
+  license: "https://creativecommons.org/licenses/by/4.0/",
   measurementTechnique: `${BENCHMARK_CANONICAL_URL}/methodology`,
   variableMeasured: [
     "Structural validity percentage",

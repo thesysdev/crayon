@@ -255,7 +255,7 @@ export function usePlayback(
       } else {
         const sp = lang.createStreamingParser!(schema, rootName);
         push = (chunk) => sp.push(chunk);
-        getFinal = () => sp.getResult();
+        getFinal = () => sp.getResult(true);
       }
 
       const s: Session = {

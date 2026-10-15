@@ -60,41 +60,19 @@ npx @openuidev/cli@latest generate src/lib/openui.tsx --spec --out src/lib/openu
 
 The specification lists each component and its props. Regenerate it whenever the library changes, for example in a `prebuild` script.
 
-## 4. Generate the system prompt
+## 4. Call the model
 
-`generateSystemPrompt` turns the specification into the instructions the agent needs to write OpenUI Lang. It produces one of two forms, depending on where the model request goes:
+`generateSystemPrompt` turns the specification into the instructions the agent needs to write OpenUI Lang. Send them as the system prompt and route the request through OpenUI Gateway, which corrects invalid OpenUI Lang as it streams and falls back to another provider when one is unavailable.
 
-```ts title="server.ts" tab="OpenUI Gateway (recommended)" tab-group="call-model"
+```ts title="server.ts"
+import OpenAI from "openai";
 import { generateSystemPrompt, type LibrarySpec } from "@openuidev/lang-core";
 import library from "./lib/openui.spec.json";
 
-// A compact configuration block. Gateway expands it into the full prompt.
 const openuiInstructions = generateSystemPrompt({
   cloud: true,
   library: library as LibrarySpec,
 });
-```
-
-```ts title="server.ts" tab="Your own provider" tab-group="call-model"
-import { generateSystemPrompt, type LibrarySpec } from "@openuidev/lang-core";
-import library from "./lib/openui.spec.json";
-
-// The complete prompt, ready to send to any model.
-const openuiInstructions = generateSystemPrompt({
-  library: library as LibrarySpec,
-});
-```
-
-With `cloud: true`, Gateway assembles the prompt on its side and keeps it up to date with the language. Without it, the full prompt is generated locally and works with any provider.
-
-Pass `openuiInstructions` through the agent framework's system-instruction option. If the agent already has a system prompt, append the OpenUI instructions after it.
-
-## 5. Call the model
-
-Route model requests through Gateway to correct invalid OpenUI Lang as it streams and fall back to another provider when one is unavailable. To keep your own provider, repair the output with [Autofix](/docs/autofix) instead.
-
-```ts title="server.ts" tab="OpenUI Gateway (recommended)" tab-group="call-model"
-import OpenAI from "openai";
 
 const gateway = new OpenAI({
   apiKey: process.env.THESYS_API_KEY,
@@ -108,24 +86,9 @@ const completion = await gateway.chat.completions.create({
 });
 ```
 
-```ts title="server.ts" tab="Your own provider" tab-group="call-model"
-import OpenAI from "openai";
-import { createAutofix } from "@openuidev/server/openai";
+If the agent already has a system prompt, append the OpenUI instructions after it.
 
-const model = new OpenAI();
-const autofix = createAutofix({ apiKey: process.env.THESYS_API_KEY!, library });
-
-const source = await model.chat.completions.create({
-  model: "gpt-5",
-  messages: [{ role: "system", content: openuiInstructions }, ...messages],
-  stream: true,
-});
-
-// Autofix adds the library itself, so pass only the conversation.
-const response = autofix.completions.stream({ stream: source, messages }).toResponse();
-```
-
-Both options use a `THESYS_API_KEY`. Create one and write it to `.env` with:
+Generate an API key and write it to `.env` with:
 
 ```bash
 npx @openuidev/cli@latest generate-api-key
@@ -133,7 +96,7 @@ npx @openuidev/cli@latest generate-api-key
 
 Gateway is OpenAI-compatible, so agent frameworks that accept an OpenAI client or base URL can use it without other changes. See the [Gateway documentation](/docs/gateway) for supported models and APIs.
 
-## 6. Stream the response to the chat UI
+## 5. Stream the response to the chat UI
 
 The agent's response is now OpenUI Lang text instead of Markdown. If the agent framework already streams text to its chat UI, keep that transport: nothing about it changes.
 

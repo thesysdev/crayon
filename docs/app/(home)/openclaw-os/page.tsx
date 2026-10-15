@@ -1,36 +1,19 @@
-import type { Metadata } from "next";
-import { InstallSplitButton } from "./InstallSplitButton";
-import { OpenClawFeatures } from "./OpenClawFeatures";
+import { createPageMetadata } from "@/lib/page-metadata";
 import styles from "../page.module.css";
 import { Footer } from "../sections/Footer/Footer";
 import { HeroSection } from "../sections/HeroSection/HeroSection";
 import heroStyles from "../sections/HeroSection/HeroSection.module.css";
 import { PossibilitiesSection } from "../sections/PossibilitiesSection/PossibilitiesSection";
 import { StuckInChatSection } from "../sections/StuckInChatSection/StuckInChatSection";
+import { InstallSplitButton } from "./InstallSplitButton";
+import page from "./metadata";
+import { OpenClawFeatures } from "./OpenClawFeatures";
 
 const INSTALL_COMMAND = "curl -fsSL https://openui.com/openclaw-os/install.sh | bash";
 const WINDOWS_INSTALL_COMMAND =
   'powershell -c "irm https://openui.com/openclaw-os/install.ps1 | iex"';
 
-export const metadata: Metadata = {
-  title: "OpenClaw OS - The Default Workspace for OpenClaw",
-  description:
-    "OpenClaw OS is the default workspace for OpenClaw. Generate interactive apps and artifacts instantly for any use case, always updated with live data.",
-  alternates: { canonical: "/openclaw-os" },
-  openGraph: {
-    title: "OpenClaw OS — The Default Workspace for OpenClaw",
-    description:
-      "The default workspace for OpenClaw. Generate interactive apps and artifacts instantly, always updated with live data.",
-    url: "/openclaw-os",
-    type: "website",
-  },
-  twitter: {
-    title: "OpenClaw OS — The Default Workspace for OpenClaw",
-    description:
-      "The default workspace for OpenClaw. Generate interactive apps and artifacts instantly, always updated with live data.",
-    card: "summary_large_image",
-  },
-};
+export const metadata = createPageMetadata(page);
 
 export default function OpenClawOSPage() {
   return (
@@ -46,17 +29,14 @@ export default function OpenClawOSPage() {
             <>
               The Default workspace for{" "}
               <span className={heroStyles.subtitleLogoTile} aria-hidden="true">
-                <img src="/openclaw-dark.svg" alt="" />
+                <img src="/openclaw-dark.svg" alt="OpenClaw logo" />
               </span>
               OpenClaw.
             </>
           }
           command={INSTALL_COMMAND}
           commandSlot={
-            <InstallSplitButton
-              macCommand={INSTALL_COMMAND}
-              winCommand={WINDOWS_INSTALL_COMMAND}
-            />
+            <InstallSplitButton macCommand={INSTALL_COMMAND} winCommand={WINDOWS_INSTALL_COMMAND} />
           }
           align="left"
           desktopPreviewImage="/openclaw-os/hero-light.webp"

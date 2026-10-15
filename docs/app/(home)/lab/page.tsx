@@ -1,9 +1,10 @@
 import { labProjects } from "@/lib/lab-projects";
+import { createPageMetadata } from "@/lib/page-metadata";
 import { ArrowUpRight, Plus } from "lucide-react";
-import type { Metadata } from "next";
 import { BevelButton } from "../components/Button/BevelButton";
 import { PageHero, PageHeroAccent } from "../components/PageHero/PageHero";
 import { Footer } from "../sections/Footer/Footer";
+import page from "./metadata";
 import styles from "./page.module.css";
 
 const TYPE_ACCENT: Record<string, "blue" | "green" | "purple" | "orange" | "slate"> = {
@@ -20,22 +21,7 @@ const TYPE_ACCENT: Record<string, "blue" | "green" | "purple" | "orange" | "slat
 
 const DISCORD_URL = "https://discord.gg/suzHfJnpw";
 
-export const metadata: Metadata = {
-  title: "OpenUI Lab",
-  description: "Official and community projects built around OpenUI.",
-  alternates: { canonical: "/lab" },
-  openGraph: {
-    title: "OpenUI Lab",
-    description: "Discover official and community projects built around OpenUI.",
-    url: "/lab",
-    type: "website",
-  },
-  twitter: {
-    title: "OpenUI Lab",
-    description: "Discover official and community projects built around OpenUI.",
-    card: "summary_large_image",
-  },
-};
+export const metadata = createPageMetadata(page);
 
 function DiscordIcon({ className }: { className?: string }) {
   return (

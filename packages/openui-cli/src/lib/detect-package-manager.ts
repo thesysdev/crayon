@@ -5,6 +5,7 @@ export interface PackageManager {
   installCmd: string;
   installArgs: string[];
   runCmd: string;
+  dlxCmd: string;
 }
 
 const PACKAGE_MANAGERS: Record<PackageManagerName, PackageManager> = {
@@ -13,24 +14,28 @@ const PACKAGE_MANAGERS: Record<PackageManagerName, PackageManager> = {
     installCmd: "pnpm install",
     installArgs: ["install"],
     runCmd: "pnpm",
+    dlxCmd: "pnpm dlx",
   },
   yarn: {
     name: "yarn",
     installCmd: "yarn",
     installArgs: [],
     runCmd: "yarn",
+    dlxCmd: "yarn dlx",
   },
   bun: {
     name: "bun",
     installCmd: "bun install",
     installArgs: ["install"],
     runCmd: "bun",
+    dlxCmd: "bunx",
   },
   npm: {
     name: "npm",
     installCmd: "npm ci --prefer-offline --no-audit --no-fund --progress=false",
     installArgs: ["ci", "--prefer-offline", "--no-audit", "--no-fund", "--progress=false"],
     runCmd: "npm",
+    dlxCmd: "npx",
   },
 };
 
@@ -45,7 +50,10 @@ function detectInvokingPackageManager(): PackageManagerName | null {
 
 export function resolveInstallPackageManager(): PackageManager {
   const invoking = detectInvokingPackageManager();
-  return PACKAGE_MANAGERS[invoking ?? "npm"];
+  const pm = PACKAGE_MANAGERS[invoking ?? "npm"];
+  // Yarn 1 has no `dlx`; npx is what its users run instead.
+  const yarnClassic = (process.env["npm_config_user_agent"] ?? "").startsWith("yarn/1.");
+  return yarnClassic ? { ...pm, dlxCmd: "npx" } : pm;
 }
 
 /** Run a published CLI through npm's Node-compatible executor. */

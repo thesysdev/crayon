@@ -1,8 +1,21 @@
 ---
 title: "How ChatGPT Intelligent UI works"
-description: "We reverse-engineered how Intelligent UI works in ChatGPT. An inference format, server-side compilation, a client runtime and rendering work together with a design system and catalog to bring Generative UI to life."
+seoTitle: "How ChatGPT's Intelligent UI works and how to build it"
+description: "ChatGPT's Intelligent UI works by having the model write a markup language called DIL, which the server compiles to JavaScript and a sandboxed client runtime renders as native components. We reverse-engineered each layer, from the inference format to streaming, data and actions."
 author: Thesys Engineering Team
 date: 2026-10-08
+featured: true
+faq:
+  - question: "What is DIL in ChatGPT?"
+    answer:
+      - "DIL is the language GPT-6 writes when ChatGPT answers with Intelligent UI. It combines Markdown for prose, JSX-like tags for components from ChatGPT's catalog (such as `<slider>` and `<box>`), and JavaScript for state and logic. ChatGPT's server compiles DIL into a JavaScript program and a JSON document before anything runs in the browser."
+  - question: "Where does ChatGPT Intelligent UI fit on the generative UI spectrum?"
+    answer:
+      - "Mostly Declarative, with an Open-Ended escape hatch. In the [State of Generative UI report](/blog/state-of-generative-ui-report#generation-static-vs-declarative-vs-open-ended), generative UI ranges from Static, where the agent selects a pre-built component, through Declarative, where it composes a spec from your catalog, to Open-Ended, where the model writes raw HTML."
+      - "Most ChatGPT responses are Declarative: GPT-6 writes DIL that composes components from ChatGPT's catalog, and the compiler validates properties against it. `AppBlock` is the Open-Ended part. For things the catalog can't draw, such as a Web Audio drum machine, the model writes a self-contained HTML app that runs in a sandboxed iframe. That is the [combined pattern](/blog/state-of-generative-ui-report#combining-styles-an-open-ended-component-inside-a-declarative-catalog) the report describes: one Open-Ended component inside a Declarative catalog."
+  - question: "How can I build something like ChatGPT Intelligent UI in my own app?"
+    answer:
+      - "You need the same pieces ChatGPT uses: a compact language the model can stream, a component catalog for it to choose from, a renderer that draws only known components, and local state so interactions don't need a model call. [OpenUI](/docs) is an open-source, MIT-licensed framework built on that pattern."
 ---
 
 import { ArchitectureDiagram } from "./components/architecture-diagram";

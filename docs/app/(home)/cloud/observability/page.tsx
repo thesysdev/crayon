@@ -1,6 +1,6 @@
 /* ssr entry: this page is a server component. */
+import { createPageMetadata } from "@/lib/page-metadata";
 import { Gift } from "@phosphor-icons/react/dist/ssr";
-import type { Metadata } from "next";
 import Image from "next/image";
 import { ExternalTextLink } from "../../components/ExternalTextLink/ExternalTextLink";
 import { FadedDither } from "../../components/FadedDither/FadedDither";
@@ -14,6 +14,7 @@ import { EarlyAccessForm } from "./EarlyAccessForm";
 import { FaqSection } from "./FaqSection";
 import { FeaturesSection } from "./FeaturesSection";
 import { IntegrateSection } from "./IntegrateSection";
+import page from "./metadata";
 import cloudStyles from "./page.module.css";
 import { WhySection } from "./WhySection";
 
@@ -46,11 +47,7 @@ const TRUST_ITEMS: GridFeature[] = [
   },
 ];
 
-export const metadata: Metadata = {
-  title: "OpenUI Observability - User analytics for AI agents",
-  description: "See what users saw and did, where your agent fell short, and what to build next.",
-  alternates: { canonical: "/cloud/observability" },
-};
+export const metadata = createPageMetadata(page);
 
 /* A structural copy of the OpenUI Cloud page with its copy and artwork removed.
    Every section component beside this file is a local copy too, so editing one
@@ -119,7 +116,7 @@ export default function ObservabilityPage() {
               <Image
                 className={`${cloudStyles.heroImage} ${cloudStyles.heroImageDark}`}
                 src="/openui-observability/hero-dark.webp"
-                alt=""
+                alt="OpenUI Observability dashboard"
                 aria-hidden="true"
                 width={1280}
                 height={600}
@@ -144,7 +141,7 @@ export default function ObservabilityPage() {
               <Image
                 className={`${cloudStyles.heroImage} ${cloudStyles.heroImageMobile} ${cloudStyles.heroImageDark}`}
                 src="/openui-observability/hero-mobile-dark.webp"
-                alt=""
+                alt="OpenUI Observability dashboard"
                 aria-hidden="true"
                 width={924}
                 height={1040}

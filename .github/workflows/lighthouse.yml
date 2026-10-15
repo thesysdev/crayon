@@ -1,0 +1,74 @@
+name: Lighthouse
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "docs/**"
+      - ".github/workflows/lighthouse.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: lighthouse-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lighthouse:
+    # Mobile and desktop run as separate jobs so the two passes over every page
+    # happen in parallel; each job builds the site itself.
+    name: Lighthouse (${{ matrix.form-factor }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        form-factor: [mobile, desktop]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v4
+        with:
+          node-version: v24.21.0
+          cache: pnpm
+          cache-dependency-path: "pnpm-lock.yaml"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build workspace packages the docs site uses
+        run: pnpm --filter "@openuidev/docs^..." --workspace-concurrency=1 run build
+        env:
+          NODE_OPTIONS: --max-old-space-size=6144
+
+      - name: Build docs site
+        working-directory: docs
+        run: pnpm build
+        env:
+          NODE_OPTIONS: --max-old-space-size=6144
+          NEXT_TELEMETRY_DISABLED: "1"
+
+      # Serves the production build with `next start` and audits the pages in
+      # docs/lighthouserc.cjs. Accessibility, best practices and SEO fail the
+      # job when they drop below their floor; performance only warns.
+      - name: Lighthouse
+        working-directory: docs
+        run: npx --yes @lhci/cli@0.15.1 autorun
+        env:
+          LHCI_FORM_FACTOR: ${{ matrix.form-factor }}
+
+      - name: Summarize scores
+        if: ${{ !cancelled() }}
+        working-directory: docs
+        run: node scripts/lighthouse-summary.mjs >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload reports
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse-reports-${{ matrix.form-factor }}
+          path: docs/lighthouse-reports
+          if-no-files-found: ignore
+          retention-days: 14

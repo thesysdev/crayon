@@ -1,0 +1,296 @@
+"use client";
+
+import { useState, type CSSProperties } from "react";
+import styles from "../LangShowcase.module.css";
+import { Block, type Example, Segmented, type Segment } from "../stream";
+
+/* The KALLAX guide, after the Open Intelligent UI answer: an exploded drawing
+   of the shelf the reader pulls apart with a slider, and the assembly steps
+   under it, written with that library's components (Svg, G, Polygon,
+   SegmentedControl, Slider...). */
+
+const PROMPT = "I just bought an IKEA KALLAX. Can you walk me through building it?";
+
+/* ── The shelf, drawn in an oblique projection: the front face flat, depth
+   receding up and to the right. Units are centimetres. ── */
+
+type Vec = [number, number, number];
+type PartId = "left" | "bottom" | "lower" | "shelf" | "upper" | "top" | "right";
+
+const W = 77;
+const H = 77;
+const D = 39;
+const T = 3.6;
+const K = 1.9;
+const ORIGIN_X = 181;
+const ORIGIN_Y = 204;
+
+function project([x, y, z]: Vec): [number, number] {
+  return [ORIGIN_X + K * (x + y * 0.7), ORIGIN_Y - K * (z + y * 0.45)];
+}
+
+const points = (corners: Vec[]) =>
+  corners
+    .map(project)
+    .map(([x, y]) => `${Math.round(x)},${Math.round(y)}`)
+    .join(" ");
+
+/* Painted back to front, so each panel covers the ones behind it. The offset
+   is the direction the panel moves, in screen space, as the shelf explodes. */
+const PARTS: { id: PartId; box: [number, number, number, number]; move: [number, number] }[] = [
+  { id: "left", box: [0, T, 0, H], move: [-1, 0] },
+  { id: "bottom", box: [T, W - T, 0, T], move: [0, 1] },
+  { id: "lower", box: [W / 2 - T / 2, W / 2 + T / 2, T, H / 2 - T / 2], move: [0, 0.45] },
+  { id: "shelf", box: [T, W - T, H / 2 - T / 2, H / 2 + T / 2], move: [0, 0] },
+  { id: "upper", box: [W / 2 - T / 2, W / 2 + T / 2, H / 2 + T / 2, H - T], move: [0, -0.45] },
+  { id: "top", box: [T, W - T, H - T, H], move: [0, -1] },
+  { id: "right", box: [W - T, W, 0, H], move: [1, 0] },
+];
+
+function faces([x0, x1, z0, z1]: [number, number, number, number]) {
+  return {
+    front: points([
+      [x0, 0, z0],
+      [x1, 0, z0],
+      [x1, 0, z1],
+      [x0, 0, z1],
+    ]),
+    top: points([
+      [x0, 0, z1],
+      [x1, 0, z1],
+      [x1, D, z1],
+      [x0, D, z1],
+    ]),
+    side: points([
+      [x1, 0, z0],
+      [x1, D, z0],
+      [x1, D, z1],
+      [x1, 0, z1],
+    ]),
+    /* The panel's silhouette, which is what the model's answer draws. */
+    outline: points([
+      [x0, 0, z0],
+      [x1, 0, z0],
+      [x1, D, z0],
+      [x1, D, z1],
+      [x0, D, z1],
+      [x0, 0, z1],
+    ]),
+  };
+}
+
+const DRAWN = PARTS.map((part) => ({ ...part, ...faces(part.box) }));
+
+const STEPS: { title: string; text: string; parts: PartId[] }[] = [
+  {
+    title: "Lay out the parts",
+    text: "Work on a soft surface. Check the panels and fittings before you begin.",
+    parts: ["left", "bottom", "lower", "shelf", "upper", "top", "right"],
+  },
+  {
+    title: "Tap in the dowels",
+    text: "Push the wooden dowels into the holes on the shelf and divider edges.",
+    parts: ["shelf", "lower", "upper"],
+  },
+  {
+    title: "Join the dividers",
+    text: "Slide one divider above the middle shelf and one below it.",
+    parts: ["shelf", "lower", "upper"],
+  },
+  {
+    title: "Add the bottom panel",
+    text: "Lower the bottom panel onto the dowels and press it flush.",
+    parts: ["bottom"],
+  },
+  {
+    title: "Fit the side panels",
+    text: "Attach both sides, then turn each cam lock a half turn clockwise.",
+    parts: ["left", "right"],
+  },
+  {
+    title: "Close it with the top",
+    text: "Fit the top panel last and lock the remaining cams.",
+    parts: ["top"],
+  },
+  {
+    title: "Stand it up and anchor it",
+    text: "Lift it with two people, then fix it to the wall with the bracket.",
+    parts: ["left", "bottom", "lower", "shelf", "upper", "top", "right"],
+  },
+];
+
+const VIEWS = ["Assembled", "Exploded", "This step"] as const;
+type View = (typeof VIEWS)[number];
+const START_APART = 36;
+
+/* ── The answer, statement by statement. A block in the preview appears once
+   its statement has fully streamed; root comes first, so the layout shows as
+   placeholders before the pieces it names arrive, as OpenUI renders it. ── */
+
+const SEGMENTS: Segment[] = [
+  { id: "root", code: `root = Col([head, scene, controls, apart, step])\n` },
+  { id: "state", code: `$view = "Exploded"\n$apart = ${START_APART}\n$step = 0\n` },
+  {
+    id: "head",
+    code: `head = Col([
+  Title("Build your KALLAX, one step at a time", "lg"),
+  Text("An interactive guide to the 77 × 77 cm shelf.", "md", "muted")
+])\n`,
+  },
+  { id: "gap", code: `gap = $view == "Assembled" ? 0 : $apart * 0.6\n` },
+  {
+    id: "scene",
+    code: `scene = Box([Svg([
+  G([left], "translate(" + (0 - gap) + " 0)"),
+  G([bottom], "translate(0 " + gap + ")"),
+  G([lower], "translate(0 " + gap * 0.45 + ")"),
+  shelf,
+  G([upper], "translate(0 " + (0 - gap * 0.45) + ")"),
+  G([top], "translate(0 " + (0 - gap) + ")"),
+  G([right], "translate(" + gap + " 0)")
+], "0 0 560 233")], null, null, 4, "sand", "lg")\n`,
+  },
+  ...DRAWN.map(({ id, outline }) => ({
+    id: `part-${id}`,
+    code: `${id} = Polygon("${outline}", "white", "edge")\n`,
+  })),
+  {
+    id: "controls",
+    code: `controls = Row([
+  SegmentedControl($view, ["Assembled", "Exploded", "This step"]),
+  Spacer(),
+  Caption("Step " + ($step + 1) + " of " + @Count(steps))
+])\n`,
+  },
+  { id: "apart", code: `apart = Slider($apart, 0, 100, 1, "Separate the parts", "%")\n` },
+  {
+    id: "step",
+    code: `step = Col([
+  Title(steps[$step].title, "md"),
+  Text(steps[$step].text, "sm", "muted"),
+  Row([
+    Button("Back", @Set($step, @Max($step - 1, 0)), "ghost", null, "sm"),
+    Button("Next step", @Set($step, @Min($step + 1, 6)), "outline", null, "sm")
+  ])
+])\n`,
+  },
+  { id: "list", code: `steps = [\n` },
+  ...STEPS.map((step, index) => ({
+    id: `step${index}`,
+    code: `  {title: "${step.title}",\n   text: "${step.text}"}${index < STEPS.length - 1 ? "," : ""}\n`,
+  })),
+  { id: "listEnd", code: `]` },
+];
+
+function KallaxAnswer({ has }: { has: (id: string) => boolean }) {
+  const [view, setView] = useState<View>("Exploded");
+  const [apart, setApart] = useState(START_APART);
+  const [step, setStep] = useState(0);
+
+  const gap = view === "Assembled" ? 0 : apart * 0.6;
+  const current = STEPS[step];
+
+  return has("root") ? (
+      <div className={styles.answer}>
+        <Block ready={has("head")} lines={2}>
+          <h4 className={styles.title}>Build your KALLAX, one step at a time</h4>
+          <p className={styles.muted}>An interactive guide to the 77 × 77 cm shelf.</p>
+        </Block>
+
+        {has("scene") ? (
+          <div className={`${styles.scene} ${styles.enter}`}>
+            <svg viewBox="0 0 560 233" role="img" aria-label="An exploded drawing of a KALLAX shelf">
+              <ellipse className={styles.shadow} cx="290" cy="214" rx="135" ry="9" />
+              {DRAWN.map(({ id, move, front, top, side }) =>
+                has(`part-${id}`) ? (
+                  <g
+                    key={id}
+                    className={styles.part}
+                    style={{
+                      transform: `translate(${move[0] * gap}px, ${move[1] * gap}px)`,
+                      opacity: view === "This step" && !current.parts.includes(id) ? 0.2 : 1,
+                    }}
+                  >
+                    <g className={styles.partIn}>
+                      <polygon className={styles.faceSide} points={side} />
+                      <polygon className={styles.faceTop} points={top} />
+                      <polygon className={styles.faceFront} points={front} />
+                    </g>
+                  </g>
+                ) : null,
+              )}
+            </svg>
+          </div>
+        ) : (
+          <Block ready={false} lines={0} tall>
+            {null}
+          </Block>
+        )}
+
+        <Block ready={has("controls")} lines={1}>
+          <div className={styles.controls}>
+            <Segmented label="View" options={VIEWS} value={view} onChange={setView} />
+            <span className={styles.caption}>
+              Step {step + 1} of {STEPS.length}
+            </span>
+          </div>
+        </Block>
+
+        <Block ready={has("apart")} lines={1}>
+          <label className={styles.slider}>
+            <span className={styles.sliderHead}>
+              <span>Separate the parts</span>
+              <span>{apart}%</span>
+            </span>
+            <input
+              type="range"
+              min={0}
+              max={100}
+              value={apart}
+              style={{ "--fill": `${apart}%` } as CSSProperties}
+              onChange={(event) => {
+                setApart(Number(event.target.value));
+                if (view === "Assembled") setView("Exploded");
+              }}
+            />
+          </label>
+        </Block>
+
+        <Block ready={has("step0")} lines={2}>
+          <div className={styles.step} key={step}>
+            <h5 className={styles.stepTitle}>{current.title}</h5>
+            <p className={styles.muted}>{current.text}</p>
+            <div className={styles.stepNav}>
+              <button
+                type="button"
+                className={styles.pillGhost}
+                disabled={step === 0}
+                onClick={() => setStep((s) => Math.max(s - 1, 0))}
+              >
+                Back
+              </button>
+              <button
+                type="button"
+                className={styles.pill}
+                disabled={step === STEPS.length - 1}
+                onClick={() => setStep((s) => Math.min(s + 1, STEPS.length - 1))}
+              >
+                Next step
+              </button>
+            </div>
+          </div>
+        </Block>
+      </div>
+    ) : null;
+}
+
+export const KALLAX: Example = {
+  id: "kallax",
+  label: "Ikea agent",
+  accent: "#c98b4e",
+  prompt: PROMPT,
+  mascot: "/homepage/shiro/shiro-woodworker.svg",
+  mascotAlt: "Shiro the woodworker",
+  segments: SEGMENTS,
+  Answer: KallaxAnswer,
+};

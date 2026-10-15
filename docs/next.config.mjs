@@ -6,9 +6,22 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const withMDX = createMDX();
 
+// Demos deployed as their own Vercel projects, served under openui.com/demo/<path>. Each app sets
+// NEXT_PUBLIC_BASE_PATH to the same path, so its pages, assets and API routes all live under it.
+const proxiedDemos = {
+  "f1-dashboard": "https://openui-f1-dashboard.vercel.app",
+  "trip-planner": "https://openui-trip-planner.vercel.app",
+  "intelligent-ui": "https://open-intelligent-ui.vercel.app",
+};
+
 /** @type {import('next').NextConfig} */
 const config = {
   serverExternalPackages: ["@takumi-rs/image-response"],
+  // OG metadata and images read artwork from public/ by path, so tracing would otherwise
+  // bundle every video into each function. Media is served from the CDN, never read at runtime.
+  outputFileTracingExcludes: {
+    "/**": ["./public/**/*.{mp4,webm,mov,gif}"],
+  },
   images: {
     /* Dense product screenshots contain small UI text and one-pixel rules.
        Keep the default for general imagery, but allow the illustration pair
@@ -35,6 +48,11 @@ const config = {
   },
   async redirects() {
     return [
+      {
+        source: "/favicon.svg",
+        destination: "/shiro-logo.svg",
+        permanent: true,
+      },
       // The Cookbooks overview is temporarily removed; open the only cookbook instead.
       {
         source: "/cookbooks",
@@ -367,6 +385,10 @@ const config = {
   },
   async rewrites() {
     return [
+      ...Object.entries(proxiedDemos).flatMap(([path, origin]) => [
+        { source: `/demo/${path}`, destination: `${origin}/demo/${path}` },
+        { source: `/demo/${path}/:rest*`, destination: `${origin}/demo/${path}/:rest*` },
+      ]),
       {
         source: "/docs/:path*.mdx",
         destination: "/llms.mdx/docs/:path*",

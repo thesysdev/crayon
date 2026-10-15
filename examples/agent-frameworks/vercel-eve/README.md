@@ -4,6 +4,12 @@ A generative-UI chat application backed by a [Vercel Eve](https://github.com/ver
 agent. Eve keeps its native session and resumable-streaming protocol. OpenUI's
 `eveAdapter()` from `@openuidev/react-headless` maps Eve's NDJSON stream to AG-UI.
 
+## Notes for coding agents
+
+This project uses the eve framework. Before writing code, read the relevant guide in `node_modules/eve/docs/`.
+
+The hand-written `ChatLLM` in `src/eve-chat.ts` is an intentional exception to the repo's fetchLLM-first convention: there is no HTTP chat endpoint here. Its `send` drives Eve's native session protocol (`POST /eve/v1/session`, resumable NDJSON event stream) and synthesizes the AG-UI SSE stream client-side from Eve session events, so `fetchLLM` does not apply — do not migrate it. Normal HTTP chat backends should use `fetchLLM` from `@openuidev/react-ui` instead of hand-writing a `ChatLLM`.
+
 ## Prerequisites
 
 - Node.js 24

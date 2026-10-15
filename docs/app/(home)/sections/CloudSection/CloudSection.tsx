@@ -1,10 +1,5 @@
 /* ssr entry: this is a server component now that the grid's accordion is gone. */
-import { ArrowRight } from "@phosphor-icons/react/dist/ssr";
-import Image from "next/image";
-import { BevelButton } from "../../components/Button/BevelButton";
-import { FadedDither } from "../../components/FadedDither/FadedDither";
-import { SectionHeader } from "../../components/SectionHeader/SectionHeader";
-import { ProductLabel, ProductSection } from "../ProductSection/ProductSection";
+import { ProductSection } from "../ProductSection/ProductSection";
 import { GATEWAY_PRODUCT } from "../ProductSection/products";
 import styles from "./CloudSection.module.css";
 
@@ -12,119 +7,15 @@ export const CLOUD_SECTION_ID = "openui-cloud";
 
 export function CloudSection() {
   return (
-    <section id={CLOUD_SECTION_ID} className={styles.section} aria-labelledby="openui-cloud-title">
+    /* No section header: the Gateway band carries its own label and headline,
+       so the band opens straight onto it. */
+    <section id={CLOUD_SECTION_ID} className={styles.section} aria-label="OpenUI Cloud">
       <div className={styles.inner}>
-        <div className={styles.contact}>
-          <ProductLabel name="OpenUI" tag="Cloud" />
-          <div className={styles.contactHeading}>
-            <SectionHeader
-              titleId="openui-cloud-title"
-              title="Production reliability"
-              subtitle="and user insights"
-              tone="dark"
-            />
-          </div>
-        </div>
-
-        {/* Wrapped rather than spaced by the bands themselves: .header and
-            .contact already supply the outer margins, so only the gap between
-            the two needs stating, and ProductSection stays free of layout it
-            would carry into every other place it is used. */}
+        {/* Wrapped rather than spaced by the bands themselves, so ProductSection
+            stays free of layout it would carry into every other place it is
+            used. */}
         <div className={styles.products}>
           <ProductSection {...GATEWAY_PRODUCT} />
-        </div>
-
-        {/* Divides the two bands. It carries the whole gap between them, so the
-            band below no longer sets a top margin of its own. */}
-        <div aria-hidden="true" className={styles.bandSeparator} />
-
-        <div id="openui-observability-card" className={styles.observabilityBand}>
-          <div className={styles.observabilityCopy}>
-            <div className={styles.observabilityLead}>
-              <ProductLabel
-                name="OpenUI"
-                tag="Observability"
-                className={styles.observabilityEyebrow}
-              />
-              <h3 className={styles.observabilityTitle}>
-                User analytics
-                <br />
-                for AI agents
-              </h3>
-              <BevelButton
-                className={styles.observabilityCta}
-                variant="primary"
-                href="/cloud/observability"
-                label="Get Early Access"
-                badge={<ArrowRight size={16} weight="bold" />}
-              />
-            </div>
-            <p className={styles.observabilityDescription}>
-              See where users drop off, what they struggle with, and what they ask for. Know what to
-              fix and what to build next.
-            </p>
-          </div>
-          <div
-            className={styles.observabilityStage}
-            role="img"
-            aria-label="OpenUI Observability session replay showing the exact generated interface and user interactions"
-          >
-            {/* The Cloud band is dark, so the shader follows it: black ground in
-                light theme, white when the band inverts. */}
-            <FadedDither band="dark" className={styles.observabilityShader} />
-            {/* Light and dark refer to the picture's own tone. The band is black
-                in light theme and inverts to white in dark theme, so the rules
-                in the stylesheet pick the one that suits the ground.
-
-                Two pairs, each in a wrapper the breakpoint switches off. The
-                phone artwork is its own drawing at 1440x1200 rather than the
-                wide one cropped, and the wrapper is display:contents when
-                shown, so the theme rules still reach the images. */}
-            <span className={styles.observabilityWide}>
-              <Image
-                className={`${styles.observabilityImage} ${styles.observabilityImageLight}`}
-                src="/homepage/observability-light.webp"
-                alt=""
-                aria-hidden="true"
-                width={2240}
-                height={880}
-                quality={95}
-                sizes="(max-width: 1023px) calc(100vw - 80px), 1120px"
-              />
-              <Image
-                className={`${styles.observabilityImage} ${styles.observabilityImageDark}`}
-                src="/homepage/observability-dark.webp"
-                alt=""
-                aria-hidden="true"
-                width={2240}
-                height={880}
-                quality={95}
-                sizes="(max-width: 1023px) calc(100vw - 80px), 1120px"
-              />
-            </span>
-            <span className={styles.observabilityCompact}>
-              <Image
-                className={`${styles.observabilityImage} ${styles.observabilityImageLight}`}
-                src="/homepage/observability-mobile-light.webp"
-                alt=""
-                aria-hidden="true"
-                width={1440}
-                height={1200}
-                quality={95}
-                sizes="calc(100vw - 40px)"
-              />
-              <Image
-                className={`${styles.observabilityImage} ${styles.observabilityImageDark}`}
-                src="/homepage/observability-mobile-dark.webp"
-                alt=""
-                aria-hidden="true"
-                width={1440}
-                height={1200}
-                quality={95}
-                sizes="calc(100vw - 40px)"
-              />
-            </span>
-          </div>
         </div>
       </div>
     </section>

@@ -62,14 +62,14 @@ The layered variant requires browser support for [CSS cascade layers](https://de
 ### `AgentInterface`
 
 ```tsx
-import { AgentInterface, openAIAdapter, type ChatLLM } from "@openuidev/react-ui";
+import { AgentInterface, fetchLLM, openAIAdapter, openAIMessageFormat } from "@openuidev/react-ui";
 import { openuiChatLibrary } from "@openuidev/react-ui/genui-lib";
 
-const llm: ChatLLM = {
-  send: ({ messages, signal }) =>
-    fetch("/api/chat", { method: "POST", body: JSON.stringify({ messages }), signal }),
-  streamProtocol: openAIAdapter(),
-};
+const llm = fetchLLM({
+  url: "/api/chat",
+  streamAdapter: openAIAdapter(),
+  messageFormat: openAIMessageFormat,
+});
 
 <AgentInterface llm={llm} componentLibrary={openuiChatLibrary} />;
 ```
@@ -83,9 +83,11 @@ const llm: ChatLLM = {
   - `llm: ChatLLM` — required; `{ send({ threadId, messages, signal }), streamProtocol }`
   - `artifactRenderers?: ArtifactRendererConfig[]`
   - `artifactCategories?: ArtifactCategory[]`
+  - `artifactAutoOpen?: boolean`
 - Shared UI props:
   - `componentLibrary?: Library` (from `@openuidev/react-lang`) — drives auto-GenUI rendering
-  - `components?: AgentInterfaceComponents` — `{ AssistantMessage?, UserMessage? }` overrides
+  - `onAction?: (event: ActionEvent) => void`: actions the chat does not handle, such as custom actions
+  - `components?: AgentInterfaceComponents`: `{ AssistantMessage?, UserMessage?, ToolCallTimeline? }` overrides
   - `logoUrl?: string`
   - `agentName?: string`
   - `labels?: AgentInterfaceLabels`
@@ -93,6 +95,7 @@ const llm: ChatLLM = {
   - `starterVariant?: ConversationStarterVariant`
   - `scrollVariant?: ScrollVariant`
   - `scrollOnLoad?: boolean`
+  - `path?: string`, `defaultPath?: string`, `onNavigate?: (next: string | undefined) => void`
 - Theme wrapper props:
   - `theme?: ThemeProps`
   - `disableThemeProvider?: boolean`

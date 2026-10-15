@@ -1,7 +1,7 @@
 import { type InferPageType, loader } from "fumadocs-core/source";
 import { lucideIconsPlugin } from "fumadocs-core/source/lucide-icons";
 import { toFumadocsSource } from "fumadocs-mdx/runtime/server";
-import { blogPosts, docs } from "fumadocs-mdx:collections/server";
+import { blogPosts, docs, integrationGuides } from "fumadocs-mdx:collections/server";
 
 export const BASE_URL = "https://www.openui.com";
 
@@ -25,14 +25,11 @@ export const blog = loader({
   source: toFumadocsSource(blogPosts, []),
 });
 
-export function getPageImage(page: InferPageType<typeof source>) {
-  const segments = [...page.slugs, "image.webp"];
-
-  return {
-    segments,
-    url: `/og/docs/${segments.join("/")}`,
-  };
-}
+/** Example and steps for each integration page, keyed by the integration's slug. */
+export const integrationGuide = loader({
+  baseUrl: "/integrations",
+  source: toFumadocsSource(integrationGuides, []),
+});
 
 export async function getLLMText(page: InferPageType<typeof source>) {
   const processed = await page.data.getText("processed");
