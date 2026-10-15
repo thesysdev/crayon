@@ -73,6 +73,9 @@ export const metadata: Metadata = {
   },
 };
 
+/** Square Shiro mark for `og:logo`, which Next's Metadata API has no field for. */
+const OG_LOGO = `${BASE_URL}/shiro-og-logo.png`;
+
 export default function Layout({ children }: LayoutProps<"/">) {
   return (
     <html
@@ -82,6 +85,9 @@ export default function Layout({ children }: LayoutProps<"/">) {
       data-scroll-behavior="smooth"
       suppressHydrationWarning
     >
+      <head>
+        <meta property="og:logo" content={OG_LOGO} />
+      </head>
       <body className="flex flex-col min-h-screen">
         <PHProvider>
           <RootProvider theme={{ defaultTheme: "light", enableSystem: false }}>
