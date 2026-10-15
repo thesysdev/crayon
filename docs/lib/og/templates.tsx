@@ -26,6 +26,13 @@ export type OgCardData =
       partnerLogo?: string;
     }
   | {
+      /** Site-wide card for the homepage and blog index: tagline over product artwork. */
+      template: "home";
+      title: string;
+      tagline: string;
+      art: string;
+    }
+  | {
       template: "cover";
       /** Blog cover art, cropped to fill the top of the image. */
       cover: string;
@@ -116,6 +123,52 @@ export function OgCard({ logo, eyebrow, title, description, partnerLogo }: OgCar
     </div>
   );
 }
+
+type OgHomeProps = { logo: string; art: string; title: string; tagline: string };
+
+/** Homepage card: the hero's two-tone headline above the product artwork, which bleeds off the bottom. */
+export function OgHome({ logo, art, title, tagline }: OgHomeProps) {
+  return (
+    <div
+      style={{
+        display: "flex",
+        position: "relative",
+        ...OG_SIZE,
+        backgroundColor: COLORS.background,
+        fontFamily: "Inter",
+      }}
+    >
+      <img
+        alt=""
+        src={art}
+        style={{ position: "absolute", top: HOME_ART_TOP, left: -40, width: 1280, height: 503 }}
+      />
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          position: "absolute",
+          top: 56,
+          left: 72,
+          gap: 4,
+          fontSize: 60,
+          fontWeight: 600,
+          lineHeight: 1.1,
+          letterSpacing: "-0.03em",
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: 18, color: COLORS.primary }}>
+          <img alt="" src={logo} width={67} height={64} />
+          <span>{title}</span>
+        </div>
+        <span style={{ color: COLORS.secondary }}>{tagline}</span>
+      </div>
+    </div>
+  );
+}
+
+/** Where the homepage artwork starts; its own top margin leaves room for the headline. */
+const HOME_ART_TOP = 170;
 
 /**
  * Height of the cover art. The art fills the top of the image, and the title sits on the dark

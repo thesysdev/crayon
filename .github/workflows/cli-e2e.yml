@@ -54,15 +54,12 @@ jobs:
           retention-days: 1
 
   cli-e2e:
-    name: ${{ matrix.template }} (${{ matrix.package-manager }}@${{ matrix.package-manager-version }}, ${{ matrix.os }}, Node ${{ matrix.node-version }})
+    name: langgraph (${{ matrix.package-manager }}@${{ matrix.package-manager-version }}, ${{ matrix.os }}, Node ${{ matrix.node-version }})
     needs: package-cli
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        template:
-          - openui-cloud
-          - openui-self-hosted
         configuration:
           # Keep one npm and pnpm canary for the legacy Node.js line.
           - ubuntu-node20-npm10
@@ -152,7 +149,6 @@ jobs:
 
       - uses: ./.github/actions/cli-scaffold-e2e
         with:
-          template: ${{ matrix.template }}
           backend-framework: langgraph
           node-version: ${{ matrix.node-version }}
           package-manager: ${{ matrix.package-manager }}
@@ -162,15 +158,12 @@ jobs:
   # manager majors; overlays only change dependencies and app code, so one
   # current Linux configuration per package manager is enough.
   cli-e2e-overlays:
-    name: ${{ matrix.template }} + ${{ matrix.overlay }} (${{ matrix.package-manager }}@11, ubuntu, Node 24)
+    name: ${{ matrix.overlay }} (${{ matrix.package-manager }}@11, ubuntu, Node 24)
     needs: package-cli
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        template:
-          - openui-cloud
-          - openui-self-hosted
         overlay:
           - vercel-ai-sdk
           - vercel-eve
@@ -183,7 +176,6 @@ jobs:
 
       - uses: ./.github/actions/cli-scaffold-e2e
         with:
-          template: ${{ matrix.template }}
           backend-framework: ${{ matrix.overlay }}
           node-version: 24
           package-manager: ${{ matrix.package-manager }}

@@ -14,7 +14,7 @@ npm ci
 
 Configure two keys privately in `.env.local`:
 
-- `THESYS_API_KEY` from the [Thesys Console](https://console.thesys.dev/keys), for generation.
+- `THESYS_API_KEY` from the [Thesys Console](https://console.thesys.dev/keys), for generation. `npm run generate:apiKey` mints one into `.env.local`.
 - `OPENAI_API_KEY` from the [OpenAI Platform](https://platform.openai.com/api-keys), for embeddings.
 
 Optional `OPENUI_MODEL` selects a supported `provider/model` identifier; the default is `openai/gpt-5.5`.

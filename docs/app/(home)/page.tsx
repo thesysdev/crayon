@@ -30,6 +30,12 @@ const structuredData = {
       "@id": "https://www.thesys.dev/#organization",
       name: "Thesys",
       url: "https://www.thesys.dev",
+      logo: {
+        "@type": "ImageObject",
+        url: "https://www.thesys.dev/thesys-logo-bw.png",
+        width: 360,
+        height: 360,
+      },
       sameAs: [
         "https://github.com/thesysdev",
         "https://x.com/thesysdev",
@@ -43,7 +49,7 @@ const structuredData = {
       alternateName: "OpenUI by Thesys",
       url: BASE_URL,
       description:
-        "The open standard for Intelligent UI. Full-stack, framework-agnostic Generative UI built on OpenUI Lang, a streaming-first language with first-party runtimes for React, Vue, Svelte, and Angular.",
+        "Full-stack, framework-agnostic Generative UI built on OpenUI Lang, a streaming-first language with first-party runtimes for React, Vue, Svelte, and Angular.",
       applicationCategory: "DeveloperApplication",
       operatingSystem: "Cross-platform",
       license: "https://opensource.org/licenses/MIT",
@@ -56,6 +62,14 @@ const structuredData = {
         "https://x.com/thesysdev",
         "https://www.linkedin.com/company/thesysdev/",
       ],
+    },
+    {
+      "@type": "WebSite",
+      "@id": `${BASE_URL}/#website`,
+      name: "OpenUI",
+      alternateName: "OpenUI by Thesys",
+      url: BASE_URL,
+      publisher: { "@id": "https://www.thesys.dev/#organization" },
     },
     {
       "@type": "FAQPage",
@@ -82,7 +96,7 @@ export default function HomePage() {
         <HeroSection
           align="left"
           desktopFromTablet
-          subtitle="Open Standard for Intelligent UI"
+          subtitle="Open Standard for Generative UI"
           showPlaygroundButton={false}
           showTagline={false}
           commandTrailing={<AgentPicker command={AGENT_SETUP_PROMPT} />}

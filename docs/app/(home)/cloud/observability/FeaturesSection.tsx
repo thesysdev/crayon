@@ -75,7 +75,7 @@ function FeatureShot({ shot, alt }: { shot?: string; alt: string }) {
         <Image
           className={`${styles.featureImage} ${styles.featureImageDark} ${focalClass}`.trim()}
           src={`/openui-observability/${shot}-dark.webp`}
-          alt=""
+          alt={alt}
           aria-hidden="true"
           width={2880}
           height={imageHeight}
@@ -98,7 +98,7 @@ function FeatureShot({ shot, alt }: { shot?: string; alt: string }) {
         <Image
           className={`${styles.featureImage} ${styles.featureImageDark}`}
           src={`/openui-observability/${shot}-mobile-dark.webp`}
-          alt=""
+          alt={alt}
           aria-hidden="true"
           width={720}
           height={600}

@@ -8,31 +8,18 @@ import {
 
 type HelpEntry = { key: string; description: string };
 
-const FALLBACK_TEMPLATES: HelpEntry[] = [
-  {
-    key: "openui-cloud",
-    description:
-      "Recommended default for prototypes and evaluations. Hosted models, managed conversation history, built-in tools, and ready-to-use reports and presentations.",
-  },
-  {
-    key: "openui-self-hosted",
-    description:
-      "Choose when owning the OpenAI-compatible provider, AI route, and persistence is a requirement. Available only via --template; interactive runs default to openui-cloud.",
-  },
-];
-
 const FALLBACK_FRAMEWORKS: HelpEntry[] = [
   {
     key: "langgraph",
-    description: "Default. Bootstraps a LangGraph agent with the selected model backend.",
+    description: "Default. Bootstraps a LangGraph agent.",
   },
   {
     key: "vercel-ai-sdk",
-    description: "Scaffolds a Vercel AI SDK agent with the selected model backend.",
+    description: "Scaffolds a Vercel AI SDK agent.",
   },
   {
     key: "vercel-eve",
-    description: "Scaffolds a Vercel Eve agent with the selected model backend.",
+    description: "Scaffolds a Vercel Eve agent.",
   },
 ];
 
@@ -58,15 +45,6 @@ async function loadCreateHelpText(): Promise<string> {
     const templates = await loadTemplatesCatalog();
     sections.push(
       formatSection(
-        "Templates:",
-        templates.map((template) => ({
-          key: template.key,
-          description: template.description,
-        })),
-      ),
-    );
-    sections.push(
-      formatSection(
         "Backend frameworks:",
         uniqueOverlays(templates).map((overlay) => ({
           key: overlay.key,
@@ -75,7 +53,6 @@ async function loadCreateHelpText(): Promise<string> {
       ),
     );
   } catch {
-    sections.push(formatSection("Templates:", FALLBACK_TEMPLATES));
     sections.push(formatSection("Backend frameworks:", FALLBACK_FRAMEWORKS));
     sections.push("  Live catalog could not be fetched.");
   }

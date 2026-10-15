@@ -47,7 +47,7 @@ function ChipIcon({ item }: { item: StackChipItem }) {
       const imgSrc = item.localSrc ?? `https://cdn.simpleicons.org/${item.slug}/${item.iconColor}`;
       return (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={imgSrc} alt="" width={16} height={16} className={styles.badgeImage} />
+        <img src={imgSrc} alt={item.name} width={16} height={16} className={styles.badgeImage} />
       );
     }
     case "vector": {
@@ -76,7 +76,7 @@ function ChipIcon({ item }: { item: StackChipItem }) {
         <img
           className={styles.mascotSvg}
           src="/shiro-logo.svg"
-          alt=""
+          alt="OpenUI"
           aria-hidden="true"
           style={{ objectFit: "contain" }}
         />

@@ -7,7 +7,7 @@ OpenUI components can be interactive. The `Renderer` manages form state automati
 
 ## Actions
 
-When a user clicks a button or follow-up, the component calls `triggerAction`. The `Renderer` wraps this into an `ActionEvent` and fires `onAction`.
+When a user clicks a button or follow-up, the component calls `triggerAction`. The `Renderer` turns the click into an event, an `ActionEvent`, and passes it to `onAction`.
 
 ```tsx
 <Renderer
@@ -15,9 +15,9 @@ When a user clicks a button or follow-up, the component calls `triggerAction`. T
   response={content}
   onAction={(event) => {
     if (event.type === "continue_conversation") {
-      // event.humanFriendlyMessage — button label or follow-up text
-      // event.formState — field values at time of click
-      // event.formName — scoping form name, if any
+      // event.humanFriendlyMessage: button label or follow-up text
+      // event.formState: field values at time of click
+      // event.formName: scoping form name, if any
     }
   }}
 />
@@ -43,20 +43,25 @@ enum BuiltinActionType {
 }
 ```
 
-- `ContinueConversation`: sends the user's intent back to the LLM (`@ToAssistant`).
-- `OpenUrl`: opens a URL in a new tab (`@OpenUrl`).
+- `ContinueConversation`: sends the user's intent back to the LLM (`@ToAssistant`). The optional context from `@ToAssistant(message, context)` arrives unchanged in `params.context`, and can be any value.
+- `OpenUrl`: opens a URL in a new tab (`@OpenUrl`). The URL is in `params.url`.
 
-The following action steps are handled internally by the runtime (not dispatched to `onAction`):
+A [custom action](/docs/openui-lang/actions#custom-actions) from your library arrives with its own name as `type` and its arguments in `params`. When the library has custom actions, `onAction` is typed from the library, and checking `event.type` narrows `event.params`.
+
+The renderer runs these actions itself and does not send them to `onAction`:
 
 - `@Run(ref)`: executes a Mutation or re-fetches a Query
 - `@Set($var, value)`: changes a reactive `$variable`
 - `@Reset($var1, $var2)`: restores `$variables` to their declared defaults
 
-In openui-lang, actions are composed with `Action([...])`:
+In OpenUI Lang, one action can be passed on its own, and several actions go in `Action([...])`:
 
 ```text
+askBtn = Button("Tell me more", @ToAssistant("Tell me more about these tickets"))
 submitBtn = Button("Create", Action([@Run(createResult), @Run(tickets), @Reset($title)]))
 ```
+
+See [Actions](/docs/openui-lang/actions) for the full rules.
 
 See [Reactive State](/docs/openui-lang/reactive-state) for `$variables` and [Queries & Mutations](/docs/openui-lang/queries-mutations) for `@Run`.
 
@@ -85,13 +90,13 @@ const MyButton = defineComponent({
 });
 ```
 
-`triggerAction(userMessage, formName?, action?)` accepts optional second and third arguments.
+`triggerAction(userMessage, formName?, action?)` accepts optional second and third arguments. To let the model choose what a component does on click, give it an `action()` prop and pass that prop as the third argument. See [Action props in your components](/docs/openui-lang/actions#action-props-in-your-components).
 
 ---
 
 ## Reactive state (`$variables`)
 
-In openui-lang, `$variables` create reactive state that components can read and write. When the LLM generates `$days = "7"` and passes it to a Select, the runtime creates a two-way binding automatically.
+In OpenUI Lang, `$variables` hold reactive state that components can read and write. When the model writes `$days = "7"` and passes it to a Select, the renderer keeps the Select and `$days` in sync.
 
 For component authors building custom libraries, the `useStateField` hook provides this binding:
 
@@ -107,8 +112,8 @@ const MySelect = defineComponent({
   }),
   component: ({ props }) => {
     const field = useStateField(props.name, props.value);
-    // field.value — current value (reads from $variable or form state)
-    // field.setValue(val) — updates the $variable and triggers re-evaluation
+    // field.value: current value (reads from $variable or form state)
+    // field.setValue(val): updates the $variable and triggers re-evaluation
     return (
       <select value={field.value ?? ""} onChange={(e) => field.setValue(e.target.value)}>
         {/* ... */}

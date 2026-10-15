@@ -546,6 +546,7 @@ export default function GitHubDemoPage() {
 
   return (
     <div className={`app ${isHomeState ? "app-home" : "app-artifact"}`}>
+      <h1 className="sr-only">OpenUI GitHub Dashboard Demo</h1>
       <Header
         theme={currentTheme}
         onThemeToggle={cycleTheme}
@@ -583,7 +584,7 @@ export default function GitHubDemoPage() {
                     <span className="gh-welcome-avatar">
                       <img
                         src={`https://github.com/${githubUsername}.png?size=32`}
-                        alt=""
+                        alt={`${githubUsername} avatar`}
                         className="gh-welcome-avatar-image"
                       />
                     </span>
@@ -724,7 +725,7 @@ export default function GitHubDemoPage() {
                 <div className="gh-connected-bar">
                   <img
                     src={`https://github.com/${githubUsername}.png?size=32`}
-                    alt=""
+                    alt={`${githubUsername} avatar`}
                     className="gh-connected-avatar"
                   />
                   <span>@{githubUsername}</span>

@@ -7,6 +7,7 @@ import type { CreateAppOptions, EnvResult } from "./create-types";
 import { resolveCloudEnv, writeEnvVar } from "./env";
 import type { ExampleProject } from "./examples-catalog";
 import { installRequestedSkill, shouldInstallSkill } from "./install-skill";
+import { missingCloudKeyNote } from "./messages";
 import {
   exampleDevCommand,
   exampleLayout,
@@ -19,6 +20,7 @@ import type { CreateTelemetryClient } from "./telemetry";
 export async function runCreateExample(params: {
   options: CreateAppOptions;
   interactive: boolean;
+  agent?: string;
   packageManager: ReturnType<typeof resolveInstallPackageManager>;
   t0: number;
   name: string;
@@ -27,8 +29,18 @@ export async function runCreateExample(params: {
   tel: CreateTelemetryClient;
   verbose: boolean;
 }): Promise<void> {
-  const { options, interactive, packageManager, t0, name, targetDir, example, tel, verbose } =
-    params;
+  const {
+    options,
+    interactive,
+    agent,
+    packageManager,
+    t0,
+    name,
+    targetDir,
+    example,
+    tel,
+    verbose,
+  } = params;
 
   tel.registerContext({ example: example.name, project_category: "example" });
   tel.trackExampleSelected({
@@ -37,7 +49,7 @@ export async function runCreateExample(params: {
   });
 
   tel.trackEnvResolutionStarted({ example: example.name });
-  const envResult = await resolveExampleEnv(example, name, options, interactive, tel);
+  const envResult = await resolveExampleEnv(example, name, options, interactive, agent, tel);
 
   const installSkill = await shouldInstallSkill(options.skill, false);
   tel.trackSkillInstalled({ skill_installed: installSkill });
@@ -132,12 +144,7 @@ export async function runCreateExample(params: {
     auth_succeeded: envResult.authSucceeded,
     dependency_installed: false,
   });
-  const envKey = example.env.key;
-  const envNote = envKey
-    ? envResult.envWritten
-      ? `✅ ${example.env.file} updated with ${envKey}.`
-      : `Add ${envKey}=… to ${example.env.file} (see the example README).`
-    : `Add your API keys to ${example.env.file} (see the example README).`;
+  const envNote = exampleEnvNote(example.env, envResult.envWritten, name, packageManager.dlxCmd);
   const skillMessage = skillInstalled
     ? "The OpenUI agent skill was installed.\nAI coding assistants will use it to help you build with OpenUI.\n"
     : "";
@@ -161,6 +168,7 @@ async function resolveExampleEnv(
   name: string,
   options: CreateAppOptions,
   interactive: boolean,
+  agent: string | undefined,
   tel: CreateTelemetryClient,
 ): Promise<EnvResult & { envKeyValue?: string }> {
   if (!example.env.key) {
@@ -172,6 +180,7 @@ async function resolveExampleEnv(
       name,
       { ...options, envFile: example.env.file },
       interactive,
+      agent,
       tel,
     );
     return { ...result, envKeyValue: result.envVars?.[example.env.key] || undefined };
@@ -200,6 +209,18 @@ async function promptForProviderKey(envKey: string): Promise<string | null> {
     }
     throw error;
   }
+}
+
+function exampleEnvNote(
+  env: ExampleProject["env"],
+  envWritten: boolean,
+  name: string,
+  dlxCmd: string,
+): string {
+  if (!env.key) return `Add your API keys to ${env.file} (see the example README).`;
+  if (envWritten) return `✅ ${env.file} updated with ${env.key}.`;
+  if (env.key === "THESYS_API_KEY") return missingCloudKeyNote(name, dlxCmd, env.file);
+  return `Add ${env.key}=… to ${env.file} (see the example README).`;
 }
 
 function posixJoin(...parts: string[]): string {

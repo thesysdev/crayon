@@ -1,6 +1,5 @@
 import { Command } from "commander";
 
-import { normalizeAuth } from "../../lib/auth/mint";
 import { context } from "../../lib/context";
 import { rejectConflictingScaffoldSelectors } from "./lib/examples-catalog";
 import { printCreateHelp } from "./lib/help";
@@ -10,17 +9,16 @@ import { runCreateApp } from "./run";
 
 export const createCommand = new Command("create")
   .description(
-    "Scaffold a Next.js agent app with the recommended OpenUI Cloud backend or your own provider",
+    "Scaffold a generative UI agent with Next.js and your choice of agent framework.\n" +
+      "No account or API key is needed to scaffold. Add the key afterwards:\n" +
+      "  openui generate-api-key",
   )
-  .option("-n, --name <string>", "Project name (interactive default: openui-agent)")
-  .option("-t, --template <template>", "AI backend to use (default: openui-cloud)")
+  .option("-n, --name <string>", "Project name (default: openui-agent)")
   .option("--backend-framework <framework>", "Backend framework to use (default: langgraph)")
   .option("-e, --example <example>", "Create from an example in examples/examples.json")
-  .option("--api-key <key>", "OpenUI Cloud API key (cloud templates and examples; skips sign-in)")
-  .option("--auth <method>", "Cloud auth method: oauth | skip (manual is deprecated)")
   .option("--skill", "Install the OpenUI agent skill for AI coding assistants")
   .option("--no-skill", "Skip installing the OpenUI agent skill")
-  .option("--no-interactive", "Fail with error if required args are missing")
+  .option("--no-interactive", "Never prompt; use defaults for anything not passed")
   .option("--no-install", "Scaffold without running the package install")
   .option("-i, --immediate", "Start the development server after installing dependencies")
   .option("--no-immediate", "Install dependencies without starting the development server")
@@ -29,11 +27,8 @@ export const createCommand = new Command("create")
   .action(
     async (options: {
       name?: string;
-      template?: string;
       backendFramework?: string;
       example?: string;
-      apiKey?: string;
-      auth?: string;
       skill?: boolean;
       interactive: boolean;
       install: boolean;
@@ -49,19 +44,14 @@ export const createCommand = new Command("create")
       rejectConflictingScaffoldSelectors({
         example: options.example,
         backendFramework: options.backendFramework,
-        template: options.template,
       });
 
       await runCreateApp(
         {
           name: options.name,
-          template: options.template,
           backendFramework: options.backendFramework,
           example: options.example,
-          apiKey: options.apiKey,
-          auth: normalizeAuth(options.auth),
           skill: options.skill,
-          noInteractive: !options.interactive,
           noInstall: !options.install,
           immediate: options.immediate,
         },

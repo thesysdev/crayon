@@ -182,6 +182,7 @@ export function CloudAgentSurface() {
           title="Good to see you"
           description="What's on your mind today?"
           promptTemplates={OPENUI_CLOUD_PROMPT_TEMPLATES}
+          starterVariant="card"
           glowAnimation
         />
         <AgentInterface.Composer>

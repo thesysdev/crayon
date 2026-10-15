@@ -116,7 +116,7 @@ export default function ObservabilityPage() {
               <Image
                 className={`${cloudStyles.heroImage} ${cloudStyles.heroImageDark}`}
                 src="/openui-observability/hero-dark.webp"
-                alt=""
+                alt="OpenUI Observability dashboard"
                 aria-hidden="true"
                 width={1280}
                 height={600}
@@ -141,7 +141,7 @@ export default function ObservabilityPage() {
               <Image
                 className={`${cloudStyles.heroImage} ${cloudStyles.heroImageMobile} ${cloudStyles.heroImageDark}`}
                 src="/openui-observability/hero-mobile-dark.webp"
-                alt=""
+                alt="OpenUI Observability dashboard"
                 aria-hidden="true"
                 width={924}
                 height={1040}

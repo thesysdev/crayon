@@ -1,10 +1,11 @@
 import { BASE_URL, source } from "@/lib/source";
+import { integrations } from "../(home)/integrations/data";
 
 export const dynamic = "force-static";
 export const revalidate = false;
 
 const SITE_DESCRIPTION =
-  "OpenUI is the open standard for Intelligent UI. Full-stack, framework-agnostic Generative UI built on OpenUI Lang, a streaming-first language with first-party runtimes for React, Vue, Svelte, and Angular, and up to 67% fewer tokens than JSON.";
+  "Full-stack, framework-agnostic Generative UI built on OpenUI Lang, a streaming-first language with first-party runtimes for React, Vue, Svelte, and Angular, and up to 67% fewer tokens than JSON.";
 
 export async function GET() {
   const pages = source.getPages().map((page) => {
@@ -14,6 +15,11 @@ export async function GET() {
 
     return `- [${page.data.title}](${markdownUrl}): ${description} Canonical source: ${canonicalUrl}`;
   });
+
+  const integrationPages = integrations.map(
+    (integration) =>
+      `- [OpenUI + ${integration.name}](${new URL(`/integrations/${integration.slug}`, BASE_URL)}): ${integration.summary}`,
+  );
 
   const index = [
     "# OpenUI",
@@ -28,6 +34,11 @@ export async function GET() {
     "## Documentation",
     "",
     ...pages,
+    "",
+    "## Integrations",
+    "",
+    `- [All integrations](${new URL("/integrations", BASE_URL)}): Use OpenUI with AI frameworks, design systems, and frontend platforms.`,
+    ...integrationPages,
     "",
     "## Benchmarks",
     "",

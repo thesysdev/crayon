@@ -10,6 +10,12 @@ import { FadedDither } from "../../components/FadedDither/FadedDither";
 import { FeatureGridSection, type GridFeatureIcon } from "../FeatureGridSection/FeatureGridSection";
 import styles from "./ProductSection.module.css";
 
+/* Rendered widths of the stage artwork, so phones fetch a phone-sized file
+   rather than the 2x desktop one. The wide shot shows from 768px up, capped at
+   --home-container-max; the compact one fills the band minus its gutters. */
+const STAGE_WIDE_SIZES = "(max-width: 1023px) calc(100vw - 80px), 1200px";
+const STAGE_COMPACT_SIZES = "calc(100vw - 40px)";
+
 export type ProductCard = {
   Icon: Icon;
   /* The same icon named as a string. The phone layout hands these cards to
@@ -171,6 +177,7 @@ export function ProductSection({
                   width={1280}
                   height={720}
                   loading="lazy"
+                  sizes={STAGE_WIDE_SIZES}
                 />
                 <Image
                   className={`${styles.stageImage} ${styles.stageDark}`}
@@ -180,6 +187,7 @@ export function ProductSection({
                   width={1280}
                   height={720}
                   loading="lazy"
+                  sizes={STAGE_WIDE_SIZES}
                 />
               </span>
               <span className={styles.stageCompact}>
@@ -191,6 +199,7 @@ export function ProductSection({
                   width={720}
                   height={600}
                   loading="lazy"
+                  sizes={STAGE_COMPACT_SIZES}
                 />
                 <Image
                   className={`${styles.stageImage} ${styles.stageDark}`}
@@ -200,6 +209,7 @@ export function ProductSection({
                   width={720}
                   height={600}
                   loading="lazy"
+                  sizes={STAGE_COMPACT_SIZES}
                 />
               </span>
             </>
