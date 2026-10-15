@@ -125,7 +125,17 @@ function registryView(spec, field) {
     });
 
     if (result.error) throw result.error;
-    // pnpm view exits non-zero when no published version matches a range.
+    if (result.status !== 0) {
+      // A range with no published match is an answer; any other failure (network,
+      // rate limit) must stop the run, or the app would lose its constraint.
+      let error;
+      try {
+        error = JSON.parse(result.stdout).error;
+      } catch {}
+      if (error?.code !== "E404" || !error.summary?.startsWith("No match found")) {
+        throw new Error(`pnpm view ${spec} ${field} failed: ${error?.summary ?? result.stderr}`);
+      }
+    }
     registryCache.set(
       key,
       result.status === 0 && result.stdout.trim() ? JSON.parse(result.stdout) : undefined,
@@ -140,11 +150,17 @@ function compareVersions(left, right) {
   return a[0] - b[0] || a[1] - b[1] || a[2] - b[2];
 }
 
-function highestVersionInRanges(name, ranges) {
+// Prereleases and versions above the latest tag are never picked.
+function highestVersionInRanges(name, ranges, latest) {
   const [first, ...rest] = ranges.map((range) =>
     [registryView(`${name}@${range}`, "version") ?? []].flat(),
   );
-  const versions = first.filter((version) => rest.every((matches) => matches.includes(version)));
+  const versions = first.filter(
+    (version) =>
+      !version.includes("-") &&
+      compareVersions(version, latest) <= 0 &&
+      rest.every((matches) => matches.includes(version)),
+  );
   return versions.sort(compareVersions).at(-1);
 }
 
@@ -156,13 +172,15 @@ function applicationOpenUIVersions(application, latestVersions) {
 
   // Lowering one package can change the ranges it declares, so repeat until
   // nothing moves. A conflict only counts once the versions have settled.
+  let conflicts = [];
   for (let pass = 1, changed = true; changed; pass++) {
     if (pass > 10) {
-      throw new Error(`${application.path}: OpenUI versions did not settle after 10 passes`);
+      const pending = conflicts.length > 0 ? `; no version satisfies ${conflicts.join("; ")}` : "";
+      throw new Error(`${application.path}: OpenUI versions did not settle after 10 passes${pending}`);
     }
     changed = false;
     const ranges = new Map();
-    const conflicts = [];
+    conflicts = [];
 
     for (const name of names) {
       for (const field of ["dependencies", "peerDependencies"]) {
@@ -175,8 +193,16 @@ function applicationOpenUIVersions(application, latestVersions) {
       }
     }
 
+    // A package nothing constrains any more goes back to latest.
+    for (const name of names) {
+      if (!ranges.has(name) && versions.get(name) !== latestVersions.get(name)) {
+        versions.set(name, latestVersions.get(name));
+        changed = true;
+      }
+    }
+
     for (const [name, nameRanges] of ranges) {
-      const version = highestVersionInRanges(name, nameRanges);
+      const version = highestVersionInRanges(name, nameRanges, latestVersions.get(name));
       if (!version) {
         conflicts.push(`${name} (${nameRanges.join(", ")})`);
       } else if (version !== versions.get(name)) {
