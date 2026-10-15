@@ -163,7 +163,7 @@ openui generate ./src/library.ts --export myLibrary --prompt-options myPromptOpt
 
 ### `openui setup-agent`
 
-Adds OpenUI instructions for coding agents to an existing project. It appends the [OpenUI skill](https://github.com/thesysdev/skills) to `AGENTS.md`, or creates the file, inside `<!-- openui:start -->` and `<!-- openui:end -->` markers. Running it again refreshes that block and leaves the rest of the file alone. Projects made with `create` already have it.
+Adds OpenUI instructions for coding agents to an existing project. It appends the [OpenUI skill](https://github.com/thesysdev/skills) to `AGENTS.md`, or creates the file. Running it again refreshes the OpenUI instructions and leaves the rest of the file alone. Projects made with `create` already have it.
 
 ```bash
 openui setup-agent [directory]
