@@ -41,10 +41,10 @@ const EXAMPLE_LOGOS: Record<string, string> = {
   "design-systems/shadcn": "/integration-logos/shadcn-ui.svg",
   "harnesses/grok-build": "/brand-icons/xai.svg",
   "harnesses/pi": "/integration-logos/pi.svg",
-  "miscellaneous/autofix": "/favicon.svg",
+  "miscellaneous/autofix": "/shiro-logo.svg",
   "miscellaneous/handsontable":
     "https://raw.githubusercontent.com/handsontable/handsontable/develop/docs/public/favicon.png",
-  "miscellaneous/html-artifact": "/favicon.svg",
+  "miscellaneous/html-artifact": "/shiro-logo.svg",
   "miscellaneous/react-email": "/integration-logos/react-email.svg",
   "miscellaneous/supabase": "/integration-logos/supabase.svg",
 };
@@ -87,7 +87,7 @@ export const REPO_EXAMPLES: RepoExample[] = catalog.examples.flatMap((example) =
     category,
     sourceUrl: `${EXAMPLES_REPO_URL}/${example.path}`,
     guideUrl: EXAMPLE_GUIDES[example.path],
-    logo: EXAMPLE_LOGOS[example.path] ?? "/favicon.svg",
+    logo: EXAMPLE_LOGOS[example.path] ?? "/shiro-logo.svg",
     logoIsDark: DARK_LOGOS.has(example.path),
     env: example.env,
   };

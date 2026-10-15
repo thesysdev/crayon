@@ -109,7 +109,13 @@ function SocialIcons() {
 
 function ThesysLogo() {
   return (
-    <div className={styles.logoWrap}>
+    <a
+      className={styles.logoWrap}
+      href="https://thesys.dev"
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="Thesys"
+    >
       <svg className={styles.absoluteSvg} fill="none" viewBox="0 0 123.871 49.5484">
         <path d={svgPaths.p16775200} fill="currentColor" />
         <path clipRule="evenodd" d={svgPaths.p29abae30} fill="currentColor" fillRule="evenodd" />
@@ -118,7 +124,7 @@ function ThesysLogo() {
         <path d={svgPaths.p27013980} fill="currentColor" />
         <path d={svgPaths.p21b7f300} fill="currentColor" />
       </svg>
-    </div>
+    </a>
   );
 }
 
