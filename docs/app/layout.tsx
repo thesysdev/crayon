@@ -26,7 +26,7 @@ const geistMono = Geist_Mono({
 
 const SITE_TITLE = SITE_NAME;
 const SITE_DESCRIPTION =
-  "Full-stack, framework-agnostic Generative UI built on OpenUI Lang, a streaming-first language with first-party runtimes for React, Vue, Svelte, and Angular, and up to 67% fewer tokens than JSON.";
+  "Open-source infrastructure for AI apps and agents to respond with interactive UI, not just text. Build with your own components, models and design system.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
