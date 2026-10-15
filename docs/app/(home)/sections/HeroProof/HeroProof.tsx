@@ -1,34 +1,53 @@
-import { ArrowUpRight } from "@phosphor-icons/react/dist/ssr";
-import Link from "next/link";
-import { BlockRace } from "./BlockRace";
+import { ArrowRight } from "@phosphor-icons/react/dist/ssr";
+import { BevelButton } from "../../components/Button/BevelButton";
+import productStyles from "../ProductSection/ProductSection.module.css";
+import { CountUp } from "./CountUp";
 import styles from "./HeroProof.module.css";
 
-/* The hero's closing row: the headline speed claim, and a block race beside it.
-   The two numbers are the speed benchmark's contact-form screen against
-   json-render; the race shows the wider benchmark's average per screen across
-   OpenUI, A2UI and json-render, and says so in its own footnote. */
+/* The benchmark fold, laid out like the product bands' header: a two-line
+   headline and a pill on the left; the two numbers with
+   the copy under them on the right. The numbers are the speed benchmark's
+   contact-form screen against json-render. */
 export function HeroProof() {
   return (
-    <div className={styles.proof}>
-      <div className={styles.stats}>
-        <div className={styles.stat}>
-          <span className={styles.statValue}>3x</span>
-          <span className={styles.statLabel}>faster generation</span>
+    <section className={styles.section} aria-labelledby="benchmark-title">
+      <div className={`${productStyles.product} ${styles.header}`}>
+        <div className={productStyles.lockup}>
+          <div className={productStyles.lead}>
+            <h3 id="benchmark-title" className={productStyles.headline}>
+              Faster answers,
+              <br />
+              fewer tokens.
+            </h3>
+            <div className={productStyles.ctas}>
+              <BevelButton
+                variant="secondary"
+                href="/benchmarks?view=formats"
+                label="See the benchmark"
+                badge={<ArrowRight size={16} weight="bold" />}
+              />
+            </div>
+          </div>
+          {/* Right column: the two numbers, with the copy under them. */}
+          <div className={styles.side}>
+            <div className={styles.stats}>
+              <div className={styles.stat}>
+                <CountUp className={styles.statValue} value={3} suffix="x" />
+                <span className={styles.statLabel}>faster generation</span>
+              </div>
+              <div className={styles.stat}>
+                <CountUp className={styles.statValue} value={67} suffix="%" delay={200} />
+                <span className={styles.statLabel}>fewer tokens</span>
+              </div>
+            </div>
+            <p className={styles.sideNote}>
+              OpenUI Lang generates up to 3x faster and uses 67% fewer tokens than JSON-based UI
+              formats. Fewer tokens means every generation finishes sooner and costs less.
+            </p>
+          </div>
         </div>
-        <div className={styles.stat}>
-          <span className={styles.statValue}>67%</span>
-          <span className={styles.statLabel}>fewer tokens</span>
-        </div>
-        <p className={styles.statNote}>
-          Fewer tokens means every generation finishes sooner and costs less.
-        </p>
-        <Link href="/benchmarks?view=formats" className={styles.link}>
-          See the benchmark <ArrowUpRight size={14} weight="bold" />
-        </Link>
       </div>
-      <div className={styles.race}>
-        <BlockRace />
-      </div>
-    </div>
+      {/* The token race is hidden for now; BlockRace is kept for reuse. */}
+    </section>
   );
 }
