@@ -1,14 +1,5 @@
 import { PromptTemplate } from "@openuidev/react-ui";
-import {
-  Car,
-  Code,
-  Flag,
-  Rocket,
-  Scale,
-  Search,
-  TreePalm,
-  Zap,
-} from "lucide-react";
+import { Car, Code, Flag, Rocket, Scale, Search, TreePalm, Zap } from "lucide-react";
 
 // One mark for both themes: the mascot reads on light and dark surfaces.
 export const OPENUI_LOGO = "/openui-logo.svg";
