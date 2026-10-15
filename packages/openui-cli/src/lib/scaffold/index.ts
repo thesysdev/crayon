@@ -8,6 +8,7 @@ import { copyTemplate } from "./copy";
 import { applyLockfileHygiene } from "./lockfiles";
 import { rewritePackageJson } from "./package-json";
 
+export { removeAgentsGuide } from "./copy";
 export { resolveTemplateSource, type ResolvedTemplate } from "./source";
 
 export function applyScaffoldFiles(params: {

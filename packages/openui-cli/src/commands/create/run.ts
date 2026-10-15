@@ -5,7 +5,7 @@ import type { CliContext } from "../../lib/context";
 import { resolveInstallPackageManager } from "../../lib/detect-package-manager";
 import { cliErrorProperties, CreateError, processErrorProperties } from "../../lib/errors";
 import { ensureGitAvailable } from "../../lib/git-preflight";
-import { applyScaffoldFiles, resolveTemplateSource } from "../../lib/scaffold";
+import { applyScaffoldFiles, removeAgentsGuide, resolveTemplateSource } from "../../lib/scaffold";
 import { withSpinner } from "../../lib/spinner";
 import { runCreateExample } from "./lib/create-example";
 import type { CreateAppOptions } from "./lib/create-types";
@@ -125,6 +125,7 @@ export async function runCreateApp(options: CreateAppOptions, ctx: CliContext): 
         backendFramework,
       });
       await writeEnv(targetDir, envResult, buildAppId(name));
+      if (options.noSkill) removeAgentsGuide(targetDir);
     } catch (err) {
       const properties = cliErrorProperties(err, {
         failure_stage: "scaffold",
