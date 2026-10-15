@@ -115,18 +115,48 @@
   }
 }
 
+/* Phones: a swipeable row of separate cards, one per view with the next
+   peeking in at the edge. The row bleeds to the screen edges so cards scroll
+   under them, and snaps to the same 16px gutter it starts at. */
 @media (max-width: 767px) {
   .cards {
-    grid-template-columns: 1fr;
+    display: flex;
+    gap: 0.75rem;
+    margin-inline: calc(-1 * var(--fold-gutter));
+    padding: 0.25rem 1rem 0.5rem;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: 1rem;
+    scrollbar-width: none;
+    border: 0;
+    border-radius: 0;
+    background: none;
   }
 
-  .card + .card {
-    border-left: 0;
-    border-top: 1px solid var(--openui-border-default);
+  .cards::-webkit-scrollbar {
+    display: none;
   }
 
   .card {
-    padding: 1.375rem 1.25rem;
+    flex: 0 0 82%;
+    padding: 1.75rem 1.25rem;
+    scroll-snap-align: start;
+    border: 1px solid var(--openui-border-default);
+    border-radius: 20px;
+    background: var(--openui-foreground);
+  }
+
+  .card + .card {
+    border-left: 1px solid var(--openui-border-default);
+  }
+
+  .card:nth-child(3) {
+    border-left: 1px solid var(--openui-border-default);
+  }
+
+  .card:nth-child(n + 3) {
+    border-top: 1px solid var(--openui-border-default);
   }
 
   .cardLogos {
