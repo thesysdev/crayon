@@ -1,5 +1,19 @@
 # @openuidev/cli
 
+## 0.6.0
+
+### Minor Changes
+
+- [#1384](https://github.com/thesysdev/openui/pull/1384) [`da58df6`](https://github.com/thesysdev/openui/commit/da58df6a98b3a224e2f4cbae9557d48b296b970e) Thanks [@AbhinRustagi](https://github.com/AbhinRustagi)! - `create .` scaffolds into the current folder when it's empty, naming the project after the folder.
+
+- [#1384](https://github.com/thesysdev/openui/pull/1384) [`da58df6`](https://github.com/thesysdev/openui/commit/da58df6a98b3a224e2f4cbae9557d48b296b970e) Thanks [@AbhinRustagi](https://github.com/AbhinRustagi)! - Remove the agent-skill install step and `--skill` from `create`. New projects now get an `AGENTS.md` copied from the OpenUI skill; `--no-skill` leaves it out and suggests `npx skills add thesysdev/skills` instead. Agent runs point to the project README.
+
+- [#1384](https://github.com/thesysdev/openui/pull/1384) [`da58df6`](https://github.com/thesysdev/openui/commit/da58df6a98b3a224e2f4cbae9557d48b296b970e) Thanks [@AbhinRustagi](https://github.com/AbhinRustagi)! - Add `setup-agent`, which adds the OpenUI skill to an existing project's `AGENTS.md` (or creates it); rerun it to refresh.
+
+### Patch Changes
+
+- [#1384](https://github.com/thesysdev/openui/pull/1384) [`da58df6`](https://github.com/thesysdev/openui/commit/da58df6a98b3a224e2f4cbae9557d48b296b970e) Thanks [@AbhinRustagi](https://github.com/AbhinRustagi)! - `generate --spec` now includes the library file's `promptOptions` export in the spec.
+
 ## 0.5.3
 
 ### Patch Changes
