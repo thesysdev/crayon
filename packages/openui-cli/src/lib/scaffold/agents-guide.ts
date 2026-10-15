@@ -45,22 +45,57 @@ export function skillToAgentsGuide(skill: string, skillUrl = SKILL_URL): string 
     .join("\n");
 }
 
-/** Writes the OpenUI skill as the project's AGENTS.md; falls back to a pointer when offline. */
+const BLOCK_START = "<!-- openui:start -->";
+const BLOCK_END = "<!-- openui:end -->";
+const BLOCK_NOTE =
+  "<!-- OpenUI instructions for coding agents. Run `npx @openuidev/cli@latest setup-agent` to refresh. -->";
+const BLOCK = new RegExp(`${BLOCK_START}[\\s\\S]*?${BLOCK_END}`);
+
+export type AgentsGuideResult = "created" | "appended" | "updated";
+
+/** Fetches the OpenUI skill as AGENTS.md content. */
+export async function fetchAgentsGuide(
+  opts: { onRetry?: (info: RetryAttemptInfo) => void } = {},
+): Promise<string> {
+  const { content } = await fetchSourceFile(SKILL_PATH, {
+    repo: SKILL_REPO,
+    onRetry: opts.onRetry,
+  });
+  return skillToAgentsGuide(content);
+}
+
+/** Adds the guide to AGENTS.md inside OpenUI markers: replaces an earlier block, else appends or creates. */
+export function upsertAgentsGuide(projectDir: string, guide: string): AgentsGuideResult {
+  const file = path.join(projectDir, "AGENTS.md");
+  const block = `${BLOCK_START}\n${BLOCK_NOTE}\n\n${guide.trim()}\n${BLOCK_END}\n`;
+  if (!fs.existsSync(file)) {
+    fs.writeFileSync(file, block);
+    return "created";
+  }
+  const existing = fs.readFileSync(file, "utf8");
+  if (BLOCK.test(existing)) {
+    fs.writeFileSync(
+      file,
+      existing.replace(BLOCK, () => block.trimEnd()),
+    );
+    return "updated";
+  }
+  fs.writeFileSync(file, `${existing.trimEnd()}\n\n${block}`);
+  return "appended";
+}
+
+/** Scaffold step: writes AGENTS.md, falling back to a pointer to the skill when offline. */
 export async function writeAgentsGuide(
   projectDir: string,
   opts: { onRetry?: (info: RetryAttemptInfo) => void } = {},
 ): Promise<void> {
   let guide = FALLBACK_GUIDE;
   try {
-    const { content } = await fetchSourceFile(SKILL_PATH, {
-      repo: SKILL_REPO,
-      onRetry: opts.onRetry,
-    });
-    guide = skillToAgentsGuide(content);
+    guide = await fetchAgentsGuide(opts);
   } catch {
     // A missing guide shouldn't fail the scaffold; the pointer still leads to the skill.
   }
-  fs.writeFileSync(path.join(projectDir, "AGENTS.md"), guide);
+  upsertAgentsGuide(projectDir, guide);
   pointReadmeToAgentsGuide(projectDir);
 }
 
