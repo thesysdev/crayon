@@ -13,6 +13,7 @@ import { BuiltinActionType, Renderer, type ActionEvent } from "@openuidev/react-
 import { ThemeProvider } from "@openuidev/react-ui";
 import { PanelRightClose, Send } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useTableContext } from "./TableContext";
 
 const STARTERS = [
   {
@@ -52,6 +53,7 @@ function ChatBody({ onClose }: { onClose: () => void }) {
   const isRunning = useThread((s) => s.isRunning);
   const processMessage = useThread((s) => s.processMessage);
   const setMessages = useThread((s) => s.setMessages);
+  const threadError = useThread((s) => s.threadError);
   const [input, setInput] = useState("");
 
   useEffect(() => {
@@ -159,6 +161,11 @@ function ChatBody({ onClose }: { onClose: () => void }) {
             </div>
           );
         })}
+        {threadError && !isRunning && (
+          <div role="alert" className="chat-bubble chat-bubble--error">
+            {threadError.message}
+          </div>
+        )}
       </div>
 
       <form className="chat-composer" onSubmit={handleSubmit}>
@@ -184,14 +191,17 @@ function ChatBody({ onClose }: { onClose: () => void }) {
 }
 
 export function ChatPanel({ onClose }: { onClose: () => void }) {
+  const { tableId } = useTableContext();
   const llm = useMemo(
     () =>
       fetchLLM({
         url: "/api/chat",
         streamAdapter: openAIAdapter(),
         messageFormat: openAIMessageFormat,
+        // Tells the route which table this browser's tools should read and edit.
+        body: { tableId },
       }),
-    [],
+    [tableId],
   );
 
   return (

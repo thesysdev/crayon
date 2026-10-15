@@ -29,6 +29,7 @@ const chat = new Chat({ api: "/api/chat", messages: loadMessages() });
 // We need to access them through computed properties
 const messages = computed(() => chat.messages);
 const status = computed(() => chat.status);
+const error = computed(() => chat.error);
 const isLoading = computed(() => status.value === "submitted" || status.value === "streaming");
 
 function handleSend(text: string) {
@@ -93,6 +94,10 @@ const starters = [
 
         <div ref="messagesEnd"></div>
       </div>
+    </div>
+
+    <div v-if="error && !isLoading" role="alert" class="mx-auto mb-2 w-[calc(100%-2rem)] max-w-3xl rounded-lg border border-red-300 bg-red-50 px-4 py-2 text-sm text-red-700 dark:border-red-900 dark:bg-red-950 dark:text-red-300">
+      {{ error.message }}
     </div>
 
     <ChatInput :is-loading="isLoading" @submit="handleSend" @stop="() => chat.stop()" />
