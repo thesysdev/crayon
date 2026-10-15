@@ -50,7 +50,10 @@ async def chat(body: dict):
             stream=True,
         )
     except APIStatusError as error:
-        return JSONResponse({"error": error.message}, status_code=error.status_code)
+        body = error.body if isinstance(error.body, dict) else {}
+        detail = body.get("error", body) if isinstance(body.get("error", body), dict) else body
+        message = detail.get("message") if isinstance(detail.get("message"), str) else error.message
+        return JSONResponse({"error": message}, status_code=error.status_code)
     except APIError as error:
         return JSONResponse({"error": error.message}, status_code=502)
 
