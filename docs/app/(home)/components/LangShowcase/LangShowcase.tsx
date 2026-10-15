@@ -3,7 +3,7 @@
 import { SITE_NAV_LINKS } from "@/lib/site-nav-links";
 import { ArrowUpRight } from "@phosphor-icons/react";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { BevelButton } from "../Button/BevelButton";
 import { FadedDither } from "../FadedDither/FadedDither";
 import styles from "./LangShowcase.module.css";
@@ -68,10 +68,35 @@ const AGENTS: Agent[] = [
 ];
 
 export function LangShowcase() {
-  const [open, setOpen] = useState("f1");
+  const [open, setOpen] = useState("ikea");
+  /* Counts openings, so a recording starts from its first frame each time its
+     panel opens: the GIFs play once and hold on their last frame. */
+  const [plays, setPlays] = useState(0);
+  /* The recordings load only once the band is on screen, so the first one
+     plays where it can be seen rather than finishing above the fold. */
+  const [seen, setSeen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const node = ref.current;
+    if (!node || typeof IntersectionObserver === "undefined") {
+      const frame = requestAnimationFrame(() => setSeen(true));
+      return () => cancelAnimationFrame(frame);
+    }
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        setSeen(true);
+        observer.disconnect();
+      },
+      { threshold: 0.3 },
+    );
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
 
   return (
-    <div className={styles.showcase}>
+    <div ref={ref} className={styles.showcase}>
       {AGENTS.map((agent) => {
         const isOpen = open === agent.id;
         return (
@@ -89,7 +114,11 @@ export function LangShowcase() {
                 className={styles.head}
                 aria-expanded={isOpen}
                 aria-controls={`agent-${agent.id}`}
-                onClick={() => setOpen(agent.id)}
+                onClick={() => {
+                  if (isOpen) return;
+                  setOpen(agent.id);
+                  setPlays((n) => n + 1);
+                }}
               >
                 <Image
                   className={styles.mascot}
@@ -104,11 +133,15 @@ export function LangShowcase() {
             </div>
 
             <div id={`agent-${agent.id}`} className={styles.card} aria-hidden={!isOpen}>
-              {agent.answer && (
+              {seen && agent.answer && (
                 <div className={styles.answerClip}>
                   <Image
                     className={styles.answer}
-                    src={agent.answer.src}
+                    src={
+                      agent.answer.src.endsWith(".gif")
+                        ? `${agent.answer.src}?play=${plays}`
+                        : agent.answer.src
+                    }
                     alt={agent.answer.alt}
                     width={agent.answer.width}
                     height={agent.answer.height}
