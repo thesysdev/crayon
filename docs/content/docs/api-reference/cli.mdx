@@ -65,28 +65,26 @@ openui create [options]
 
 **Options**
 
-| Flag                              | Description                                                                                                         |
-| --------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
-| `-n, --name <string>`             | Project name (default: `openui-agent`)                                                                              |
-| `--backend-framework <framework>` | Backend framework: `langgraph` (default), `vercel-ai-sdk`, or `vercel-eve`                                          |
-| `-e, --example <example>`         | Scaffold an [OpenUI example](https://github.com/thesysdev/openui/blob/main/examples) instead                        |
-| `--skill` / `--no-skill`          | Install or skip the [OpenUI agent skill](/docs/mcp#install-via-the-skills-cli-recommended) for AI coding assistants |
-| `--no-install`                    | Scaffold without installing dependencies                                                                            |
-| `-i, --immediate`                 | Start the development server after installing                                                                       |
-| `--no-immediate`                  | Install dependencies without starting the development server                                                        |
-| `--no-interactive`                | Never prompt; use defaults for anything not passed                                                                  |
+| Flag                              | Description                                                                                  |
+| --------------------------------- | -------------------------------------------------------------------------------------------- |
+| `-n, --name <string>`             | Project name (default: `openui-agent`)                                                       |
+| `--backend-framework <framework>` | Backend framework: `langgraph` (default), `vercel-ai-sdk`, or `vercel-eve`                   |
+| `-e, --example <example>`         | Scaffold an [OpenUI example](https://github.com/thesysdev/openui/blob/main/examples) instead |
+| `--no-install`                    | Scaffold without installing dependencies                                                     |
+| `-i, --immediate`                 | Start the development server after installing                                                |
+| `--no-immediate`                  | Install dependencies without starting the development server                                 |
+| `--no-interactive`                | Never prompt; use defaults for anything not passed                                           |
 
 `--example` cannot be combined with `--backend-framework`. `--immediate` and `--no-immediate` cannot be used together.
 
 **Interactive and non-interactive runs**
 
-In a terminal, `create` prompts for anything you didn't pass: the project name, a backend framework or example, Gateway sign-in, and the agent skill. It then installs dependencies and starts the development server.
+In a terminal, `create` prompts for anything you didn't pass: the project name, a backend framework or example, and Gateway sign-in. It then installs dependencies and starts the development server.
 
 When nobody can answer prompts, `create` takes the defaults instead: `langgraph` and the name `openui-agent` (or `openui-agent-2`, `-3`, … if that directory exists). This happens when you pass `--no-interactive`, when there's no terminal attached (CI, scripts), or when a coding agent runs the CLI. In that mode it:
 
 - installs dependencies but doesn't start the development server (pass `--immediate` to start it)
 - skips Gateway sign-in and ends with the `generate-api-key` command to run next
-- skips the agent skill unless you pass `--skill`
 
 An explicit `--name` that already exists is an error in non-interactive runs.
 
@@ -97,7 +95,6 @@ An explicit `--name` that already exists is an error in non-interactive runs.
 | `langgraph`     | LangGraph agent                            |
 | `vercel-ai-sdk` | Vercel AI SDK agent                        |
 | `vercel-eve`    | Eve agent rendered through Agent Interface |
-
 
 **OpenUI examples**
 
@@ -420,7 +417,7 @@ npx @openuidev/cli@latest feedback --category docs "The streaming guide doesn't 
 
 Coding agents should pass `--agent-name` with their stable, lowercase kebab-case product slug, such as `codex`, `claude-code`, `cline`, `factory-droid`, or `pi`. Don't pass a model version, user name, or session ID. Humans can omit it.
 
-`create` never waits on a prompt when an agent runs it, whether or not `--agent-name` is passed: it takes its [non-interactive defaults](#create) and prints any follow-up commands, such as `generate-api-key`, at the end.
+`create` never waits on a prompt when an agent runs it, whether or not `--agent-name` is passed: it takes its [non-interactive defaults](#create) and prints any follow-up commands, such as `generate-api-key`, at the end. Its last line points the agent at the new project's README to get started.
 
 ## Telemetry
 

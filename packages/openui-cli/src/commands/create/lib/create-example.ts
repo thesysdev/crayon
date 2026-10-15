@@ -6,8 +6,7 @@ import { withSpinner } from "../../../lib/spinner";
 import type { CreateAppOptions, EnvResult } from "./create-types";
 import { resolveCloudEnv, writeEnvVar } from "./env";
 import type { ExampleProject } from "./examples-catalog";
-import { installRequestedSkill, shouldInstallSkill } from "./install-skill";
-import { missingCloudKeyNote } from "./messages";
+import { agentReadmeNote, missingCloudKeyNote, readmePath } from "./messages";
 import {
   exampleDevCommand,
   exampleLayout,
@@ -51,8 +50,6 @@ export async function runCreateExample(params: {
   tel.trackEnvResolutionStarted({ example: example.name });
   const envResult = await resolveExampleEnv(example, name, options, interactive, agent, tel);
 
-  const installSkill = await shouldInstallSkill(options.skill, false);
-  tel.trackSkillInstalled({ skill_installed: installSkill });
   tel.trackImmediateSelected({
     immediate: false,
     dependency_install_requested: false,
@@ -127,27 +124,16 @@ export async function runCreateExample(params: {
     skip_reason: "not_immediate",
   });
 
-  const skillInstalled = await installRequestedSkill({
-    enabled: installSkill,
-    verbose,
-    targetDir,
-    tel,
-    printFailureLog: true,
-  });
-
   tel.trackCreateSucceeded({
     example: example.name,
     duration_ms: Date.now() - t0,
-    skill_installed: skillInstalled,
     env_written: envResult.envWritten,
     auth_method: envResult.authMethod,
     auth_succeeded: envResult.authSucceeded,
     dependency_installed: false,
   });
+  const agentReadme = agent ? readmePath(targetDir) : undefined;
   const envNote = exampleEnvNote(example.env, envResult.envWritten, name, packageManager.dlxCmd);
-  const skillMessage = skillInstalled
-    ? "The OpenUI agent skill was installed.\nAI coding assistants will use it to help you build with OpenUI.\n"
-    : "";
   const nextStep = isNestedExample(layout)
     ? nestedExampleNextSteps({
         name,
@@ -159,7 +145,9 @@ export async function runCreateExample(params: {
     : [`> cd ${name}`, `> ${installCmd}`, `> ${packageManager.runCmd} run dev`].join("\n");
 
   console.info(
-    `\n${[skillMessage.trim(), "Done!", envNote, nextStep].filter(Boolean).join("\n\n")}\n`,
+    `\n${["Done!", envNote, nextStep, agentReadme ? agentReadmeNote(agentReadme) : ""]
+      .filter(Boolean)
+      .join("\n\n")}\n`,
   );
 }
 

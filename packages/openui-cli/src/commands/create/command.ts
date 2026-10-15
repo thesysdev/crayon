@@ -16,8 +16,6 @@ export const createCommand = new Command("create")
   .option("-n, --name <string>", "Project name (default: openui-agent)")
   .option("--backend-framework <framework>", "Backend framework to use (default: langgraph)")
   .option("-e, --example <example>", "Create from an example in examples/examples.json")
-  .option("--skill", "Install the OpenUI agent skill for AI coding assistants")
-  .option("--no-skill", "Skip installing the OpenUI agent skill")
   .option("--no-interactive", "Never prompt; use defaults for anything not passed")
   .option("--no-install", "Scaffold without running the package install")
   .option("-i, --immediate", "Start the development server after installing dependencies")
@@ -29,7 +27,6 @@ export const createCommand = new Command("create")
       name?: string;
       backendFramework?: string;
       example?: string;
-      skill?: boolean;
       interactive: boolean;
       install: boolean;
       immediate?: boolean;
@@ -51,7 +48,6 @@ export const createCommand = new Command("create")
           name: options.name,
           backendFramework: options.backendFramework,
           example: options.example,
-          skill: options.skill,
           noInstall: !options.install,
           immediate: options.immediate,
         },

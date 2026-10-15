@@ -1,3 +1,6 @@
+import * as fs from "node:fs";
+import * as path from "node:path";
+
 import { THESYS_KEYS_URL } from "../../../lib/auth/mint";
 import { DEFAULT_ENV_FILE } from "../../../lib/env";
 
@@ -15,23 +18,31 @@ export function missingCloudKeyNote(
   ].join("\n");
 }
 
+/** The scaffolded project's README, if it has one. */
+export function readmePath(projectDir: string): string | undefined {
+  const file = path.join(projectDir, "README.md");
+  return fs.existsSync(file) ? file : undefined;
+}
+
+/** Last line for a coding agent: where to read next, as a path it can open. */
+export function agentReadmeNote(readmePath: string): string {
+  return `Coding agent: read the project README to get started:\n> ${readmePath}`;
+}
+
 export function getStartedMessage(o: {
   name: string;
   devCmd: string;
   dlxCmd: string;
   backendGettingStarted?: string;
-  skillInstalled: boolean;
   envWritten: boolean;
   /** A key is in `.env` or already exported in the shell. */
   apiKeyAvailable: boolean;
   startDev: boolean;
   installCmd: string;
   dependencyInstalled: boolean;
+  /** Set for agent runs: the scaffolded README to point the agent at. */
+  agentReadmePath?: string;
 }): string {
-  const skillMessage = o.skillInstalled
-    ? "The OpenUI agent skill was installed.\nAI coding assistants will use it to help you build with OpenUI.\n"
-    : "";
-
   const envNote = o.envWritten ? "✅ .env created with your OpenUI Cloud API key + base URL." : "";
 
   // Without a key the app can't answer yet, so the key step replaces the usual
@@ -63,7 +74,6 @@ export function getStartedMessage(o: {
   const frameworkNote = o.backendGettingStarted?.replaceAll("{{packageManager}}", o.devCmd) ?? "";
 
   return `\n${[
-    skillMessage.trim(),
     "Done!",
     envNote,
     frameworkNote,
@@ -71,6 +81,7 @@ export function getStartedMessage(o: {
     deployHint,
     feedbackHint,
     keyStep,
+    o.agentReadmePath ? agentReadmeNote(o.agentReadmePath) : "",
   ]
     .filter(Boolean)
     .join("\n\n")}\n`;

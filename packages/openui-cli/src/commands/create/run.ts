@@ -12,8 +12,7 @@ import type { CreateAppOptions } from "./lib/create-types";
 import { runDevCommand } from "./lib/dev-server";
 import { buildAppId, resolveCloudEnv, writeEnv } from "./lib/env";
 import { installProjectDependencies, resolveInstallInvocation } from "./lib/install";
-import { installRequestedSkill, shouldInstallSkill } from "./lib/install-skill";
-import { getStartedMessage } from "./lib/messages";
+import { getStartedMessage, readmePath } from "./lib/messages";
 import type { TemplateOverlay } from "./lib/overlays";
 import {
   loadCreateCatalog,
@@ -101,9 +100,6 @@ export async function runCreateApp(options: CreateAppOptions, ctx: CliContext): 
   tel.trackEnvResolutionStarted({ template, ai_setup: aiSetup });
   const envResult = await resolveCloudEnv(name, options, interactive, agent, tel);
 
-  const installSkill = await shouldInstallSkill(options.skill, interactive);
-  tel.trackSkillInstalled({ skill_installed: installSkill });
-
   const immediateResolution = resolveImmediate(options.immediate, options.noInstall, interactive);
   const apiKeyEnv = "THESYS_API_KEY";
   const apiKeyAvailable = envResult.envWritten || Boolean(process.env[apiKeyEnv]?.trim());
@@ -181,13 +177,6 @@ export async function runCreateApp(options: CreateAppOptions, ctx: CliContext): 
     installDependencies: immediateResolution.installDependencies,
   });
 
-  const skillInstalled = await installRequestedSkill({
-    enabled: installSkill,
-    verbose: ctx.verbose,
-    targetDir,
-    tel,
-  });
-
   const devCmd = packageManager.runCmd;
   const startDev =
     immediateResolution.immediate && dependencyInstalled && !devStartBlockedByMissingApiKey;
@@ -196,7 +185,6 @@ export async function runCreateApp(options: CreateAppOptions, ctx: CliContext): 
     template,
     ai_setup: aiSetup,
     duration_ms: Date.now() - t0,
-    skill_installed: skillInstalled,
     env_written: envResult.envWritten,
     dependency_installed: dependencyInstalled,
   });
@@ -206,12 +194,12 @@ export async function runCreateApp(options: CreateAppOptions, ctx: CliContext): 
       devCmd,
       dlxCmd: packageManager.dlxCmd,
       backendGettingStarted: overlay?.manifest.gettingStarted,
-      skillInstalled,
       envWritten: envResult.envWritten,
       apiKeyAvailable,
       startDev,
       installCmd,
       dependencyInstalled,
+      agentReadmePath: agent ? readmePath(targetDir) : undefined,
     }),
   );
 

@@ -56,7 +56,6 @@ Options:
 - `-n, --name <string>`: Project name (default: `openui-agent`)
 - `--backend-framework <framework>`: `langgraph` (default), `vercel-ai-sdk`, or `vercel-eve`
 - `-e, --example <example>`: Scaffold an OpenUI example instead (see below)
-- `--skill` / `--no-skill`: Install or skip the OpenUI agent skill for AI coding assistants
 - `--no-install`: Scaffold without installing dependencies
 - `-i, --immediate` / `--no-immediate`: Start, or don't start, the development server after installing
 - `--no-interactive`: Never prompt; use defaults for anything not passed
@@ -179,7 +178,7 @@ openui --agent-name codex feedback --category bug "Renderer throws when a stream
 
 Coding agents should pass `--agent-name` with their stable, lowercase kebab-case product slug, such as `codex`, `claude-code`, `cline`, `factory-droid`, or `pi`. Don't pass a model version, user name, or session ID. Humans can omit it.
 
-`create` never waits on a prompt when an agent runs it, whether or not `--agent-name` is passed. It takes the non-interactive defaults and prints any follow-up commands at the end.
+`create` never waits on a prompt when an agent runs it, whether or not `--agent-name` is passed. It takes the non-interactive defaults, prints any follow-up commands at the end, and points the agent at the new project's README to get started.
 
 ## Telemetry
 
