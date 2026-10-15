@@ -87,7 +87,8 @@ export function useGitHubStarCount() {
 
     void fetchGitHubStarCount().then((target) => {
       if (cancelled || target === null) return;
-      const startCount = Math.max(target - 50, 0);
+      const finalCount = Math.max(target, GITHUB_STAR_FALLBACK);
+      const startCount = Math.max(finalCount - 50, GITHUB_STAR_FALLBACK);
       const startTime = performance.now();
 
       setCount(startCount);
@@ -95,7 +96,7 @@ export function useGitHubStarCount() {
       const tick = () => {
         if (cancelled) return;
         const progress = Math.min((performance.now() - startTime) / COUNT_UP_DURATION, 1);
-        setCount(Math.round(startCount + (target - startCount) * progress));
+        setCount(Math.round(startCount + (finalCount - startCount) * progress));
         if (progress < 1) requestAnimationFrame(tick);
       };
 

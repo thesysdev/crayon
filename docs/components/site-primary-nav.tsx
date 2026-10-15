@@ -1,18 +1,15 @@
 "use client";
 
+import { SITE_NAV_LINKS } from "@/lib/site-nav-links";
 import {
   ArrowRight,
   ArrowUpRight,
-  ArrowsOutLineHorizontal,
   Asterisk,
   Book,
-  Bug,
   ChartPieSlice,
-  ChatCenteredText,
   Code,
   CreditCard,
   DeviceMobileCamera,
-  MagnifyingGlass,
   Monitor,
   PlugsConnected,
   PresentationChart,
@@ -110,38 +107,8 @@ function dropdownColumns(item: NavDropdown): NavGroup[][] {
 }
 
 export const PRIMARY_SITE_NAV_ITEMS: NavItem[] = [
-  {
-    title: "Product",
-    cardTrack: 200,
-    groups: [
-      {
-        label: "Open source",
-        children: [
-          {
-            title: "OpenUI",
-            description: "The open standard for generative UI.",
-            href: "/",
-          },
-        ],
-      },
-      {
-        label: "Cloud",
-        children: [
-          {
-            title: "Gateway",
-            description: "One endpoint for generative UI across every model.",
-            href: "/cloud/gateway",
-          },
-          {
-            title: "Observability",
-            description: "Product analytics and user insights for AI agents.",
-            href: "/cloud/observability",
-            tag: "Early access",
-          },
-        ],
-      },
-    ],
-  },
+  { title: "Demos", ...SITE_NAV_LINKS.demos },
+  { title: "Documentation", ...SITE_NAV_LINKS.documentation },
   {
     title: "Resources",
     layout: "list",
@@ -154,29 +121,29 @@ export const PRIMARY_SITE_NAV_ITEMS: NavItem[] = [
         label: "Demos",
         children: [
           {
-            title: "Compare",
-            description: "See how AI apps look with and without OpenUI",
-            href: "/compare",
-            icon: ArrowsOutLineHorizontal,
+            title: "Open Intelligent UI",
+            description: "Interactive maps, images, and editable itineraries built with OpenUI.",
+            ...SITE_NAV_LINKS.openIntelligentUi,
+            icon: Monitor,
           },
           {
-            title: "OpenUI Chat",
-            description: "A ChatGPT-like assistant powered by OpenUI",
-            href: "/chat",
-            icon: ChatCenteredText,
+            title: "F1 Dashboard",
+            description:
+              "Explore races, drivers, and teams with live standings and interactive charts.",
+            ...SITE_NAV_LINKS.f1Dashboard,
+            icon: ChartPieSlice,
+          },
+          {
+            title: "Trip Planner",
+            description: "Plan a trip with visual itineraries, maps, and live hotel prices.",
+            ...SITE_NAV_LINKS.tripPlanner,
+            icon: DeviceMobileCamera,
           },
           {
             title: "AI Dashboards",
             description: "A demo built on GitHub data that answers with a dashboard",
-            href: "/demo/github",
+            ...SITE_NAV_LINKS.aiDashboards,
             icon: ChartPieSlice,
-          },
-          {
-            title: "OpenUI vs JSON",
-            description:
-              "Compare OpenUI Lang with JSON-based UI generation: 3× faster with up to 67% fewer tokens.",
-            href: "/openui-vs-json",
-            icon: Code,
           },
         ],
       },
@@ -184,50 +151,30 @@ export const PRIMARY_SITE_NAV_ITEMS: NavItem[] = [
         label: "Lab projects",
         children: [
           {
-            title: "OUI-1",
-            description: "An open-weight model for Generative UI",
-            href: "/oui-1",
-            icon: Code,
-            tag: "New",
-          },
-          {
             title: "AppLess",
             description: "An open-source concept for an OS without any apps",
-            href: "/appless",
+            ...SITE_NAV_LINKS.appless,
             icon: DeviceMobileCamera,
             tag: "New",
           },
           {
+            title: "OUI-1",
+            description: "An open-weight model built to generate interfaces with OpenUI Lang.",
+            ...SITE_NAV_LINKS.oui1,
+            tag: "New",
+            icon: Code,
+          },
+          {
             title: "OpenClaw OS",
             description: "A power-packed workspace for your OpenClaw agents",
-            href: "/openclaw-os",
+            ...SITE_NAV_LINKS.openClawOs,
             icon: Monitor,
           },
           {
             title: "By community",
             description: "Tools, packages, plugins, and demos from the community",
-            href: "/lab",
+            ...SITE_NAV_LINKS.community,
             icon: Users,
-          },
-        ],
-      },
-      {
-        label: "Tools",
-        children: [
-          /* Both Tools rows point into the developer tools docs, at their own
-             sections. Relative, so they stay client-side navigations and resolve
-             to openui.com in production rather than pointing previews at live. */
-          {
-            title: "Debug",
-            description: "Reproduce and diagnose how a response is parsed and rendered.",
-            href: "/docs/openui-lang/developer-tools#debug",
-            icon: Bug,
-          },
-          {
-            title: "Inspect",
-            description: "Monitor OpenUI streams, errors, and events in real time.",
-            href: "/docs/openui-lang/developer-tools#inspect",
-            icon: MagnifyingGlass,
           },
         ],
       },
@@ -237,40 +184,33 @@ export const PRIMARY_SITE_NAV_ITEMS: NavItem[] = [
           {
             title: "Benchmarks",
             description: "Compare how Generative UI frameworks perform across models",
-            href: "/benchmarks",
+            ...SITE_NAV_LINKS.benchmarks,
             icon: PresentationChart,
           },
           {
             title: "Pricing",
             description: "OpenUI, Gateway, and Observability pricing",
-            href: "/pricing",
+            ...SITE_NAV_LINKS.pricing,
             icon: CreditCard,
           },
           {
             title: "Blogs",
             description:
               "Product updates, deep dives, and notes on building generative UI from our team.",
-            href: "/blog",
+            ...SITE_NAV_LINKS.blog,
             icon: Book,
           },
-          /* No /integrations route exists yet, here or on main. */
           {
             title: "Integrations",
             description:
               "How OpenUI integrates easily with your AI frameworks, UI libraries, SDKs etc.",
-            href: "/integrations",
+            ...SITE_NAV_LINKS.integrations,
             icon: PlugsConnected,
           },
         ],
       },
     ],
   },
-  { title: "Documentation", href: "/docs", newTab: false },
-  /* Deliberately the same destination as Resources > Research > Benchmarks. Up
-     here it is a promotion, badged while it is still new; down there it is
-     filed where someone browsing would look for it. Drop one of the two once
-     the launch is over. */
-  { title: "Benchmarks", href: "/benchmarks", newTab: false, badge: "New" },
   // Temporarily hidden — Agent Interface isn't ready to share yet. Restore when ready:
   // { title: "Agent Interface", href: "/agent-interface", newTab: false, badge: "New" },
 ];

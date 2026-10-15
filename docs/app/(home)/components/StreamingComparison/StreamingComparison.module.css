@@ -1,0 +1,1809 @@
+/* Sized by the space it is given, not the window: hosts like the mobile
+   hero frame are much narrower than the screen. */
+.frame {
+  container: sc / inline-size;
+  box-sizing: border-box;
+  width: 100%;
+  /* Side gutters, so the panels never run into the window edge. */
+  padding-inline: clamp(0px, 3vw, 2.5rem);
+}
+
+/* Two panels side by side (stacked on narrow screens), each a chat: the
+   prompt on top, the streamed answer below it in a fixed-height window that
+   follows the newest output and fades out at the bottom. */
+.root {
+  --sc-panel-bg: #f4f4f4;
+  --sc-surface: #fff;
+  --sc-border: rgba(0, 0, 0, 0.06);
+  --sc-text: var(--openui-text-neutral-primary, #111);
+  --sc-muted: var(--openui-text-neutral-secondary, rgba(0, 0, 0, 0.5));
+  --sc-height: 54em;
+  /* The page behind the panels; the notches are cut in this colour. */
+  --sc-page: #fff;
+  /* Everything inside is sized in em off this, so the panels read like a real
+     app window embedded in the page rather than page-sized content. */
+  font-size: 0.8125rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1em;
+  width: 100%;
+  max-width: 80rem;
+  margin-inline: auto;
+  text-align: left;
+  color: var(--sc-text);
+}
+
+/* One full-width panel when an example has no "Without" side. */
+.root.rootSingle {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+@container sc (min-width: 720px) {
+  .root:not(.rootSingle) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 0.5em;
+  }
+}
+
+[data-theme="dark"] .root {
+  --sc-page: #000;
+  --sc-panel-bg: #141414;
+  --sc-surface: #1d1d1d;
+  --sc-border: rgba(255, 255, 255, 0.08);
+}
+
+.panel {
+  position: relative;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  height: var(--sc-height);
+  padding: 2em 1em 0;
+  border-radius: 1.5em;
+  background: var(--sc-panel-bg);
+}
+
+/* Phones: a small, scaled-down "Without" panel up top, with the full-size
+   "With OpenUI" panel overlapping its lower half, as the old hero art did. */
+@container sc (max-width: 719px) {
+  .root {
+    --sc-small-height: 30em;
+    --sc-small-scale: 0.62;
+    --sc-height: 61em;
+    gap: 0;
+  }
+
+  .root:not(.rootSingle) .panel:first-child {
+    height: var(--sc-small-height);
+    width: calc(100% / var(--sc-small-scale) * 0.82);
+    justify-self: center;
+    transform: scale(var(--sc-small-scale));
+    transform-origin: top center;
+    /* Give back the space the scale-down frees, then tuck the big panel up
+       over the bottom of the small one. */
+    margin-bottom: calc(var(--sc-small-height) * (var(--sc-small-scale) - 1) - 7em);
+  }
+
+  .root:not(.rootSingle) .panel:last-child {
+    position: relative;
+    z-index: 1;
+    box-shadow: 0 -12px 40px -16px rgba(0, 0, 0, 0.25);
+  }
+}
+
+/* "Without" / "With OpenUI" as a notch: a tab of the page colour hanging
+   down from the panel's top edge, its bottom corners rounded and its top
+   corners curving out into the edge (the two pseudo-elements). */
+.label {
+  --sc-notch-r: 0.875em;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 0.3em 1.25em 0.45em;
+  border-radius: 0 0 var(--sc-notch-r) var(--sc-notch-r);
+  background: var(--sc-page);
+  font-size: 0.9375em;
+  font-weight: 500;
+  line-height: 1.3;
+  white-space: nowrap;
+}
+
+.label::before,
+.label::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  width: var(--sc-notch-r);
+  height: var(--sc-notch-r);
+}
+
+.label::before {
+  right: 100%;
+  background: radial-gradient(
+    circle at 0 100%,
+    transparent calc(var(--sc-notch-r) - 0.5px),
+    var(--sc-page) var(--sc-notch-r)
+  );
+}
+
+.label::after {
+  left: 100%;
+  background: radial-gradient(
+    circle at 100% 100%,
+    transparent calc(var(--sc-notch-r) - 0.5px),
+    var(--sc-page) var(--sc-notch-r)
+  );
+}
+
+/* The user's message: a bubble on the right, sized to its text. */
+.prompt {
+  flex-shrink: 0;
+  align-self: flex-end;
+  max-width: 80%;
+  margin-top: 0.75em;
+  padding: 0.55em 1.1em;
+  border-radius: 1.25em;
+  background: #000;
+  color: #fff;
+  font-size: 0.9375em;
+}
+
+[data-theme="dark"] .prompt {
+  background: #fff;
+  color: #000;
+}
+
+/* The "Without" side stays quiet: an outlined bubble, so the eye goes to
+   the "With OpenUI" side. */
+.panel:not(.panelAccent) .prompt {
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  background: transparent;
+  color: var(--sc-text);
+}
+
+[data-theme="dark"] .panel:not(.panelAccent) .prompt {
+  border-color: rgba(255, 255, 255, 0.16);
+}
+
+.body {
+  flex: 1;
+  min-height: 0;
+  margin-top: 1.25em;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(to bottom, #000 92%, transparent);
+  mask-image: linear-gradient(to bottom, #000 92%, transparent);
+}
+
+.response {
+  min-height: 100%;
+  padding: 1.25em 1.25em 1.5em;
+  border-radius: 1em 1em 0 0;
+  background: var(--sc-surface);
+  opacity: 0;
+  transform: translateY(8px);
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s ease;
+}
+
+.responseVisible {
+  opacity: 1;
+  transform: none;
+}
+
+/* ── Text ── */
+
+.heading {
+  margin: 0 0 0.5em;
+  font-family: var(--home-font-display, inherit);
+  font-size: 1.375em;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
+
+.subheading {
+  margin: 1em 0 0.75em;
+  font-size: 1.0625em;
+  font-weight: 500;
+}
+
+.paragraph,
+.muted,
+.bullets {
+  margin: 0 0 0.875em;
+  font-size: 0.9375em;
+  line-height: 1.6;
+}
+
+.muted {
+  color: var(--sc-muted);
+}
+
+.bullets {
+  padding-left: 1.25em;
+  list-style: disc;
+}
+
+/* Line-by-line text: clipped to whole lines, opening one line at a time. */
+.lineReveal {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  transition: max-height 0.15s ease-out;
+}
+
+/* Each new line comes into focus from a soft blur. */
+/* Long enough that the next line starts while this one is still settling, so
+   several lines stream in together. */
+.blurIn {
+  animation: scBlurIn 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes scBlurIn {
+  from {
+    opacity: 0.15;
+    filter: blur(2px);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+  }
+}
+
+.caret {
+  display: inline-block;
+  width: 0.45em;
+  height: 1em;
+  margin-left: 1px;
+  vertical-align: -0.12em;
+  border-radius: 1px;
+  background: currentColor;
+  opacity: 0.55;
+}
+
+/* ── UI pieces: each one rises into place as the stream reaches it ── */
+
+.pop {
+  animation: scPop 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes scPop {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.divider {
+  margin: 1em 0;
+  border: 0;
+  border-top: 1px solid var(--sc-border);
+}
+
+.cards {
+  display: flex;
+  gap: 0.75em;
+  margin: 0.25em -1.25em 1em 0;
+  overflow: hidden;
+}
+
+.card {
+  display: flex;
+  flex: 0 0 13.5em;
+  flex-direction: column;
+  padding: 0.5em;
+  border: 1px solid var(--sc-border);
+  border-radius: 1em;
+  background: var(--sc-surface);
+  box-shadow: 0 4px 16px -8px rgba(0, 0, 0, 0.15);
+}
+
+.cardImage {
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+  border-radius: 0.625em;
+}
+
+.badge {
+  display: inline-flex;
+  align-self: flex-start;
+  align-items: center;
+  gap: 0.3em;
+  margin-top: 0.625em;
+  padding: 0.2em 0.5em;
+  border-radius: 0.375em;
+  font-size: 0.75em;
+}
+
+.badge > svg {
+  width: 1.1em;
+  height: 1.1em;
+}
+
+.badge_green {
+  background: rgba(22, 163, 74, 0.1);
+  color: #15803d;
+}
+
+.badge_purple {
+  background: rgba(124, 58, 237, 0.1);
+  color: #6d28d9;
+}
+
+.badge_blue {
+  background: rgba(37, 99, 235, 0.1);
+  color: #1d4ed8;
+}
+
+.badge_amber {
+  background: rgba(217, 119, 6, 0.12);
+  color: #b45309;
+}
+
+.cardTitle {
+  margin: 0.5em 0 0.125em;
+  font-size: 0.9375em;
+  font-weight: 500;
+}
+
+.cardDescription {
+  flex: 1;
+  margin: 0 0 0.625em;
+  font-size: 0.8125em;
+  line-height: 1.45;
+  color: var(--sc-muted);
+}
+
+/* Card foot: a small primary button that hugs its label, and a round
+   outlined icon button to save the place. */
+.cardFooter {
+  display: flex;
+  align-items: center;
+  gap: 0.375em;
+}
+
+.cardAction {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35em 0.875em;
+  border-radius: 0.5em;
+  background: #000;
+  color: #fff;
+  font-size: 0.8125em;
+}
+
+.cardIconButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.15em;
+  height: 2.15em;
+  border: 1px solid var(--sc-border);
+  border-radius: 999px;
+  background: var(--sc-surface);
+  color: var(--sc-text);
+}
+
+.cardIconButton > svg {
+  width: 1em;
+  height: 1em;
+}
+
+[data-theme="dark"] .cardAction {
+  background: #fff;
+  color: #000;
+}
+
+/* Photo mosaic: one large image on the left, the rest in a 2x2 tile. */
+.gallery {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  grid-template-rows: repeat(2, 1fr);
+  gap: 0.3em;
+  height: 16em;
+  margin: 0.25em 0 1em;
+  overflow: hidden;
+  border-radius: 0.875em;
+}
+
+.galleryImage {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  object-fit: cover;
+}
+
+.galleryImage:first-child {
+  grid-row: span 2;
+}
+
+/* Suggested next prompts, each on its own hairline row. */
+.followups {
+  display: flex;
+  flex-direction: column;
+  margin-top: 1.25em;
+}
+
+.followupsLabel {
+  margin-bottom: 0.25em;
+  color: var(--sc-muted);
+  font-size: 0.875em;
+}
+
+.followup {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  padding: 0.55em 0;
+  border-bottom: 1px solid var(--sc-border);
+  font-size: 0.9375em;
+}
+
+.followup > svg {
+  flex-shrink: 0;
+  width: 1em;
+  height: 1em;
+  color: var(--sc-muted);
+}
+
+.facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5em;
+}
+
+.fact {
+  display: flex;
+  align-items: center;
+  gap: 0.625em;
+  padding: 0.625em 0.75em;
+  border: 1px solid var(--sc-border);
+  border-radius: 0.75em;
+  background: var(--sc-panel-bg);
+  font-size: 0.875em;
+}
+
+.factIcon {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 2em;
+  height: 2em;
+  border-radius: 0.5em;
+  background: var(--sc-surface);
+}
+
+.factIcon > svg {
+  width: 1.25em;
+  height: 1.25em;
+}
+
+.factLabel,
+.factValue {
+  display: block;
+}
+
+.factValue {
+  color: var(--sc-muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pop,
+  .blurIn,
+  .response {
+    animation: none;
+    transition: none;
+  }
+}
+
+/* ── "With OpenUI": the react-ui genui components (PR 1385) ──
+   Their surfaces, tints, radii and weights, kept at this window's compact
+   sizes. Variable Inter: Regular 440, Medium 560, -1% tracking. */
+.panelAccent .response {
+  border-radius: 1.231em 1.231em 0 0;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.04);
+  font-variation-settings: "wght" 440;
+  letter-spacing: -0.01em;
+}
+
+.panelAccent .heading,
+.panelAccent .subheading,
+.panelAccent .cardTitle,
+.panelAccent .factLabel,
+.panelAccent .cardAction,
+.panelAccent .badge {
+  font-weight: 560;
+  font-variation-settings: "wght" 560;
+}
+
+/* Carousel row: room under the cards for their shadow. */
+.panelAccent .cards {
+  padding: 0.25em 0 0.5em;
+}
+
+/* CompositeCard surface: white, 6% hairline, soft low shadow, 14px radius,
+   at the compact size the window had before. */
+.panelAccent .card {
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 1.077em;
+  background: var(--sc-surface);
+  box-shadow:
+    0 1px 2px oklch(0 0 0 / 0.04),
+    0 4px 16px -4px oklch(0 0 0 / 0.08);
+}
+
+/* Tag: a full pill in the theme's tints, at the compact size. */
+.panelAccent .badge {
+  padding: 0.2em 0.6em 0.2em 0.45em;
+  border-radius: 999px;
+}
+
+.panelAccent .badge_green {
+  background: oklch(from #16a34a l c h / 0.12);
+  color: #166534;
+}
+
+.panelAccent .badge_purple {
+  background: oklch(from #8b5cf6 l c h / 0.12);
+  color: #5b21b6;
+}
+
+.panelAccent .badge_blue {
+  background: oklch(from #3b82f6 l c h / 0.12);
+  color: #1e40af;
+}
+
+.panelAccent .badge_amber {
+  background: oklch(from #f59e0b l c h / 0.16);
+  color: #92400e;
+}
+
+/* Tags and table pills in dark: lighter tints and text, so they read on the
+   dark cards. */
+/* Light text on dark reads heavier, so the tags drop a step in weight. */
+[data-theme="dark"] .panelAccent .badge {
+  font-weight: 460;
+  font-variation-settings: "wght" 460;
+}
+
+[data-theme="dark"] .badge_green,
+[data-theme="dark"] .panelAccent .badge_green {
+  background: oklch(from #22c55e l c h / 0.16);
+  color: #86efac;
+}
+
+[data-theme="dark"] .badge_purple,
+[data-theme="dark"] .panelAccent .badge_purple {
+  background: oklch(from #a78bfa l c h / 0.18);
+  color: #c4b5fd;
+}
+
+[data-theme="dark"] .badge_blue,
+[data-theme="dark"] .panelAccent .badge_blue {
+  background: oklch(from #60a5fa l c h / 0.18);
+  color: #93c5fd;
+}
+
+[data-theme="dark"] .badge_amber,
+[data-theme="dark"] .panelAccent .badge_amber {
+  background: oklch(from #f59e0b l c h / 0.18);
+  color: #fcd34d;
+}
+
+/* Button, primary: inverted fill, 8% accent border, shadow-m, a full pill,
+   the label in Medium. */
+.panelAccent .cardAction {
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 999px;
+  background: #000;
+  color: #fff;
+  box-shadow:
+    0 4px 6px -2px oklch(0 0 0 / 0.025),
+    0 2px 2px -2px oklch(0 0 0 / 0.05);
+}
+
+/* ValueCard: the sunk 4% tint, no outline, 14px radius, a round leading. */
+.panelAccent .facts {
+  gap: 0.615em;
+}
+
+.panelAccent .fact {
+  border: 0;
+  border-radius: 1.077em;
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.panelAccent .factIcon {
+  border-radius: 999px;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.06);
+}
+
+.panelAccent .cardIconButton {
+  border-color: rgba(0, 0, 0, 0.12);
+  box-shadow:
+    0 4px 6px -2px oklch(0 0 0 / 0.025),
+    0 2px 2px -2px oklch(0 0 0 / 0.05);
+}
+
+.panelAccent .divider {
+  border-top-color: rgba(0, 0, 0, 0.06);
+}
+
+[data-theme="dark"] .panelAccent .response {
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.06);
+  font-variation-settings: "wght" 420;
+}
+
+[data-theme="dark"] .panelAccent .card {
+  border-color: rgba(255, 255, 255, 0.06);
+  box-shadow: none;
+}
+
+[data-theme="dark"] .panelAccent .fact {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+[data-theme="dark"] .panelAccent .cardAction {
+  border-color: rgba(0, 0, 0, 0.2);
+  background: #fff;
+  color: #000;
+}
+
+/* ValueLayout (react-ui PR 1385): the facts without their tinted tiles,
+   flush cells split by dashed rules. Columns sit 24px apart with each cell's
+   left rule in the middle of the gap, inset 12px top and bottom, and a top
+   rule across its width; the grid clips the outer ones. */
+.panelAccent .factsRules {
+  gap: 0 1.846em;
+  clip-path: inset(0 -2px);
+}
+
+.panelAccent .factsRules .fact {
+  position: relative;
+  padding: 0.75em 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+.panelAccent .factsRules .fact::after {
+  content: "";
+  position: absolute;
+  top: 0.923em;
+  bottom: 0.923em;
+  left: -0.923em;
+  border-left: 1px dashed rgba(0, 0, 0, 0.12);
+  pointer-events: none;
+}
+
+/* A top rule across each cell; the grid clips the ones above the first row. */
+.panelAccent .factsRules .fact::before {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: 0;
+  right: 0;
+  border-top: 1px dashed rgba(0, 0, 0, 0.12);
+  pointer-events: none;
+}
+
+[data-theme="dark"] .panelAccent .factsRules .fact::before {
+  border-top-color: rgba(255, 255, 255, 0.16);
+}
+
+[data-theme="dark"] .panelAccent .factsRules .fact {
+  background: transparent;
+}
+
+[data-theme="dark"] .panelAccent .factsRules .fact::after {
+  border-left-color: rgba(255, 255, 255, 0.16);
+}
+
+/* ── Metrics: stat tiles on the sunk tint ── */
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(8em, 1fr));
+  gap: 0.615em;
+  margin: 0.25em 0 1em;
+}
+
+.metric {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25em;
+  padding: 0.75em 0.923em;
+  border-radius: 1.077em;
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.metricLabel {
+  color: var(--sc-muted);
+  font-size: 0.8125em;
+}
+
+.metricValue {
+  font-size: 1.375em;
+  font-weight: 600;
+  font-variation-settings: "wght" 600;
+  letter-spacing: -0.02em;
+}
+
+.metricChange {
+  font-size: 0.8125em;
+  font-weight: 560;
+  font-variation-settings: "wght" 560;
+}
+
+.metricUp {
+  color: #15803d;
+}
+
+.metricDown {
+  color: #b91c1c;
+}
+
+/* ── Charts: no card, split from their neighbours by dashed rules ── */
+.chart {
+  margin: 0 0 1em;
+  padding: 0;
+}
+
+.response > .chart,
+.response > .split {
+  padding-top: 1em;
+  border-top: 1px dashed rgba(0, 0, 0, 0.12);
+}
+
+.split > .splitColumn + .splitColumn {
+  padding-left: 1em;
+  border-left: 1px dashed rgba(0, 0, 0, 0.12);
+}
+
+[data-theme="dark"] .response > .chart,
+[data-theme="dark"] .response > .split,
+[data-theme="dark"] .split > .splitColumn + .splitColumn {
+  border-color: rgba(255, 255, 255, 0.16);
+}
+
+.chartTitle {
+  margin-bottom: 0.9em;
+  font-size: 0.875em;
+  font-weight: 560;
+  font-variation-settings: "wght" 560;
+}
+
+.bars {
+  display: flex;
+  align-items: stretch;
+  gap: 0.6em;
+  height: 14em;
+}
+
+.barColumn {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3em;
+  min-width: 0;
+}
+
+.barValue {
+  min-height: 1.2em;
+  font-size: 0.75em;
+  font-variation-settings: "wght" 560;
+}
+
+.barTrack {
+  display: flex;
+  flex: 1;
+  align-items: flex-end;
+  width: 100%;
+  border-bottom: 1px solid var(--sc-border);
+}
+
+.bar {
+  width: 100%;
+  border-radius: 0.375em 0.375em 0 0;
+  background: #111;
+  transform-origin: bottom;
+  animation: scGrow 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.barNegative {
+  background: #d4d4d4;
+}
+
+[data-theme="dark"] .bar {
+  background: #f4f4f4;
+}
+
+.barLabel {
+  overflow: hidden;
+  max-width: 100%;
+  color: var(--sc-muted);
+  font-size: 0.75em;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+@keyframes scGrow {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+
+/* ── Table ── */
+.table {
+  width: 100%;
+  margin: 0.25em 0 1em;
+  border-collapse: collapse;
+  font-size: 0.875em;
+}
+
+.table th {
+  padding: 0.5em 0.5em 0.5em 0;
+  border-bottom: 1px solid var(--sc-border);
+  color: var(--sc-muted);
+  font-weight: 500;
+  text-align: left;
+}
+
+.table td {
+  padding: 0.55em 0.5em 0.55em 0;
+  border-bottom: 1px dashed var(--sc-border);
+}
+
+/* ── Slides: a row of 16:9 frames ── */
+.slides {
+  display: flex;
+  gap: 0.75em;
+  margin: 0.25em -1.25em 1em 0;
+  overflow: hidden;
+}
+
+.slide {
+  display: flex;
+  flex: 0 0 18em;
+  flex-direction: column;
+  gap: 0.4em;
+  aspect-ratio: 16 / 9;
+  padding: 1.1em 1.2em;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 0.75em;
+  background: var(--sc-surface);
+  box-shadow:
+    0 1px 2px oklch(0 0 0 / 0.04),
+    0 4px 16px -4px oklch(0 0 0 / 0.08);
+}
+
+.slideDark {
+  border-color: transparent;
+  background: #111;
+  color: #fff;
+}
+
+.slideEyebrow {
+  color: var(--sc-muted);
+  font-size: 0.6875em;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.slideDark .slideEyebrow {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.slideTitle {
+  font-family: var(--home-font-display, inherit);
+  font-size: 1.2em;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.slideStat {
+  margin-top: auto;
+  font-family: var(--home-font-display, inherit);
+  font-size: 2.4em;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.slideBullets {
+  margin: auto 0 0;
+  padding-left: 1.1em;
+  font-size: 0.8125em;
+  line-height: 1.5;
+  list-style: disc;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bar {
+    animation: none;
+  }
+}
+
+/* ── Example tabs under the comparison (the homepage pill tabs) ── */
+.tabs {
+  display: flex;
+  justify-content: center;
+  gap: 0.25rem;
+  width: fit-content;
+  max-width: 100%;
+  margin: 1.25rem auto 0;
+  padding: 0.25rem;
+  overflow-x: auto;
+  border: 1px solid var(--openui-border-default, rgba(0, 0, 0, 0.08));
+  border-radius: 999px;
+  background: var(--openui-foreground, #fff);
+  scrollbar-width: none;
+}
+
+.tab {
+  flex-shrink: 0;
+  padding: 0.5rem 1.125rem;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--openui-text-neutral-secondary, rgba(0, 0, 0, 0.5));
+  font: inherit;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    color 0.15s ease,
+    background-color 0.15s ease;
+}
+
+.tab:hover {
+  color: var(--openui-text-neutral-primary, #111);
+}
+
+.tabActive {
+  background: var(--openui-background, #f4f4f4);
+  color: var(--openui-text-neutral-primary, #111);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="dark"] .tabActive {
+  background: #1f1f22;
+}
+
+@media (max-width: 767px) {
+  .tab {
+    padding-inline: 0.875rem;
+    font-size: 0.875rem;
+  }
+}
+
+.metricIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.85em;
+  height: 1.85em;
+  margin-bottom: 0.35em;
+  border-radius: 0.5em;
+  background: var(--sc-surface);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.06);
+}
+
+.metricIcon > svg {
+  width: 1em;
+  height: 1em;
+}
+
+.metricValue .metricChange {
+  margin-left: 0.4em;
+}
+
+/* ── Grouped bars ── */
+.groupedPlot,
+.scatterPlot {
+  display: flex;
+  gap: 0.5em;
+  height: 13em;
+}
+
+.yTicks {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding-bottom: 1.4em;
+  color: var(--sc-muted);
+  font-family: var(--font-geist-mono, ui-monospace, monospace);
+  font-size: 0.6875em;
+  text-align: right;
+}
+
+.scatterPlot .yTicks {
+  padding-bottom: 0;
+}
+
+.groups {
+  display: flex;
+  flex: 1;
+  gap: 0.25em;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent calc(25% - 1px),
+    var(--sc-border) calc(25% - 1px),
+    var(--sc-border) 25%
+  );
+  background-size: 100% calc(100% - 1.4em);
+  background-repeat: no-repeat;
+}
+
+.group {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3em;
+  min-width: 0;
+}
+
+.groupBars {
+  display: flex;
+  flex: 1;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 0.2em;
+  width: 100%;
+}
+
+.groupBar {
+  width: 0.45em;
+  border-radius: 999px 999px 0 0;
+  transform-origin: bottom;
+  animation: scGrow 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1em;
+  margin-top: 0.75em;
+  color: var(--sc-muted);
+  font-size: 0.75em;
+}
+
+.legend > span,
+.legendColumn > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+}
+
+.legend i,
+.legendColumn i {
+  width: 0.65em;
+  height: 0.65em;
+  border-radius: 0.2em;
+}
+
+/* ── Donut, area and scatter ── */
+.chartSubtitle {
+  display: block;
+  margin: -0.5em 0 0.75em;
+  color: var(--sc-muted);
+  font-size: 0.8125em;
+}
+
+.chartCaption {
+  display: block;
+  margin-top: 0.5em;
+  color: var(--sc-muted);
+  font-size: 0.75em;
+  text-align: center;
+}
+
+.donutRow {
+  display: flex;
+  justify-content: center;
+}
+
+.donut {
+  width: 10em;
+  height: 10em;
+  flex-shrink: 0;
+}
+
+.legendColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35em;
+  min-width: 0;
+  font-size: 0.75em;
+}
+
+.legendColumn b {
+  margin-left: auto;
+  padding-left: 0.6em;
+  font-weight: 560;
+  font-variation-settings: "wght" 560;
+}
+
+.area {
+  display: block;
+  width: 100%;
+  height: 10em;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent calc(25% - 1px),
+    var(--sc-border) calc(25% - 1px),
+    var(--sc-border) 25%
+  );
+}
+
+.areaFill {
+  fill: rgba(79, 70, 229, 0.12);
+}
+
+.areaLine {
+  fill: none;
+  stroke: #4f46e5;
+  stroke-width: 2;
+}
+
+.areaLabels,
+.xTicks {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.4em;
+  color: var(--sc-muted);
+  font-family: var(--font-geist-mono, ui-monospace, monospace);
+  font-size: 0.6875em;
+}
+
+.xTicks {
+  padding-left: 2.6em;
+}
+
+.scatter {
+  position: relative;
+  flex: 1;
+  height: 100%;
+  border-bottom: 1px solid var(--sc-border);
+  border-left: 1px solid var(--sc-border);
+}
+
+.dot {
+  position: absolute;
+  width: 0.7em;
+  height: 0.7em;
+  border-radius: 999px;
+  transform: translate(-50%, 50%);
+  opacity: 0.9;
+}
+
+/* ── Split columns ── */
+.split {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14em, 1fr));
+  gap: 1em;
+  margin-bottom: 1em;
+}
+
+.splitColumn {
+  min-width: 0;
+}
+
+/* ── Form: sits straight in the answer, grouped by spacing ── */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.15em;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4em;
+}
+
+.fieldLabel {
+  font-size: 0.8125em;
+  font-weight: 560;
+  font-variation-settings: "wght" 560;
+}
+
+.input {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  padding: 0.6em 0.75em;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 0.615em;
+  background: var(--sc-surface);
+  font-size: 0.875em;
+}
+
+.input > svg {
+  width: 1.1em;
+  height: 1.1em;
+  color: var(--sc-muted);
+}
+
+.inputPlaceholder {
+  color: var(--sc-muted);
+}
+
+.dateRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5em;
+}
+
+.stepper {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: 0.9em;
+  padding: 0.3em;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 999px;
+  font-size: 0.875em;
+}
+
+.stepperButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.8em;
+  height: 1.8em;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.stepperButton > svg {
+  width: 0.9em;
+  height: 0.9em;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4em;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3em;
+  padding: 0.35em 0.85em;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 999px;
+  font-size: 0.8125em;
+}
+
+.chip > svg {
+  width: 1em;
+  height: 1em;
+}
+
+.chipSelected {
+  border-color: #000;
+  background: #000;
+  color: #fff;
+}
+
+.formSubmit {
+  align-self: flex-start;
+  padding: 0.6em 1.3em;
+  border-radius: 999px;
+  background: #000;
+  color: #fff;
+  font-size: 0.875em;
+  font-weight: 560;
+  font-variation-settings: "wght" 560;
+}
+
+[data-theme="dark"] .chipSelected,
+[data-theme="dark"] .formSubmit {
+  background: #fff;
+  color: #000;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .groupBar {
+    animation: none;
+  }
+}
+
+/* The example tabs float over the bottom edge of the visual, on its fade. */
+.tabsHost {
+  position: relative;
+}
+
+/* A full-width strip pinned to the bottom edge that centres the tab bar with
+   flexbox, so no transform can push it off centre. */
+.tabsBar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 1.25rem;
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+  padding-inline: 1rem;
+  pointer-events: none;
+}
+
+.tabsBar > .tabs {
+  margin: 0;
+  pointer-events: auto;
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.04),
+    0 8px 24px -6px rgba(0, 0, 0, 0.16);
+}
+
+/* Metrics in ValueLayout style: flush cells, dashed rules between them. */
+.metricsRules {
+  gap: 0 1.846em;
+  clip-path: inset(0 -2px);
+}
+
+.metricsRules .metric {
+  position: relative;
+  padding: 0.5em 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+.metricsRules .metric::after {
+  content: "";
+  position: absolute;
+  top: 0.6em;
+  bottom: 0.6em;
+  left: -0.923em;
+  border-left: 1px dashed rgba(0, 0, 0, 0.12);
+}
+
+[data-theme="dark"] .metricsRules .metric::after {
+  border-left-color: rgba(255, 255, 255, 0.16);
+}
+
+/* Charts side by side share one height. */
+.splitColumn > .chart {
+  box-sizing: border-box;
+  height: 100%;
+  margin: 0;
+}
+
+/* Choice tiles: icon over label, the picked ones filled. */
+.tiles {
+  display: grid;
+  gap: 0.5em;
+}
+
+.tile {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.6em;
+  padding: 0.8em 0.85em;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 0.875em;
+  font-size: 0.8125em;
+  font-weight: 560;
+  font-variation-settings: "wght" 560;
+}
+
+.tile > svg {
+  width: 1.35em;
+  height: 1.35em;
+  stroke-width: 1.75;
+}
+
+.tileSelected {
+  border-color: #000;
+  background: #000;
+  color: #fff;
+}
+
+[data-theme="dark"] .tileSelected {
+  border-color: #fff;
+  background: #fff;
+  color: #000;
+}
+
+/* Date strip: a week of days with the trip range shaded and its ends filled. */
+.dateStrip {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4em;
+}
+
+.dateMonth {
+  color: var(--sc-muted);
+  font-size: 0.75em;
+}
+
+.days {
+  display: grid;
+  grid-template-columns: repeat(10, minmax(0, 1fr));
+  border-radius: 0.75em;
+}
+
+.day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.1em;
+  padding: 0.45em 0;
+  font-size: 0.875em;
+  font-weight: 560;
+  font-variation-settings: "wght" 560;
+}
+
+.day small {
+  color: var(--sc-muted);
+  font-size: 0.75em;
+  font-weight: 400;
+}
+
+.dayInRange {
+  background: rgba(0, 0, 0, 0.06);
+}
+
+.dayEdge {
+  border-radius: 0.6em;
+  background: #000;
+  color: #fff;
+}
+
+.dayEdge small {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+[data-theme="dark"] .dayEdge {
+  background: #fff;
+  color: #000;
+}
+
+/* ── Tables: wrapped so a sectioned answer can card them ── */
+.tableWrap {
+  margin: 0.25em 0 1em;
+}
+
+.tableWrap .table {
+  margin: 0;
+}
+
+.cell {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35em;
+}
+
+.cellMain {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+}
+
+.cellStrong {
+  font-weight: 560;
+  font-variation-settings: "wght" 560;
+}
+
+.cellIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.7em;
+  height: 1.7em;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.cellIcon > svg {
+  width: 0.95em;
+  height: 0.95em;
+}
+
+.cellBar {
+  display: block;
+  width: 6em;
+  height: 0.3em;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+}
+
+.cellBar > i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: #4f46e5;
+}
+
+[data-theme="dark"] .cellBar {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .cellBar > i {
+  background: #6366f1;
+}
+
+.cellBadge {
+  margin: 0;
+  padding: 0.15em 0.5em;
+  border-radius: 999px;
+}
+
+/* ── Sectioned answer: no white sheet; each block is its own card ── */
+.responseSectioned {
+  padding: 0 0 1.5em;
+  background: transparent;
+  box-shadow: none !important;
+}
+
+.responseSectioned > .metrics,
+.responseSectioned > .chart,
+.responseSectioned > .tableWrap {
+  margin: 0 0 0.75em;
+  padding: 1em 1.15em;
+  border: 1px solid rgba(0, 0, 0, 0.06) !important;
+  border-radius: 1.077em;
+  background: var(--sc-surface);
+  box-shadow:
+    0 1px 2px oklch(0 0 0 / 0.04),
+    0 4px 16px -4px oklch(0 0 0 / 0.08);
+}
+
+.responseSectioned > .heading {
+  margin-top: 0.25em;
+}
+
+.responseSectioned > .subheading {
+  margin-top: 0.5em;
+}
+
+/* Rules sit only between items, never before the first. */
+.metricsRules .metric:first-child::after,
+.panelAccent .factsRules .fact:first-child::after {
+  display: none;
+}
+
+/* In a sectioned answer, charts set side by side are each their own card. */
+.responseSectioned > .split {
+  padding-top: 0;
+  border-top: 0;
+  gap: 0.75em;
+  margin-bottom: 0.75em;
+}
+
+.responseSectioned > .split > .splitColumn + .splitColumn {
+  padding-left: 0;
+  border-left: 0;
+}
+
+.responseSectioned > .split > .splitColumn > .chart {
+  padding: 1em 1.15em;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 1.077em;
+  background: var(--sc-surface);
+  box-shadow:
+    0 1px 2px oklch(0 0 0 / 0.04),
+    0 4px 16px -4px oklch(0 0 0 / 0.08);
+}
+
+/* A carded rules row keeps its clip at the content edge, not the padding
+   edge, so no rule hangs off the first item of any row. */
+.responseSectioned > .metricsRules {
+  clip-path: none;
+}
+
+/* Charts in a card: the legend (or footnote) sits on the card's bottom edge,
+   so legends line up across cards set side by side. */
+.responseSectioned .chart {
+  display: flex;
+  flex-direction: column;
+}
+
+.responseSectioned .chart > .legend,
+.responseSectioned .chart > .funnelNote {
+  margin-top: auto;
+  padding-top: 0.75em;
+}
+
+.legend {
+  flex-wrap: nowrap;
+  white-space: nowrap;
+}
+
+/* ── Funnel: each step a bar narrowing to its share of the first ── */
+.funnel {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 0.2em;
+}
+
+/* Label, a bar centred in its track (so the stack tapers like a funnel),
+   and the value in one right-aligned column. */
+.funnelStep {
+  display: grid;
+  grid-template-columns: 5.5em 1fr 3em;
+  align-items: center;
+  gap: 0.75em;
+  font-size: 0.8125em;
+}
+
+.funnelLabel {
+  color: var(--sc-muted);
+  white-space: nowrap;
+}
+
+.funnelTrack {
+  display: flex;
+  justify-content: center;
+  height: 1.9em;
+}
+
+.funnelBar {
+  display: block;
+  height: 100%;
+  border-radius: 0.45em;
+  transform-origin: center;
+  animation: scGrowX 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.funnelValue {
+  font-weight: 560;
+  font-variation-settings: "wght" 560;
+  text-align: right;
+}
+
+/* The share that carries on to the next step, between the two bars. */
+.funnelDrop {
+  min-height: 1.3em;
+  padding-left: calc(5.5em * 0.8125 + 0.75em * 0.8125);
+  padding-right: calc(3em * 0.8125 + 0.75em * 0.8125);
+  color: var(--sc-muted);
+  font-size: 0.6875em;
+  text-align: center;
+}
+
+.funnelNote {
+  color: var(--sc-muted);
+  font-size: 0.75em;
+  text-align: center;
+  white-space: nowrap;
+}
+
+@keyframes scGrowX {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@container sc (max-width: 600px) {
+  .responseSectioned > .metricsRules {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .responseSectioned > .metricsRules .metric:nth-child(2n + 1)::after {
+    display: none;
+  }
+}
+
+/* Table card: header row near the top edge, every cell centred on its row,
+   pills at the body size. */
+.responseSectioned > .tableWrap {
+  padding-top: 0.35em;
+}
+
+.table td {
+  vertical-align: middle;
+}
+
+/* Table pills: small, in the regular weight. */
+.table .cellBadge {
+  padding: 0.15em 0.5em;
+  font-size: 0.8125em;
+  font-weight: 400;
+  font-variation-settings: "wght" 440;
+}
+
+/* Phones: the demo takes nearly the full width and everything inside renders
+   smaller, like a zoomed-out app window, so the hero and the demo fit on the
+   first screen. The panels are shorter to match. */
+@media (max-width: 767px) {
+  .frame {
+    padding-inline: 0;
+  }
+
+  .tabsBar {
+    bottom: 0.75rem;
+  }
+
+  .tab {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.8125rem;
+  }
+
+  /* Phones only, so tablets keep the stacked layout at its full size. */
+  @container sc (max-width: 719px) {
+    .root {
+      font-size: 0.625rem;
+      --sc-small-height: 28em;
+      --sc-height: 34em;
+    }
+
+    /* Tuck the big panel further up over the small one, so less of the
+       "Without" side's empty lower half shows. */
+    .root:not(.rootSingle) .panel:first-child {
+      margin-bottom: calc(var(--sc-small-height) * (var(--sc-small-scale) - 1) - 9em);
+    }
+
+    /* A single-panel example (no "Without" side) takes the same total height
+       as the stacked pair, so switching tabs never shifts the page. */
+    .root.rootSingle {
+      --sc-height: calc(34em + var(--sc-small-height) * var(--sc-small-scale) - 9em);
+    }
+
+    /* More room inside the single-panel preview (Dashboards): a wider inset
+       from the panel edge, and roomier section cards. */
+    .rootSingle .panel {
+      padding-inline: 1.75em;
+    }
+
+    .rootSingle .responseSectioned {
+      padding-top: 0.5em;
+    }
+
+    .rootSingle .responseSectioned > .heading {
+      margin-bottom: 0.4em;
+    }
+
+    .rootSingle .responseSectioned > .metrics,
+    .rootSingle .responseSectioned > .chart,
+    .rootSingle .responseSectioned > .tableWrap {
+      margin-bottom: 1em;
+      padding: 1.4em 1.5em;
+    }
+
+    .rootSingle .responseSectioned > .split {
+      gap: 1em;
+    }
+  }
+}
+
+/* Form controls in dark: the light theme's black hairlines and tints vanish on
+   the dark card, so the fields, chips, tiles and range days take white ones. */
+[data-theme="dark"] .input,
+[data-theme="dark"] .stepper,
+[data-theme="dark"] .chip:not(.chipSelected),
+[data-theme="dark"] .tile:not(.tileSelected) {
+  border-color: rgba(255, 255, 255, 0.14);
+}
+
+[data-theme="dark"] .stepperButton,
+[data-theme="dark"] .dayInRange:not(.dayEdge),
+[data-theme="dark"] .cellIcon {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .dayEdge small {
+  color: rgba(0, 0, 0, 0.6);
+}

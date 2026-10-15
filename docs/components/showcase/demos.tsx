@@ -1,24 +1,9 @@
 import { EXAMPLES_REPO_URL } from "@/lib/examples-catalog";
 import { labProjects } from "@/lib/lab-projects";
+import { SITE_NAV_LINKS } from "@/lib/site-nav-links";
 import { LinkCardGrid, ShowcaseGrid, type ShowcaseItem } from "./cards";
 
 const PLAYGROUND: ShowcaseItem[] = [
-  {
-    name: "OpenUI Chat",
-    tagline: "Chat assistant",
-    description:
-      "A ChatGPT-like assistant powered by OpenUI Cloud. Start a live conversation or replay a curated one.",
-    image: { light: "/nav/chat-light.webp", dark: "/nav/chat-dark.webp" },
-    links: [{ label: "Open demo", href: "/chat" }],
-  },
-  {
-    name: "AI Dashboards",
-    tagline: "Live GitHub data",
-    description:
-      "Enter a GitHub username and ask questions about their activity. Each answer is an interactive dashboard.",
-    image: { light: "/nav/dashboard-light.webp", dark: "/nav/dashboard-dark.webp" },
-    links: [{ label: "Open demo", href: "/demo/github" }],
-  },
   {
     name: "Compare",
     tagline: "Side by side",
@@ -38,10 +23,22 @@ const PLAYGROUND: ShowcaseItem[] = [
 ];
 
 export function Playground() {
-  return <ShowcaseGrid items={PLAYGROUND} />;
+  return <ShowcaseGrid items={PLAYGROUND} clickable />;
 }
 
 const FEATURED_PROJECTS: ShowcaseItem[] = [
+  {
+    name: "Open Intelligent UI",
+    tagline: "Interactive answers",
+    description:
+      "An open-source recreation of ChatGPT’s Intelligent UI experience, with maps, photographs, and editable itineraries rendered with OpenUI.",
+    // The final frame of the homepage KALLAX demo (public/homepage/agents).
+    image: {
+      light: "/nav/open-intelligent-ui-light.png",
+      dark: "/nav/open-intelligent-ui-dark.png",
+    },
+    links: [{ label: "GitHub", href: SITE_NAV_LINKS.openIntelligentUi.href, external: true }],
+  },
   {
     name: "F1 Dashboard",
     tagline: "Live race data",
@@ -49,7 +46,7 @@ const FEATURED_PROJECTS: ShowcaseItem[] = [
       "Ask about any race, driver or team and get charts, tables and timing from OpenF1, next to live standings dashboards.",
     image: { light: "/nav/f1-dashboard-light.webp", dark: "/nav/f1-dashboard-dark.webp" },
     links: [
-      { label: "Open demo", href: "/demo/f1-dashboard" },
+      { label: "Open demo", href: SITE_NAV_LINKS.f1Dashboard.href },
       { label: "GitHub", href: "https://github.com/thesysdev/openui-f1-dashboard", external: true },
     ],
   },
@@ -60,20 +57,25 @@ const FEATURED_PROJECTS: ShowcaseItem[] = [
       "Plan a trip as visual spreads, a day-by-day itinerary on a map, a moodboard and a journal, with live hotel prices from trivago.",
     image: { light: "/nav/trip-planner-light.webp", dark: "/nav/trip-planner-dark.webp" },
     links: [
-      { label: "Open demo", href: "/demo/trip-planner" },
+      { label: "Open demo", href: SITE_NAV_LINKS.tripPlanner.href },
       { label: "GitHub", href: "https://github.com/thesysdev/openui-trip-planner", external: true },
     ],
   },
   {
-    name: "OpenClaw OS",
-    tagline: "Agent workspace",
+    name: "OpenUI Chat",
+    tagline: "Chat assistant",
     description:
-      "The default workspace for OpenClaw. Agents generate interactive apps and artifacts that stay updated with live data.",
-    image: { light: "/nav/openclaw-light.webp", dark: "/nav/openclaw-dark.webp" },
-    links: [
-      { label: "Website", href: "/openclaw-os" },
-      { label: "GitHub", href: "https://github.com/thesysdev/openclaw-os", external: true },
-    ],
+      "A ChatGPT-like assistant powered by OpenUI Cloud. Start a live conversation or replay a curated one.",
+    image: { light: "/nav/chat-light.webp", dark: "/nav/chat-dark.webp" },
+    links: [{ label: "Open demo", href: "/chat" }],
+  },
+  {
+    name: "AI Dashboards",
+    tagline: "Live GitHub data",
+    description:
+      "Enter a GitHub username and ask questions about their activity. Each answer is an interactive dashboard.",
+    image: { light: "/nav/dashboard-light.webp", dark: "/nav/dashboard-dark.webp" },
+    links: [{ label: "Open demo", href: "/demo/github" }],
   },
   {
     name: "AppLess",
@@ -81,12 +83,15 @@ const FEATURED_PROJECTS: ShowcaseItem[] = [
     description:
       "An experimental phone with no apps. Ask for what you need and OpenUI streams a native interface for it on iOS and Android.",
     image: { light: "/nav/appless-light.webp", dark: "/nav/appless-dark.webp" },
-    links: [{ label: "GitHub", href: "https://github.com/thesysdev/appless", external: true }],
+    links: [
+      { label: "Website", href: SITE_NAV_LINKS.appless.href },
+      { label: "GitHub", href: "https://github.com/thesysdev/appless", external: true },
+    ],
   },
 ];
 
 export function FeaturedProjects() {
-  return <ShowcaseGrid items={FEATURED_PROJECTS} />;
+  return <ShowcaseGrid items={FEATURED_PROJECTS} clickable />;
 }
 
 export function CommunityProjects() {
@@ -99,6 +104,7 @@ export function CommunityProjects() {
 
   return (
     <LinkCardGrid
+      clickable
       items={projects.map((project) => ({
         name: project.name,
         description: project.description,
