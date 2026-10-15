@@ -13,13 +13,13 @@ export function HeroProof() {
     <section className={styles.section} aria-labelledby="benchmark-title">
       <div className={`${productStyles.product} ${styles.header}`}>
         <div className={productStyles.lockup}>
-          <div className={productStyles.lead}>
-            <h3 id="benchmark-title" className={productStyles.headline}>
+          <div className={`${productStyles.lead} ${styles.lead}`}>
+            <h3 id="benchmark-title" className={`${productStyles.headline} ${styles.title}`}>
               Faster answers,
               <br />
               fewer tokens.
             </h3>
-            <div className={productStyles.ctas}>
+            <div className={`${productStyles.ctas} ${styles.ctas}`}>
               <BevelButton
                 variant="secondary"
                 href="/benchmarks?view=formats"
