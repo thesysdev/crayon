@@ -47,6 +47,11 @@ const config = {
   },
   async redirects() {
     return [
+      {
+        source: "/favicon.svg",
+        destination: "/shiro-logo.svg",
+        permanent: true,
+      },
       // The Cookbooks overview is temporarily removed; open the only cookbook instead.
       {
         source: "/cookbooks",
