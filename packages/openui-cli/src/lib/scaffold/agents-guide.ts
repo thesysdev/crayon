@@ -8,10 +8,12 @@ const SKILL_REPO = { owner: "thesysdev", name: "skills" };
 const SKILL_PATH = "skills/openui/SKILL.md";
 const SKILL_URL = `https://raw.githubusercontent.com/thesysdev/skills/refs/heads/main/${SKILL_PATH}`;
 
-const FALLBACK_GUIDE = `# OpenUI: guide for coding agents
+/** The coding-agent paragraph template READMEs ship; also the offline AGENTS.md body. */
+const SKILL_POINTER = `This project is built with [OpenUI](https://www.openui.com). Before changing it, read the maintained OpenUI skill for coding agents published at [thesysdev/skills](${SKILL_URL}).`;
+const AGENTS_POINTER =
+  "This project is built with [OpenUI](https://www.openui.com). Before changing it, read [AGENTS.md](AGENTS.md), the OpenUI guide for coding agents.";
 
-This project is built with [OpenUI](https://www.openui.com). Before changing it, read the maintained OpenUI skill for coding agents published at [thesysdev/skills](${SKILL_URL}).
-`;
+const FALLBACK_GUIDE = `# OpenUI: guide for coding agents\n\n${SKILL_POINTER}\n`;
 
 const FRONTMATTER = /^---\r?\n[\s\S]*?\r?\n---\r?\n+/;
 const INLINE_LINK = /(\]\()([^)\s]+)/g;
@@ -59,4 +61,16 @@ export async function writeAgentsGuide(
     // A missing guide shouldn't fail the scaffold; the pointer still leads to the skill.
   }
   fs.writeFileSync(path.join(projectDir, "AGENTS.md"), guide);
+  pointReadmeToAgentsGuide(projectDir);
+}
+
+// Templates keep the skill link in their README so older CLIs, which don't write
+// AGENTS.md, still scaffold a working pointer; swap it once AGENTS.md exists.
+function pointReadmeToAgentsGuide(projectDir: string) {
+  const readme = path.join(projectDir, "README.md");
+  if (!fs.existsSync(readme)) return;
+  const content = fs.readFileSync(readme, "utf8");
+  if (content.includes(SKILL_POINTER)) {
+    fs.writeFileSync(readme, content.replace(SKILL_POINTER, AGENTS_POINTER));
+  }
 }
