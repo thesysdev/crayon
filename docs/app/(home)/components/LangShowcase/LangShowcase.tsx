@@ -20,25 +20,14 @@ type Agent = {
   /* A Shiro mascot under /public, drawn as supplied: never recoloured. */
   mascot: string;
   mascotAlt: string;
-  /* Where "View demo" goes: the live demo this agent's answer comes from. */
+  /* Where the panel's call to action goes, and what it says. */
   demo: string;
-  answer?: { src: string; alt: string; width: number; height: number };
+  cta?: string;
+  /* playMs: how long the recording runs before holding its last frame. */
+  answer?: { src: string; alt: string; width: number; height: number; playMs: number };
 };
 
 const AGENTS: Agent[] = [
-  {
-    id: "ikea",
-    label: "Ikea",
-    mascot: "/homepage/shiro/shiro-woodworker.svg",
-    mascotAlt: "Shiro the woodworker",
-    demo: SITE_NAV_LINKS.openIntelligentUi.href,
-    answer: {
-      src: "/homepage/agents/ikea-kallax.gif",
-      alt: "The Ikea agent's answer streaming in: a step-by-step KALLAX guide with an exploded drawing of the shelf, a view toggle and a slider to separate the parts.",
-      width: 1100,
-      height: 1200,
-    },
-  },
   {
     id: "f1",
     label: "F1",
@@ -47,6 +36,7 @@ const AGENTS: Agent[] = [
     demo: SITE_NAV_LINKS.f1Dashboard.href,
     answer: {
       src: "/homepage/agents/f1-answer.gif",
+      playMs: 10920,
       alt: "The F1 agent's answer: Antonelli against Russell on points, wins and podiums, the Mercedes drivers' standings, and follow-up questions.",
       width: 1100,
       height: 1183,
@@ -60,21 +50,46 @@ const AGENTS: Agent[] = [
     demo: SITE_NAV_LINKS.tripPlanner.href,
     answer: {
       src: "/homepage/agents/travel-kyoto.gif",
+      playMs: 5640,
       alt: "The Travel agent's answer streaming in: Kyoto in November, taken slowly, with temple and garden picks and three November date windows to choose from.",
       width: 1100,
       height: 2138,
     },
   },
+  {
+    id: "ikea",
+    label: "Ikea",
+    mascot: "/homepage/shiro/shiro-woodworker.svg",
+    mascotAlt: "Shiro the woodworker",
+    demo: SITE_NAV_LINKS.openIntelligentUi.href,
+    cta: "View on GitHub",
+    answer: {
+      src: "/homepage/agents/ikea-kallax.gif",
+      playMs: 14250,
+      alt: "The Ikea agent's answer streaming in: a step-by-step KALLAX guide with an exploded drawing of the shelf, a view toggle and a slider to separate the parts.",
+      width: 1100,
+      height: 1200,
+    },
+  },
 ];
 
+const HOLD_MS = 3000;
+
 export function LangShowcase() {
-  const [open, setOpen] = useState("ikea");
+  const [open, setOpen] = useState("f1");
   /* Counts openings, so a recording starts from its first frame each time its
      panel opens: the GIFs play once and hold on their last frame. */
   const [plays, setPlays] = useState(0);
   /* The recordings load only once the band is on screen, so the first one
      plays where it can be seen rather than finishing above the fold. */
   const [seen, setSeen] = useState(false);
+  const [inView, setInView] = useState(false);
+  /* The panels take turns on their own while the band is on screen: each
+     recording plays, holds its last frame for HOLD_MS, then the next panel
+     opens. Hovering pauses that; picking a panel stops it for good. */
+  const [auto, setAuto] = useState(true);
+  const [hovering, setHovering] = useState(false);
+  const startedAt = useRef(0);
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -85,9 +100,8 @@ export function LangShowcase() {
     }
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (!entry.isIntersecting) return;
-        setSeen(true);
-        observer.disconnect();
+        setInView(entry.isIntersecting);
+        if (entry.isIntersecting) setSeen(true);
       },
       { threshold: 0.3 },
     );
@@ -95,8 +109,34 @@ export function LangShowcase() {
     return () => observer.disconnect();
   }, []);
 
+  // A panel's turn starts when it opens, or when the band first comes into view.
+  useEffect(() => {
+    if (seen) startedAt.current = Date.now();
+  }, [seen, open, plays]);
+
+  useEffect(() => {
+    if (!auto || hovering || !inView) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const index = AGENTS.findIndex((agent) => agent.id === open);
+    const turn = (AGENTS[index].answer?.playMs ?? 0) + HOLD_MS;
+    const left = Math.max(HOLD_MS / 2, turn - (Date.now() - startedAt.current));
+    const id = window.setTimeout(() => {
+      setOpen(AGENTS[(index + 1) % AGENTS.length].id);
+      setPlays((n) => n + 1);
+    }, left);
+    return () => window.clearTimeout(id);
+  }, [auto, hovering, inView, open, plays]);
+
   return (
-    <div ref={ref} className={styles.showcase}>
+    <div
+      ref={ref}
+      className={styles.showcase}
+      onPointerEnter={(event) => {
+        // A touch has no "leave", so only a mouse pauses the rotation.
+        if (event.pointerType === "mouse") setHovering(true);
+      }}
+      onPointerLeave={() => setHovering(false)}
+    >
       {AGENTS.map((agent) => {
         const isOpen = open === agent.id;
         return (
@@ -116,6 +156,7 @@ export function LangShowcase() {
                 aria-controls={`agent-${agent.id}`}
                 onClick={() => {
                   if (isOpen) return;
+                  setAuto(false);
                   setOpen(agent.id);
                   setPlays((n) => n + 1);
                 }}
@@ -157,7 +198,7 @@ export function LangShowcase() {
                 <BevelButton
                   variant="secondary"
                   href={agent.demo}
-                  label="View demo"
+                  label={agent.cta ?? "View demo"}
                   external
                   badge={<ArrowUpRight size={16} weight="bold" />}
                 />
