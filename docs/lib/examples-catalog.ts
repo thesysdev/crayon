@@ -105,7 +105,6 @@ const EXTERNAL_INTEGRATIONS: RepoExample[] = [
       "Streaming OpenUI Lang rendered as cross-platform ReactLynx interfaces with @lynx-js/genui.",
     category: "app-frameworks",
     sourceUrl: "https://github.com/lynx-family/lynx-stack/tree/main/packages/genui/openui",
-    guideUrl: "/integrations/lynx",
     logo: "/integration-logos/lynx.svg",
     logoIsDark: true,
     runnable: false,
