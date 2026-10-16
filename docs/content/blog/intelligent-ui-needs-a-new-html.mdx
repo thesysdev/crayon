@@ -1,0 +1,141 @@
+---
+title: "The Intelligent UI era needs its new HTML"
+seoTitle: "Why intelligent UI needs a shared interface language"
+description: "Every lab is inventing its own inference language for generating interfaces. HTML gave the web a common language that unlocked an entire ecosystem. The agentic era needs its own."
+author: Rabi Guha
+date: 2026-10-15
+---
+
+import comparisonStyles from "./components/comparison-image.module.css";
+
+## Every AI lab is inventing its own inference language
+
+<figure className={`${comparisonStyles.preview} not-prose`}>
+  <img
+    src="/images/blog/intelligent-ui-needs-a-new-html/interface-languages.png"
+    alt="Examples of interface inference languages used to generate UI"
+    width="1697"
+    height="2048"
+  />
+</figure>
+
+When ChatGPT launched Intelligent UI, we spent the day [taking it apart to see how it works](/blog/how-chatgpt-intelligent-ui-works). Under the hood was a new **Interface Inference Language (IIL)** OpenAI invented, the kind of language a model writes at inference time to describe an interface without rewriting the components from scratch. They called it DIL.
+
+DIL joins A2UI, OpenUI Lang, json-render, and possibly a longer list of implementations that aren’t public yet. They all solve the same underlying problem. Each is a different way for the model to describe the interface, and none of them speak each other’s language.
+
+This is expected. Intelligent UI (or Generative UI) is a fundamentally different approach to building software, one that treats the interface as a generated, ephemeral object rather than a compiled artifact. When a shift that fundamental happens, people approach it differently.
+
+But it feels like we are now building the next generation of software on incompatible foundations, and that gets expensive **fast**.
+
+## All of them arrive at the same architecture
+
+Look closely at how these IILs work and the differences shrink. The syntax varies and the implementations differ, but the architecture doesn’t.
+
+Teams working independently, across different model families and product surfaces, landed on the same decisions:
+
+- **Constrained, not open-ended.** The model picks from a set of predefined components instead of writing arbitrary code.
+
+- **Built to stream.** Unlike traditional apps, the interface is generated token by token, so it has to render while it’s still being written.
+
+- **Data by reference.** Passing mission-critical data like product prices or SQL results through an LLM is wasteful and prone to errors. A generated interface references the data rather than inferring it.
+
+- **Errors are forgiven.** A bad token, like a misplaced bracket or a missing argument, doesn’t break the interface.
+
+- **Every token counts.** Inference is costly, and even more so when the output is an interactive interface. Compactness and expressiveness trade off along their own curve, and every language is trying to strike the balance.
+
+When independent teams building separately reach the same answer, it’s no longer a design choice. It’s a new layer of the stack, the IIL. It doesn’t replace HTML or React. They stay the render targets, the layer that actually draws the interface, and the IIL sits above them.
+
+## We've seen this movie before
+
+<div className={comparisonStyles.centeredImage}>
+
+![Browser badges from the early web: best viewed in Netscape or Internet Explorer](/images/blog/intelligent-ui-needs-a-new-html/best-viewed-in-browser.png)
+
+</div>
+
+_Source: [The unwelcome return of “Best Viewed with Internet Explorer”](https://technologizer.com/2010/09/16/the-unwelcome-return-of-best-viewed-with-internet-explorer/index.html)._
+
+The early web looked like this. Netscape shipped `<blink>` and IE shipped `<marquee>`. Each browser added tags only it could render and tried to get as many developers it could within its closed ecosystem. It was the developers who ended up paying for it: pages shipped with “Best Viewed in Netscape” badges and ultimately everyone ended up installing more libraries to paper over the differences.
+
+_A universal HTML spec broke that pattern by doing two things at once. And we need both:_
+
+### Vendor neutrality
+
+A site written once worked in every browser so developers stopped building for a vendor and started building for the web.
+
+Today developers have the same relationship with model providers. An agent built on OpenAI models needs to have the freedom to run on their own fine-tuned open sourced model without having to reimplement the entire stack. The renderer, component catalog or your client runtime shouldn’t have to be redefined again because you switched model providers.
+
+The reverse holds true too: a model post-trained once should work across all agents.
+
+### A shared grammar for developers
+
+The bigger contribution of a spec like HTML wasn’t just vendor neutrality. It was what the shared grammar unlocked. A shared IIL would do the same.
+
+| **What HTML gave the web**      | **What a shared IIL gives developers and model companies** |
+| ------------------------------- | ---------------------------------------------------------- |
+| Browsers                        | Renderers on every platform                                |
+| DevTools                        | Inspectors and debuggers                                   |
+| Validators and linters          | Parsers, validators, and repair                            |
+| CSS and component libraries     | Component catalogs that plug in                            |
+| View-source                     | Datasets and examples anyone can learn from                |
+| One language every engine reads | One IIL for every lab to post-train on                     |
+
+The biggest benefit is not just a shared grammar but rather what it unlocks: a shared ecosystem.
+
+## Why not just HTML?
+
+HTML & React are excellent render targets but poor languages for a model to write directly.
+
+For starters, the web is just one surface. On iOS the target is SwiftUI, on Android it’s Compose, cross platform tools like Lynx have their own, not to mention non standardized displays like Rabbit R1. Native code is compiled at build time so for a model to be able to write these interfaces there needs to be a translation layer at runtime.
+
+The problems stack up from there:
+
+- **Constrained**: Arbitrary code lets the model write anything, so you need a sandbox to run it. Add the fact that conversations can be shared outside your account, and the attack surface grows, so each rollout needs a security review.
+
+- **Streaming**: HTML and React weren’t built to be written one token at a time. A half-finished tree is a broken layout, not a smaller interface.
+
+- **Data by reference**: HTML has no notion of “the result of this query” so the model ends up retyping the data values each time.
+
+- **Token cost**: HTML and React are verbose and every token is paid for twice, once in dollars and again in latency. A concise model optimized Interface Inference Language improves the agent experience for both developers and consumers.
+
+But the biggest problem is the vocabulary. An agent should never emit `<div>` or `<span>`. A product is built on a shared brand, and an Airbnb screen is not just divs, it’s their brand language. Teams have spent years perfecting their component libraries and screens for their audience, and an agent-generated interface has to speak that same language.
+
+Even OpenAI didn’t ask their model to write raw HTML or JSX. It invented DIL.
+
+## The cost of a fragmented future
+
+Every new language multiplies the work: languages × surfaces × models. And it compounds fast.
+
+The problem isn’t that there are many IILs. It’s that each lab welds its IIL to its own transport, runtime, and renderer, so swapping one means rebuilding the rest.
+
+Beyond the obvious cost of duplicated code (which no one writes anymore anyway), the real cost of competing specs is that they stop a bigger ecosystem from forming around any of them.
+
+An IIL needs more than renderers. Debugging agent interfaces, for example, needs its own tools and integrations, and each IIL widens the surface to cover. Skills, recipes, and libraries don’t spread when the ecosystem is split.
+
+Evals become first-party only, so no one can compare models on neutral ground. Without a shared eval, model companies can’t hill-climb, and that makes it harder to improve the models. And these evals aren’t only about verifiable things. Human feedback will play an important role in improving quality over time, but today’s RLHF data is collected on text outputs. New datasets will need to be built for the Interface modality.
+
+<div className={comparisonStyles.centeredImage}>
+
+![xkcd comic: an attempt to unify 14 competing standards results in 15 competing standards](/images/blog/intelligent-ui-needs-a-new-html/competing-standards.png)
+
+</div>
+
+_Source: [“Standards” by Randall Munroe, xkcd](https://xkcd.com/927/), [CC BY-NC 2.5](https://creativecommons.org/licenses/by-nc/2.5/)._
+
+## An HTML for the agentic era
+
+A shared language feels directionally right in the long term. [But if history is any guide, it won’t happen anytime soon](https://thehistoryoftheweb.com/blink-marquis-tag/). There are also good reasons not to converge too fast: committees slow down innovation, switching costs are still low right now, and labs have a reason to keep iterating on their languages while they post-train.
+
+Full disclosure: we build [OpenUI Lang](/docs/openui-lang/quickstart), one of the IILs in this pile, so weigh this accordingly.
+
+So don’t start with a spec. Start with vocabulary. Generative UI is still a loose term, and the pieces inside these systems are understood even less. We should at least agree on names for them: IIL, transport, runtime, render target, catalog, data bindings, and actions.
+
+From there, each layer can improve as more of these systems reach production. Until the world consolidates, translators can bridge IILs, and devtools can define a common interface so competing IILs can reuse them.
+
+A standard should also know what to stay out of. Standardize the contract, not the components. Agents need a canvas, not a cage, just as today’s web grew far beyond the foundations it started with.
+
+## Parting thoughts
+
+The next generation of software won’t be written entirely by developers (with or without coding agents). Much of it will be built on demand by machines and we can build it on incompatible foundations or a common one.
+
+HTML didn’t win because it was perfect. It gave everyone enough common ground to build on. The agentic era needs the same.
