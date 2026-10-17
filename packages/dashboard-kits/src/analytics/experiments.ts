@@ -78,3 +78,29 @@ export function guardrailLight(
   if (point > allowed) return "red";
   return worst > allowed ? "yellow" : "grey";
 }
+
+/** z for a two-sided 95% interval, and the z a true effect needs for 80% power at that level. */
+const Z95 = 1.96;
+const Z_POWER = Z95 + 0.8416;
+
+/**
+ * Reading a lift off its 95% interval: the chance the variant beats control
+ * (the share of a normal spread around the lift above zero), and, while the
+ * interval still crosses zero, how many more days at today's traffic a lift
+ * this size needs for 80% power. The interval narrows with the square root of
+ * the days run.
+ */
+export function readOdds(
+  lift: number,
+  ciLow: number,
+  ciHigh: number,
+  daysRunning: number,
+): { chanceBetter: number; moreDays?: number } {
+  const sd = (ciHigh - ciLow) / (2 * Z95);
+  if (!(sd > 0)) return { chanceBetter: lift > 0 ? 1 : lift < 0 ? 0 : 0.5 };
+  const chanceBetter = normalCdf(lift / sd);
+  const z = Math.abs(lift) / sd;
+  if (ciLow > 0 || ciHigh < 0 || z === 0) return { chanceBetter };
+  const needed = daysRunning * (Z_POWER / z) ** 2;
+  return { chanceBetter, moreDays: Math.max(1, Math.ceil(needed - daysRunning)) };
+}

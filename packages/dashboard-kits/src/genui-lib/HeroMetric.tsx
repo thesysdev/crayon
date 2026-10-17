@@ -9,7 +9,7 @@ import { Pending } from "./Pending";
 export const HeroMetric = defineComponent({
   name: "HeroMetric",
   description:
-    'The one number a dashboard leads with: the metric at hero size, its change against the comparison (prior period, last year, or plan), and a large trend of this period against it, with the gap between them shaded and any events marked. Use exactly one per dashboard, in a LargeCard at the top. Pass a KPI tool\'s hero, heroTrend, and metrics, plus a $binding shared with KpiStrip, so selecting a KPI tile shows that metric here: $metric = "" then HeroMetric(kpis.hero, kpis.heroTrend, kpis.metrics, $metric) and KpiStrip(kpis.metrics, $metric).',
+    'The one number a dashboard leads with: the metric at hero size, its change against the comparison (prior period, last year, or plan), and a large trend against it with the gap shaded and events marked. Use exactly one, in a LargeCard at the top. Pass a KPI tool\'s hero, heroTrend, and metrics, plus a $binding shared with KpiStrip so selecting a tile shows that metric here: $metric = "" then HeroMetric(kpis.hero, kpis.heroTrend, kpis.metrics, $metric) and KpiStrip(kpis.metrics, $metric).',
   props: z.object({
     metric: passed("A KPI tool's hero"),
     trend: passed("Its heroTrend").optional(),

@@ -40,8 +40,9 @@ describe("workspaces", () => {
   const list = workspaces();
   const named = (name: string) => list.find((w) => w.name === name)!;
 
-  it("has every paying workspace, with unique names", () => {
-    expect(list.length).toBe(PAYING_WORKSPACES);
+  it("has every paying workspace, plus those that cancelled, with unique names", () => {
+    expect(list.filter((w) => !w.churned).length).toBe(PAYING_WORKSPACES);
+    expect(list.some((w) => w.churned)).toBe(true);
     expect(new Set(list.map((w) => w.name)).size).toBe(list.length);
   });
 

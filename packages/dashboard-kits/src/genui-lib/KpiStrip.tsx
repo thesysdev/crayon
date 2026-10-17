@@ -9,7 +9,7 @@ import { Pending } from "./Pending";
 export const KpiStrip = defineComponent({
   name: "KpiStrip",
   description:
-    "Row of supporting KPI tiles: each shows its value, the change against the comparison colored by whether that direction is good, the comparison value, a sparkline, and a benchmark, with its definition on hover. Pass a KPI tool's metrics directly; a hand-made tile is {label, value, change?, previous?, hint?}. Give it the same $binding as HeroMetric and each tile becomes a tab that shows its metric in the hero chart: KpiStrip(kpis.metrics, $metric). Handles metrics where lower is better.",
+    "Row of KPI tiles: value, change against the comparison colored by whether that direction is good, the comparison value, a sparkline, and a benchmark, with the definition on hover. Pass a KPI tool's metrics; a hand-made tile is {label, value, change?, previous?, hint?}. With HeroMetric's $binding each tile becomes a tab: KpiStrip(kpis.metrics, $metric). Handles metrics where lower is better.",
   props: z.object({
     metrics: z.array(passed("A KPI")).default([]),
     selected: reactive(z.string().optional()),

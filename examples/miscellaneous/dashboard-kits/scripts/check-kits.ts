@@ -34,7 +34,6 @@ function argumentSets(input: z.ZodObject): Record<string, unknown>[] {
 const PROMPT_BUDGET: Record<string, number> = {
   ecommerce: 64_000,
   analytics: 64_000,
-  usage: 64_000,
 };
 
 let failures = 0;

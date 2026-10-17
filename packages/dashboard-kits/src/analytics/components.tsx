@@ -1,18 +1,20 @@
 "use client";
 
 import { defineComponent } from "@openuidev/react-lang";
-import { BarChart, HeatmapChart, useTheme } from "@openuidev/react-ui";
 import { Fragment, useState } from "react";
 import { z } from "zod/v4";
 import { BurnDown } from "../components/Charts/BurnDown";
+import { ColumnChart as ColumnChartView } from "../components/Charts/ColumnChart";
+import { HeatGrid } from "../components/Charts/HeatGrid";
 import { QuadrantChart } from "../components/Charts/QuadrantChart";
+import { SegmentFlow as SegmentFlowView } from "../components/Charts/SegmentFlow";
 import { SixTwelve } from "../components/Charts/SixTwelve";
 import { Sparkline } from "../components/Charts/Sparkline";
 import { MUTED_COLOR, SERIES_COLORS } from "../components/Charts/utils/constants";
-import { paletteInOrder } from "../components/Charts/utils/palette";
 import { formatChange, formatCurrency, formatNumber, formatPoints } from "../core/format";
 import { passed } from "../core/schemas";
 import { Pending } from "../genui-lib/Pending";
+import { readOdds } from "./experiments";
 import type {
   accountSchema,
   commitSchema,
@@ -46,30 +48,6 @@ const LIFECYCLE = [
 ] as const;
 const DORMANT = "var(--kit-s8)";
 
-/**
- * The kit's ordinal blue ramp, low to high, for react-ui's HeatmapChart. Hex,
- * not tokens: the heatmap interpolates between steps. Dark mode runs from the
- * card color up to the brightest step, so low values recede on either surface.
- */
-const HEAT_RAMP_LIGHT = [
-  "#eaf2fc",
-  "#c3dbf7",
-  "#86b6ef",
-  "#5598e7",
-  "#2a78d6",
-  "#1c5cab",
-  "#104281",
-];
-const HEAT_RAMP_DARK = [
-  "#141b28",
-  "#16335a",
-  "#184f95",
-  "#256abf",
-  "#3987e5",
-  "#6da7ec",
-  "#9ec5f4",
-];
-
 export const LifecycleChart = defineComponent({
   name: "LifecycleChart",
   description:
@@ -89,28 +67,18 @@ export const LifecycleChart = defineComponent({
     const newUsers = props.newUsers ?? [];
     const resurrecting = props.resurrecting ?? [];
     const dormant = (props.dormant ?? []).map((v) => -Math.abs(v));
-    // react-ui's BarChart stacks by sign: growth above zero, dormant below.
-    const data = labels.map((label, i) => ({
-      week: shortWeek(label),
-      Returning: returning[i] ?? 0,
-      New: newUsers[i] ?? 0,
-      Resurrecting: resurrecting[i] ?? 0,
-      Dormant: dormant[i] ?? 0,
-    }));
     const last = labels.length - 1;
     return (
       <div className="kit-lifecycle">
-        <BarChart
-          data={data}
-          categoryKey="week"
-          variant="stacked"
-          customPalette={paletteInOrder([...LIFECYCLE.map((s) => s.color), DORMANT])}
-          condensed
-          height={300}
-          maxBarWidth={24}
-          barRadius={4}
-          yAxisLabel="Users"
-          isAnimationActive
+        <ColumnChartView
+          labels={labels.map(shortWeek)}
+          series={[
+            ...LIFECYCLE.map((s) => ({ name: s.name, values: props[s.key] ?? [], color: s.color })),
+            { name: "Dormant", values: dormant, color: DORMANT },
+          ]}
+          stacked
+          yLabel="Users"
+          height={280}
         />
         <div className="kit-chart-note">
           <span>
@@ -122,11 +90,40 @@ export const LifecycleChart = defineComponent({
           {props.quickRatio && (
             <span className="kit-chart-note__figure">
               Quick ratio <strong>{props.quickRatio}</strong>
-              <span className="kit-muted"> · above 1 means growing</span>
+              <span className="kit-muted">
+                {" "}
+                · for every user who went dormant, {props.quickRatio} came in or came back
+              </span>
             </span>
           )}
         </div>
       </div>
+    );
+  },
+});
+
+/** Lifecycle states best first, so a move toward an earlier one is an improvement. */
+const FLOW_ORDER = ["Weekly active", "At risk", "Dormant", "Lapsed"];
+
+export const LifecycleFlow = defineComponent({
+  name: "LifecycleFlow",
+  description:
+    "Where users moved between lifecycle states over 28 days, as ribbons: LifecycleFlow(states.flow).",
+  props: z.object({
+    moves: z.array(passed("A move from get_lifecycle states")).default([]),
+  }),
+  component: ({ props }) => {
+    const moves = (props.moves ?? []) as unknown as { from: string; to: string; users: number }[];
+    if (moves.length === 0) return <Pending kind="columns" />;
+    return (
+      <SegmentFlowView
+        links={moves.map((m) => ({ from: m.from, to: m.to, value: m.users }))}
+        order={FLOW_ORDER}
+        columns={["28 days ago", "Today"]}
+        source="Signed up"
+        sink="Lapsed"
+        unit="users"
+      />
     );
   },
 });
@@ -146,12 +143,7 @@ export const PowerUserCurve = defineComponent({
     const window = props.window ?? buckets.length;
     const powerFrom = window >= 28 ? 20 : Math.ceil((window * 5) / 7);
     const total = buckets.reduce((a, b) => a + b.users, 0) || 1;
-    // Two stacked series, so power days draw in the accent and the rest in gray.
-    const data = buckets.map((b) => {
-      const share = Math.round((b.users / total) * 1000) / 10;
-      const power = b.days >= powerFrom;
-      return { days: String(b.days), "Power users": power ? share : 0, Others: power ? 0 : share };
-    });
+    const shares = buckets.map((b) => Math.round((b.users / total) * 1000) / 10);
     return (
       <div className="kit-power">
         <p className="kit-power__summary">
@@ -161,18 +153,17 @@ export const PowerUserCurve = defineComponent({
             {Math.round(((buckets[0]?.users ?? 0) / total) * 100)}% came once.
           </span>
         </p>
-        <BarChart
-          data={data}
-          categoryKey="days"
-          variant="stacked"
-          customPalette={paletteInOrder([SERIES_COLORS[0]!, MUTED_COLOR])}
-          condensed
-          height={260}
-          maxBarWidth={28}
-          barRadius={4}
-          xAxisLabel={`Days active in the last ${window} days`}
-          yAxisLabel="% of active users"
-          isAnimationActive
+        <ColumnChartView
+          labels={buckets.map((b) => String(b.days))}
+          series={[{ name: "Active users", values: shares }]}
+          columnColors={buckets.map((b) => (b.days >= powerFrom ? SERIES_COLORS[0] : MUTED_COLOR))}
+          keys={[
+            { name: "Power users", color: SERIES_COLORS[0]!, kind: "rect" },
+            { name: "Everyone else", color: MUTED_COLOR, kind: "rect" },
+          ]}
+          format="percent"
+          xLabel={`Days active in the last ${window} days`}
+          height={240}
         />
       </div>
     );
@@ -383,6 +374,79 @@ export const EventTable = defineComponent({
   },
 });
 
+interface Release {
+  label: string;
+  date: string;
+  platforms: string;
+  detail: string;
+  metrics: {
+    name: string;
+    before: string;
+    after: string;
+    change: number;
+    unit: "percent" | "points";
+  }[];
+}
+
+/** Changes smaller than this read as no change, so noise isn't painted as a result. */
+const STEADY = { percent: 0.5, points: 0.2 } as const;
+
+export const ReleaseImpact = defineComponent({
+  name: "ReleaseImpact",
+  description:
+    "Each launch or rollback with what it changed, the week before against the week after: ReleaseImpact(releases.releases).",
+  props: z.object({
+    releases: z.array(passed("A release from get_release_impact")).default([]),
+  }),
+  component: ({ props }) => {
+    const releases = (props.releases ?? []) as unknown as Release[];
+    if (releases.length === 0) return <Pending kind="list" rows={4} />;
+    return (
+      <div className="kit-releases-wrap">
+        <div className="kit-releases">
+          {releases.map((r) => (
+            <section key={r.label} className="kit-release">
+              <div className="kit-release__head">
+                <span className="kit-release__date">{r.date}</span>
+                <span className="kit-release__label">{r.label}</span>
+                <span className="kit-small kit-muted">{r.platforms}</span>
+              </div>
+              <p className="kit-release__detail">{r.detail}</p>
+              <dl className="kit-release__metrics">
+                {r.metrics.map((m) => {
+                  const steady = Math.abs(m.change) < STEADY[m.unit];
+                  const tone = steady ? "neutral" : m.change > 0 ? "good" : "bad";
+                  return (
+                    <div key={m.name}>
+                      <dt>{m.name}</dt>
+                      <dd>
+                        <span className="kit-muted">{m.before}</span>
+                        <span aria-hidden> → </span>
+                        <strong>{m.after}</strong>
+                        <span className={`kit-num kit-text-${tone}`}>
+                          {steady
+                            ? "no change"
+                            : m.unit === "points"
+                              ? formatPoints(m.change)
+                              : formatChange(m.change)}
+                        </span>
+                      </dd>
+                    </div>
+                  );
+                })}
+              </dl>
+            </section>
+          ))}
+        </div>
+        <p className="kit-small kit-muted">
+          The 7 days before each release against the 7 after, launch day left out. Other things
+          change too, so read this beside the experiment that decided it.
+        </p>
+      </div>
+    );
+  },
+});
+
 export const ActivityHeatmap = defineComponent({
   name: "ActivityHeatmap",
   description:
@@ -392,7 +456,6 @@ export const ActivityHeatmap = defineComponent({
     hourLabels: z.array(z.string()).optional(),
   }),
   component: ({ props }) => {
-    const { mode } = useTheme();
     const days = props.days ?? [];
     if (days.length === 0) return <Pending kind="grid" rows={7} />;
     const hours = Math.max(...days.map((d) => d.values.length));
@@ -401,12 +464,6 @@ export const ActivityHeatmap = defineComponent({
     days.forEach((row, d) =>
       row.values.forEach((v, h) => v > days[peak.d].values[peak.h] && (peak = { d, h })),
     );
-    // Columns are hours, rows are weekdays: react-ui's HeatmapChart contract.
-    const data = labels.slice(0, hours).map((hour, h) => {
-      const column: Record<string, string | number> = { hour };
-      for (const row of days) column[row.day] = row.values[h] ?? 0;
-      return column;
-    });
     return (
       <div className="kit-heat">
         <p className="kit-heat__readout">
@@ -416,14 +473,10 @@ export const ActivityHeatmap = defineComponent({
           </strong>{" "}
           · {formatNumber(days[peak.d]?.values[peak.h] ?? 0)} events
         </p>
-        <HeatmapChart
-          data={data}
-          categoryKey="hour"
-          customPalette={mode === "dark" ? HEAT_RAMP_DARK : HEAT_RAMP_LIGHT}
-          legend={false}
-          cellGap={2}
-          cellRadius={3}
-          isAnimationActive
+        <HeatGrid
+          rows={days.map((d) => ({ label: d.day, values: d.values }))}
+          columns={labels.slice(0, hours)}
+          unit="events"
         />
       </div>
     );
@@ -524,6 +577,13 @@ const LIGHT = {
   red: { label: "Past limit", tone: "negative" },
 } as const;
 
+/** Past this many more days, a test is better stopped or redesigned than waited on. */
+const MAX_WAIT = 60;
+
+/** A chance as a reader takes it: never a flat 0% or 100% from a finite sample. */
+const formatOdds = (p: number) =>
+  p > 0.99 ? ">99%" : p < 0.01 ? "<1%" : `${Math.round(p * 100)}%`;
+
 const significanceText = (s: number) =>
   s >= 0.999 ? "p < 0.001" : `p = ${(1 - s).toFixed(s >= 0.99 ? 3 : 2)}`;
 
@@ -573,6 +633,10 @@ export const ExperimentResults = defineComponent({
                 className={`kit-experiment__variants${unreadable ? " kit-experiment__variants--muted" : ""}`}
               >
                 {e.variants.map((v) => {
+                  const odds =
+                    v.lift != null && v.ciLow != null && v.ciHigh != null
+                      ? readOdds(v.lift, v.ciLow, v.ciHigh, e.daysRunning)
+                      : undefined;
                   const tone =
                     v.ciLow == null
                       ? "neutral"
@@ -620,6 +684,16 @@ export const ExperimentResults = defineComponent({
                         className={`kit-variant__sig${(v.significance ?? 0) >= 0.95 ? " kit-variant__sig--strong" : ""}`}
                       >
                         {v.significance != null ? significanceText(v.significance) : ""}
+                        {odds && !unreadable && (
+                          <span className="kit-variant__odds">
+                            {formatOdds(odds.chanceBetter)} to beat control
+                            {e.status === "running" && odds.moreDays != null && !unreadable
+                              ? odds.moreDays > MAX_WAIT
+                                ? " · too small to call at this traffic"
+                                : ` · ~${odds.moreDays} more days to call`
+                              : ""}
+                          </span>
+                        )}
                       </span>
                     </div>
                   );

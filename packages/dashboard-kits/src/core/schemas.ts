@@ -72,6 +72,7 @@ export const trendSchema = z.object({
     .describe("The last point is still in progress (today, or this week), so it is drawn dotted"),
   target: targetSchema.optional(),
   band: bandSchema.optional(),
+  summary: z.string().optional().describe("What moved the metric"),
 });
 
 /**
@@ -129,6 +130,7 @@ export const seriesSchema = z.object({
     .enum(["primary", "muted"])
     .optional()
     .describe("primary draws in the accent with an area wash; muted draws in gray for context"),
+  tone: z.enum(["good", "warn", "bad"]).optional(),
 });
 
 /** A ranked or part-to-whole item for BarList and ShareBar. */
@@ -268,6 +270,7 @@ export const goalSchema = z.object({
     .describe(
       "Where the plan says the running total should be by now; a straight line to the goal if left out",
     ),
+  range: z.array(z.number()).optional(),
   asOf: z.string().optional(),
 });
 
@@ -286,6 +289,11 @@ export const targetProgressSchema = z
     goodDirection: z.enum(["up", "down"]).describe("down for a budget"),
   })
   .meta({ opaque: "TargetProgress" });
+
+/** One row of a heat grid, e.g. a weekday with a value per hour. */
+export const heatRowSchema = z
+  .object({ label: z.string(), values: z.array(z.number()) })
+  .meta({ opaque: "HeatRow" });
 
 /** One block of a status tracker, e.g. a day of fulfillment against its target. */
 export const trackerItemSchema = z

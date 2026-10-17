@@ -18,6 +18,8 @@ export interface SegmentFlowProps {
   /** Names that enter from outside (first orders) and leave (lapsed), drawn apart from the rest. */
   source?: string;
   sink?: string;
+  /** What the flow counts, for the readout. Default "customers". */
+  unit?: string;
   className?: string;
 }
 
@@ -35,18 +37,30 @@ export function SegmentFlow({
   columns = ["90 days ago", "Today"],
   source,
   sink,
+  unit = "customers",
   className,
 }: SegmentFlowProps) {
   const [frameRef, size] = useContainerSize<HTMLDivElement>(640, 320);
   const [hover, setHover] = useState<{ node?: string; side?: "left" | "right"; link?: FlowLink }>();
   const names = new Set(links.flatMap((l) => [l.from, l.to]));
-  const height = Math.max(260, (names.size / 2 + 1) * ROW);
-  const labelWidth = Math.min(150, Math.max(96, size.width * 0.24));
+  // Narrow cards put each count under its name, so labels need only the name's
+  // width, and nodes sit further apart so two-line labels never touch.
+  const narrow = size.width < 520;
+  const perSide = Math.max(
+    new Set(links.map((l) => l.from)).size,
+    new Set(links.map((l) => l.to)).size,
+  );
+  const gap = narrow ? 28 : 6;
+  const height = Math.max(260, (names.size / 2 + 1) * ROW) + (narrow ? perSide * 22 : 0);
+  const longest = Math.max(...[...names].map((n) => n.length));
+  const labelWidth = narrow
+    ? Math.min(size.width * 0.3, longest * 6.6 + 12)
+    : Math.min(150, Math.max(96, size.width * 0.24));
   const x0 = labelWidth + NODE;
   const x1 = size.width - labelWidth - NODE;
   const layout = useMemo(
-    () => flowLayout(links, { order, top: 6, bottom: height - 6, gap: 6, x0, x1 }),
-    [links, order, height, x0, x1],
+    () => flowLayout(links, { order, top: 6, bottom: height - 6, gap, x0, x1 }),
+    [links, order, height, gap, x0, x1],
   );
   const rank = (name: string) => order.indexOf(name);
   const direction = (l: FlowLink): Direction =>
@@ -73,16 +87,16 @@ export function SegmentFlow({
     down: "slipped to",
     stay: "stayed",
     in: "came in as",
-    out: "lapsed:",
+    out: "lapsed",
   };
   const readout = hover?.link
-    ? `${hover.link.from} → ${hover.link.to}: ${formatNumber(hover.link.value)} customers`
+    ? `${hover.link.from} → ${hover.link.to}: ${formatNumber(hover.link.value)} ${unit}`
     : hover?.node
       ? `${hover.node}: ${formatNumber(
           links
             .filter((l) => (hover.side === "left" ? l.from : l.to) === hover.node)
             .reduce((t, l) => t + l.value, 0),
-        )} customers ${hover.side === "left" ? columns[0].toLowerCase() : columns[1].toLowerCase()}`
+        )} ${unit} ${hover.side === "left" ? columns[0].toLowerCase() : columns[1].toLowerCase()}`
       : undefined;
 
   return (
@@ -99,7 +113,7 @@ export function SegmentFlow({
             height={height}
             className={`${P}-svg`}
             role="img"
-            aria-label={`Customers by segment ${columns[0].toLowerCase()} and ${columns[1].toLowerCase()}`}
+            aria-label={`${unit[0]!.toUpperCase()}${unit.slice(1)} by segment ${columns[0].toLowerCase()} and ${columns[1].toLowerCase()}`}
           >
             <g className={`${P}-ribbons`}>
               {layout.ribbons.map((r) => (
@@ -138,7 +152,20 @@ export function SegmentFlow({
                     textAnchor={left ? "end" : "start"}
                     className={`${P}-label`}
                   >
-                    {n.name} <tspan className={`${P}-count`}>{formatNumber(n.value)}</tspan>
+                    {narrow ? (
+                      <>
+                        <tspan x={left ? x - 8 : x + NODE + 8} dy="-0.25em">
+                          {n.name}
+                        </tspan>
+                        <tspan x={left ? x - 8 : x + NODE + 8} dy="1.2em" className={`${P}-count`}>
+                          {formatNumber(n.value)}
+                        </tspan>
+                      </>
+                    ) : (
+                      <>
+                        {n.name} <tspan className={`${P}-count`}>{formatNumber(n.value)}</tspan>
+                      </>
+                    )}
                   </text>
                 </g>
               );
@@ -151,8 +178,8 @@ export function SegmentFlow({
         {moves.map((m, i) => (
           <span key={`${m.from}-${m.to}`}>
             {i > 0 && "; "}
-            {formatNumber(m.value)} {m.from} {verb[direction(m)]}{" "}
-            {direction(m) === "out" ? "" : m.to}
+            {formatNumber(m.value)} {m.from} {verb[direction(m)]}
+            {direction(m) === "out" ? "" : ` ${m.to}`}
           </span>
         ))}
         .

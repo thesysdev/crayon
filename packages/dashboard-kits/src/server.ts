@@ -8,8 +8,6 @@ import type { KitDefinition } from "./core/kit";
 import type { ToolHandler } from "./core/prompt";
 import { ecommerceHandlers } from "./ecommerce/data";
 import { ecommerceKit } from "./ecommerce/kit";
-import { usageHandlers } from "./usage/data";
-import { usageKit } from "./usage/kit";
 
 export { analyticsTools } from "./analytics/tools";
 export { BASE_COMPONENT_GROUPS, BASE_RULES, DATA_RULES } from "./core/base-prompt";
@@ -19,24 +17,15 @@ export { buildSystemPrompt, runTool } from "./core/prompt";
 export type { ToolHandler } from "./core/prompt";
 export * from "./core/schemas";
 export { ecommerceTools } from "./ecommerce/tools";
-export { usageTools } from "./usage/tools";
-export {
-  analyticsHandlers,
-  analyticsKit,
-  ecommerceHandlers,
-  ecommerceKit,
-  usageHandlers,
-  usageKit,
-};
+export { analyticsHandlers, analyticsKit, ecommerceHandlers, ecommerceKit };
 
 /** Every kit, in display order. */
-export const KITS: KitDefinition[] = [ecommerceKit, analyticsKit, usageKit];
+export const KITS: KitDefinition[] = [ecommerceKit, analyticsKit];
 
-/** Sample-data tool handlers for each kit: Sundial Goods, Relay, and a Relay workspace. */
+/** Sample-data tool handlers for each kit: Sundial Goods and Relay. */
 export const SAMPLE_HANDLERS: Record<string, Record<string, ToolHandler>> = {
   ecommerce: ecommerceHandlers,
   analytics: analyticsHandlers,
-  usage: usageHandlers,
 };
 
 export function getKit(id: string): KitDefinition | undefined {

@@ -83,6 +83,7 @@ export function HeroMetric({
         ) : (
           m.hint && <span className="kit-hero__hint">{m.hint}</span>
         )}
+        {!picked && trend?.summary && <p className="kit-hero__lead">{trend.summary}</p>}
       </div>
       {t && t.labels.length > 0 && (
         <TrendChart

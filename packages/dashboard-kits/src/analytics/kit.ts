@@ -62,7 +62,7 @@ $platform = "all"
 $plan = "all"
 $mode = "exact"
 $unit = "user"
-section = Section([curveRow, cohortRow, stateRow], filters)
+section = Section([curveRow, cohortRow, stateRow, flowRow], filters)
 filters = FilterBar([platformFilter, planFilter, modeFilter, unitFilter])
 ${FILTERS.split("\n").slice(2).join("\n")}
 modeFilter = FilterSelect("mode", "Retention", [{value: "exact", label: "Active that week"}, {value: "unbounded", label: "That week or later"}, {value: "bracket", label: "Brackets"}], $mode)
@@ -81,14 +81,18 @@ cohortRow = CardRow([cohortCard])
 cohortCard = LargeCard([cohortHeader, cohortGrid])
 cohortHeader = DashboardCardHeader("Weekly cohorts", cohorts.rule)
 cohortGrid = CohortGrid(cohorts.cohorts, cohorts.periodLabels, cohorts.format, "Cohort size")
-states = Query("get_lifecycle", {platform: $platform, plan: $plan, view: "states"}, {labels: [], newUsers: [], dormant: 0, current: [], cameBack: [], atRiskWau: [], rates: [], sensitivity: [], rule: ""})
+states = Query("get_lifecycle", {platform: $platform, plan: $plan, view: "states"}, {labels: [], newUsers: [], dormant: 0, current: [], cameBack: [], atRiskWau: [], rates: [], sensitivity: [], flow: [], rule: ""})
 stateRow = CardRow([stateCard, rateCard])
 stateCard = LargeCard([stateHeader, stateChart])
 stateHeader = DashboardCardHeader("Daily lifecycle states", "Active users by why they count; users away 1–6 days below the line")
 stateChart = ColumnChart(states.labels, [{name: "Current", values: states.current}, {name: "New", values: states.newUsers}, {name: "Came back", values: states.cameBack}, {name: "At risk this week", values: states.atRiskWau}], "number", true)
 rateCard = MediumCard([rateHeader, rateList])
 rateHeader = DashboardCardHeader("Which rate moves actives", "Extra daily actives in 90 days if a state's return rate rose 2%")
-rateList = BarList(states.sensitivity, "number", 4)`;
+rateList = BarList(states.sensitivity, "number", 4)
+flowRow = CardRow([flowCard])
+flowCard = LargeCard([flowHeader, flowChart])
+flowHeader = DashboardCardHeader("Where users moved", "Each user's state 28 days ago, or signed up since, against today; dormant is 29–90 days away, lapsed longer")
+flowChart = LifecycleFlow(states.flow)`;
 
 const FEATURES_AND_EXPERIMENTS = `root = Dashboard([header, section])
 header = DashboardHeader("Features and experiments", "Experiments ready to decide, and which features go with users staying")
@@ -96,7 +100,7 @@ $range = "30d"
 $platform = "all"
 $plan = "all"
 $status = "running"
-section = Section([experimentRow, valueRow, matrixRow, rhythmRow, eventsRow], filters)
+section = Section([experimentRow, releaseRow, valueRow, matrixRow, rhythmRow, eventsRow], filters)
 filters = FilterBar([rangeFilter, platformFilter, planFilter, statusFilter])
 ${FILTERS.split("\n").slice(1).join("\n")}
 statusFilter = FilterSelect("status", "Experiments", [{value: "running", label: "Running"}, {value: "completed", label: "Completed"}, {value: "all", label: "All experiments"}], $status)
@@ -105,6 +109,11 @@ experimentRow = CardRow([experimentCard])
 experimentCard = LargeCard([experimentHeader, experimentList])
 experimentHeader = DashboardCardHeader("Experiments", "Lift with its 95% interval, the traffic split check, guardrails, and the decision")
 experimentList = ExperimentResults(experiments.experiments)
+releases = Query("get_release_impact", {}, {releases: []})
+releaseRow = CardRow([releaseCard])
+releaseCard = LargeCard([releaseHeader, releaseList])
+releaseHeader = DashboardCardHeader("What each release changed", "Shipped and rolled-back features, the week before against the week after")
+releaseList = ReleaseImpact(releases.releases)
 features = Query("get_feature_engagement", {range: $range, platform: $platform, plan: $plan}, {features: []})
 valueRow = CardRow([valueCard])
 valueCard = LargeCard([valueHeader, value])
@@ -196,9 +205,10 @@ dropFilter = FilterSelect("drop", "Below usual by", [{value: "5", label: "5%"}, 
 confirmFilter = FilterSelect("confirm", "Confirm over", [{value: "1of1", label: "1 day"}, {value: "2of3", label: "2 of 3 days"}, {value: "3of5", label: "3 of 5 days"}], $confirm)
 quietFilter = FilterSelect("quiet", "Quiet hours", [{value: "none", label: "Send at once"}, {value: "weekends", label: "Hold weekends to Monday"}], $quiet)
 windowFilter = FilterSelect("window", "Back-test", [{value: "30", label: "Last 30 days"}, {value: "90", label: "Last 90 days"}], $window)
-alert = Query("preview_alert", {metric: $alertMetric, drop: $drop, confirm: $confirm, quiet: $quiet, window: $window}, {labels: [], actual: [], threshold: [], format: "number", events: [], fired: 0, rule: "", summary: ""})
+alert = Query("preview_alert", {metric: $alertMetric, drop: $drop, confirm: $confirm, quiet: $quiet, window: $window}, {labels: [], actual: [], threshold: [], format: "number", events: [], days: [], fired: 0, rule: "", summary: ""})
 alertRow = CardRow([alertCard])
-alertCard = LargeCard([alertHeader, alertChart])
+alertCard = LargeCard([alertHeader, alertChart, alertDays])
+alertDays = Tracker(alert.days)
 alertHeader = DashboardCardHeader("Back-test", alert.summary)
 alertChart = TrendChart(alert.labels, [{name: "Actual", values: alert.actual, emphasis: "primary"}, {name: "Alert line", values: alert.threshold, emphasis: "muted"}], alert.format, "line", alert.events)`;
 
@@ -208,11 +218,11 @@ $range = "30d"
 $platform = "all"
 $plan = "all"
 $unit = "user"
-section = Section([funnelRow, momentRow, pathRow], filters)
+section = Section([funnelRow, platformRow, momentRow, pathRow], filters)
 filters = FilterBar([rangeFilter, platformFilter, planFilter, unitFilter])
 ${FILTERS.split("\n").slice(1).join("\n")}
 unitFilter = FilterSelect("unit", "Count", [{value: "user", label: "Users"}, {value: "workspace", label: "Workspaces"}], $unit)
-funnel = Query("get_activation_funnel", {range: $range, platform: $platform, plan: $plan, unit: $unit}, {steps: [], activationRate: "—", validity: {activated: "", notActivated: "", ratio: 0, pass: false, note: ""}})
+funnel = Query("get_activation_funnel", {range: $range, platform: $platform, plan: $plan, unit: $unit}, {steps: [], activationRate: "—", validity: {activated: "", notActivated: "", ratio: 0, pass: false, note: ""}, platformUsers: [], platformActivation: []})
 sources = Query("get_signups_by_source", {range: $range, platform: $platform}, ${SOURCES_DEFAULTS})
 funnelRow = CardRow([funnelCard, sourceCard])
 funnelCard = LargeCard([funnelHeader, funnelChart, validityNote])
@@ -223,6 +233,11 @@ sourceCard = MediumCard([sourceHeader, sourceShare, sourceList])
 sourceHeader = DashboardCardHeader("Signups by source", "Share of new signups, then how many of each activated")
 sourceShare = ShareBar(sources.items, "number")
 sourceList = BarList(sources.activation, "percent", 6, "Activated")
+platformRow = CardRow([platformCard])
+platformCard = LargeCard([platformHeader, platformShare, platformActivation])
+platformHeader = DashboardCardHeader("Daily users by platform", "Each platform's share of daily actives, and activation for its signups, against the prior period")
+platformShare = ShareBar(funnel.platformUsers, "number", $platform)
+platformActivation = BarList(funnel.platformActivation, "percent", 3, "Activation by platform")
 moments = Query("find_activation_moment", {platform: $platform, plan: $plan}, {cohort: "", users: 0, baseline: "", candidates: [], note: ""})
 momentRow = CardRow([momentCard])
 momentCard = LargeCard([momentHeader, momentList])
@@ -272,7 +287,7 @@ filters = FilterBar([accountPlanFilter, accountActiveFilter, listFilter])
 accountPlanFilter = FilterSelect("accountPlan", "Account plan", [{value: "all", label: "Team and Business"}, {value: "team", label: "Team"}, {value: "business", label: "Business"}], $accountPlan)
 accountActiveFilter = FilterSelect("accountActive", "Active workspace", [{value: "team", label: "3+ members"}, {value: "any", label: "Anyone"}, {value: "seats", label: "Half the seats"}], $accountActive)
 listFilter = FilterSelect("list", "List", [{value: "risk", label: "Lowest health"}, {value: "slipping", label: "Slipping away"}, {value: "expansion", label: "Ready to expand"}, {value: "power", label: "Power workspaces"}, {value: "mrr", label: "Largest"}], $list)
-revenue = Query("get_revenue_retention", {plan: $accountPlan}, {metrics: [], walk: [], comparisonLabel: "", labels: [], cohorts: [], cohortLabels: [], nrr: [], nrrBand: {label: "", from: 0, to: 0}, gained: [], lost: [], note: ""})
+revenue = Query("get_revenue_retention", {plan: $accountPlan}, {metrics: [], walk: [], comparisonLabel: "", labels: [], cohorts: [], cohortLabels: [], nrr: [], nrrBand: {label: "", from: 0, to: 0}, movements: [], note: ""})
 nrrRow = CardRow([nrrCohortCard, nrrTrendCard])
 nrrCohortCard = LargeCard([nrrCohortHeader, nrrCohorts])
 nrrCohortHeader = DashboardCardHeader("Net revenue retention by start month", "Each month's new workspaces: MRR now ÷ their starting MRR")
@@ -286,8 +301,8 @@ walkHeader = DashboardCardHeader("Recurring revenue", revenue.note)
 revenueStrip = KpiStrip(revenue.metrics)
 revenueWalk = VarianceWalk(revenue.walk, revenue.comparisonLabel, "currency")
 movementCard = MediumCard([movementHeader, movementChart])
-movementHeader = DashboardCardHeader("MRR gained and lost", "New, expansion, and reactivation against contraction and churn, by month")
-movementChart = ColumnChart(revenue.labels, [{name: "Gained", values: revenue.gained}, {name: "Lost", values: revenue.lost}], "currency")
+movementHeader = DashboardCardHeader("MRR gained and lost", "New, expansion, and reactivation above zero; contraction and churn below, by month")
+movementChart = ColumnChart(revenue.labels, revenue.movements, "currency", true)
 activity = Query("get_account_activity", {plan: $accountPlan, accountActive: $accountActive}, {labels: [], active: [], seats: [], metrics: [], rule: ""})
 activityRow = CardRow([activityCard, seatCard])
 activityCard = LargeCard([activityHeader, activityStrip, activityChart])
@@ -297,14 +312,17 @@ activityChart = ColumnChart(activity.labels, [{name: "Active workspaces", values
 seatCard = MediumCard([seatHeader, seatFunnel])
 seatHeader = DashboardCardHeader("Seats", "Paid, claimed, and active in the last 28 days")
 seatFunnel = ConversionFunnel(activity.seats)
-accounts = Query("get_account_health", {plan: $accountPlan, list: $list, limit: 10}, {metrics: [], accounts: [], backTest: []})
+accounts = Query("get_account_health", {plan: $accountPlan, list: $list, limit: 10}, {metrics: [], accounts: [], distribution: {labels: [], series: []}, backTest: []})
 listRow = CardRow([listCard])
 listCard = LargeCard([listHeader, listStrip, listTable])
 listHeader = DashboardCardHeader("Workspaces", "Each with why it is on the list; open a row for its health breakdown")
 listStrip = KpiStrip(accounts.metrics)
 listTable = AccountHealth(accounts.accounts)
-backRow = CardRow([backCard])
-backCard = LargeCard([backHeader, backChart])
+backRow = CardRow([distCard, backCard])
+distCard = LargeCard([distHeader, distChart])
+distHeader = DashboardCardHeader("Health across every paying workspace", "Workspaces by health score: under 40 at risk, 40–69 watch, 70 and up healthy")
+distChart = ColumnChart(accounts.distribution.labels, accounts.distribution.series, "number", true)
+backCard = MediumCard([backHeader, backChart])
 backHeader = DashboardCardHeader("Does the health score work?", "Workspaces that cancelled in the last 90 days, by their health score 90 days ago")
 backChart = BarList(accounts.backTest, "percent", 3, "Cancelled within 90 days")`;
 
@@ -317,7 +335,7 @@ export const analyticsKit: KitDefinition = {
     "You build product analytics dashboards for the team behind Relay, a team workspace app with boards, tasks, and docs, sold on Free, Team, and Business plans and used on web, iOS, and Android. You are generating an openui-lang dashboard.",
   rules: [
     'Filters: $range ("7d" | "30d" | "90d" | "mtd", default "30d"), $platform ("all" | "web" | "ios" | "android"), $plan ("all" | "free" | "team" | "business"), $active ("core" | "any": what counts as active), $compare ("previous_period" | "last_year" | "plan", get_usage_kpis only). Tool arguments of the same names take these values. Why questions → explain_change with DriverCards and VarianceWalk, its metric matching the question and the dashboard filters; never write a cause the tools did not return. get_lifecycle, get_retention_cohorts, get_retention_curves, and get_stickiness take no range. Only add filters that the dashboard\'s tools accept.',
-    `Definitions: ${glossary()}. Lifecycle: new, returning (active the week before too), resurrecting (back after a gap), dormant (active the week before, not this week). Breadth = percent of monthly active users using a feature; frequency = days per week they use it. Each KPI carries its definition.`,
+    `Definitions: ${glossary()}. Breadth = percent of monthly active users using a feature; frequency = days per week they use it. Each KPI carries its definition.`,
     'Layout: open overview dashboards with a hero row, CardRow([LargeCard([HeroMetric(kpis.hero, kpis.heroTrend, kpis.metrics, $metric)]), MediumCard([...])]), where the MediumCard explains the hero (InsightList with a limit, or a funnel). Then a LargeCard row with KpiStrip(kpis.metrics, $metric). Declare $metric = "" so selecting a KPI tile shows that metric in the hero chart. Then detail rows of a LargeCard and a MediumCard.',
     'Use a KPI tool\'s periodLabel as the DashboardHeader subtitle: DashboardHeader("Product health", kpis.periodLabel). KPI query defaults: {periodLabel: "", hero: {label: "Loading", value: "—"}, heroTrend: {labels: [], current: []}, metrics: []}.',
     'Charts: TrendChart over time (DAU/WAU/MAU, retention curves by plan with "All users" muted), ColumnChart for per-period counts, BarList for ranked categories (activation by source), ShareBar for part-to-whole (signups by source). Do not use LineChart, AreaChart, BarChart, or PieChart.',
@@ -348,7 +366,7 @@ export const analyticsKit: KitDefinition = {
     {
       title: "Retention and lifecycle",
       description:
-        "Where retention flattens by plan, weekly cohorts as exact weeks, that week or later, or brackets, for users or workspaces, the daily lifecycle states, which return rate moves actives most, and the power user curve.",
+        "Where retention flattens by plan, weekly cohorts as exact weeks, that week or later, or brackets, for users or workspaces, the daily lifecycle states and where users moved between them, which return rate moves actives most, and the power user curve.",
       program: RETENTION_AND_LIFECYCLE,
     },
     {
@@ -383,7 +401,7 @@ export const analyticsKit: KitDefinition = {
     {
       title: "Alert check",
       description:
-        "An alert rule back-tested on 30 or 90 days, with N-of-M confirmation and quiet weekends: the metric against its alert line, each alert marked, holidays and tracking changes called out.",
+        "An alert rule back-tested on 30 or 90 days, with N-of-M confirmation and quiet weekends: the metric against its alert line, each alert marked, holidays and tracking changes called out, and every day as clear, below, or alerting.",
       program: ALERT_CHECK,
       example: false,
     },

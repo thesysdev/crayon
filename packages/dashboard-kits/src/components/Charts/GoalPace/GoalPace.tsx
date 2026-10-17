@@ -69,6 +69,22 @@ function GoalPaceImpl({ goal: g, className }: GoalPaceProps) {
           <dt>Days left</dt>
           <dd>{status.total - status.elapsed}</dd>
         </div>
+        {status.chance != null && (
+          <div>
+            <dt>Chance of goal</dt>
+            <dd>
+              <span
+                className={`kit-text-${status.chance >= 0.7 ? "good" : status.chance <= 0.3 ? "bad" : "neutral"}`}
+              >
+                {status.chance > 0.99
+                  ? ">99%"
+                  : status.chance < 0.01
+                    ? "<1%"
+                    : formatPercent(status.chance, 0)}
+              </span>
+            </dd>
+          </div>
+        )}
       </dl>
       <PaceChart goal={g} status={status} format={format} />
     </div>

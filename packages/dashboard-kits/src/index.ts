@@ -14,6 +14,7 @@ export {
   DataStatus,
   DriverCards,
   GoalPace,
+  HeatGrid,
   HeroMetric,
   InsightList,
   KpiStrip,
@@ -33,6 +34,8 @@ export { ColumnChart as ColumnChartView } from "./components/Charts/ColumnChart"
 export type { ColumnChartProps } from "./components/Charts/ColumnChart";
 export { GoalPace as GoalPaceView } from "./components/Charts/GoalPace";
 export type { GoalPaceProps } from "./components/Charts/GoalPace";
+export { HeatGrid as HeatGridView } from "./components/Charts/HeatGrid";
+export type { HeatGridProps } from "./components/Charts/HeatGrid";
 export { Sparkline } from "./components/Charts/Sparkline";
 export type { SparklineProps } from "./components/Charts/Sparkline";
 export { Tracker as TrackerView } from "./components/Charts/Tracker";

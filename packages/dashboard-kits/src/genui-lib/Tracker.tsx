@@ -9,7 +9,7 @@ import { Pending } from "./Pending";
 export const Tracker = defineComponent({
   name: "Tracker",
   description:
-    "A strip of blocks, one per day or check, each colored by whether it met its target, with the day's figure on hover and a count of each status. For service levels and streaks: orders shipped on time each day, uptime, daily goals hit. Pass a tracker tool's days and summary directly: Tracker(sla.days, sla.summary).",
+    "A strip of blocks, one per day or check, colored by whether it met its target, with the figure on hover and a count per status: on-time shipping, uptime, alert days. Pass a tracker tool's days and summary: Tracker(sla.days, sla.summary).",
   props: z.object({
     items: z.array(passed("A day from a tracker tool")).default([]),
     summary: z.string().optional().describe('One line above the strip, e.g. "96.8% on time"'),

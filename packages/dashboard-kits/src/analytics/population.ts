@@ -45,6 +45,18 @@ export interface PopulationInput {
   dayFactor: number[];
   /** Days of warm-up before the first returned day, at the first day's signups: Relay's age before the history starts (4 years by default). */
   warmup?: number;
+  /** Follow users over this many final days: where each state's users are at the end (see `flow`). */
+  flowDays?: number;
+}
+
+/** States for a flow, by days since a user was last active: within 7, 8–28, 29–90, or longer. */
+export const FLOW_STATES = ["Weekly active", "At risk", "Dormant", "Lapsed"] as const;
+/** Where users who signed up during a flow come from. */
+export const FLOW_NEW = "Signed up";
+
+/** A flow state's share of a "days away" vector (v[g] = last active g days before tomorrow). */
+function flowState(g: number): number {
+  return g <= 7 ? 0 : g <= 28 ? 1 : g <= 90 ? 2 : 3;
 }
 
 export interface Population {
@@ -70,6 +82,11 @@ export interface Population {
    * sum is its returning users in growth accounting.
    */
   returning: Float64Array;
+  /**
+   * With `flowDays`: users by their state when the flow starts (or "Signed
+   * up" during it) and their state on the last day. Every user is counted once.
+   */
+  flow?: { from: string; to: string; value: number }[];
 }
 
 export const chanceAfter = (curve: ReturnCurve, daysAway: number) =>
@@ -139,6 +156,10 @@ export function simulate(input: PopulationInput): Population {
       tag: new Float64Array(LONGEST + 1),
     },
   ];
+  // Flow: each group's users split by their state when the flow starts, plus
+  // one vector for signups during it, each followed on its own to the end.
+  const flowStart = input.flowDays ? days - 1 - input.flowDays : -1;
+  const flows = groups.map(() => [] as Float64Array[]);
   // Weeks end on the last day, so the latest week is a whole one.
   const weekEnds = (t: number) => (days - 1 - t) % 7 === 0;
   // Warm up at the first day's signups, on a plain week, so day one starts
@@ -155,6 +176,11 @@ export function simulate(input: PopulationInput): Population {
       out.returning[t] += firstBack.active;
       g.tag[1] = 0;
       const arrivals = input.signups[t]! * g.share(t);
+      if (t > flowStart && flowStart >= 0) {
+        flows[k]!.forEach((f, s) =>
+          advance(f, g.curve, s === FLOW_STATES.length ? arrivals : 0, factor),
+        );
+      }
       // Classify before ageing: who is away how long, and who comes back.
       const before = Float64Array.from(g.v);
       const { back, active } = advance(g.v, g.curve, arrivals, factor);
@@ -174,6 +200,14 @@ export function simulate(input: PopulationInput): Population {
         }
       }
       if (k === 0) out.dauActivated[t] = active;
+      if (t === flowStart) {
+        flows[k] = [
+          ...FLOW_STATES.map((_, s) =>
+            g.v.map((v, gap) => (gap > 0 && flowState(gap) === s ? v : 0)),
+          ),
+          new Float64Array(LONGEST + 1),
+        ];
+      }
       if (weekEnds(t)) {
         g.tag.fill(0);
         g.tag.set(g.v.subarray(1, 8), 1);
@@ -183,7 +217,24 @@ export function simulate(input: PopulationInput): Population {
     out.wau[t] = out.dau[t]! + out.atRiskWau[t]!;
     out.mau[t] = out.wau[t]! + out.atRiskMau[t]!;
   }
-  return out;
+  if (flowStart < 0) return out;
+  const flow = new Map<string, number>();
+  for (const vectors of flows) {
+    vectors.forEach((f, s) => {
+      const from = s < FLOW_STATES.length ? FLOW_STATES[s]! : FLOW_NEW;
+      for (let gap = 1; gap <= LONGEST; gap++) {
+        const key = `${from}\u0000${FLOW_STATES[flowState(gap)]}`;
+        flow.set(key, (flow.get(key) ?? 0) + f[gap]!);
+      }
+    });
+  }
+  return {
+    ...out,
+    flow: [...flow].map(([key, value]) => {
+      const [from, to] = key.split("\u0000") as [string, string];
+      return { from, to, value };
+    }),
+  };
 }
 
 export interface CohortInput {
@@ -285,6 +336,16 @@ export function addPopulations(list: Population[]): Population {
   const out = { ...first! } as Population;
   for (const key of Object.keys(first!) as (keyof Population)[]) {
     if (key === "days") continue;
+    if (key === "flow") {
+      const merged = new Map<string, { from: string; to: string; value: number }>();
+      for (const link of list.flatMap((p) => p.flow ?? [])) {
+        const at = merged.get(`${link.from}>${link.to}`);
+        if (at) at.value += link.value;
+        else merged.set(`${link.from}>${link.to}`, { ...link });
+      }
+      out.flow = [...merged.values()];
+      continue;
+    }
     const sum = Float64Array.from(first![key] as Float64Array);
     for (const p of rest) (p[key] as Float64Array).forEach((v, i) => (sum[i] += v));
     (out as unknown as Record<string, unknown>)[key] = sum;

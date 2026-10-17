@@ -8,7 +8,7 @@ import { colorSeries } from "../shared/seriesColors";
 import { DEFAULT_TREND_HEIGHT, KIT_CHART_PREFIX, X_LABEL_SPACING } from "../utils/constants";
 import { formatAxis, formatValue } from "../utils/format";
 import { findNearestDataIndex } from "../utils/mouseUtils";
-import { labelIndexes, labelWidth, valueScale } from "../utils/scale";
+import { fitsWithoutZero, labelIndexes, labelWidth, valueScale } from "../utils/scale";
 import { EventBands, eventAt } from "./parts/EventBands";
 import { TrendAxes } from "./parts/TrendAxes";
 import { TrendSeries, type GapTone } from "./parts/TrendSeries";
@@ -98,7 +98,10 @@ function TrendChartImpl({
     const guides = [target?.value, band?.from, band?.to].filter(
       (v): v is number => v != null && Number.isFinite(v),
     );
-    const { scale: y, ticks } = valueScale([...values, ...guides], [plotBottom, MARGIN_TOP]);
+    // Lines of a level far from zero (a rate near 110%) fit their range; areas keep zero.
+    const all = [...values, ...guides];
+    const zero = variant === "area" || !fitsWithoutZero(all);
+    const { scale: y, ticks } = valueScale(all, [plotBottom, MARGIN_TOP], 4, zero);
     const left = labelWidth(ticks.map((t) => formatAxis(t, format))) + 10;
     const right = width - Math.max(16, labelWidth(endLabels) + 14);
     const x = scalePoint<number>()
@@ -108,7 +111,18 @@ function TrendChartImpl({
     const ys = series.map((s) => Float64Array.from(s.values, (v) => y(v)));
     const flat = packTrend(xs, ys, [y(target?.value ?? 0), y(band?.from ?? 0), y(band?.to ?? 0)]);
     return { x, y, ticks, left, right, flat };
-  }, [series, width, plotBottom, format, n, target?.value, band?.from, band?.to, endLabels]);
+  }, [
+    series,
+    variant,
+    width,
+    plotBottom,
+    format,
+    n,
+    target?.value,
+    band?.from,
+    band?.to,
+    endLabels,
+  ]);
 
   const { x, y, left, right } = geometry;
   const at = (i: number) => x(i)!;

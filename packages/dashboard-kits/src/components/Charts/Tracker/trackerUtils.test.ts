@@ -15,4 +15,14 @@ describe("statusCounts", () => {
       ["none", 1],
     ]);
   });
+
+  it("names a status by its blocks' shared detail, else by the default", () => {
+    const counts = statusCounts([
+      { label: "a", status: "bad", detail: "Alerting" },
+      { label: "b", status: "bad", detail: "Alerting" },
+      { label: "c", status: "good", detail: "Clear" },
+      { label: "d", status: "good", detail: "Fine" },
+    ]);
+    expect(counts.map((c) => c.label)).toEqual(["Met target", "Alerting"]);
+  });
 });

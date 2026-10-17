@@ -11,6 +11,8 @@ import {
   itemSchema,
   kpiOutput,
   rangeSchema,
+  seriesSchema,
+  trackerItemSchema,
   walkStepSchema,
   whySchema,
 } from "../core/schemas";
@@ -242,7 +244,7 @@ export const analyticsTools = [
   defineTool({
     name: "preview_alert",
     description:
-      'Back-tests an alert on the last 30 or 90 days: below when the metric falls more than drop percent under the same weekday\'s 4-week mean, firing when confirm days of the window are below, optionally holding weekend alerts to Monday. TrendChart(alert.labels, [{name: "Actual", values: alert.actual, emphasis: "primary"}, {name: "Alert line", values: alert.threshold, emphasis: "muted"}], alert.format, "line", alert.events).',
+      "Back-tests an alert on the last 30 or 90 days: below when the metric falls more than drop percent under the same weekday's 4-week mean, firing when confirm days of the window are below, optionally holding weekend alerts to Monday. A line TrendChart of actual (primary) and threshold (muted) with alert.events; Tracker(alert.days) for each day.",
     input: z.object({
       metric: z.enum(["dau", "signups", "activation"]).default("dau"),
       drop: z.coerce.number().default(15),
@@ -259,6 +261,7 @@ export const analyticsTools = [
       threshold: z.array(z.number()),
       format: z.enum(["number", "percent"]),
       events: z.array(eventSchema),
+      days: z.array(trackerItemSchema),
       fired: z.number(),
       rule: z.string(),
       summary: z.string(),
@@ -319,10 +322,7 @@ export const analyticsTools = [
       platform,
       plan,
       weeks: z.number().int().min(4).max(16).default(12),
-      view: z
-        .enum(["weekly", "states"])
-        .default("weekly")
-        .describe("weekly growth accounting, or the seven daily states"),
+      view: z.enum(["weekly", "states"]).default("weekly"),
     }),
     output: z.object({
       labels: z.array(z.string()),
@@ -343,12 +343,19 @@ export const analyticsTools = [
       resurrected: z.array(z.number()).optional(),
       cameBack: z.array(z.number()).optional().describe("Reactivated + resurrected"),
       atRiskWau: z.array(z.number()).optional().describe("Negative: away 1–6 days"),
-      atRiskMau: z.array(z.number()).optional().describe("Negative: away 7–27 days"),
       rates: z.array(itemSchema).optional().describe("Each state's daily return rate, percent"),
       sensitivity: z
         .array(itemSchema)
         .optional()
         .describe("Extra daily actives if that rate rose 2%"),
+      flow: z
+        .array(
+          z
+            .object({ from: z.string(), to: z.string(), users: z.number() })
+            .meta({ opaque: "LifecycleMove" }),
+        )
+        .optional()
+        .describe("states: LifecycleFlow(states.flow)"),
       rule,
     }),
   }),
@@ -375,6 +382,8 @@ export const analyticsTools = [
         pass: z.boolean(),
         note: z.string(),
       }),
+      platformUsers: z.array(itemSchema),
+      platformActivation: z.array(itemSchema),
     }),
   }),
   defineTool({
@@ -530,9 +539,36 @@ export const analyticsTools = [
     output: z.object({ experiments: z.array(experimentSchema) }),
   }),
   defineTool({
+    name: "get_release_impact",
+    description:
+      "Each launch or rollback's week before against the week after, on its platforms: ReleaseImpact(releases.releases).",
+    input: z.object({}),
+    output: z.object({
+      releases: z.array(
+        z
+          .object({
+            label: z.string(),
+            date: z.string(),
+            platforms: z.string(),
+            detail: z.string(),
+            metrics: z.array(
+              z.object({
+                name: z.string(),
+                before: z.string(),
+                after: z.string(),
+                change: z.number(),
+                unit: z.enum(["percent", "points"]),
+              }),
+            ),
+          })
+          .meta({ opaque: "Release" }),
+      ),
+    }),
+  }),
+  defineTool({
     name: "get_account_health",
     description:
-      "Paying workspaces: KPIs (paying workspaces, healthy share, ARR at risk, seat utilization), workspaces with health, its breakdown and history, seats, ARR, renewal, and why each is listed, and the back-test (churn by score 90 days ago). Lists: risk (lowest health), slipping (no core action for over twice the usual gap), expansion (80%+ of seats active, renewing within 90 days), power, or mrr. Feeds KpiStrip(accounts.metrics) and AccountHealth(accounts.accounts).",
+      "Paying workspaces: KPIs (paying workspaces, healthy share, ARR at risk, seat utilization), workspaces with health and why each is listed, the score distribution, and the back-test (churn by score 90 days ago). Lists: risk (lowest health), slipping (no core action for over twice the usual gap), expansion (80%+ of seats active, renewing within 90 days), power, or mrr. Feeds KpiStrip(accounts.metrics) and AccountHealth(accounts.accounts).",
     input: z.object({
       plan: z.enum(["all", "team", "business"]).default("all"),
       list: z.enum(["risk", "slipping", "expansion", "power", "mrr"]).default("risk"),
@@ -541,6 +577,9 @@ export const analyticsTools = [
     output: z.object({
       metrics: kpiOutput.metrics,
       accounts: z.array(accountSchema),
+      distribution: z
+        .object({ labels: z.array(z.string()), series: z.array(seriesSchema) })
+        .describe("Health score bands by zone, for a stacked ColumnChart"),
       backTest: z
         .array(itemSchema)
         .describe(
@@ -567,7 +606,7 @@ export const analyticsTools = [
   defineTool({
     name: "get_revenue_retention",
     description:
-      'MRR for the last 12 whole months: KPIs (MRR, NRR, GRR, quick ratio), a walk of the latest month, and MRR gained and lost by month. VarianceWalk(revenue.walk, revenue.comparisonLabel, "currency"), ColumnChart(revenue.labels, [{name: "Gained", values: revenue.gained}, {name: "Lost", values: revenue.lost}], "currency"), NRR by start month: CohortGrid(revenue.cohorts, revenue.cohortLabels, "percent", "Workspaces"), and TrendChart(revenue.labels, [{name: "NRR", values: revenue.nrr}], "percent", "line", [], false, revenue.nrrBand).',
+      'MRR for 12 whole months: KPIs (MRR, NRR, GRR, quick ratio, ARPA, churn, LTV), the latest month\'s walk, and movements by month (losses negative). VarianceWalk(revenue.walk, revenue.comparisonLabel, "currency"), ColumnChart(revenue.labels, revenue.movements, "currency", true), NRR by start month: CohortGrid(revenue.cohorts, revenue.cohortLabels, "percent", "Workspaces"), and TrendChart(revenue.labels, [{name: "NRR", values: revenue.nrr}], "percent", "line", [], false, revenue.nrrBand).',
     input: z.object({ plan: z.enum(["all", "team", "business"]).default("all") }),
     output: z.object({
       metrics: kpiOutput.metrics,
@@ -578,8 +617,9 @@ export const analyticsTools = [
       cohortLabels: z.array(z.string()),
       nrr: z.array(z.number()).describe("Trailing 12-month NRR at each month's end, percent"),
       nrrBand: bandSchema,
-      gained: z.array(z.number()),
-      lost: z.array(z.number()),
+      movements: z
+        .array(seriesSchema)
+        .describe("MRR movements by month; contraction and churn are negative"),
       note: z.string(),
     }),
   }),

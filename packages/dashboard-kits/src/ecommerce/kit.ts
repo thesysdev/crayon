@@ -6,7 +6,7 @@ const RANGE_FILTER = `rangeFilter = FilterSelect("range", "Period", [{value: "7d
 const KPI_DEFAULTS = `{periodLabel: "", hero: {label: "Loading", value: "—"}, heroTrend: {labels: [], current: []}, metrics: []}`;
 const ITEMS_DEFAULTS = `{labels: [], totalSales: [], orders: [], items: [], overTime: {labels: [], series: []}}`;
 const COMPARE_FILTER = `compareFilter = FilterSelect("compare", "Compare with", [{value: "plan", label: "Plan"}, {value: "previous_period", label: "Prior period"}, {value: "last_year", label: "Last year"}], $compare)`;
-const PROFIT_DEFAULTS = `{periodLabel: "", comparisonLabel: "", lines: [], grossMargin: "—", contributionMargin: "—", profitPerOrder: "—", breakEvenRoas: 0}`;
+const PROFIT_DEFAULTS = `{periodLabel: "", comparisonLabel: "", lines: [], grossMargin: "—", contributionMargin: "—", profitPerOrder: "—", breakEvenRoas: 0, byChannel: []}`;
 
 const STORE_OVERVIEW = `root = Dashboard([header, section])
 header = DashboardHeader("Store overview", kpis.periodLabel)
@@ -98,7 +98,7 @@ const MARKETING_AND_PROFIT = `root = Dashboard([header, section])
 header = DashboardHeader("Marketing and profit", mkt.periodLabel)
 $range = "30d"
 $model = "last_click"
-section = Section([heroRow, kpiRow, channelRow, creativeRow, mixRow], filters)
+section = Section([heroRow, kpiRow, channelRow, salesChannelRow, creativeRow, mixRow, hourRow], filters)
 filters = FilterBar([rangeFilter, modelFilter])
 modelFilter = FilterSelect("model", "Attribution", [{value: "last_click", label: "Last click"}, {value: "first_click", label: "First click"}, {value: "linear", label: "Linear"}, {value: "platform", label: "Platform reports"}], $model)
 ${RANGE_FILTER}
@@ -116,9 +116,13 @@ kpiCard = LargeCard([kpiStrip, kpiRules])
 kpiStrip = KpiStrip(mkt.metrics, $metric)
 kpiRules = RuleChips(mkt.rules)
 channelRow = CardRow([channelCard])
+salesChannelRow = CardRow([salesChannelCard])
 channelCard = LargeCard([channelHeader, channelTable])
 channelHeader = DashboardCardHeader("Channel performance", "Attributed revenue and ROAS against the target, by channel")
 channelTable = ChannelPerformance(mkt.channels, mkt.targetRoas)
+salesChannelCard = LargeCard([salesChannelHeader, salesChannelTable])
+salesChannelHeader = DashboardCardHeader("Profit by sales channel", "What each channel keeps after product cost, fees, shipping, returns, and marketing; the tick is the prior period's margin")
+salesChannelTable = ChannelProfit(profit.byChannel)
 ads = Query("get_creatives", {range: $range}, {creatives: [], breakEvenRoas: 0})
 creativeRow = CardRow([creativeCard])
 creativeCard = LargeCard([creativeHeader, creativeTable])
@@ -132,7 +136,12 @@ mixHeader = DashboardCardHeader("Sales from new and returning customers", "Where
 mixChart = ColumnChart(mix.labels, [{name: "New customers", values: mix.newCustomerSales}, {name: "Returning customers", values: mix.returningCustomerSales}], "currency", true, "Sales (USD)")
 reconCard = MediumCard([reconHeader, reconChart])
 reconHeader = DashboardCardHeader("Store orders against platform claims", "What each ad platform says it drove, against what the store's orders credit it with")
-reconChart = ReconciliationCard(recon)`;
+reconChart = ReconciliationCard(recon)
+hours = Query("get_orders_by_hour", {range: $range}, {rows: [], columns: [], peak: "", rule: ""})
+hourRow = CardRow([hourCard])
+hourCard = LargeCard([hourHeader, hourGrid])
+hourHeader = DashboardCardHeader("When orders come in", hours.rule)
+hourGrid = HeatGrid(hours.rows, hours.columns, "orders")`;
 
 const CUSTOMERS_AND_RETENTION = `root = Dashboard([header, section])
 header = DashboardHeader("Customers and retention", customers.periodLabel)
@@ -182,7 +191,7 @@ $range = "30d"
 $category = "all"
 $device = "all"
 $customer = "all"
-section = Section([productRow, mapRow, stockRow, returnRow, journeyRow, slaRow, ordersRow], filters)
+section = Section([productRow, mapRow, stockRow, healthRow, returnRow, journeyRow, slaRow, ordersRow], filters)
 filters = FilterBar([rangeFilter, categoryFilter, customerFilter, deviceFilter])
 customerFilter = FilterSelect("customer", "Customers", [{value: "all", label: "All customers"}, {value: "new", label: "First orders"}, {value: "returning", label: "Returning"}], $customer)
 ${RANGE_FILTER}
@@ -198,7 +207,7 @@ mapRow = CardRow([mapCard])
 mapCard = LargeCard([mapHeader, productMap])
 mapHeader = DashboardCardHeader("Which products to push, restock, or reprice", "Sell-through against gross margin, sized by net sales, split at the medians")
 productMap = ProductQuadrant(catalog.products)
-stock = Query("get_inventory_health", {category: $category}, {metrics: [], items: []})
+stock = Query("get_inventory_health", {category: $category}, {metrics: [], items: [], catalog: [], concentration: ""})
 byCategory = Query("get_sales_by", {range: $range, dimension: "category"}, ${ITEMS_DEFAULTS})
 stockRow = CardRow([stockCard, alertsCard])
 stockCard = LargeCard([stockHeader, stockStrip, categoryChart])
@@ -208,6 +217,10 @@ categoryChart = ColumnChart(byCategory.overTime.labels, byCategory.overTime.seri
 alertsCard = MediumCard([alertsHeader, alerts])
 alertsHeader = DashboardCardHeader("Restock now", "Below reorder point, with open purchase orders")
 alerts = InventoryAlerts(stock.items)
+healthRow = CardRow([healthCard])
+healthCard = LargeCard([healthHeader, healthTable])
+healthHeader = DashboardCardHeader("Every product's stock", "Most urgent first; the tick marks the reorder point, lead time plus safety stock")
+healthTable = InventoryHealth(stock.catalog, stock.concentration)
 returns = Query("get_returns", {range: $range, category: $category}, {periodLabel: "", lines: [], metrics: [], reasons: [], products: []})
 returnRow = CardRow([returnCard, sizeCard])
 returnCard = LargeCard([returnHeader, returnStrip, returnLedger, reasonList])
@@ -268,10 +281,10 @@ yearChart = TrendChart(sales.labels, [{name: "This year", values: sales.totalSal
 const TARGETS_AND_PACING = `root = Dashboard([header, section])
 header = DashboardHeader("Targets and pacing", targets.periodLabel)
 $channel = "all"
-section = Section([targetRow, kpiRow], filters)
+section = Section([targetRow, budgetRow, kpiRow], filters)
 filters = FilterBar([channelFilter])
 channelFilter = FilterSelect("channel", "Sales channel", [{value: "all", label: "All channels"}, {value: "online", label: "Online store"}, {value: "app", label: "Mobile app"}, {value: "amazon", label: "Amazon"}], $channel)
-targets = Query("get_targets", {channel: $channel}, {periodLabel: "", targets: []})
+targets = Query("get_targets", {channel: $channel}, {periodLabel: "", targets: [], budgets: []})
 goal = Query("get_sales_goal", {channel: $channel}, {label: "", goal: 0, labels: [], cumulative: []})
 targetRow = CardRow([targetCard, goalCard])
 targetCard = LargeCard([targetHeader, bullets])
@@ -280,6 +293,10 @@ bullets = BulletList(targets.targets)
 goalCard = MediumCard([goalHeader, goalPace])
 goalHeader = DashboardCardHeader("Monthly sales goal", "October sales against the pace needed to reach the goal")
 goalPace = GoalPace(goal)
+budgetRow = CardRow([budgetCard])
+budgetCard = LargeCard([budgetHeader, budgetTable])
+budgetHeader = DashboardCardHeader("Ad budgets", "October spend by platform against its budget (last year +6%), and where this pace ends the month")
+budgetTable = AdBudgetPacing(targets.budgets)
 kpis = Query("get_store_kpis", {range: "mtd", channel: $channel, compare: "plan"}, ${KPI_DEFAULTS})
 kpiRow = CardRow([kpiCard])
 kpiCard = LargeCard([kpiHeader, kpiStrip, kpiRules])
@@ -321,9 +338,14 @@ stockHeader = DashboardCardHeader("Restock", "Below reorder point, most urgent f
 alerts = InventoryAlerts(stock.items)`;
 
 const LIVE = `root = Dashboard([header, section])
-header = DashboardHeader("Live", "The last hour, online store and app")
-section = Section([liveRow, flowRow])
-live = Query("get_live_view", {}, {asOf: "", labels: [], sessions: [], sessionsWeekAgo: [], orders: [], sales: [], visitorsNow: 0, metrics: [], funnel: [], products: []})
+header = DashboardHeader("Live", "Today so far and the last hour, online store and app")
+section = Section([todayRow, liveRow, flowRow])
+live = Query("get_live_view", {}, {asOf: "", labels: [], sessions: [], sessionsWeekAgo: [], visitorsNow: 0, metrics: [], funnel: [], products: [], hours: [], hourlyToday: [], hourlyYesterday: [], todayMetrics: []})
+todayRow = CardRow([todayCard])
+todayCard = LargeCard([todayHeader, todayStrip, todayChart])
+todayHeader = DashboardCardHeader("Today so far", "Sales by hour since midnight UTC, against yesterday; the close projects today's pace")
+todayStrip = KpiStrip(live.todayMetrics)
+todayChart = ColumnChart(live.hours, [{name: "Today", values: live.hourlyToday, emphasis: "primary"}, {name: "Yesterday", values: live.hourlyYesterday, emphasis: "muted"}], "currency")
 liveRow = CardRow([liveCard])
 liveCard = LargeCard([liveHeader, liveStrip, liveChart])
 liveHeader = DashboardCardHeader(live.visitorsNow, "Visitors on the store right now", "number")
@@ -363,13 +385,13 @@ export const ecommerceKit: KitDefinition = {
   preamble:
     "You build e-commerce analytics dashboards for the team running Sundial Goods, a direct-to-consumer brand selling apparel, footwear, accessories, and home goods through its online store, mobile app, and Amazon. You are generating an openui-lang dashboard.",
   rules: [
-    'Filters: $range ("7d" | "30d" | "90d" | "mtd", default "30d"), $channel ("all" | "online" | "app" | "amazon"), $category ("all" | "apparel" | "footwear" | "accessories" | "home"), $device ("all" | "desktop" | "mobile" | "tablet"), $customer ("all" | "new" | "returning", the customerType argument), $compare ("previous_period" | "last_year" | "plan"; "plan" for a store overview). Tool arguments of the same names (customerType for $customer) take these values. Only add filters that the dashboard\'s tools accept.',
+    'Filters: $range ("7d" | "30d" | "90d" | "mtd", default "30d"), $channel ("all" | "online" | "app" | "amazon"), $category ("all" | "apparel" | "footwear" | "accessories" | "home"), $device ("all" | "desktop" | "mobile" | "tablet"), $customer ("all" | "new" | "returning"; argument customerType), $compare ("previous_period" | "last_year" | "plan"; "plan" for a store overview). Arguments of the same names take these values; add only filters the dashboard\'s tools accept.',
     `Definitions: ${glossary()}. Each KPI carries its definition, shown when hovering its value.`,
-    "Layout: the hero row's MediumCard explains the hero (InsightList with a limit, DriverCards, a funnel, or a MoneyBreakdown); then the KpiStrip row; then rows of three MediumCards, or a LargeCard and a MediumCard.",
+    "Layout: a hero row whose MediumCard explains the hero (InsightList with a limit, DriverCards, a funnel, or MoneyBreakdown), the KpiStrip row, then rows of three MediumCards or a LargeCard and a MediumCard.",
     'Use a KPI tool\'s periodLabel as the DashboardHeader subtitle: DashboardHeader("Store overview", kpis.periodLabel). KPI query defaults: {periodLabel: "", hero: {label: "Loading", value: "—"}, heroTrend: {labels: [], current: []}, metrics: []}.',
-    'Charts: TrendChart over time (mark the prior period "muted"), ColumnChart for per-period counts or stacked new versus returning, BarList for ranked categories (countries, categories, channels), ShareBar for part-to-whole (channel or device mix). Do not use LineChart, AreaChart, BarChart, or PieChart.',
-    "Why questions → explain_change (DriverCards, VarianceWalk), its metric matching the question and the same range, channel, and compare as the dashboard; never write a cause the tools did not return. Otherwise: overview → get_store_kpis, get_store_insights; profit → get_profit_bridge; marketing → get_marketing_performance, get_creatives, get_reconciliation; customers → get_customer_kpis, get_customer_flow, get_customer_cohorts, get_customer_segments; products and stock → get_product_performance, get_inventory_health, get_returns; conversion → get_purchase_journey, get_checkout_journey; plans → get_targets, get_sales_goal, get_sale_plan; promotions → get_promo_impact; now → get_live_view; next steps → get_actions.",
-    'Give every card except the hero a DashboardCardHeader whose subtitle says what is measured and against what, e.g. "Attributed revenue and ROAS against the target, by channel". When a card leads with one number, make it the title with titleType "number".',
+    'Charts: TrendChart over time (prior period "muted"), ColumnChart for per-period counts or composition, BarList for ranked categories, ShareBar for part-to-whole, HeatGrid for weekday by hour. Not LineChart, AreaChart, BarChart, or PieChart.',
+    "Why questions → explain_change (DriverCards, VarianceWalk), with the question's metric and the dashboard's range, channel, and compare; never write a cause the tools did not return. Otherwise: overview → get_store_kpis, get_store_insights; profit → get_profit_bridge; marketing → get_marketing_performance, get_creatives, get_reconciliation; customers → get_customer_kpis, get_customer_flow, get_customer_cohorts, get_customer_segments; products and stock → get_product_performance, get_inventory_health, get_returns; timing → get_orders_by_hour; conversion → get_purchase_journey, get_checkout_journey; plans → get_targets, get_sales_goal, get_sale_plan; promotions → get_promo_impact; today and now → get_live_view; next steps → get_actions.",
+    'Give every card but the hero a DashboardCardHeader whose subtitle says what is measured and against what. A card that leads with one number makes it the title, titleType "number".',
   ],
   tools: ecommerceTools,
   gallery: [
@@ -388,7 +410,7 @@ export const ecommerceKit: KitDefinition = {
     {
       title: "Marketing and profit",
       description:
-        "Blended ROAS hero against break-even beside the contribution profit ledger, marketing KPIs with how they are counted, channel ROAS against break-even, new versus returning sales, and store orders against ad-platform claims.",
+        "Blended ROAS hero against break-even beside the contribution profit ledger, marketing KPIs with how they are counted, channel ROAS against break-even, new versus returning sales, store orders against ad-platform claims, and when orders come in by weekday and hour.",
       program: MARKETING_AND_PROFIT,
       example: false,
     },
@@ -402,7 +424,7 @@ export const ecommerceKit: KitDefinition = {
     {
       title: "Targets and pacing",
       description:
-        "October's targets as bullet charts with forecasts, the monthly sales goal's pace, and month-to-date KPIs against plan, flagged when outside their usual range.",
+        "October's targets as bullet charts with forecasts, the monthly sales goal's pace, each ad platform's budget burn-down, and month-to-date KPIs against plan, flagged when outside their usual range.",
       program: TARGETS_AND_PACING,
       example: false,
     },

@@ -52,6 +52,7 @@ import {
   isArrAtRisk,
   isExpansionReady,
   isSlipping,
+  payingWorkspaces,
   workspaces,
   zoneOf,
   type HealthCategory,
@@ -176,6 +177,7 @@ function segmentPopulation(pf: Platform, pl: Plan, boost: Boost = NO_BOOST): Pop
     activated: { ...activated, bands: boost.bands },
     notActivated: { ...notActivated, bands: boost.bands },
     dayFactor: DAY_FACTOR,
+    flowDays: 28,
   });
   segmentCache.set(key, pop);
   return pop;
@@ -421,7 +423,7 @@ const mrrHistory = (plans: readonly ("team" | "business")[]) =>
       revenueHistory(
         p,
         sum(
-          workspaces()
+          payingWorkspaces()
             .filter((w) => w.plan.toLowerCase() === p)
             .map((w) => w.mrr),
         ),
@@ -859,7 +861,7 @@ function scorecard(e: ExperimentSpec) {
  * take rate for upgrade offers, the observed retention gap for a feature.
  */
 function recommendedActions() {
-  const list = workspaces();
+  const list = payingWorkspaces();
   const slipping = list.filter(isSlipping);
   const slippingArr = sum(slipping.map((w) => w.mrr * 12));
   const ready = list.filter(isExpansionReady);
@@ -1043,6 +1045,15 @@ function alertPreview(
     ...new Set(sent.flatMap(({ run }) => (causeOf(run) ? [causeOf(run)!.label] : []))),
   ];
   const daysBelow = below.filter(Boolean).length;
+  // Each back-test day for a Tracker: alerting (confirmed), below but not confirmed, or clear.
+  const fmt = (v: number) => (format === "percent" ? `${v.toFixed(1)}%` : formatNumber(v));
+  const alerting = nOfM(below, need!, of!);
+  const days_ = labels.map((day, i) => ({
+    label: day,
+    status: alerting[i] ? ("bad" as const) : below[i] ? ("warn" as const) : ("good" as const),
+    value: `${fmt(actual[i]!)} against a usual ${fmt(usual[i]!)}`,
+    detail: alerting[i] ? "Alerting" : below[i] ? "Below the line, not confirmed" : "Clear",
+  }));
   const rule = `Fires ${of === 1 ? "on any day" : `when ${need} of ${of} days are`} more than ${drop}% under the same weekday's usual${quiet ? "; weekend alerts wait for Monday" : ""}`;
   return {
     labels,
@@ -1050,6 +1061,7 @@ function alertPreview(
     threshold: line.map((v) => round(v, digits)),
     format,
     events,
+    days: days_,
     fired: sent.length,
     rule,
     summary: sent.length
@@ -1184,11 +1196,6 @@ const CREDIT_PRICE = 0.02;
 let commitCache: ReturnType<typeof buildCommits> | undefined;
 const allCommits = () => (commitCache ??= buildCommits());
 
-/** One workspace's AI credit commit, for the usage kit's view of the same workspace. */
-export function commitOf(name: string) {
-  return allCommits().find((c) => c.name === name);
-}
-
 function usageCommits() {
   const commits = allCommits().filter((c) => c.elapsed >= 8);
   return commitSummary(commits);
@@ -1196,7 +1203,7 @@ function usageCommits() {
 
 function buildCommits() {
   // About two thirds of Business workspaces commit to AI credits; the named ones all do.
-  const business = workspaces().filter(
+  const business = payingWorkspaces().filter(
     (w) =>
       w.plan === "Business" &&
       (w.id.startsWith("named") || between(`commit:${w.name}`, 0, 1) < 0.66),
@@ -1544,6 +1551,161 @@ function ghostUsers(
   return mean(withGhosts.map((v, i) => v - sum(without.map((w) => w[i]!))));
 }
 
+/**
+ * Every platform side by side, whatever the platform filter: its share of
+ * daily actives over the period, and activation for its signups, each against
+ * the period before.
+ */
+function byPlatform(plan: string, days: number) {
+  const pfs = Object.keys(PLATFORMS) as Platform[];
+  const users = pfs.map((pf) => [0, days].map((o) => mean(dau(pf, plan, days, o))));
+  const total = sum(users.map(([now]) => now!)) || 1;
+  const change = (now: number, then: number) => round(((now - then) / (then || 1)) * 100, 1);
+  return {
+    platformUsers: pfs.map((pf, k) => ({
+      name: PLATFORM_LABEL[pf],
+      key: pf,
+      value: Math.round(users[k]![0]!),
+      share: round(users[k]![0]! / total, 4),
+      change: change(users[k]![0]!, users[k]![1]!),
+    })),
+    platformActivation: pfs.map((pf) => {
+      const [now, then] = [0, days].map((o) => activationCounts(pf, plan, days, o).rate * 100);
+      return {
+        name: PLATFORM_LABEL[pf],
+        key: pf,
+        value: round(now!, 1),
+        change: change(now!, then!),
+      };
+    }),
+  };
+}
+
+/**
+ * How many workspaces score in each band of 10, stacked by zone so each
+ * column carries its zone's status color (under 40 at risk, 40–69 watch).
+ */
+function healthDistribution(scores: number[]) {
+  const counts = Array.from(
+    { length: 10 },
+    (_, b) => scores.filter((s) => Math.min(9, Math.floor(s / 10)) === b).length,
+  );
+  const zone = (lo: number, hi: number) => counts.map((c, b) => (b >= lo && b < hi ? c : 0));
+  return {
+    labels: counts.map((_, b) => (b === 9 ? "90–100" : `${b * 10}–${b * 10 + 9}`)),
+    series: [
+      { name: "At risk", values: zone(0, 4), tone: "bad" as const },
+      { name: "Watch", values: zone(4, 7), tone: "warn" as const },
+      { name: "Healthy", values: zone(7, 10), tone: "good" as const },
+    ],
+  };
+}
+
+/**
+ * Paying workspaces at the end of each of the last `months` whole months,
+ * oldest first: today's count walked back month by month, less each month's
+ * new workspaces and plus its cancellations, plan by plan. New Team
+ * workspaces start small; new and cancelled Business ones are the size of a
+ * typical Business account.
+ */
+function payingByMonth(plans: readonly ("team" | "business")[], months: number): number[] {
+  const out = new Array<number>(months).fill(0);
+  for (const p of plans) {
+    const inPlan = payingWorkspaces().filter((w) => w.plan.toLowerCase() === p);
+    const average = sum(inPlan.map((w) => w.mrr)) / Math.max(1, inPlan.length);
+    const newSize = p === "team" ? NEW_WORKSPACE_MRR : average;
+    const history = mrrHistory([p]).slice(-months);
+    let count = inPlan.length;
+    for (let k = months - 1; k >= 0; k--) {
+      out[k] += count;
+      count += history[k]!.churn / average - history[k]!.new / newSize;
+    }
+  }
+  return out.map(Math.round);
+}
+
+/**
+ * ARPA, monthly revenue churn, and lifetime value (ARPA ÷ churn) for the
+ * latest whole month against the one before, each month's MRR over that
+ * month's paying workspaces.
+ */
+function unitEconomics(
+  plans: readonly ("team" | "business")[],
+  last: RevenueMonth,
+  before: RevenueMonth,
+  year: RevenueMonth[],
+) {
+  const counts = payingByMonth(plans, year.length);
+  const countOf = (m: RevenueMonth) => counts[year.indexOf(m)] ?? counts.at(-1)!;
+  const churn = (m: RevenueMonth) => (m.churn + m.contraction) / (m.start || 1);
+  const arpa = (m: RevenueMonth) => m.end / (countOf(m) || 1);
+  const ltv = (m: RevenueMonth) => arpa(m) / (churn(m) || 1);
+  return [
+    metric("arpa", arpa(last), arpa(before), formatCurrency, { series: year.map(arpa) }),
+    metric("revenue_churn", churn(last) * 100, churn(before) * 100, (v) => `${v.toFixed(2)}%`, {
+      series: year.map((m) => churn(m) * 100),
+    }),
+    metric("ltv", ltv(last), ltv(before), formatCurrency, {
+      series: year.map(ltv),
+      hint: "Revenue, before costs",
+    }),
+  ];
+}
+
+/**
+ * What each launch or rollback changed: the 7 days before it against the 7
+ * days after (the launch day left out), on the platforms it touched, for daily
+ * actives, signups a day, and activation of the signups in each week.
+ */
+function releaseImpact() {
+  return PRODUCT_EVENTS.filter((e) => e.kind === "launch" && e.from > 7).map((e) => {
+    const pfs = e.platforms ?? (Object.keys(PLATFORMS) as Platform[]);
+    const before = e.from + 1;
+    const after = e.from - 7;
+    const daily = (get: (pf: Platform, offset: number) => number[], offset: number) =>
+      sum(pfs.map((pf) => mean(get(pf, offset))));
+    const activation = (offset: number) => {
+      const counts = pfs.map((pf) => activationCounts(pf, "all", 7, offset));
+      return sum(counts.map((c) => c.aha)) / (sum(counts.map((c) => c.setup)) || 1);
+    };
+    const users = [before, after].map((o) => daily((pf, off) => dau(pf, "all", 7, off), o));
+    const joins = [before, after].map((o) => daily((pf, off) => signups(pf, "all", 7, off), o));
+    const rates = [before, after].map((o) => activation(o) * 100);
+    const pct = ([b, a]: number[]) => round(((a! - b!) / (b! || 1)) * 100, 1);
+    return {
+      label: e.label,
+      date: dateLabel(e.from),
+      platforms: e.platforms
+        ? e.platforms.map((pf) => PLATFORM_LABEL[pf]).join(" and ")
+        : "All platforms",
+      detail: e.detail,
+      metrics: [
+        {
+          name: "Daily active users",
+          before: formatNumber(users[0]!),
+          after: formatNumber(users[1]!),
+          change: pct(users),
+          unit: "percent" as const,
+        },
+        {
+          name: "Activation",
+          before: `${rates[0]!.toFixed(1)}%`,
+          after: `${rates[1]!.toFixed(1)}%`,
+          change: round(rates[1]! - rates[0]!, 1),
+          unit: "points" as const,
+        },
+        {
+          name: "Signups a day",
+          before: formatNumber(joins[0]!),
+          after: formatNumber(joins[1]!),
+          change: pct(joins),
+          unit: "percent" as const,
+        },
+      ],
+    };
+  });
+}
+
 function explainAnalytics({ metric, range, platform, plan, active }: Input<"explain_change">): Why {
   const days = RANGE_DAYS[range];
   const label = WHY_LABEL[metric];
@@ -1770,7 +1932,6 @@ function lifecycleStates(platform: string, plan: string) {
     // Reactivated and resurrected together, so a 4-series chart keeps at risk.
     cameBack: field(pop.reactivated).map((v, i) => v + field(pop.resurrected)[i]!),
     atRiskWau: field(pop.atRiskWau, -1),
-    atRiskMau: field(pop.atRiskMau, -1),
     dormant: Math.round(pop.dormant[HISTORY - 1]!),
     rates: [
       { name: "Current: back within 6 days", value: round(rate(pop.current, pop.wau) * 100, 1) },
@@ -1786,6 +1947,13 @@ function lifecycleStates(platform: string, plan: string) {
     sensitivity: tests
       .map(([name, boost]) => ({ name, value: Math.round(boosted(boost) - base) }))
       .sort((a, b) => b.value - a.value) as Item[],
+    // Where users were 28 days ago (or that they signed up since) and where
+    // they are today. Users lapsed (away 90+ days) at both ends are left out:
+    // years of past signups that would dwarf every move worth seeing.
+    flow: (pop.flow ?? [])
+      .filter((l) => !(l.from === "Lapsed" && l.to === "Lapsed"))
+      .map((l) => ({ from: l.from, to: l.to, users: Math.round(l.value) }))
+      .filter((l) => l.users > 0),
     rule: ruleFor("core", "daily states, last 28 days"),
   };
 }
@@ -1962,6 +2130,10 @@ export const analyticsHandlers: Record<string, (args: any) => unknown> = {
         asOf: AS_OF,
         partial: true,
         ...(against ? { comparisonLabel: against } : {}),
+        // The lead: explain_change's sentence, which reads against the prior period only.
+        ...(compare === "previous_period"
+          ? { summary: explainAnalytics({ metric: "wau", range, platform, plan, active }).summary }
+          : {}),
       },
       metrics: [
         metric(any ? "dau_any" : "dau", mean(daily[0]!), mean(daily[1]!), formatNumber, {
@@ -2108,12 +2280,22 @@ export const analyticsHandlers: Record<string, (args: any) => unknown> = {
     const cumulative = signups(platform, "all", elapsed).map((v) => Math.round((running += v)));
     const projected = (running / elapsed) * days;
     const step = 10 ** (Math.floor(Math.log10(projected)) - 2);
+    // The 80% range: the rest of the month moves as much as whole weeks have
+    // over the last 8, independently week to week.
+    const weeks = Array.from({ length: 8 }, (_, w) =>
+      sum(signups(platform, "all", 7, elapsed + 7 * w)),
+    );
+    const cv = Math.sqrt(sum(weeks.map((v) => (v - mean(weeks)) ** 2)) / 7) / mean(weeks);
+    const rest = projected - running;
+    const spread = 1.2816 * cv * rest * Math.sqrt(7 / (days - elapsed));
     return {
       label: "October signup goal",
       goal: Math.round((projected * 0.97) / step) * step,
       format: "number" as const,
       labels: Array.from({ length: days }, (_, i) => dateLabel(elapsed - 1 - i)),
       cumulative,
+      projected: Math.round(projected),
+      range: [Math.round(projected - spread), Math.round(projected + spread)],
       asOf: AS_OF,
     };
   },
@@ -2167,6 +2349,10 @@ export const analyticsHandlers: Record<string, (args: any) => unknown> = {
   },
 
   explain_change: explainAnalytics,
+
+  get_release_impact() {
+    return { releases: releaseImpact() };
+  },
 
   find_activation_moment({ platform, plan }: Input<"find_activation_moment">) {
     return activationMoments(platform, plan);
@@ -2227,6 +2413,7 @@ export const analyticsHandlers: Record<string, (args: any) => unknown> = {
         pass: a / n >= 2,
         note: `Week-4 retention is ${(a * 100).toFixed(0)}% for activated users against ${(n * 100).toFixed(0)}% for the rest: ${(a / n).toFixed(1)}×, ${a / n >= 2 ? "so the aha moment predicts who stays" : "under the 2× bar, so look for a better aha moment"}.`,
       },
+      ...byPlatform(plan, days),
     };
   },
 
@@ -2491,7 +2678,9 @@ export const analyticsHandlers: Record<string, (args: any) => unknown> = {
 
   get_account_health({ plan, list, limit }: Input<"get_account_health">) {
     const all = workspaces().filter((w) => plan === "all" || w.plan.toLowerCase() === plan);
-    const scored = all.map((w) => {
+    // Paying today: those that cancelled in the last 90 days stay only in the back-test.
+    const paying = all.filter((w) => !w.churned);
+    const scored = paying.map((w) => {
       const parts = healthParts(w);
       return { w, parts, score: healthScore(parts) };
     });
@@ -2519,41 +2708,28 @@ export const analyticsHandlers: Record<string, (args: any) => unknown> = {
       )[0]!;
       return `Weakest: ${weakest[0]} ${Math.round(weakest[1])}; active seats ${w.active28 >= w.active28Before ? "up" : "down"} ${pct(Math.abs(w.active28 / w.active28Before - 1))} on 90 days ago`;
     };
-    const seats = sum(all.map((w) => w.seats));
-    const active = sum(all.map((w) => w.active28));
-    const before = sum(all.map((w) => w.active28Before));
+    const seats = sum(paying.map((w) => w.seats));
+    const active = sum(paying.map((w) => w.active28));
+    const before = sum(paying.map((w) => w.active28Before));
     // Health is kept as of 90, 30, and 7 days ago and today; the seat rule is
     // read on today's 90-day comparison at every point (our rule).
     const scoreAt = [
-      (w: (typeof all)[number]) => w.score90Ago,
-      (w: (typeof all)[number]) => w.score30Ago,
-      (w: (typeof all)[number]) => w.scoreWeekAgo,
-      (w: (typeof all)[number]) => healthScore(healthParts(w)),
+      (w: (typeof paying)[number]) => w.score90Ago,
+      (w: (typeof paying)[number]) => w.score30Ago,
+      (w: (typeof paying)[number]) => w.scoreWeekAgo,
+      (w: (typeof paying)[number]) => healthScore(healthParts(w)),
     ];
     const healthyAt = scoreAt.map(
-      (score) => (all.filter((w) => score(w) >= 70).length / Math.max(1, all.length)) * 100,
+      (score) => (paying.filter((w) => score(w) >= 70).length / Math.max(1, paying.length)) * 100,
     );
     const riskAt = scoreAt.map((score) =>
-      sum(all.filter((w) => isArrAtRisk(w, score(w))).map((w) => w.mrr * 12)),
+      sum(paying.filter((w) => isArrAtRisk(w, score(w))).map((w) => w.mrr * 12)),
     );
-    // Paying workspaces a month ago: today's, less last month's new ones, plus
-    // its cancellations, plan by plan. New Team workspaces start small; new
-    // and cancelled Business ones are the size of a typical Business account.
     const plansIn = plan === "all" ? (["team", "business"] as const) : ([plan] as const);
-    const payingBefore =
-      all.length +
-      sum(
-        plansIn.map((p) => {
-          const month = mrrHistory([p]).at(-1)!;
-          const inPlan = all.filter((w) => w.plan.toLowerCase() === p);
-          const average = sum(inPlan.map((w) => w.mrr)) / Math.max(1, inPlan.length);
-          const newSize = p === "team" ? NEW_WORKSPACE_MRR : average;
-          return month.churn / average - month.new / newSize;
-        }),
-      );
+    const payingBefore = payingByMonth(plansIn, 2)[0]!;
     return {
       metrics: [
-        metric("paying_workspaces", all.length, payingBefore, formatNumber, {
+        metric("paying_workspaces", paying.length, payingBefore, formatNumber, {
           hint: "Team and Business",
         }),
         metric("healthy_share", healthyAt[3]!, healthyAt[1]!, (v) => `${Math.round(v)}%`, {
@@ -2605,6 +2781,7 @@ export const analyticsHandlers: Record<string, (args: any) => unknown> = {
           ]),
         };
       }),
+      distribution: healthDistribution(scored.map((x) => x.score)),
       backTest: backTest(all).map((b) => ({
         name: `${b.label} (${formatNumber(b.workspaces)} workspaces)`,
         value: round(b.rate * 100, 1),
@@ -2636,8 +2813,6 @@ export const analyticsHandlers: Record<string, (args: any) => unknown> = {
     const percent = (v: number) => `${(v * 100).toFixed(1)}%`;
     const year = history.slice(-12);
     const trailing = year.map((_, k) => retention(history, months - 12 + k));
-    const gained = (m: (typeof history)[number]) => m.new + m.expansion + m.reactivation;
-    const lost = (m: (typeof history)[number]) => m.contraction + m.churn;
     const usualContraction = mean(history.slice(-7, -1).map((m) => m.contraction / m.start));
     const cut = last.contraction / last.start / usualContraction;
     const steps = [
@@ -2669,6 +2844,7 @@ export const analyticsHandlers: Record<string, (args: any) => unknown> = {
             series: year.map(quickRatio),
           },
         ),
+        ...unitEconomics(plans, last, before, year),
       ],
       walk: [
         { label: `${month(0)} 1`, value: Math.round(last.start), kind: "base" as const },
@@ -2693,8 +2869,14 @@ export const analyticsHandlers: Record<string, (args: any) => unknown> = {
       cohortLabels: Array.from({ length: 12 }, (_, m) => `Month ${m}`),
       nrr: trailing.map((r) => round(r.nrr * 100, 1)),
       nrrBand: NRR_BAND,
-      gained: year.map((m) => Math.round(gained(m))),
-      lost: year.map((m) => Math.round(lost(m))),
+      // Each movement by month, losses negative, for a diverging stacked ColumnChart.
+      movements: [
+        { name: "New", values: year.map((m) => Math.round(m.new)) },
+        { name: "Expansion", values: year.map((m) => Math.round(m.expansion)) },
+        { name: "Reactivation", values: year.map((m) => Math.round(m.reactivation)) },
+        { name: "Contraction", values: year.map((m) => -Math.round(m.contraction)) },
+        { name: "Churn", values: year.map((m) => -Math.round(m.churn)) },
+      ],
       note:
         plans.includes(SEAT_CUTS.plan) && cut > 1.5
           ? `Contraction was ${cut.toFixed(1)}× its usual share in ${monthName(0, "long")} (${formatCurrency(last.contraction)}): Business workspaces cut seats at renewal. Net revenue retention ${percent(now.nrr)}, ${now.nrr >= then.nrr ? "up" : "down"} from ${percent(then.nrr)}.`
@@ -2703,7 +2885,7 @@ export const analyticsHandlers: Record<string, (args: any) => unknown> = {
   },
 
   get_account_activity({ plan, accountActive }: Input<"get_account_activity">) {
-    const all = workspaces().filter((w) => plan === "all" || w.plan.toLowerCase() === plan);
+    const all = payingWorkspaces().filter((w) => plan === "all" || w.plan.toLowerCase() === plan);
     const next = random(`account-activity:${plan}`);
     // Each workspace's members active each week drift from 12 weeks ago to now.
     const weeks = 12;
@@ -2828,7 +3010,7 @@ export const analyticsHandlers: Record<string, (args: any) => unknown> = {
     }
 
     if (plan !== "free") {
-      const dropped = workspaces()
+      const dropped = payingWorkspaces()
         .map((w) => ({ w, score: healthScore(healthParts(w)) }))
         .sort((a, b) => a.score - a.w.scoreWeekAgo - (b.score - b.w.scoreWeekAgo))[0]!;
       const drop = dropped.w.scoreWeekAgo - dropped.score;

@@ -23,6 +23,27 @@ export const METRICS = {
     basis: STOREFRONT,
     glossary: false,
   },
+  today_sales: {
+    label: "Sales today",
+    formula: "Total sales from online store and app orders since midnight",
+    window: "Today so far, against yesterday at the same time",
+    basis: "Store orders",
+    glossary: false,
+  },
+  today_orders: {
+    label: "Orders today",
+    formula: "Orders placed in the online store and app since midnight",
+    window: "Today so far, against yesterday at the same time",
+    basis: "Store orders",
+    glossary: false,
+  },
+  today_projected: {
+    label: "Projected close",
+    formula: "Sales so far ÷ the share of a day's sales usually in by this hour",
+    window: "Today, against yesterday's whole day",
+    basis: "Store orders; the range is how much the same weekday has varied",
+    glossary: false,
+  },
   live_orders: {
     label: "Orders",
     formula: "Orders placed in the online store and app",

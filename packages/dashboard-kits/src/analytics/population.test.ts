@@ -119,3 +119,30 @@ it("returns less the longer someone has been away, down to a floor", () => {
   expect(chanceAfter(curve, 2)).toBeCloseTo(0.64);
   expect(chanceAfter(curve, 60)).toBe(0.01);
 });
+
+describe("simulate flow", () => {
+  const days = 90;
+  const p = simulate({ ...input(days), flowDays: 28 });
+  const total = (key: "from" | "to", name: string) =>
+    p.flow!.filter((l) => l[key] === name).reduce((a, l) => a + l.value, 0);
+
+  it("ends with every user in the state they hold on the last day", () => {
+    const last = days - 1;
+    expect(total("to", "Weekly active")).toBeCloseTo(p.wau[last]!, 6);
+    expect(total("to", "At risk")).toBeCloseTo(p.atRiskMau[last]!, 6);
+  });
+
+  it("starts with the states at the flow's start, plus signups since", () => {
+    const start = days - 1 - 28;
+    expect(total("from", "Weekly active")).toBeCloseTo(p.wau[start]!, 6);
+    expect(total("from", "At risk")).toBeCloseTo(p.atRiskMau[start]!, 6);
+    const signedUp = Array.from(p.signups.subarray(start + 1)).reduce((a, v) => a + v, 0);
+    expect(total("from", "Signed up")).toBeCloseTo(signedUp, 6);
+  });
+
+  it("keeps the users: as many leave the left side as reach the right", () => {
+    const sum = (key: "from" | "to") =>
+      [...new Set(p.flow!.map((l) => l[key]))].reduce((a, n) => a + total(key, n), 0);
+    expect(sum("from")).toBeCloseTo(sum("to"), 6);
+  });
+});

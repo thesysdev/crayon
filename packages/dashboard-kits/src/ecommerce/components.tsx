@@ -2,6 +2,7 @@
 
 import { defineComponent } from "@openuidev/react-lang";
 import { z } from "zod/v4";
+import { BurnDown } from "../components/Charts/BurnDown";
 import { ProfitWaterfall as ProfitWaterfallView } from "../components/Charts/ProfitWaterfall";
 import { QuadrantChart } from "../components/Charts/QuadrantChart";
 import { SegmentFlow as SegmentFlowView } from "../components/Charts/SegmentFlow";
@@ -14,6 +15,7 @@ import {
   formatCurrency,
   formatNumber,
   formatPercent,
+  formatPoints,
 } from "../core/format";
 import { passed } from "../core/schemas";
 import { Pending } from "../genui-lib/Pending";
@@ -202,6 +204,104 @@ export const ReconciliationCard = defineComponent({
           </span>
         </div>
         <p className="kit-recon__summary">{recon?.summary}</p>
+      </div>
+    );
+  },
+});
+
+interface AdBudget {
+  name: string;
+  budget: number;
+  spent: number;
+  burn: number[];
+  elapsed: number;
+  projected: number;
+  pace: number;
+  status: "under" | "on_track" | "over";
+}
+
+/** Spending faster than plan is the risk for a budget; slower is only worth a look. */
+const BUDGET_LABEL = {
+  under: { text: "Under pace", tone: "info" },
+  on_track: { text: "On pace", tone: "positive" },
+  over: { text: "Over pace", tone: "negative" },
+} as const;
+/** The pace bar runs to 150%; 98–102% is on pace, as the targets judge it. */
+const BUDGET_PACE_MAX = 150;
+
+export const AdBudgetPacing = defineComponent({
+  name: "AdBudgetPacing",
+  description:
+    "Each ad platform's spend against its monthly budget, with a burn-down to month end. Pass get_targets's budgets.",
+  props: z.object({
+    budgets: z.array(passed("A budget from get_targets")).default([]),
+  }),
+  component: ({ props }) => {
+    const budgets = (props.budgets ?? []) as unknown as AdBudget[];
+    if (budgets.length === 0) return <Pending kind="table" rows={3} />;
+    const at = (v: number) => `${(Math.min(v, BUDGET_PACE_MAX) / BUDGET_PACE_MAX) * 100}%`;
+    return (
+      <div className="kit-scroll">
+        <table className="kit-table kit-commits">
+          <thead>
+            <tr>
+              <th>Platform</th>
+              <th>Pace</th>
+              <th>Burn-down</th>
+              <th className="kit-num">Month end</th>
+            </tr>
+          </thead>
+          <tbody>
+            {budgets.map((b) => {
+              const label = BUDGET_LABEL[b.status];
+              const over = b.projected - b.budget;
+              return (
+                <tr key={b.name}>
+                  <th scope="row">
+                    <span className="kit-commits__name">{b.name}</span>
+                    <span className="kit-small kit-muted">
+                      {formatCurrency(b.spent)} of {formatCurrency(b.budget)}
+                    </span>
+                  </th>
+                  <td>
+                    <span className="kit-pace">
+                      <span className="kit-pace__track" aria-hidden>
+                        <i
+                          className="kit-pace__band"
+                          style={{ left: at(98), width: `calc(${at(102)} - ${at(98)})` }}
+                        />
+                        <i
+                          className={`kit-pace__mark kit-pace__mark--${b.status === "over" ? "bad" : b.status}`}
+                          style={{ left: at(b.pace) }}
+                        />
+                      </span>
+                      <span className={`kit-status kit-status--${label.tone}`}>
+                        {b.pace}% · {label.text}
+                      </span>
+                    </span>
+                  </td>
+                  <td className="kit-commits__burn">
+                    <BurnDown
+                      burn={b.burn}
+                      committed={b.budget}
+                      elapsed={b.elapsed / 100}
+                      projected={b.projected}
+                      status={b.status}
+                      overIsBad
+                    />
+                  </td>
+                  <td className="kit-num">
+                    {formatCurrency(b.projected)}
+                    <span className={`kit-small ${over > 0 ? "kit-text-bad" : "kit-muted"}`}>
+                      {" "}
+                      {over > 0 ? `${formatCurrency(over)} over` : `${formatCurrency(-over)} left`}
+                    </span>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
       </div>
     );
   },
@@ -491,7 +591,7 @@ export const ProductPerformance = defineComponent({
 export const ProductLeaderboard = defineComponent({
   name: "ProductLeaderboard",
   description:
-    "Compact ranked list of best-selling products with revenue, units, category, a revenue bar relative to the leader, and the change against the previous period. Pass get_product_performance's products directly.",
+    "Ranked best sellers with revenue, a sparkline, any stock warning, units, category, a bar against the leader, and the change. Pass get_product_performance's products.",
   props: z.object({
     products: z.array(passed("A product: {name, revenue, units?, category?, change?}")).default([]),
     limit: z.number().optional(),
@@ -508,6 +608,20 @@ export const ProductLeaderboard = defineComponent({
             <span className="kit-leaderboard__body">
               <span className="kit-leaderboard__line">
                 <span className="kit-leaderboard__name">{product.name}</span>
+                {product.stockStatus && product.stockStatus !== "In stock" && (
+                  <span
+                    className={`kit-status kit-status--${STOCK_TONE[product.stockStatus]} kit-leaderboard__stock`}
+                    title={product.stockStatus}
+                  >
+                    <i className="kit-status__dot" />
+                    {product.stockStatus === "Out of stock" ? "Out" : "Low"}
+                  </span>
+                )}
+                {product.trend && product.trend.length > 1 && (
+                  <span className="kit-leaderboard__spark" aria-hidden>
+                    <Sparkline values={product.trend} tone="neutral" height={20} />
+                  </span>
+                )}
                 <span className="kit-num kit-strong">{formatCurrency(product.revenue)}</span>
               </span>
               <span className="kit-meter">
@@ -528,6 +642,181 @@ export const ProductLeaderboard = defineComponent({
           </li>
         ))}
       </ol>
+    );
+  },
+});
+
+interface CatalogItem {
+  name: string;
+  sku: string;
+  category: string;
+  abc: "A" | "B" | "C";
+  revenue: number;
+  stock: number;
+  dailySales: number;
+  daysOfCover: number;
+  reorderAt: number;
+  status: "Out of stock" | "Reorder now" | "Slow mover" | "Healthy";
+  action: string;
+}
+
+const HEALTH_TONE = {
+  "Out of stock": "negative",
+  "Reorder now": "warning",
+  "Slow mover": "info",
+  Healthy: "positive",
+} as const;
+/** The days-of-cover bar runs to this, so a slow mover still reads against the reorder tick. */
+const COVER_MAX = 90;
+
+export const InventoryHealth = defineComponent({
+  name: "InventoryHealth",
+  description:
+    "Every product's stock, most urgent first: ABC class, cover against the reorder point, status, next step: InventoryHealth(stock.catalog, stock.concentration).",
+  props: z.object({
+    catalog: z.array(passed("A product from get_inventory_health's catalog")).default([]),
+    concentration: z.string().optional(),
+  }),
+  component: ({ props }) => {
+    const catalog = (props.catalog ?? []) as unknown as CatalogItem[];
+    if (catalog.length === 0) return <Pending kind="table" rows={8} />;
+    const at = (days: number) => `${(Math.min(days, COVER_MAX) / COVER_MAX) * 100}%`;
+    return (
+      <div className="kit-stockhealth">
+        {props.concentration && <p className="kit-stockhealth__lead">{props.concentration}</p>}
+        <div className="kit-scroll">
+          <table className="kit-table kit-commits">
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th title="By share of the last 30 days' revenue: A makes the first 80%">Class</th>
+                <th>Days of cover · reorder at {catalog[0]!.reorderAt}</th>
+                <th className="kit-num">Sales/day</th>
+                <th>Status</th>
+                <th>Next step</th>
+              </tr>
+            </thead>
+            <tbody>
+              {catalog.map((c) => (
+                <tr key={c.sku}>
+                  <th scope="row">
+                    <span className="kit-commits__name">{c.name}</span>
+                    <span className="kit-small kit-muted">
+                      {c.sku} · {c.category}
+                    </span>
+                  </th>
+                  <td>
+                    <span className={`kit-abc kit-abc--${c.abc.toLowerCase()}`}>{c.abc}</span>
+                  </td>
+                  <td>
+                    <span className="kit-cover">
+                      <span className="kit-cover__track" aria-hidden>
+                        <i
+                          className={`kit-cover__bar kit-cover__bar--${HEALTH_TONE[c.status]}`}
+                          style={{ width: at(c.daysOfCover) }}
+                        />
+                        <i className="kit-cover__tick" style={{ left: at(c.reorderAt) }} />
+                      </span>
+                      <span className="kit-num">{Math.round(c.daysOfCover)} days</span>
+                    </span>
+                  </td>
+                  <td className="kit-num">{formatNumber(c.dailySales)}</td>
+                  <td>
+                    <span className={`kit-status kit-status--${HEALTH_TONE[c.status]}`}>
+                      <i className="kit-status__dot" />
+                      {c.status}
+                    </span>
+                  </td>
+                  <td className="kit-small">{c.action || <span className="kit-muted">—</span>}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    );
+  },
+});
+
+interface ChannelProfitRow {
+  name: string;
+  net: number;
+  productCost: number;
+  feesAndFulfillment: number;
+  marketing: number;
+  contribution: number;
+  margin: number;
+  marginBefore: number;
+}
+
+export const ChannelProfit = defineComponent({
+  name: "ChannelProfit",
+  description:
+    "Sales channels side by side, net sales to contribution profit and margin: ChannelProfit(profit.byChannel).",
+  props: z.object({
+    channels: z.array(passed("A channel from get_profit_bridge's byChannel")).default([]),
+  }),
+  component: ({ props }) => {
+    const rows = (props.channels ?? []) as unknown as ChannelProfitRow[];
+    if (rows.length === 0) return <Pending kind="table" rows={3} />;
+    const top = Math.max(0.01, ...rows.map((r) => Math.max(r.margin, r.marginBefore)));
+    return (
+      <div className="kit-scroll">
+        <table className="kit-table kit-commits">
+          <thead>
+            <tr>
+              <th>Channel</th>
+              <th className="kit-num">Net sales</th>
+              <th className="kit-num">Product cost</th>
+              <th className="kit-num">Fees, shipping, returns</th>
+              <th className="kit-num">Marketing</th>
+              <th className="kit-num">Contribution</th>
+              <th>Margin</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((r) => {
+              const points = (r.margin - r.marginBefore) * 100;
+              return (
+                <tr key={r.name}>
+                  <th scope="row">
+                    <span className="kit-commits__name">{r.name}</span>
+                  </th>
+                  <td className="kit-num">{formatCurrency(r.net)}</td>
+                  <td className="kit-num kit-muted">−{formatCurrency(r.productCost)}</td>
+                  <td className="kit-num kit-muted">−{formatCurrency(r.feesAndFulfillment)}</td>
+                  <td className="kit-num kit-muted">
+                    {r.marketing ? `−${formatCurrency(r.marketing)}` : "—"}
+                  </td>
+                  <td className="kit-num kit-strong">{formatCurrency(r.contribution)}</td>
+                  <td>
+                    <span className="kit-cover">
+                      <span className="kit-cover__track" aria-hidden>
+                        <i
+                          className="kit-cover__bar kit-cover__bar--positive"
+                          style={{ width: `${(Math.max(0, r.margin) / top) * 100}%` }}
+                        />
+                        <i
+                          className="kit-cover__tick"
+                          style={{ left: `${(Math.max(0, r.marginBefore) / top) * 100}%` }}
+                        />
+                      </span>
+                      <span className="kit-num">{formatPercent(r.margin, 1)}</span>
+                      {Math.abs(points) >= 0.1 && (
+                        <span
+                          className={`kit-small kit-num kit-text-${points >= 0 ? "good" : "bad"}`}
+                        >
+                          {formatPoints(points)}
+                        </span>
+                      )}
+                    </span>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
     );
   },
 });

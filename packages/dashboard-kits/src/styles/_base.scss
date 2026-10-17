@@ -153,6 +153,14 @@
   border-bottom: 1px solid var(--kit-border);
   vertical-align: middle;
 }
+// A row header reads like a body cell: same padding, type, and alignment.
+.kit-table tbody th {
+  padding: 11px 12px;
+  vertical-align: middle;
+  font: var(--kit-body);
+  color: var(--kit-ink);
+  white-space: normal;
+}
 .kit-table th:first-child,
 .kit-table td:first-child {
   padding-left: 0;
@@ -165,9 +173,11 @@
 .kit-table td.kit-num {
   text-align: right;
 }
-.kit-table tbody tr:last-child td {
+.kit-table tbody tr:last-child td,
+.kit-table tbody tr:last-child th {
   border-bottom: 0;
 }
+.kit-table tbody tr:hover th,
 .kit-table tbody tr:hover td {
   background: color-mix(in oklch, var(--kit-sunk) 70%, transparent);
 }
@@ -338,4 +348,63 @@
   .kit-action {
     grid-template-columns: minmax(0, 1fr);
   }
+}
+
+// ── Pacing tables: AI credit commits, ad budgets ──
+// Name over its detail; spans stack as blocks so the cell stays a table cell
+// and its border lines up with the row.
+.kit-commits th[scope="row"] > span {
+  display: block;
+}
+.kit-commits th[scope="row"] > span + span {
+  margin-top: 2px;
+}
+.kit-commits__name {
+  font-weight: 600;
+  color: var(--kit-ink);
+}
+.kit-commits__burn {
+  width: 22%;
+  min-width: 140px;
+}
+.kit-pace {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  min-width: 150px;
+}
+.kit-pace__track {
+  position: relative;
+  width: 100%;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--kit-sunk);
+}
+.kit-pace__band {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-radius: 999px;
+  background: var(--kit-good-bg);
+  outline: 1px solid color-mix(in srgb, var(--kit-good) 40%, transparent);
+}
+.kit-pace__mark {
+  position: absolute;
+  top: 50%;
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  border: 2px solid var(--kit-card);
+  background: var(--kit-good);
+  transform: translate(-50%, -50%);
+}
+.kit-pace__mark--under {
+  background: var(--kit-warn);
+}
+.kit-pace__mark--over {
+  background: var(--kit-accent);
+}
+.kit-pace__mark--bad {
+  background: var(--kit-bad);
 }

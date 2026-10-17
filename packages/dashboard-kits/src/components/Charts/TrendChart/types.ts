@@ -7,6 +7,8 @@ export interface TrendChartSeries {
   emphasis?: "primary" | "muted";
   /** Overrides the series color the chart would assign. */
   color?: string;
+  /** A status color instead of a categorical one: good, warning, or bad. */
+  tone?: "good" | "warn" | "bad";
   dashed?: boolean;
 }
 

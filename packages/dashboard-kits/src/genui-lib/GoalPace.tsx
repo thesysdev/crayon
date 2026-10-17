@@ -9,7 +9,7 @@ import { Pending } from "./Pending";
 export const GoalPace = defineComponent({
   name: "GoalPace",
   description:
-    "Progress toward a goal for a calendar period, like a monthly sales target: a gauge of the share reached with a tick where the pace says it should be, whether the period is on pace and where it is projected to finish, and the running total against the straight-line pace to the goal. Pass a goal tool's result directly: GoalPace(goal).",
+    "Progress toward a goal for a calendar period (a monthly sales target): a gauge with a tick where the pace says it should be, whether it is on pace and where it will finish, and the running total against the straight-line pace. Pass a goal tool's result: GoalPace(goal).",
   props: z.object({
     goal: goalSchema,
   }),

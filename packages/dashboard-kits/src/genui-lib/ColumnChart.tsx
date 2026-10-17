@@ -9,7 +9,7 @@ import { Pending } from "./Pending";
 export const ColumnChart = defineComponent({
   name: "ColumnChart",
   description:
-    'Column chart over time or categories, grouped or stacked, drawn by react-ui\'s BarChart with its tooltip, hover band, and legend; up to 4 series in a fixed color order. Name the unit in yLabel, since the axis prints plain numbers. Use it instead of BarChart: ColumnChart(mix.labels, [{name: "New", values: mix.newCustomers}, {name: "Returning", values: mix.returningCustomers}], "number", true, "Customers").',
+    'Columns over time or categories, grouped or stacked (negatives draw below zero); up to 8 series. Use it instead of BarChart: ColumnChart(mix.labels, [{name: "New", values: mix.newCustomers}, {name: "Returning", values: mix.returningCustomers}], "number", true, "Customers").',
   props: z.object({
     labels: z.array(z.string()).default([]),
     series: z.array(seriesSchema).default([]),
@@ -25,6 +25,7 @@ export const ColumnChart = defineComponent({
       <ColumnChartView
         labels={labels}
         series={series}
+        format={props.format}
         stacked={props.stacked}
         yLabel={props.yLabel}
         fill

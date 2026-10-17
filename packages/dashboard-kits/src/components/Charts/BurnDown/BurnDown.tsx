@@ -16,7 +16,13 @@ const PAD = 3;
  * the commit assumes (faint). d3 linear scales at the container's real width;
  * the geometry is pure (burnGeometry.ts).
  */
-export function BurnDown({ height = 44, className, status, ...input }: BurnDownProps) {
+export function BurnDown({
+  height = 44,
+  className,
+  status,
+  overIsBad = false,
+  ...input
+}: BurnDownProps) {
   const [ref, size] = useContainerSize<HTMLDivElement>(160, height);
   const width = size.width;
   const paths = useMemo(() => {
@@ -42,7 +48,16 @@ export function BurnDown({ height = 44, className, status, ...input }: BurnDownP
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [input.burn.join(","), input.committed, input.elapsed, input.projected, width, height]);
   return (
-    <div ref={ref} className={clsx(P, `${P}--${status}`, className)} style={{ height }}>
+    <div
+      ref={ref}
+      className={clsx(
+        P,
+        `${P}--${status}`,
+        overIsBad && status === "over" && `${P}--bad`,
+        className,
+      )}
+      style={{ height }}
+    >
       <svg width={width} height={height} aria-hidden>
         <line className={`${P}-today`} x1={paths.today} x2={paths.today} y1={0} y2={height} />
         <path className={`${P}-ideal`} d={paths.ideal} />

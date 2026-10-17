@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { labelIndexes, valueScale } from "./scale";
+import { fitsWithoutZero, labelIndexes, valueScale } from "./scale";
 
 describe("valueScale", () => {
   it("includes zero and rounds the top to a nice tick", () => {
@@ -37,5 +37,27 @@ describe("labelIndexes", () => {
 
   it("shows every label when there is room", () => {
     expect(labelIndexes(5, 600, 72)).toEqual([0, 1, 2, 3, 4]);
+  });
+});
+
+describe("valueScale without zero", () => {
+  it("fits the data with room on both sides", () => {
+    const { scale } = valueScale([108, 112], [200, 0], 4, false);
+    const [lo, hi] = scale.domain();
+    expect(lo).toBeGreaterThan(0);
+    expect(lo).toBeLessThanOrEqual(108);
+    expect(hi).toBeGreaterThanOrEqual(112);
+  });
+});
+
+describe("fitsWithoutZero", () => {
+  it("fits a level far from zero", () => {
+    expect(fitsWithoutZero([108, 110, 112])).toBe(true);
+  });
+
+  it("keeps zero for a wide spread or values on both sides", () => {
+    expect(fitsWithoutZero([10, 60])).toBe(false);
+    expect(fitsWithoutZero([-5, 5])).toBe(false);
+    expect(fitsWithoutZero([7])).toBe(false);
   });
 });

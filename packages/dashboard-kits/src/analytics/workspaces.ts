@@ -340,7 +340,7 @@ export function workspaces(): Workspace[] {
     return w;
   });
   const taken = new Set(out.map((w) => w.name));
-  for (let i = out.length; i < PAYING_WORKSPACES; i++) {
+  const generated = (i: number): Workspace => {
     // Mostly small Team workspaces (a median near 6 seats), and a tenth on Business.
     const plan = next() < 0.9 ? "Team" : "Business";
     const seats = Math.round(plan === "Team" ? 3 + 45 * next() ** 3 : 40 + 320 * next() ** 1.8);
@@ -380,15 +380,23 @@ export function workspaces(): Workspace[] {
     w.scoreWeekAgo = Math.round(now - drift * 6 + (next() - 0.5) * 4);
     w.score30Ago = Math.round(now - drift * 20 + (next() - 0.5) * 6);
     w.score90Ago = Math.max(0, Math.min(100, Math.round(now - drift * 40 + (next() - 0.5) * 10)));
-    out.push(w);
-  }
+    return w;
+  };
+  for (let i = out.length; i < PAYING_WORKSPACES; i++) out.push(generated(i));
   // Churn over the last 90 days, more likely the lower the score was then.
   for (const w of out.slice(NAMED.length)) {
     w.churned = next() < 0.55 * (1 - w.score90Ago / 100) ** 2.2;
   }
+  // Those that cancelled stay for the back-test only; as many workspaces
+  // joined since, so PAYING_WORKSPACES are paying today.
+  const cancelled = out.filter((w) => w.churned).length;
+  for (let k = 0; k < cancelled; k++) out.push(generated(out.length));
   cache = out;
   return out;
 }
+
+/** The workspaces paying today: every one but those that cancelled in the last 90 days. */
+export const payingWorkspaces = () => workspaces().filter((w) => !w.churned);
 
 /** Churn by health band 90 days ago: does a low score back then predict leaving? */
 export function backTest(list: Workspace[]) {

@@ -193,12 +193,29 @@ function channelsFor(channel: string): Channel[] {
 export type CustomerType = "all" | "new" | "returning";
 
 /**
- * The data is as of 3:48 PM, when the store has taken this share of a day's
- * orders. The last day of every window counts only that much, so today is
- * set against the same hours of each comparison day rather than whole days.
+ * The data is as of 3:48 PM. The last day of every window counts only the
+ * share of a day's orders each channel has usually taken by then (its hour
+ * profile, see hourShares), so today is set against the same hours of each
+ * comparison day rather than whole days.
  */
-const SHARE_OF_DAY_SO_FAR = 0.62;
 let cutLastDay = true;
+
+/** Minutes of today gone by AS_OF (3:48 PM). */
+const MINUTES_SO_FAR = 15 * 60 + 48;
+
+/** The share of a day's orders a channel has usually taken by 3:48 PM, on today's kind of day. */
+function shareSoFar(ch: Channel): number {
+  return shareBy(ch, [0, 6].includes(dayOfWeek(0)), MINUTES_SO_FAR / 60);
+}
+
+/** The same for a set of channels, weighted by their orders. */
+function shareSoFarFor(chs: Channel[]): number {
+  const weights = chs.map((ch) => CHANNELS[ch].orders);
+  return sum(chs.map((ch, k) => shareSoFar(ch) * weights[k]!)) / (sum(weights) || 1);
+}
+
+/** The online store and app together: what ad spend is cut by, as platforms spend through the day. */
+const storefrontShareSoFar = () => shareSoFarFor(STOREFRONT);
 
 /** Runs `fn` with every window's last day counted whole, for windows that end before today on purpose. */
 function wholeDays<T>(fn: () => T): T {
@@ -233,6 +250,7 @@ function series(
   for (const ch of channels) {
     const h = history(ch);
     const values = h[field];
+    const before = days > 0 ? out[days - 1] : 0;
     for (let i = 0; i < days; i++) {
       const d = HISTORY - offset - days + i;
       if (type === "all" || field === "sessions") {
@@ -245,8 +263,9 @@ function series(
       const part = type === "new" ? share : field === "newOrders" ? 0 : 1 - share;
       out[i] += values[d] * part;
     }
+    // Today's channel counts only the hours gone.
+    if (days > 0 && cutLastDay) out[days - 1] = before + (out[days - 1] - before) * shareSoFar(ch);
   }
-  if (days > 0 && cutLastDay) out[days - 1] *= SHARE_OF_DAY_SO_FAR;
   return out;
 }
 const current = (chs: Channel[], field: Field, range: Range, type: CustomerType = "all") =>
@@ -345,7 +364,7 @@ function marketingChannel(m: (typeof MARKETING)[number], days: number, offset: n
         (1 + m.growth * ((HISTORY - offset - days + i) / HISTORY)) *
         (0.9 + next() * 0.2) *
         // Platforms spend through the day, so the last day is cut like sales.
-        (i === days - 1 && cutLastDay ? SHARE_OF_DAY_SO_FAR : 1),
+        (i === days - 1 && cutLastDay ? storefrontShareSoFar() : 1),
   );
   return {
     revenue,
@@ -1004,8 +1023,8 @@ function octoberPlan(
 }
 
 /** The plan to date: October's first days, with today cut at the same hours as the actual. */
-const planToDate = (plan: number[]) =>
-  sum(plan.slice(0, MONTH_ELAPSED - 1)) + plan[MONTH_ELAPSED - 1]! * SHARE_OF_DAY_SO_FAR;
+const planToDate = (plan: number[], share = storefrontShareSoFar()) =>
+  sum(plan.slice(0, MONTH_ELAPSED - 1)) + plan[MONTH_ELAPSED - 1]! * share;
 
 /** October to date, day by day, cut at the same hours today. */
 function octoberActual(chs: Channel[], metric: Parameters<typeof octoberPlan>[1]) {
@@ -1026,7 +1045,12 @@ function monthTarget(chs: Channel[], t: (typeof TARGETS)[number]) {
   const plan = octoberPlan(chs, t.metric);
   const actualDays = octoberActual(chs, t.metric);
   const actual = sum(actualDays);
-  const toDate = planToDate(plan);
+  // Today's plan cut by the same hours as the actual: ad spend by the
+  // storefront's day, everything else by each channel's own.
+  const toDate = planToDate(
+    plan,
+    t.metric === "adSpend" ? storefrontShareSoFar() : shareSoFarFor(chs),
+  );
   // The rest of today, and the days after it.
   const remaining = sum(plan) - toDate;
   // Pace: each whole day's actual against its plan. The forecast carries the
@@ -1062,11 +1086,195 @@ function monthTarget(chs: Channel[], t: (typeof TARGETS)[number]) {
   };
 }
 
+/**
+ * Each ad platform's October budget and how it is burning: the plan (last
+ * year's same weekdays, +6%) as the budget, spend so far by day, and the
+ * month-end forecast at the pace so far, the same rule as the ad budget
+ * target. Spend follows the storefront's share of sales, as the target does,
+ * so the platforms add up to it for any channel filter.
+ */
+function adBudgets(chs: Channel[]) {
+  const planShare = wholeDays(() => storefrontShare(chs, MONTH_DAYS, MONTH_LAST_YEAR));
+  const plans = wholeDays(() => adSpendDaily(MONTH_DAYS, MONTH_LAST_YEAR)).platforms;
+  const share = storefrontShare(chs, MONTH_ELAPSED, 0);
+  const elapsed = (MONTH_ELAPSED - 1 + storefrontShareSoFar()) / MONTH_DAYS;
+  return adSpendDaily(MONTH_ELAPSED, 0).platforms.flatMap((p) => {
+    const plan = plans
+      .find((q) => q.key === p.key)!
+      .daily.map((v, i) => v * PLAN.adSpend * planShare[i]!);
+    const budget = sum(plan);
+    if (budget <= 0) return [];
+    let running = 0;
+    const burn = p.daily.map((v, i) => (running += v * share[i]!));
+    const spent = running;
+    const pace = spent / (planToDate(plan) || 1);
+    const projected = spent + (budget - planToDate(plan)) * pace;
+    return [
+      {
+        name: p.label,
+        budget: Math.round(budget),
+        spent: Math.round(spent),
+        burn: burn.map(Math.round),
+        elapsed: round(elapsed * 100, 1),
+        projected: Math.round(projected),
+        pace: Math.round(pace * 100),
+        status:
+          pace > 1.02
+            ? ("over" as const)
+            : pace < 0.98
+              ? ("under" as const)
+              : ("on_track" as const),
+      },
+    ];
+  });
+}
+
+// ── Orders by hour ─────────────────────────────────────────────────────────
+
+function bump(h: number, at: number, width: number) {
+  return Math.exp(-((h - at) ** 2) / (2 * width ** 2));
+}
+
+/**
+ * The share of a day's orders in each hour, by channel and weekday or weekend
+ * (our model, in UTC like every day here): the store sells at lunch and most
+ * in the evening, the app before work, at lunch, and late; Amazon through the
+ * day. Weekends start later.
+ */
+export function hourShares(ch: Channel, weekend: boolean): number[] {
+  const morning = weekend ? 11 : ch === "app" ? 8 : 9;
+  const weight = (h: number) =>
+    ch === "amazon"
+      ? 0.2 + bump(h, 14, 4)
+      : ch === "app"
+        ? 0.1 + 0.8 * bump(h, morning, 1.4) + 0.7 * bump(h, 12.5, 1.3) + 1.6 * bump(h, 21, 1.6)
+        : 0.15 + 0.5 * bump(h, morning, 1.6) + bump(h, 12.5, 2.2) + 1.4 * bump(h, 20, 2);
+  const raw = Array.from({ length: 24 }, (_, h) => weight(h));
+  const total = sum(raw);
+  return raw.map((v) => v / total);
+}
+
+const WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+
+/**
+ * Average orders per hour by weekday over the whole days of the range (ending
+ * yesterday, so today's open hours don't skew it): each day's real orders per
+ * channel, spread over the hours by that channel's profile.
+ */
+function ordersByHour(range: Range, channel: string) {
+  const days = RANGE_DAYS[range];
+  const chs = channelsFor(channel);
+  const rows = WEEKDAYS.map(() => new Array<number>(24).fill(0));
+  const seen = new Array<number>(7).fill(0);
+  for (const ch of chs) {
+    // Whole days: only today is cut to the hours gone, and today is left out.
+    const orders = wholeDays(() => series([ch], "orders", days, 1));
+    orders.forEach((n, i) => {
+      const js = dayOfWeek(days - i);
+      const row = (js + 6) % 7;
+      if (ch === chs[0]) seen[row]! += 1;
+      hourShares(ch, js === 0 || js === 6).forEach((s, h) => (rows[row]![h]! += n * s));
+    });
+  }
+  const values = rows.map((r, w) => r.map((v) => round(v / (seen[w] || 1), 1)));
+  let peak = { w: 0, h: 0 };
+  values.forEach((r, w) => r.forEach((v, h) => v > values[peak.w]![peak.h]! && (peak = { w, h })));
+  const hour = (h: number) => `${String(h).padStart(2, "0")}:00`;
+  return {
+    rows: values.map((v, w) => ({ label: WEEKDAYS[w]!, values: v })),
+    columns: Array.from({ length: 24 }, (_, h) => hour(h)),
+    peak: `${WEEKDAYS[peak.w]} ${hour(peak.h)}, ${formatNumber(values[peak.w]![peak.h]!)} orders an hour`,
+    rule: `Average orders per hour, the ${days} whole days to yesterday, UTC · busiest ${WEEKDAYS[peak.w]} ${hour(peak.h)}`,
+  };
+}
+
 // ── Live: the last hour ────────────────────────────────────────────────────
 
-/** Minutes the store has been open today by AS_OF (3:48 PM) and the hour's share of the day's traffic. */
-const MINUTES_SO_FAR = 15 * 60 + 48;
+/** The hour's share of the day's traffic, for the last hour. */
 const AFTERNOON_LIFT = 1.18;
+
+/** Hours of today gone by AS_OF (3:48 PM): 15 whole hours and most of the 16th. */
+const HOURS_SO_FAR = MINUTES_SO_FAR / 60;
+
+/** The share of a day's orders that comes in before `hours` (fractional hours count part of the hour). */
+function shareBy(ch: Channel, weekend: boolean, hours: number): number {
+  const shares = hourShares(ch, weekend);
+  const whole = Math.floor(hours);
+  return sum(shares.slice(0, whole)) + (shares[whole] ?? 0) * (hours - whole);
+}
+
+/**
+ * Today so far against yesterday at the same time, by hour, and where today
+ * closes at this pace. Each channel's sales today are spread over the hours by
+ * its profile and scaled so the hours add up to the sales so far; yesterday is
+ * the whole day spread the same way. The projected close divides the sales so
+ * far by the share a day usually has in by now; its 80% range comes from how
+ * much the same weekday varied over the last 8 weeks, on the part of the day
+ * still to come.
+ */
+function todaySoFar() {
+  const front = STOREFRONT;
+  const weekendOn = (ago: number) => [0, 6].includes(dayOfWeek(ago));
+  const hourly = (ago: number, field: Field, upTo: number) => {
+    const out = new Array<number>(24).fill(0);
+    for (const ch of front) {
+      const whole = wholeDays(() => series([ch], field, 1, ago))[0]!;
+      const shares = hourShares(ch, weekendOn(ago));
+      // Today: what has come in so far, spread over the hours gone.
+      const scale = ago === 0 ? series([ch], field, 1, 0)[0]! / (shareSoFar(ch) || 1) : whole;
+      for (let h = 0; h < 24; h++) {
+        const part = h + 1 <= upTo ? 1 : h < upTo ? upTo - h : 0;
+        out[h] += scale * shares[h]! * part;
+      }
+    }
+    return out;
+  };
+  const today = hourly(0, "total", HOURS_SO_FAR);
+  const yesterday = hourly(1, "total", 24);
+  const salesNow = sum(today);
+  const sameTime = (ago: number, field: Field) =>
+    sum(
+      front.map(
+        (ch) =>
+          wholeDays(() => series([ch], field, 1, ago))[0]! *
+          shareBy(ch, weekendOn(ago), HOURS_SO_FAR),
+      ),
+    );
+  // Each channel's sales so far over the share of its day usually in by now.
+  const projected = sum(front.map((ch) => series([ch], "total", 1, 0)[0]! / (shareSoFar(ch) || 1)));
+  const sharesNow = salesNow / (projected || 1);
+  // The same weekday's whole days over the last 8 weeks, for the spread.
+  const weekdays = Array.from({ length: 8 }, (_, w) =>
+    sum(front.map((ch) => wholeDays(() => series([ch], "total", 1, 7 * (w + 1)))[0]!)),
+  );
+  const cv = Math.sqrt(sum(weekdays.map((v) => (v - mean(weekdays)) ** 2)) / 7) / mean(weekdays);
+  const spread = 1.2816 * cv * projected * (1 - sharesNow);
+  const ordersNow = series(front, "orders", 1, 0)[0]!;
+  const hourLabel = (h: number) => `${String(h).padStart(2, "0")}:00`;
+  return {
+    hours: Array.from({ length: 24 }, (_, h) => hourLabel(h)),
+    // Only whole hours: the hour in progress would read as a drop.
+    hourlyToday: today.slice(0, Math.floor(HOURS_SO_FAR)).map(Math.round),
+    hourlyYesterday: yesterday.map(Math.round),
+    todayMetrics: [
+      metric("today_sales", salesNow, sameTime(1, "total"), formatCurrency, {
+        hint: `Since midnight UTC, against yesterday by ${AS_OF.split(", ")[1]}`,
+      }),
+      metric("today_orders", ordersNow, sameTime(1, "orders"), formatNumber, {
+        hint: "Online store and app",
+      }),
+      metric(
+        "today_projected",
+        projected,
+        wholeDays(() => series(front, "total", 1, 1))[0]!,
+        formatCurrency,
+        {
+          hint: `80% range ${formatCurrency(projected - spread)}–${formatCurrency(projected + spread)}`,
+        },
+      ),
+    ],
+  };
+}
 
 function liveView() {
   const front = STOREFRONT;
@@ -1085,14 +1293,15 @@ function liveView() {
   const orders = bucket("orders");
   // The same five minutes a week ago, and every step as a rate per 5 minutes
   // so the step still in progress does not read as a drop.
-  const weekRate = (series(front, "sessions", 1, 7)[0]! / MINUTES_SO_FAR) * AFTERNOON_LIFT * 1.08;
+  const weekRate = (series(front, "sessions", 1, 7)[0]! / MINUTES_SO_FAR) * AFTERNOON_LIFT;
   const per5 = (values: number[]) => values.map((v, k) => Math.round((v / steps[k]!) * 5));
   const sessionsWeekAgo = steps.map(() => Math.round(weekRate * 5 * (0.88 + next() * 0.24)));
   const aov = sum(series(front, "total", 1, 0)) / sum(series(front, "orders", 1, 0));
   const sales = orders.map((o) => Math.round(o * aov * (0.9 + next() * 0.2)));
-  // The same hour a week ago, for the comparison.
+  // The same hour a week ago, for the comparison: that day's hours to 3:48 PM
+  // at the same afternoon rate as today, as the sessions chart compares them.
   const weekAgo = (field: Field) =>
-    (series(front, field, 1, 7)[0]! / (24 * 60)) * AFTERNOON_LIFT * 1.08 * 58;
+    (series(front, field, 1, 7)[0]! / MINUTES_SO_FAR) * AFTERNOON_LIFT * 58;
   const hour = { sessions: sum(sessions), orders: sum(orders), sales: sum(sales) };
   const views = Math.round(hour.sessions * 0.57);
   const carts = Math.round(views * 0.22);
@@ -1117,8 +1326,6 @@ function liveView() {
     labels,
     sessions: per5(sessions),
     sessionsWeekAgo,
-    orders: per5(orders),
-    sales: per5(sales),
     visitorsNow: Math.round(perMinute("sessions") * 5 * 1.6),
     metrics: [
       tile("live_sessions", hour.sessions, weekAgo("sessions"), formatNumber, per5(sessions)),
@@ -1140,6 +1347,7 @@ function liveView() {
       { label: "Purchased", value: hour.orders },
     ],
     products: products.map((p) => ({ name: p.name, value: p.value })) as Item[],
+    ...todaySoFar(),
   };
 }
 
@@ -1746,6 +1954,72 @@ function buildInventory() {
       adSpendPerDay: Math.round((p.revenue / net) * adsPerDay),
     };
   });
+}
+
+/** Cover above this many days ties up cash: a candidate to discount rather than reorder. */
+const SLOW_COVER = 60;
+
+/**
+ * Every SKU's stock health, most urgent first: ABC class by its share of the
+ * last 30 days' revenue (A up to 80% cumulative, B to 95%, C the rest), days
+ * of cover against the reorder point (lead time plus safety stock), a status,
+ * and what to do about it. Plus a sentence on how concentrated revenue is.
+ */
+function inventoryCatalog(items: ReturnType<typeof inventory>) {
+  const revenue = new Map(productSales("30d", "all").map((p) => [p.sku, p.revenue]));
+  const ranked = [...items].sort((a, b) => (revenue.get(b.sku) ?? 0) - (revenue.get(a.sku) ?? 0));
+  const total = sum(ranked.map((i) => revenue.get(i.sku) ?? 0)) || 1;
+  let running = 0;
+  const abc = new Map(
+    ranked.map((i) => {
+      const before = running / total;
+      running += revenue.get(i.sku) ?? 0;
+      return [i.sku, before < 0.8 ? "A" : before < 0.95 ? "B" : "C"] as const;
+    }),
+  );
+  const rank = { "Out of stock": 0, "Reorder now": 1, "Slow mover": 2, Healthy: 3 } as const;
+  const catalog = items
+    .map((i) => {
+      const status: keyof typeof rank =
+        i.stock === 0
+          ? "Out of stock"
+          : i.stock < i.reorderPoint
+            ? "Reorder now"
+            : i.daysOfCover > SLOW_COVER
+              ? "Slow mover"
+              : "Healthy";
+      return {
+        name: i.name,
+        sku: i.sku,
+        category: CATEGORY_LABELS[i.category] ?? i.category,
+        abc: abc.get(i.sku)!,
+        revenue: Math.round(revenue.get(i.sku) ?? 0),
+        stock: i.stock,
+        dailySales: i.dailySales,
+        daysOfCover: i.daysOfCover,
+        reorderAt: LEAD_TIME + SAFETY_DAYS,
+        status,
+        action:
+          status === "Out of stock"
+            ? i.incoming
+              ? `Expedite PO (${formatNumber(i.incoming)} units)`
+              : "Order now"
+            : status === "Reorder now"
+              ? i.incoming
+                ? `PO lands in ${i.incomingInDays} days`
+                : `Order ${formatNumber(i.suggestedOrder ?? 0)}`
+              : status === "Slow mover"
+                ? `Discount: ${formatCurrency(i.stock * i.unitCost)} at cost`
+                : "",
+      };
+    })
+    .sort((a, b) => rank[a.status] - rank[b.status] || b.revenue - a.revenue);
+  const aSkus = catalog.filter((c) => c.abc === "A");
+  const aShort = aSkus.filter((c) => c.status === "Out of stock" || c.status === "Reorder now");
+  return {
+    catalog,
+    concentration: `${aSkus.length} of ${catalog.length} products make 80% of the last 30 days' revenue${aShort.length ? `; ${aShort.length} of them ${aShort.length === 1 ? "is" : "are"} below the reorder point` : ""}.`,
+  };
 }
 
 function stockStatus(sku: string): "In stock" | "Low stock" | "Out of stock" {
@@ -2737,6 +3011,8 @@ export const ecommerceHandlers: Record<string, (args: any) => unknown> = {
     const heroTrend = {
       ...trendOf(range, profitNow, profitThen, "currency", eventsFor(range)),
       comparisonLabel: COMPARISON_LABEL[compare],
+      // The lead: the same sentence explain_change writes for this metric and comparison.
+      summary: explain({ metric: "contribution_profit", range, channel, compare }).summary,
     };
     const metrics: Kpi[] = [
       metric("total_sales", sum(sales), sum(prior(chs, "total", range)), formatCurrency, {
@@ -3141,6 +3417,21 @@ export const ecommerceHandlers: Record<string, (args: any) => unknown> = {
       contributionMargin: share(c.contribution),
       breakEvenRoas: round(breakEvenRoas(days), 2),
       profitPerOrder: formatCurrency(c.contribution / sum(current(chs, "orders", range))),
+      // Every sales channel side by side, whatever the channel filter.
+      byChannel: (Object.keys(CHANNELS) as Channel[]).map((ch) => {
+        const t = totals(profitDays([ch], days, 0));
+        const before = totals(profitAgainst([ch], range, compare));
+        return {
+          name: CHANNELS[ch].label,
+          net: Math.round(t.net),
+          productCost: Math.round(t.cogs),
+          feesAndFulfillment: Math.round(t.fulfillment + t.fees + t.returnCosts),
+          marketing: Math.round(t.adSpend + t.otherMarketing),
+          contribution: Math.round(t.contribution),
+          margin: round(t.contribution / (t.net || 1), 4),
+          marginBefore: round(before.contribution / (before.net || 1), 4),
+        };
+      }),
     };
   },
 
@@ -3510,6 +3801,7 @@ export const ecommerceHandlers: Record<string, (args: any) => unknown> = {
       items: low
         .sort((a, b) => a.daysOfCover - b.daysOfCover)
         .map(({ category: _c, unitCost: _u, ...item }) => item),
+      ...inventoryCatalog(all),
     };
   },
 
@@ -3619,7 +3911,12 @@ export const ecommerceHandlers: Record<string, (args: any) => unknown> = {
       periodLabel: `October to date: ${MONTH_ELAPSED} of ${MONTH_DAYS} days`,
       // A channel with no spend (Amazon) has no ad budget to track.
       targets: TARGETS.map((t) => monthTarget(chs, t)).filter((t) => t.target > 0),
+      budgets: adBudgets(chs),
     };
+  },
+
+  get_orders_by_hour({ range, channel }: Input<"get_orders_by_hour">) {
+    return ordersByHour(range, channel);
   },
 
   get_live_view() {
@@ -3652,6 +3949,7 @@ export const ecommerceHandlers: Record<string, (args: any) => unknown> = {
     const sales = monthTarget(chs, TARGETS[0]);
     return {
       projected: sales.forecast,
+      range: [sales.forecastLow, sales.forecastHigh],
       planToDate: sales.toDate,
       label: "October sales goal",
       // The plan for the month, the same one the targets use.

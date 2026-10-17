@@ -1,6 +1,6 @@
 # Dashboard kits
 
-Three kits for the OpenUI dashboard artifact. A kit is everything a model needs to build dashboards for one domain: the dashboard artifact's base components plus the kit's own components, read-only data tools, prompt rules, and worked examples. All three are modeled on the dashboards teams already use, with the same metric names and definitions.
+Two kits for the OpenUI dashboard artifact. A kit is everything a model needs to build dashboards for one domain: the dashboard artifact's base components plus the kit's own components, read-only data tools, prompt rules, and worked examples. All three are modeled on the dashboards teams already use, with the same metric names and definitions.
 
 - **E-commerce**, for Sundial Goods, a direct-to-consumer brand. It is modeled on Shopify, Triple Whale, and GA4, and covers:
   - sales, the total sales breakdown, and contribution profit as the main number (CM1–CM3 and break-even ROAS);
@@ -20,13 +20,7 @@ Three kits for the OpenUI dashboard artifact. A kit is everything a model needs 
   - free to paid: the product-qualified funnel, Free plan limits, Business trials, and AI credit commits with their burn-down;
   - a 6-12 weekly business review, recommended actions to approve, and an alert back-test with N-of-M confirmation and quiet weekends.
 
-- **Workspace usage**, for the admins of a Relay customer (Brightline Health, 180 seats, renewing in 41 days; Kestrel Labs and Bluefin Studio for contrast). It is modeled on the admin analytics of Slack, GitHub Copilot, Microsoft 365, Gemini, Atlassian, and Notion, and covers:
-  - seat utilization and every seat's state, the seats to reclaim (remind at 30 days inactive, reclaim at 60) and the forecast at renewal;
-  - active members, adoption by team with groups under 5 hidden, how teams work together, champions (opt-out, names hidden by default), and the member directory with search, sorting, CSV export, and a names toggle;
-  - AI adoption by intensity and feature, and the credit pool against its pace with 75/90/100% alerts;
-  - estimated hours saved with its formula and editable inputs, benchmarks against Relay workspaces of the same size, and security coverage with admin events.
-
-The e-commerce kit has 10 dashboards and 30 data tools, the analytics kit 9 and 27, and the usage kit 7 and 16. They share a chart family (`HeroMetric`, `TrendChart`, `ColumnChart`, `BarList`, `ShareBar`, `GoalPace`, `VarianceWalk`) and blocks: `KpiStrip`, `InsightList`, `ConversionFunnel`, `CohortGrid`, `Tracker`, `DriverCards`, `RuleChips`, `DataStatus`, `BulletList`, and `ActionCards`.
+The e-commerce kit has 10 dashboards and 31 data tools and the analytics kit 9 and 27. They share a chart family (`HeroMetric`, `TrendChart`, `ColumnChart`, `BarList`, `ShareBar`, `HeatGrid`, `GoalPace`, `Tracker`, `VarianceWalk`, plus `SegmentFlow`, `QuadrantChart`, and `BurnDown` behind kit components) and blocks: `KpiStrip`, `InsightList`, `ConversionFunnel`, `CohortGrid`, `DriverCards`, `RuleChips`, `DataStatus`, `BulletList`, and `ActionCards`.
 
 The kits themselves live in the [`@openuidev/dashboard-kits`](../../../packages/dashboard-kits) package. This app is the playground: it installs the package, renders its galleries, and serves its prompts and tools.
 
@@ -96,7 +90,7 @@ This runs the kit contract check, then a production build. The check parses ever
 - The app uses `@openuidev/react-ui` and `@openuidev/react-headless` 0.17.1. `@openuidev/thesys` 0.14.0 asks for ^0.14, so `overrides` in `package.json` points it at 0.17.1; all 26 dashboards render with no errors. See finding 9 in DESIGN.md.
 - `next.config.ts` turns off Turbopack minification: re-minifying the `@openuidev/thesys` bundle produces invalid JavaScript. See finding 6 in DESIGN.md.
 - The package's theme lets the base `FilterBar` wrap on phones. See finding 4 in DESIGN.md.
-- The kits use react-ui's `BarChart`, `HeatmapChart`, and `SegmentedBar` where they fit, and draw the charts react-ui lacks. See "Visual design" in DESIGN.md.
+- Every kit chart is drawn on d3 with the same interactions (hover follower and tooltip, legend focus and pin, arrow keys, spring data morph). See "Visual design" in DESIGN.md.
 
 ## Add a kit
 

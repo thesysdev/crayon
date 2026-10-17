@@ -13,6 +13,36 @@ export interface ConversionFunnelProps {
   format?: "number" | "currency";
 }
 
+/** Below this many points of change, a step's rate counts as steady. */
+const STEADY_POINTS = 0.5;
+
+/**
+ * The step a reader should look at, by its index (the step it arrives at):
+ * the step whose rate fell most against the prior period, when one fell; else
+ * the biggest leak, the step that loses the largest share. Undefined for a
+ * funnel of two steps, where there is nothing to pick between.
+ */
+export function funnelFocus(
+  steps: FunnelStep[],
+): { index: number; kind: "fell" | "leak"; points?: number } | undefined {
+  if (steps.length < 3) return undefined;
+  let fell: { index: number; points: number } | undefined;
+  let leak = { index: 1, rate: Infinity };
+  steps.forEach((step, i) => {
+    const prior = steps[i - 1];
+    if (!prior) return;
+    const rate = step.value / (prior.value || 1);
+    if (rate < leak.rate) leak = { index: i, rate };
+    if (prior.previous && step.previous != null) {
+      const points = (rate - step.previous / prior.previous) * 100;
+      if (points <= -STEADY_POINTS && (!fell || points < fell.points)) fell = { index: i, points };
+    }
+  });
+  return fell
+    ? { index: fell.index, kind: "fell", points: fell.points }
+    : { index: leak.index, kind: "leak" };
+}
+
 /**
  * An ordered funnel as a step list: one bar per step on the ordinal ramp, the
  * share that continues and drops off between steps, the median time between
@@ -27,6 +57,7 @@ export function ConversionFunnel({ steps, format }: ConversionFunnelProps) {
   const overall = last.value / first;
   const prevOverall =
     steps[0].previous && last.previous != null ? last.previous / steps[0].previous : undefined;
+  const focus = funnelFocus(steps);
   const ramp = (i: number) =>
     `var(--kit-o${Math.min(5, Math.round((i / Math.max(1, steps.length - 1)) * 4) + 1)})`;
   return (
@@ -40,7 +71,9 @@ export function ConversionFunnel({ steps, format }: ConversionFunnelProps) {
         return (
           <Fragment key={`${step.label}-${i}`}>
             {prior && (
-              <div className="kit-funnel__step">
+              <div
+                className={`kit-funnel__step${focus?.index === i ? " kit-funnel__step--focus" : ""}`}
+              >
                 <span className="kit-funnel__rate">{formatPercent(rate)}</span>
                 <span className="kit-funnel__drop">
                   continue · {formatPercent(1 - rate)} drop off
@@ -73,6 +106,18 @@ export function ConversionFunnel({ steps, format }: ConversionFunnelProps) {
           </Fragment>
         );
       })}
+      {focus && (
+        <p className="kit-funnel__note">
+          <strong>
+            {focus.kind === "fell" ? "Biggest change" : "Biggest leak"}:{" "}
+            {steps[focus.index - 1]!.label.toLowerCase()} →{" "}
+            {steps[focus.index]!.label.toLowerCase()}
+          </strong>
+          {focus.kind === "fell"
+            ? `, ${formatPoints(focus.points!)} on the prior period.`
+            : `, ${formatPercent(1 - steps[focus.index]!.value / (steps[focus.index - 1]!.value || 1))} drop off.`}
+        </p>
+      )}
       <div className="kit-funnel__total">
         <span>Overall conversion</span>
         <span className="kit-funnel__overall">

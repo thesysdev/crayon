@@ -7,11 +7,10 @@ Dashboard kits for OpenUI. A kit is everything a model needs to build dashboards
 - a **data contract**: read-only tools with zod input and output schemas, called with `Query()`;
 - **sample data**: tool handlers over one coherent demo business.
 
-Three kits ship today:
+Two kits ship today:
 
 - **e-commerce**: Sundial Goods, modeled on Shopify, Triple Whale, and GA4;
 - **product analytics**: Relay's team looking at its own product, modeled on PostHog, Amplitude, and Mixpanel;
-- **workspace usage**: the page Relay shows its customers' admins (seats and reclaim, AI adoption and credits, value, security), modeled on the admin analytics of Slack, GitHub Copilot, Microsoft 365, Gemini, Atlassian, and Notion. Its demo workspaces are customers the analytics kit already tracks, so the two views of the same account agree.
 
 ## Entry points
 
@@ -20,7 +19,6 @@ Three kits ship today:
 | `@openuidev/dashboard-kits`            | client | The shared blocks (openui-lang definitions and plain React views), `createKitLibrary`, `createToolProvider` |
 | `@openuidev/dashboard-kits/ecommerce`  | client | `createEcommerceLibrary(base)` and the e-commerce components                                                |
 | `@openuidev/dashboard-kits/analytics`  | client | `createAnalyticsLibrary(base)` and the product analytics components                                         |
-| `@openuidev/dashboard-kits/usage`      | client | `createUsageLibrary(base)` and the workspace usage components                                               |
 | `@openuidev/dashboard-kits/server`     | server | Kit definitions, tool contracts, sample-data handlers, `buildSystemPrompt`, `runTool`. No React             |
 | `@openuidev/dashboard-kits/styles.css` | —      | The kit theme (light and dark) and every component's styles                                                 |
 
@@ -75,9 +73,10 @@ src/
       GoalPace/          gauge + pace chart, goalGeometry.ts (+ tests)
       Tracker/           status strip, trackerUtils.ts (+ tests)
       Sparkline/         KPI sparkline
-      ColumnChart/       react-ui's BarChart, sized and themed for the kits
+      ColumnChart/       grouped and diverging stacked columns, columnGeometry.ts (+ tests)
+      HeatGrid/          weekday × hour heatmap, heatGeometry.ts (+ tests)
       shared/            tooltip, legend, crosshair, d3 series geometry, AnimatedPath, spring (ported from react-ui)
-      hooks/ utils/      container size, chart hover, series focus, scales, pointer → index, formats, palette order
+      hooks/ utils/      container size, chart hover, series focus, scales, pointer → index, formats
     HeroMetric/ KpiStrip/ InsightList/ ConversionFunnel/ CohortGrid/ BarList/ ShareBar/ …
   genui-lib/             openui-lang definitions of the shared blocks, Pending, createKitLibrary
   core/                  schemas, formats, kit types, prompt assembly, tool provider, sample-data helpers,
@@ -89,7 +88,7 @@ src/
   styles/                theme tokens, shared primitives, each kit's component styles
 ```
 
-**Charts reuse react-ui where it fits.** Column charts, the lifecycle chart, and the power user curve are react-ui's `BarChart`; the activity heatmap is `HeatmapChart`; the share bar is `SegmentedBar`. The kit adds charts react-ui does not have — the period-over-period `TrendChart` (shaded gap, events, goal lines and benchmark bands, in-progress tail), `GoalPace`, `Tracker`, the KPI `Sparkline`, `ProfitWaterfall`, `SegmentFlow`, `QuadrantChart`, `SixTwelve`, and `BurnDown` — with react-ui's architecture: a hook-free empty-state dispatcher, an implementation with parts, d3 scales and d3-shape curves (react-ui's "natural" monotone curve), pure geometry with unit tests, react-ui's motion (a spring data morph so data changes glide, mounted hover followers so the crosshair, dots, and tooltip glide between points, and draw-on entrances), and a stylesheet per chart under the `kit` class prefix. Charts measure before their first paint and snap on resize, so only data changes animate.
+**Every chart is the kit's own, on d3.** `ColumnChart` (grouped, or stacked from zero with negative values below; the lifecycle chart, power user curve, and MRR movements use it), `HeatGrid` (the activity heatmap), the `ShareBar`, the period-over-period `TrendChart` (shaded gap, events, goal lines and benchmark bands, in-progress tail; lines far from zero fit their range, areas keep zero), `GoalPace`, `Tracker`, the KPI `Sparkline`, `ProfitWaterfall`, `SegmentFlow`, `QuadrantChart`, `SixTwelve`, and `BurnDown` all share one interaction model — a gliding hover follower and the shared tooltip, a legend that brings a series forward on hover and pins it on click, arrow keys — and react-ui's architecture: a hook-free empty-state dispatcher, an implementation with parts, d3 scales and d3-shape curves (react-ui's "natural" monotone curve), pure geometry with unit tests, react-ui's motion (a spring data morph so data changes glide, mounted hover followers so the crosshair, dots, and tooltip glide between points, and draw-on entrances), and a stylesheet per chart under the `kit` class prefix. Charts measure before their first paint and snap on resize, so only data changes animate.
 
 Where a react-ui chart was close but not a fit, the kit keeps its own:
 

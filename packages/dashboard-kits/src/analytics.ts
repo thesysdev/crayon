@@ -11,8 +11,10 @@ export {
   FeatureAdoption,
   FeatureValue,
   LifecycleChart,
+  LifecycleFlow,
   PaywallMatrix,
   PowerUserCurve,
+  ReleaseImpact,
   UserPaths,
   WeeklyReview,
 } from "./analytics/components";

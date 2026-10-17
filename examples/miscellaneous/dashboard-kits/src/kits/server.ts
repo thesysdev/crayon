@@ -8,7 +8,6 @@ import {
 import type { LibrarySpec } from "@openuidev/lang-core";
 import analyticsSpec from "../generated/analytics.spec.json";
 import ecommerceSpec from "../generated/ecommerce.spec.json";
-import usageSpec from "../generated/usage.spec.json";
 
 // Server-only: the library specs written by `npm run generate`, prompt
 // assembly, and the sample-data tool handlers.
@@ -16,7 +15,6 @@ import usageSpec from "../generated/usage.spec.json";
 const SPECS: Record<string, LibrarySpec> = {
   ecommerce: ecommerceSpec as LibrarySpec,
   analytics: analyticsSpec as LibrarySpec,
-  usage: usageSpec as LibrarySpec,
 };
 
 export function getKitSpec(kitId: string): LibrarySpec {

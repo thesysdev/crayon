@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { guardrailLight, liftOf, normalCdf, sampleRatio } from "./experiments";
+import { guardrailLight, liftOf, normalCdf, readOdds, sampleRatio } from "./experiments";
 
 describe("normalCdf", () => {
   it("matches the table", () => {
@@ -34,5 +34,20 @@ describe("guardrailLight", () => {
     expect(guardrailLight({ lift: 0.01, low: -0.01, high: 0.03 }, allowed, true)).toBe("yellow");
     expect(guardrailLight({ lift: 0.03, low: 0.01, high: 0.05 }, allowed, true)).toBe("red");
     expect(guardrailLight({ lift: -0.03, low: -0.05, high: -0.01 }, allowed, false)).toBe("red");
+  });
+});
+
+describe("readOdds", () => {
+  it("reads the chance of beating control off the interval", () => {
+    expect(readOdds(0, -2, 2, 10).chanceBetter).toBeCloseTo(0.5, 6);
+    // An interval with its low end on zero puts 97.5% of the spread above it.
+    expect(readOdds(3, 0, 6, 10).chanceBetter).toBeCloseTo(0.975, 3);
+  });
+
+  it("says how much longer an unclear lift needs, and nothing once it is clear", () => {
+    // z = 1: 80% power needs about 7.85 times the days run.
+    const unclear = readOdds(1, -0.96, 2.96, 10);
+    expect(unclear.moreDays).toBe(Math.ceil(10 * (2.8016 / 1) ** 2 - 10));
+    expect(readOdds(3, 1, 5, 10).moreDays).toBeUndefined();
   });
 });

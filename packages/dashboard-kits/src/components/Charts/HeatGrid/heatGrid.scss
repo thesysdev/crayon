@@ -1,0 +1,58 @@
+@use "../prefix" as brand;
+@use "../shared/chartBase" as base;
+
+// Rows by columns of shaded cells, a ring that follows the hovered cell, and
+// a stepped legend under the grid.
+
+@include base.chart-frame("heat-grid");
+@include base.plot-axes("heat-grid");
+
+.#{brand.$prefix}-heat-grid {
+  gap: 10px;
+
+  &-cell {
+    transition: fill 0.35s ease;
+  }
+
+  &-tick--active {
+    fill: var(--kit-ink);
+    font-weight: 600;
+  }
+
+  &-ring {
+    fill: none;
+    stroke: var(--kit-ink);
+    stroke-width: 1.5;
+    pointer-events: none;
+  }
+
+  &-legend {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 3px;
+    font: var(--kit-label);
+    color: var(--kit-ink-3);
+
+    span:first-child {
+      margin-right: 4px;
+    }
+
+    span:last-child {
+      margin-left: 4px;
+    }
+  }
+
+  &-swatch {
+    width: 14px;
+    height: 10px;
+    border-radius: 2px;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .#{brand.$prefix}-heat-grid-cell--animated {
+    opacity: 0;
+    animation: #{brand.$prefix}-fade-appear 0.4s ease-out forwards;
+  }
+}

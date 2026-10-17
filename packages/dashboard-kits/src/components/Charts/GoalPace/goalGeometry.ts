@@ -1,5 +1,6 @@
 import { arc as d3Arc, type DefaultArcObject } from "d3-shape";
 import type { Goal } from "../../../core/schemas";
+import { normalCdf } from "../../../core/stats";
 import type { PaceTone } from "./types";
 
 /** Within this share of the goal either way, the period is on pace (the targets use the same band). */
@@ -24,6 +25,21 @@ export interface GoalStatus {
   tone: PaceTone;
   /** What each remaining day needs to reach the goal; undefined once the period ends. */
   neededPerDay?: number;
+  /** The forecast's 80% range of the finish, when the tool gives one. */
+  low?: number;
+  high?: number;
+  /** Chance of reaching the goal, 0–1, read off that range as a normal spread. */
+  chance?: number;
+}
+
+/** z for the edges of a central 80% interval. */
+const Z80 = 1.2816;
+
+/** The chance a forecast with this 80% range finishes at or above `goal`. */
+export function chanceOfGoal(projected: number, low: number, high: number, goal: number): number {
+  const sd = (high - low) / (2 * Z80);
+  if (!(sd > 0)) return projected >= goal ? 1 : 0;
+  return 1 - normalCdf((goal - projected) / sd);
 }
 
 /** Progress, pace, and projection for a goal, from its running total to date. */
@@ -34,6 +50,10 @@ export function goalStatus(goal: Goal): GoalStatus {
   // A tool's own forecast (shaped by its plan) wins over a straight line.
   const projected = goal.projected ?? (elapsed > 0 ? (actual / elapsed) * total : 0);
   const pace = goal.goal > 0 ? projected / goal.goal - 1 : 0;
+  const range =
+    goal.range?.length === 2 && goal.range.every(Number.isFinite)
+      ? ([Math.min(...goal.range), Math.max(...goal.range)] as const)
+      : undefined;
   return {
     total,
     elapsed,
@@ -50,6 +70,13 @@ export function goalStatus(goal: Goal): GoalStatus {
     onPace: pace >= -ON_PACE_BAND,
     tone: pace >= -ON_PACE_BAND ? "good" : pace >= -WARN_BAND ? "warn" : "bad",
     neededPerDay: elapsed < total ? Math.max(0, goal.goal - actual) / (total - elapsed) : undefined,
+    ...(range && elapsed < total
+      ? {
+          low: range[0],
+          high: range[1],
+          chance: chanceOfGoal(projected, range[0], range[1], goal.goal),
+        }
+      : {}),
   };
 }
 

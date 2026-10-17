@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { Goal } from "../../../core/schemas";
-import { gaugeAngle, gaugeArc, gaugeMarker, goalStatus } from "./goalGeometry";
+import { chanceOfGoal, gaugeAngle, gaugeArc, gaugeMarker, goalStatus } from "./goalGeometry";
 
 const goal = (target: number, cumulative: number[], days = 30): Goal => ({
   label: "Goal",
@@ -49,5 +49,19 @@ describe("gauge geometry", () => {
     expect(m.x2).toBeCloseTo(0);
     expect(m.y1).toBeCloseTo(-37);
     expect(m.y2).toBeCloseTo(-55);
+  });
+});
+
+describe("chanceOfGoal", () => {
+  it("is even when the forecast lands on the goal, and grows as it clears it", () => {
+    expect(chanceOfGoal(100, 90, 110, 100)).toBeCloseTo(0.5, 6);
+    // The goal at the range's low edge: 90% of an 80% interval's spread lies above it.
+    expect(chanceOfGoal(100, 90, 110, 90)).toBeCloseTo(0.9, 3);
+    expect(chanceOfGoal(100, 90, 110, 110)).toBeCloseTo(0.1, 3);
+  });
+
+  it("is certain either way without a spread", () => {
+    expect(chanceOfGoal(100, 100, 100, 99)).toBe(1);
+    expect(chanceOfGoal(100, 100, 100, 101)).toBe(0);
   });
 });

@@ -1,23 +1,54 @@
 @use "../prefix" as brand;
+@use "../shared/chartBase" as base;
 
-// The wrapper only sizes react-ui's BarChart; the bars, axes, tooltip, and
-// legend keep react-ui's own styles.
+// Columns on d3 scales: a hover band, rounded outer ends, a 2px surface gap
+// between stacked segments, and the zero line drawn over the columns.
+
+@include base.chart-frame("column-chart");
+@include base.plot-axes("column-chart");
+
 .#{brand.$prefix}-column-chart {
-  position: relative;
-  min-width: 0;
-
-  &--fill {
-    flex: 1 1 auto;
+  &-top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 4px 16px;
   }
 
-  &--empty {
-    display: grid;
-    place-items: center;
-    min-height: 120px;
-  }
-
-  &-empty-text {
-    font: var(--kit-body);
+  &-unit {
+    font: var(--kit-label);
     color: var(--kit-ink-3);
+  }
+
+  &-hover-band {
+    fill: var(--kit-sunk);
+  }
+
+  &-series {
+    transition: opacity 0.2s ease;
+  }
+
+  &-col {
+    transition: opacity 0.15s ease;
+  }
+
+  // While a column is hovered, the others step back.
+  &-bars--hovering &-col:not(&-col--active) {
+    opacity: 0.5;
+  }
+
+  &-xlabel {
+    font: var(--kit-label);
+    color: var(--kit-ink-3);
+    text-align: center;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  // Columns rise from the baseline (each path's transform-origin), staggered.
+  .#{brand.$prefix}-column-chart-col--animated {
+    transform-box: view-box;
+    animation: #{brand.$prefix}-grow-y 0.55s cubic-bezier(0.2, 0.7, 0.2, 1) both;
   }
 }

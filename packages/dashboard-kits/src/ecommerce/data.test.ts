@@ -4,8 +4,10 @@ import { formatCurrency } from "../core/format";
 import { runTool } from "../core/prompt";
 import type { Kpi } from "../core/schemas";
 import { LAST_YEAR, STORE_EVENTS } from "./calendar";
-import { activeCustomers, ecommerceHandlers } from "./data";
+import { activeCustomers, ecommerceHandlers, hourShares } from "./data";
 import { ecommerceKit } from "./kit";
+
+const WEEKDAY_LABELS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
 // The sample store has to add up: every tool reads the same daily history, so
 // totals agree across tools and every KPI says how it is calculated.
@@ -460,6 +462,40 @@ describe("targets and usual ranges", () => {
     );
     expect(conversion.usual.status).toBe("above");
   });
+
+  it("splits the ad budget by platform: budgets, spend, and forecasts add up to the target", () => {
+    for (const channel of ["all", "online", "app"]) {
+      const { targets, budgets } = run("get_targets", { channel });
+      const ads = targets.find((t: { label: string }) => t.label === "Ad spend budget");
+      const total = (key: string) => budgets.reduce((a: number, b: any) => a + b[key], 0);
+      expect(Math.abs(total("budget") - ads.target), channel).toBeLessThanOrEqual(budgets.length);
+      expect(Math.abs(total("spent") - ads.actual), channel).toBeLessThanOrEqual(budgets.length);
+      for (const b of budgets) expect(b.burn.at(-1)).toBe(b.spent);
+    }
+    expect(run("get_targets", { channel: "amazon" }).budgets).toEqual([]);
+  });
+});
+
+describe("orders by hour", () => {
+  it("counts whole days: no weekday row is cut like today", () => {
+    const { rows } = run("get_orders_by_hour", { range: "7d" });
+    const totals = rows.map((r: { values: number[] }) => r.values.reduce((a, v) => a + v, 0));
+    expect(Math.min(...totals) / Math.max(...totals)).toBeGreaterThan(0.6);
+  });
+
+  it("spreads all of each day's orders over its hours", () => {
+    for (const ch of ["online", "app", "amazon"] as const)
+      for (const weekend of [false, true])
+        expect(hourShares(ch, weekend).reduce((a, v) => a + v, 0)).toBeCloseTo(1, 9);
+    const { rows, columns } = run("get_orders_by_hour", { range: "7d" });
+    expect(rows.map((r: { label: string }) => r.label)).toEqual(WEEKDAY_LABELS);
+    expect(columns).toHaveLength(24);
+  });
+
+  it("puts the store's busiest hour in the evening", () => {
+    const { rule } = run("get_orders_by_hour", { range: "30d", channel: "online" });
+    expect(rule).toMatch(/busiest \w{3} (19|20|21):00/);
+  });
 });
 
 it("cohorts forecast at most three months and pay back inside the grid", () => {
@@ -574,5 +610,50 @@ describe("order journey", () => {
       (m: { label: string }) => m.label === "Repeat purchase rate",
     );
     expect(((second.value / first.value) * 100).toFixed(1)).toBe(repeat.value.replace("%", ""));
+  });
+});
+
+describe("LEDGER-inspired cards", () => {
+  it("splits contribution profit across sales channels that add up to the store", () => {
+    const all = run("get_profit_bridge", { range: "30d", channel: "all" });
+    const total = all.lines.find((l: { label: string }) => l.label === "Contribution profit").value;
+    const sum = all.byChannel.reduce(
+      (a: number, c: { contribution: number }) => a + c.contribution,
+      0,
+    );
+    expect(Math.abs(sum - total)).toBeLessThanOrEqual(all.byChannel.length);
+    for (const c of all.byChannel) expect(c.margin).toBeCloseTo(c.contribution / c.net, 3);
+  });
+
+  it("charts today's whole hours, and projects a close inside its range", () => {
+    const live = run("get_live_view");
+    const [sales, , projected] = live.todayMetrics;
+    const hours = live.hourlyToday.reduce((a: number, v: number) => a + v, 0);
+    // 3:48 PM: 15 whole hours; the hour in progress holds the rest of today's sales.
+    expect(live.hourlyToday).toHaveLength(15);
+    expect(live.hourlyYesterday).toHaveLength(24);
+    const salesNow = Number(sales.value.replace(/[$K]/g, "")) * 1000;
+    expect(hours).toBeLessThan(salesNow);
+    expect(hours).toBeGreaterThan(salesNow * 0.85);
+    const [low, high] = projected.hint.match(/\$[\d.]+K/g);
+    expect(projected.value >= low && projected.value <= high).toBe(true);
+  });
+
+  it("lists every product's stock, most urgent first, with ABC classes in revenue order", () => {
+    const { catalog, items } = run("get_inventory_health", { category: "all" });
+    const order = ["Out of stock", "Reorder now", "Slow mover", "Healthy"];
+    const ranks = catalog.map((c: { status: string }) => order.indexOf(c.status));
+    expect(ranks).toEqual([...ranks].sort((a, b) => a - b));
+    const below = catalog.filter(
+      (c: { status: string }) => c.status !== "Slow mover" && c.status !== "Healthy",
+    );
+    expect(below).toHaveLength(items.length);
+    expect(catalog.some((c: { abc: string }) => c.abc === "A")).toBe(true);
+  });
+
+  it("gives the sales goal a forecast range around its projection", () => {
+    const goal = run("get_sales_goal", { channel: "all" });
+    expect(goal.range[0]).toBeLessThanOrEqual(goal.projected);
+    expect(goal.range[1]).toBeGreaterThanOrEqual(goal.projected);
   });
 });

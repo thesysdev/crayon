@@ -7,6 +7,7 @@ import {
   eventSchema,
   funnelStepSchema,
   goalSchema,
+  heatRowSchema,
   insightSchema,
   itemSchema,
   kpiOutput,
@@ -233,7 +234,7 @@ export const ecommerceTools = [
   defineTool({
     name: "get_promo_impact",
     description:
-      'Did a promotion pay: daily sales against a baseline from the weeks before, the order lift against the lift needed to cover the discount, the sales lift during, the dip after (demand pulled forward), the net profit effect, and a summary. TrendChart(promo.labels, [{name: "Actual", values: promo.actual, emphasis: "primary"}, {name: "Baseline", values: promo.baseline, emphasis: "muted"}], "currency", "area", promo.events) and KpiStrip(promo.metrics).',
+      'Did a promotion pay: daily sales against a baseline from the weeks before, the order lift against what covers the discount, the lift during, the dip after, the net profit effect, and a summary. TrendChart(promo.labels, [{name: "Actual", values: promo.actual, emphasis: "primary"}, {name: "Baseline", values: promo.baseline, emphasis: "muted"}], "currency", "area", promo.events) and KpiStrip(promo.metrics).',
     input: z.object({
       event: z
         .enum(["fall-sale", "fall-sale-2025", "bfcm-2025"])
@@ -279,7 +280,7 @@ export const ecommerceTools = [
   defineTool({
     name: "get_profit_bridge",
     description:
-      "Did the store make money: net sales to gross profit, profit before marketing, and contribution profit, each step against the comparison, with margins, profit per order, and break-even ROAS. Feeds ProfitWaterfall(profit.lines, profit.comparisonLabel) or MoneyBreakdown(profit.lines).",
+      "Did the store make money: net sales to gross profit, profit before marketing, and contribution profit, each step against the comparison, with margins, profit per order, and break-even ROAS. Feeds ProfitWaterfall(profit.lines, profit.comparisonLabel) or MoneyBreakdown(profit.lines); channels side by side: ChannelProfit(profit.byChannel).",
     input: z.object({ range: rangeSchema, channel, compare: compareSchema }),
     output: z.object({
       periodLabel: z.string(),
@@ -291,6 +292,20 @@ export const ecommerceTools = [
       breakEvenRoas: z
         .number()
         .describe("Blended ROAS below which ad spend costs more than the profit it brings in"),
+      byChannel: z.array(
+        z
+          .object({
+            name: z.string(),
+            net: z.number(),
+            productCost: z.number(),
+            feesAndFulfillment: z.number(),
+            marketing: z.number(),
+            contribution: z.number(),
+            margin: z.number(),
+            marginBefore: z.number(),
+          })
+          .meta({ opaque: "ChannelProfit" }),
+      ),
     }),
   }),
   defineTool({
@@ -330,7 +345,7 @@ export const ecommerceTools = [
   defineTool({
     name: "get_customer_flow",
     description:
-      'Is the customer base growing: new customers and reactivated ones (back after 52 weeks without an order) gained, and customers lapsing (their last order now 52 weeks old) lost, over time, with KPIs for net active customers and the active base. For a diverging ColumnChart: ColumnChart(flow.labels, [{name: "New", values: flow.newCustomers}, {name: "Lapsed", values: flow.lapsed}, {name: "Reactivated", values: flow.reactivated}], "number", true, "Customers"); KpiStrip(flow.metrics).',
+      'Is the customer base growing: new and reactivated customers (back after 52 weeks) gained and lapsing ones (last order 52 weeks ago) lost, over time, with KPIs for net active customers and the base: ColumnChart(flow.labels, [{name: "New", values: flow.newCustomers}, {name: "Lapsed", values: flow.lapsed}, {name: "Reactivated", values: flow.reactivated}], "number", true, "Customers"); KpiStrip(flow.metrics).',
     input: z.object({ range: rangeSchema }),
     output: z.object({
       periodLabel: z.string(),
@@ -405,14 +420,35 @@ export const ecommerceTools = [
   defineTool({
     name: "get_inventory_health",
     description:
-      "Inventory KPIs (including revenue at risk and ad spend on low stock) and the products that need restocking: stock-adjusted velocity, days of cover, the order-by date, open purchase orders, any stockout gap before they land and the sales it costs, and the suggested order. Feeds InventoryAlerts and KpiStrip directly.",
+      "Inventory KPIs (revenue at risk, ads on low stock) and products to restock: velocity, days of cover, order-by date, open POs, any stockout gap and its cost, and the suggested order, for InventoryAlerts and KpiStrip; every product's health: InventoryHealth(stock.catalog, stock.concentration).",
     input: z.object({ category }),
-    output: z.object({ metrics: kpiOutput.metrics, items: z.array(inventoryItemSchema) }),
+    output: z.object({
+      metrics: kpiOutput.metrics,
+      items: z.array(inventoryItemSchema),
+      catalog: z.array(
+        z
+          .object({
+            name: z.string(),
+            sku: z.string(),
+            category: z.string(),
+            abc: z.enum(["A", "B", "C"]),
+            revenue: z.number(),
+            stock: z.number(),
+            dailySales: z.number(),
+            daysOfCover: z.number(),
+            reorderAt: z.number(),
+            status: z.enum(["Out of stock", "Reorder now", "Slow mover", "Healthy"]),
+            action: z.string(),
+          })
+          .meta({ opaque: "CatalogItem" }),
+      ),
+      concentration: z.string(),
+    }),
   }),
   defineTool({
     name: "get_returns",
     description:
-      "Returns and exchanges: a ledger from gross sales to what was sent back, kept as exchanges, and kept overall (MoneyBreakdown); return KPIs (KpiStrip); return reasons (BarList); the size-exchange matrix, ordered size against exchanged-for size, for footwear or apparel (ExchangeMatrix(returns.exchanges)); and the most-returned products with their return rate in percent (BarList).",
+      "Returns and exchanges: a ledger from gross sales to sent back, kept as exchanges, and kept (MoneyBreakdown); return KPIs (KpiStrip); reasons (BarList); the size-exchange matrix (ExchangeMatrix(returns.exchanges)); and the most-returned products by return rate in percent (BarList).",
     input: z.object({ range: rangeSchema, category }),
     output: z.object({
       periodLabel: z.string(),
@@ -435,24 +471,57 @@ export const ecommerceTools = [
     description:
       "Are we on track this month: October to date for total sales, contribution profit, orders, new customers, and the ad budget, each against its target to date and for the month, with a forecast and its range. Feeds BulletList(targets.targets).",
     input: z.object({ channel }),
-    output: z.object({ periodLabel: z.string(), targets: z.array(targetProgressSchema) }),
+    output: z.object({
+      periodLabel: z.string(),
+      targets: z.array(targetProgressSchema),
+      budgets: z
+        .array(
+          z
+            .object({
+              name: z.string(),
+              budget: z.number(),
+              spent: z.number(),
+              burn: z.array(z.number()).describe("Cumulative spend at the end of each day so far"),
+              elapsed: z.number().describe("Percent of the month gone"),
+              projected: z.number().describe("Month-end spend at the pace so far"),
+              pace: z.number().describe("Spend ÷ budget to date, percent"),
+              status: z.enum(["under", "on_track", "over"]),
+            })
+            .meta({ opaque: "AdBudget" }),
+        )
+        .describe("Each ad platform's budget burn-down: AdBudgetPacing(targets.budgets)"),
+    }),
+  }),
+  defineTool({
+    name: "get_orders_by_hour",
+    description:
+      'When orders come in: average orders per hour by weekday, for timing campaigns and staffing. HeatGrid(hours.rows, hours.columns, "orders").',
+    input: z.object({ range: rangeSchema, channel }),
+    output: z.object({
+      rows: z.array(heatRowSchema),
+      columns: z.array(z.string()),
+      peak: z.string().describe("The busiest hour"),
+      rule: z.string(),
+    }),
   }),
   defineTool({
     name: "get_live_view",
     description:
-      'The last hour, live, online store and app: sessions, orders, and sales per 5 minutes (the last step still in progress), sessions at the same time a week ago, visitors right now, KPIs, the hour\'s purchase funnel, and the products most added to carts. TrendChart(live.labels, [{name: "Sessions", values: live.sessions, emphasis: "primary"}, {name: "Same time last week", values: live.sessionsWeekAgo, emphasis: "muted"}], "number", "area", [], true).',
+      'Live, store and app: today so far against yesterday at the same time (todayMetrics; hourlyToday and hourlyYesterday sales over hours for a ColumnChart), and the last hour per 5 minutes against a week ago, visitors now, KPIs, funnel, and most-carted products: TrendChart(live.labels, [{name: "Sessions", values: live.sessions, emphasis: "primary"}, {name: "Same time last week", values: live.sessionsWeekAgo, emphasis: "muted"}], "number", "area", [], true).',
     input: z.object({}),
     output: z.object({
       asOf: z.string(),
       labels: z.array(z.string()),
       sessions: z.array(z.number()),
       sessionsWeekAgo: z.array(z.number()),
-      orders: z.array(z.number()),
-      sales: z.array(z.number()),
       visitorsNow: z.number(),
       metrics: kpiOutput.metrics,
       funnel: z.array(funnelStepSchema),
       products: z.array(itemSchema),
+      hours: z.array(z.string()),
+      hourlyToday: z.array(z.number()),
+      hourlyYesterday: z.array(z.number()),
+      todayMetrics: kpiOutput.metrics,
     }),
   }),
   defineTool({
@@ -498,7 +567,7 @@ export const ecommerceTools = [
   defineTool({
     name: "get_sale_plan",
     description:
-      'Black Friday Cyber Monday 2026: days to go, the plan by day against last year\'s same weekdays, plan KPIs, and the extra units each product needs for the sale and the date to order them by. TrendChart(sale.labels, [{name: "Plan", values: sale.plan, emphasis: "primary"}, {name: "Last year", values: sale.lastYear, emphasis: "muted"}], "currency", "area", sale.events), KpiStrip(sale.metrics), BarList(sale.extraUnits, "number").',
+      'Black Friday Cyber Monday 2026: days to go, the daily plan against last year\'s same weekdays, plan KPIs, and the extra units each product needs and the order-by date. TrendChart(sale.labels, [{name: "Plan", values: sale.plan, emphasis: "primary"}, {name: "Last year", values: sale.lastYear, emphasis: "muted"}], "currency", "area", sale.events), KpiStrip(sale.metrics), BarList(sale.extraUnits, "number").',
     input: z.object({}),
     output: z.object({
       event: z.string(),

@@ -1,4 +1,4 @@
-// Part-to-whole: the total, react-ui's segmented bar, and a legend whose rows can filter the dashboard.
+// Part-to-whole: the total, a segmented bar, and a legend whose rows can filter the dashboard.
 
 .kit-share {
   display: flex;
@@ -16,10 +16,42 @@
   letter-spacing: -0.02em;
   color: var(--kit-ink);
 }
-// The bar itself is react-ui's SegmentedBar; this only sets its height to the
-// kit's 14px share bar and lets it span the card.
-.kit-share__bar {
+.kit-share__frame {
+  position: relative;
   width: 100%;
+  min-width: 0;
+  outline: none;
+  touch-action: pan-y;
+}
+.kit-share__frame--pointer {
+  cursor: pointer;
+}
+.kit-share__frame:focus-visible {
+  box-shadow: 0 0 0 2px var(--kit-accent);
+  border-radius: 6px;
+}
+.kit-share__svg {
+  display: block;
+  overflow: visible;
+}
+.kit-share__segment {
+  transition:
+    opacity 0.15s ease,
+    fill 0.2s ease;
+}
+// While a part is hovered (on the bar or in the legend), the others step back.
+.kit-share__segments--hovering .kit-share__segment:not(.kit-share__segment--active) {
+  opacity: 0.45;
+}
+.kit-share__legend--hovering li:not([data-active]) {
+  opacity: 0.55;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .kit-share__segments {
+    transform-box: view-box;
+    transform-origin: 0 0;
+    animation: kit-scale-x 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  }
 }
 .kit-share__legend {
   list-style: none;
@@ -87,7 +119,10 @@
   outline-offset: 1px;
 }
 
-.kit-share__legend li[data-faded],
+.kit-share__legend li[data-faded] {
+  opacity: 0.5;
+}
+
 .kit-share__clear {
   margin-left: auto;
   padding: 3px 10px;

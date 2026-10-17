@@ -13,6 +13,7 @@ export type { CardSlot, KitComponent, KitLibraryDefinition } from "./create-kit-
 export { DataStatus } from "./DataStatus";
 export { DriverCards } from "./DriverCards";
 export { GoalPace } from "./GoalPace";
+export { HeatGrid } from "./HeatGrid";
 export { HeroMetric } from "./HeroMetric";
 export { InsightList } from "./InsightList";
 export { KpiStrip } from "./KpiStrip";

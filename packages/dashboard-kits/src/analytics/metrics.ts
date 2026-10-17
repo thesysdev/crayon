@@ -154,6 +154,28 @@ export const METRICS = {
     basis: "Billing records; annual plans counted at a twelfth",
     glossary: false,
   },
+  arpa: {
+    label: "ARPA",
+    formula: "MRR ÷ paying workspaces: average revenue per account, monthly",
+    window: "End of the latest whole month, against the month before",
+    basis: "Billing records; today's paying workspaces",
+    glossary: false,
+  },
+  revenue_churn: {
+    label: "Revenue churn",
+    formula: "MRR lost to cancellations and seat cuts in the month ÷ MRR at its start",
+    window: "The latest whole month, against the month before",
+    basis: "Billing records",
+    goodDirection: "down",
+    glossary: false,
+  },
+  ltv: {
+    label: "Lifetime value",
+    formula: "ARPA ÷ monthly revenue churn: revenue a paying workspace brings over its life",
+    window: "The latest whole month, against the month before",
+    basis: "Billing records; revenue, before costs",
+    glossary: false,
+  },
   nrr: {
     label: "Net revenue retention",
     formula: "MRR today from workspaces paying 12 months ago ÷ their MRR then",

@@ -17,7 +17,7 @@ import { Pending } from "./Pending";
 export const TrendChart = defineComponent({
   name: "TrendChart",
   description:
-    'Line or area chart over time with a crosshair tooltip, an end label, and events (spans, or markers for one-day events). Up to 4 series, colored in a fixed order; mark context series "muted" (e.g. the comparison) and the series the story is about "primary". Pass partial true when the last point is today, still in progress, so it draws dotted; band shades a benchmark range and target draws a goal line. Use it instead of LineChart and AreaChart: TrendChart(sales.labels, [{name: "This period", values: sales.totalSales, emphasis: "primary"}, {name: sales.comparisonLabel, values: sales.comparison, emphasis: "muted"}], "currency", "area", sales.events, true).',
+    'Line or area chart over time with a crosshair tooltip, an end label, and events. Up to 4 series in a fixed color order; mark context series (the comparison) "muted" and the story\'s series "primary". partial true draws an in-progress last point dotted; band shades a benchmark range; target draws a goal line. Use it instead of LineChart and AreaChart: TrendChart(sales.labels, [{name: "This period", values: sales.totalSales, emphasis: "primary"}, {name: sales.comparisonLabel, values: sales.comparison, emphasis: "muted"}], "currency", "area", sales.events, true).',
   props: z.object({
     labels: z.array(z.string()).default([]),
     series: z.array(seriesSchema).default([]),

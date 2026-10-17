@@ -327,6 +327,17 @@ describe("actions and alerts", () => {
     expect(confirmed.events[0].kind).toBe("holiday");
   });
 
+  it("marks each back-test day: alerting on the fired days, below-only days unconfirmed", () => {
+    const alert = run("preview_alert", { metric: "dau", drop: 15, confirm: "2of3" });
+    expect(alert.days).toHaveLength(alert.labels.length);
+    alert.days.forEach((d: { status: string }, i: number) => {
+      const below = alert.actual[i] < alert.threshold[i];
+      if (d.status !== "good") expect(below || d.status === "bad").toBe(true);
+      if (!below) expect(d.status).not.toBe("warn");
+    });
+    expect(alert.days.some((d: { status: string }) => d.status === "bad")).toBe(alert.fired > 0);
+  });
+
   it("never blames the iOS any-event bug for a signup alert", () => {
     const alert = run("preview_alert", { metric: "signups", drop: 5 });
     expect(alert.summary).not.toMatch(/iOS duplicate/);
@@ -474,5 +485,40 @@ describe("signups by source", () => {
       const total = sources.items.reduce((a: number, i: { value: number }) => a + i.value, 0);
       expect(total).toBe(funnel.steps[0].value);
     }
+  });
+});
+
+describe("TRACE-inspired cards", () => {
+  it("measures each launch the week before against the week after", () => {
+    const { releases } = run("get_release_impact");
+    expect(releases.map((r: { label: string }) => r.label)).toEqual([
+      "Onboarding checklist v2",
+      "Quick-capture widget rolled back",
+    ]);
+    const checklist = releases[0].metrics.find((m: { name: string }) => m.name === "Activation");
+    expect(checklist.change).toBeGreaterThan(1);
+  });
+
+  it("splits daily actives by platform, adding up to the whole", () => {
+    const funnel = run("get_activation_funnel", { range: "30d", platform: "ios" });
+    const share = funnel.platformUsers.reduce((a: number, p: { share: number }) => a + p.share, 0);
+    expect(share).toBeCloseTo(1, 3);
+    expect(funnel.platformActivation).toHaveLength(3);
+  });
+
+  it("counts every paying workspace once in the health distribution, by zone", () => {
+    const accounts = run("get_account_health", { plan: "all" });
+    const counted = accounts.distribution.series
+      .flatMap((s: { values: number[] }) => s.values)
+      .reduce((a: number, v: number) => a + v, 0);
+    expect(counted).toBe(accounts.metrics[0].value.replace(/,/g, "") * 1);
+  });
+
+  it("derives lifetime value from ARPA and revenue churn", () => {
+    const { metrics } = run("get_revenue_retention", { plan: "all" });
+    const label = (l: string) => metrics.find((m: { label: string }) => m.label === l);
+    expect(label("ARPA")).toBeDefined();
+    expect(label("Revenue churn").goodDirection).toBe("down");
+    expect(label("Lifetime value")).toBeDefined();
   });
 });
