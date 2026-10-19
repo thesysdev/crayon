@@ -1,7 +1,7 @@
 name: Docs redirects
 
-# Fails a pull request that removes or renames a docs-site URL without adding a redirect for it
-# in docs/redirects.mjs. URLs are read from files, so this needs no install or build.
+# Fails a pull request that removes or renames a docs-site page without adding a redirect for it
+# in docs/next.config.mjs.
 on:
   pull_request:
     branches: [main]
@@ -9,7 +9,7 @@ on:
       - "docs/content/**"
       - "docs/app/**"
       - "docs/lib/source.ts"
-      - "docs/redirects.mjs"
+      - "docs/next.config.mjs"
       - "docs/scripts/check-removed-urls.mjs"
       - ".github/workflows/docs-redirects.yml"
 
@@ -20,14 +20,20 @@ jobs:
   removed-urls:
     name: Removed URLs have redirects
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+      - uses: pnpm/action-setup@v6
       - uses: actions/setup-node@v4
         with:
           node-version: v24.21.0
+          cache: pnpm
+          cache-dependency-path: "pnpm-lock.yaml"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile --filter @openuidev/docs
 
       - name: Check removed URLs
         working-directory: docs
