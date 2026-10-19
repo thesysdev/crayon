@@ -39,6 +39,7 @@ export const metadata: Metadata = {
   referrer: "origin-when-cross-origin",
   keywords: [
     "OpenUI",
+    "Open UI",
     "Intelligent UI",
     "Generative UI",
     "AI UI",
