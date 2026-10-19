@@ -1,46 +1,24 @@
 #!/usr/bin/env node
-// docs/urls.txt lists every URL that must keep working: each page the site serves, and each old
-// URL that now redirects. Lines are only ever added. This script fails when any of them stops
-// working: a page removed without a redirect, a redirect removed, or a line deleted from the file.
-// Run it after `next build`; pages and redirects come from the build's manifests.
+// Fails when a URL in docs/urls.txt stops working: a page removed without a redirect, a redirect
+// removed, or a line deleted from the file. Also fails when a page isn't listed yet. Run it after
+// `next build`; pages and redirects come from the build's manifests.
 //
-//   node scripts/check-urls.mjs [--base <ref>]   # check (base defaults to origin/main)
-//   node scripts/check-urls.mjs --write          # add new pages to urls.txt
+//   pnpm build && pnpm check:urls [--base <ref>]   # base defaults to origin/main
 
 import { execFileSync } from "node:child_process";
-import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { createRequire } from "node:module";
-import { fileURLToPath } from "node:url";
+import { docsDir, readBuildManifest, readBuiltPages, readLines, readListedUrls } from "./urls.mjs";
 
 const require = createRequire(import.meta.url);
 const { getPathMatch } = require("next/dist/shared/lib/router/utils/path-match");
 const { compile } = require("next/dist/compiled/path-to-regexp");
 
-const docsDir = fileURLToPath(new URL("..", import.meta.url));
-const urlsFile = `${docsDir}urls.txt`;
 const args = process.argv.slice(2);
 const baseRef = args.includes("--base") ? args[args.indexOf("--base") + 1] : "origin/main";
 
-const readJson = (file) => JSON.parse(readFileSync(`${docsDir}.next/${file}`, "utf8"));
-const prerender = readJson("prerender-manifest.json");
-const routes = readJson("routes-manifest.json");
-const readLines = (text) => text.split("\n").filter(Boolean);
-
-// Every static page plus every page a dynamic route prerendered from generateStaticParams. OG images,
-// Markdown mirrors, API routes and Next.js internals are not pages people link to.
-const pages = new Set(
-  [...routes.staticRoutes.map((route) => route.page), ...Object.keys(prerender.routes)].filter(
-    (url) => !/^\/(og|llms\.mdx|api|_not-found|_global-error)(\/|$)/.test(url),
-  ),
-);
-const listed = existsSync(urlsFile) ? [...new Set(readLines(readFileSync(urlsFile, "utf8")))] : [];
-
-if (args.includes("--write")) {
-  const all = [...new Set([...listed, ...pages])].sort();
-  writeFileSync(urlsFile, `${all.join("\n")}\n`);
-  console.log(`urls.txt: ${all.length} URLs, ${all.length - listed.length} added.`);
-  process.exit(0);
-}
+const pages = readBuiltPages();
+const listed = readListedUrls();
+const routes = readBuildManifest("routes-manifest.json");
 
 const redirects = routes.redirects
   .filter((redirect) => !redirect.internal && !redirect.has && !redirect.missing)
@@ -97,7 +75,7 @@ if (deleted.length > 0) {
 const missing = [...pages].filter((url) => !listed.includes(url)).sort();
 if (missing.length > 0) {
   errors.push(
-    "These pages aren't in urls.txt. Run `pnpm build && pnpm check:urls --write` and commit it:\n" +
+    "These pages aren't in urls.txt. Run `pnpm build && pnpm urls:update` and commit it:\n" +
       missing.map((url) => `  ${url}`).join("\n"),
   );
 }
