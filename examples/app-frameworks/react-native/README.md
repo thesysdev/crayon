@@ -20,7 +20,7 @@ A full-stack example that demonstrates using `@openuidev/react-lang` in a React 
 │                             │ ──────►│                          │
 │  • Chat UI                  │        │  • /api/chat  (POST)     │
 │  • <Renderer /> parsing     │◄────── │  • Streams OpenUI Lang   │
-│    streamed OpenUI Lang      │  stream│    from GPT              │
+│    streamed OpenUI Lang      │  stream│    via OpenUI Cloud      │
 │  • Native chart components  │        │  • CORS enabled          │
 └─────────────────────────────┘        └──────────────────────────┘
 ```
@@ -33,8 +33,6 @@ react-native/
 │   ├── package.json          # Standalone backend dependencies and scripts
 │   ├── src/
 │   │   ├── library.ts        # Component library definition (Node-compatible)
-│   │   ├── generated/
-│   │   │   └── system-prompt.txt # Generated locally from library.ts
 │   │   └── app/api/chat/
 │   │       └── route.ts      # Streaming chat endpoint
 │   └── env.example
@@ -73,15 +71,7 @@ Add your key to `backend/.env.local`:
 THESYS_API_KEY=sk-th-...
 ```
 
-### 3. Generate the system prompt
-
-The [Prompt Generator](https://www.openui.com/docs/openui-lang/overview) compiles `library.ts` into an ignored `generated/system-prompt.txt` containing component signatures, syntax rules, and streaming guidelines for the LLM. The backend dev and build commands run this step automatically; run it directly when you only want to refresh the generated artifacts:
-
-```bash
-(cd backend && pnpm generate:prompt)
-```
-
-### 4. Start the backend
+### 3. Start the backend
 
 ```bash
 (cd backend && pnpm dev)
@@ -89,7 +79,7 @@ The [Prompt Generator](https://www.openui.com/docs/openui-lang/overview) compile
 
 The API will be available at `http://localhost:3000`.
 
-### 5. Start the mobile app
+### 4. Start the mobile app
 
 ```bash
 (cd chat-app && pnpm start)
@@ -99,7 +89,7 @@ The API will be available at `http://localhost:3000`.
 
 ### `backend/src/library.ts`
 
-Defines the custom component library using [`defineComponent`](https://www.openui.com/docs/openui-lang/overview) and `createLibrary`. This is a **Node-compatible** version (renderers set to `null`) used only by the CLI to generate the system prompt — the backend never renders components itself.
+Defines the custom component library using [`defineComponent`](https://www.openui.com/docs/openui-lang/overview) and `createLibrary`. This is a **Node-compatible** version (renderers set to `null`) that the chat route turns into the system prompt — the backend never renders components itself.
 
 The library exposes five components:
 
@@ -115,8 +105,8 @@ The library exposes five components:
 
 A Next.js Route Handler that:
 
-1. Loads `system-prompt.txt` at startup
-2. Forwards the conversation to the OpenAI streaming API
+1. Builds the system prompt from `library.ts` with `generateSystemPrompt` from `@openuidev/lang-core` when the module loads
+2. Streams the conversation through OpenUI Cloud, using the OpenAI SDK pointed at `https://api.thesys.dev/v1/embed`
 3. Returns raw `text/plain` chunks — intentionally simpler than SSE so React Native can consume the stream directly without a browser `EventSource`
 
 ### React Native app (`chat-app/`)
@@ -125,11 +115,10 @@ Uses the [`<Renderer />`](https://www.openui.com/docs/openui-lang/overview) comp
 
 ## Scripts
 
-| Directory   | Script                 | Description                                      |
-| ----------- | ---------------------- | ------------------------------------------------ |
-| `backend/`  | `pnpm dev`             | Start the Next.js API server                     |
-| `backend/`  | `pnpm generate:prompt` | Regenerate `system-prompt.txt` from `library.ts` |
-| `chat-app/` | `pnpm start`           | Start the Expo dev server                        |
+| Directory   | Script       | Description                  |
+| ----------- | ------------ | ---------------------------- |
+| `backend/`  | `pnpm dev`   | Start the Next.js API server |
+| `chat-app/` | `pnpm start` | Start the Expo dev server    |
 
 ## Learn More
 

@@ -16,7 +16,10 @@ export const generateCommand = new Command("generate")
     "--json-schema",
     "Output JSON schema with component signatures for standalone prompt generation",
   )
-  .option("--spec", "Generate a serialized library spec JSON (signatures, groups, JSON schema)")
+  .option(
+    "--spec",
+    "Generate a serialized library spec JSON (signatures, groups, JSON schema, prompt options)",
+  )
   .option("--export <name>", "Name of the export to use (auto-detected by default)")
   .option(
     "--prompt-options <name>",

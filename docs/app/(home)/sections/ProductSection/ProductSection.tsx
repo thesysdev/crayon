@@ -55,7 +55,8 @@ export type ProductSectionProps = {
   name: string;
   tag?: string;
   headline: ReactNode;
-  description: string;
+  /* Optional: a band can let its headline stand alone. */
+  description?: string;
   /* Optional: a band with nothing to try yet shows only the docs link. */
   primaryCta?: { label: string; href: string; external?: true };
   secondaryCta: { label: string; href: string; external?: true };
@@ -73,6 +74,9 @@ export type ProductSectionProps = {
   /* Let artwork that already includes its own frame crop directly to the
      section bounds instead of nesting it inside the shared inset stage. */
   fullBleedArt?: boolean;
+  /* Drop the stage's own frame and shader, for art that draws its own panels
+     (the Lang band's three agents). */
+  bareStage?: boolean;
   /* Optional artwork-specific ratios. Desktop exports can stay canonical;
      mobile uses a controlled center crop instead of squeezing the frame. */
   stageAspectRatio?: string;
@@ -98,6 +102,7 @@ export function ProductSection({
   shot,
   art,
   fullBleedArt = false,
+  bareStage = false,
   stageAspectRatio,
   stageMobileAspectRatio,
   cards,
@@ -146,11 +151,13 @@ export function ProductSection({
         </div>
         {/* Opposite the headline on desktop, beneath it on a phone: the same
             split the page hero uses. */}
-        <p className={styles.description}>{description}</p>
+        {description && <p className={styles.description}>{description}</p>}
       </div>
 
       <div
-        className={`${styles.stage} ${fullBleedArt ? styles.stageFullBleed : ""}`.trim()}
+        className={`${styles.stage} ${fullBleedArt ? styles.stageFullBleed : ""} ${
+          bareStage ? styles.stageBare : ""
+        }`.trim()}
         style={
           {
             "--product-stage-aspect": stageAspectRatio,
@@ -160,7 +167,7 @@ export function ProductSection({
       >
         {/* Behind the artwork, filling the transparent margin it is drawn with.
             Client-only, since it is WebGPU. */}
-        <FadedDither band={tone} className={styles.stageShader} />
+        {!bareStage && <FadedDither band={tone} className={styles.stageShader} />}
         {art ??
           (shot ? (
             /* Two pairs, each in a wrapper the breakpoint switches off. The

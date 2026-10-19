@@ -1,0 +1,348 @@
+/* Three agent panels in a row, one open at a time: the open one takes the
+   width and shows its answer card, the other two fold to a strip with their
+   Shiro and name. */
+.showcase {
+  /* The answer card stays white in both themes: the recordings are white. */
+  --ls-surface: #fff;
+  --ls-border: rgba(10, 10, 10, 0.08);
+  --ls-text: var(--openui-text-neutral-primary, #0a0a0a);
+
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  display: flex;
+  gap: 0.5rem;
+  color: var(--ls-text);
+}
+
+.panel {
+  position: relative;
+  display: flex;
+  flex: 0 0 4.5rem;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+  border-radius: 24px;
+  isolation: isolate;
+  transition: flex 520ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.panelOpen {
+  flex: 1 1 0;
+}
+
+/* The same Faded Dither as the other stages... */
+.dither {
+  position: absolute;
+  z-index: -2;
+  inset: 0;
+}
+
+.dither > * {
+  width: 100%;
+  height: 100%;
+}
+
+/* ...tinted from the Shiro, except F1, which takes the faint teal of its
+   answer's charts. Multiply keeps the stipple, so the pattern reads exactly
+   as before, only warmer or cooler. */
+.panel[data-agent="ikea"] {
+  --accent: #c98b4e;
+  --tint-mix: 6%;
+}
+
+.panel[data-agent="f1"] {
+  --accent: #2fd0b5;
+  --tint-mix: 5%;
+}
+
+.panel[data-agent="travel"] {
+  --accent: #fe5d71;
+  --tint-mix: 6%;
+}
+
+.tint {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background: color-mix(in srgb, var(--accent) var(--tint-mix), #fff);
+  mix-blend-mode: multiply;
+  pointer-events: none;
+}
+
+:global([data-theme="dark"]) .tint {
+  background: color-mix(in srgb, var(--accent) 18%, #000);
+  mix-blend-mode: screen;
+}
+
+/* The panel's Shiro and name, at the top in both states so the Shiro stays
+   put as a panel opens: closed, the name runs down the strip under it; open,
+   it sits beside it. The open padding lines the Shiro up with the strip's. */
+.head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.75rem;
+  width: 100%;
+  height: 100%;
+  padding: 1rem 1.125rem;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.panelOpen .head {
+  flex-direction: row;
+  justify-content: flex-start;
+  width: auto;
+  height: auto;
+  padding: 1rem 1.125rem 0.75rem;
+  cursor: default;
+}
+
+/* The head and, when open, its "View demo" pill on the right. */
+.headRow {
+  display: flex;
+  align-items: flex-start;
+  height: 100%;
+}
+
+.panelOpen .headRow {
+  align-items: center;
+  height: auto;
+}
+
+/* "View demo", the site's own pill, on the card's faded bottom edge. It
+   shows while the open panel is hovered or focused, as the card lifts and its
+   fade deepens; on touch screens, which cannot hover, it always shows. */
+.demo {
+  position: absolute;
+  z-index: 2;
+  bottom: 1.75rem;
+  left: 50%;
+  opacity: 0;
+  transform: translate(-50%, 6px);
+  transition:
+    opacity 240ms ease,
+    transform 240ms ease;
+}
+
+.panelOpen:hover .demo,
+.panelOpen:focus-within .demo {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+/* Just the pill, lifted off the fade by a soft shadow: no bevel ring or
+   edge around it. */
+.demo > a {
+  border-color: transparent;
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.03),
+    0 12px 40px -4px rgba(0, 0, 0, 0.1);
+}
+
+@media (hover: none) {
+  .demo {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+.mascot {
+  flex: none;
+  width: 2.25rem;
+  height: auto;
+  transition: transform 240ms ease;
+}
+
+.panel:not(.panelOpen) .head:hover .mascot {
+  transform: translateY(-3px) rotate(-4deg);
+}
+
+/* The woodworker's drawing is wider (it holds a hammer and a brush), so its
+   face reads small at the shared width; it gets more room, and the padding
+   shrinks to keep it centred on the strip. */
+[data-agent="ikea"] .mascot {
+  width: 2.875rem;
+}
+
+[data-agent="ikea"] .head {
+  padding-inline: 0.8125rem;
+}
+
+/* Closed, the name runs down the strip. */
+.panel:not(.panelOpen) .label {
+  writing-mode: vertical-rl;
+}
+
+.label {
+  /* Softened so the name sits into the panel rather than on it. */
+  opacity: 0.65;
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* The answer on a white card lifted off the dither by its shadow, centred in
+   the panel and running off its bottom edge. The answer inside fades out
+   there like the hero's preview (masking the card would clip its shadow). */
+.card {
+  position: relative;
+  display: none;
+  flex: 1;
+  width: min(100% - 2.5rem, 44rem);
+  min-height: 0;
+  margin: 0.25rem auto -2rem;
+  padding: clamp(1.75rem, 3.5vw, 3rem) clamp(2rem, 4.5vw, 3.75rem);
+  overflow: hidden;
+  border: 1px solid var(--ls-border);
+  border-radius: 18px;
+  background: var(--ls-surface);
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.06),
+    0 24px 56px -18px rgba(0, 0, 0, 0.28);
+  transform-origin: 50% 0;
+  transition: scale 360ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+/* The card lifts while the View demo button is hovered or focused. */
+.panelOpen:has(.demo a:hover, .demo a:focus-visible) .card {
+  scale: 1.02;
+}
+
+/* A deeper fade over the card's lower part on hover, so the button reads. */
+.card::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  height: 55%;
+  background: linear-gradient(to bottom, transparent, var(--ls-surface) 70%);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 300ms ease;
+}
+
+.panelOpen:hover .card::after,
+.panelOpen:focus-within .card::after {
+  opacity: 1;
+}
+
+@media (hover: none) {
+  .card::after {
+    opacity: 1;
+  }
+}
+
+.panelOpen .card {
+  display: block;
+  animation: enter 420ms 120ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+.answerClip {
+  height: 100%;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 68%, transparent 92%);
+  mask-image: linear-gradient(to bottom, #000 0%, #000 68%, transparent 92%);
+}
+
+.answer {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+@keyframes enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .panel,
+  .mascot,
+  .demo,
+  .card,
+  .panelOpen .card {
+    animation: none;
+    transition: none;
+  }
+}
+
+/* ── Phones: the panels stack, the closed two as short rows. The stack
+   bleeds a little into the band's side padding (16px gutters, matching the
+   hero demo), and everything in it is smaller, so the open answer reads like a zoomed-out page. ── */
+@media (max-width: 767px) {
+  .showcase {
+    inset: 0 -0.25rem;
+    flex-direction: column;
+    gap: 0.375rem;
+  }
+
+  .panel {
+    flex: 0 0 3rem;
+    border-radius: 16px;
+  }
+
+  /* No dither on phones: just the flat tint. */
+  .dither {
+    display: none;
+  }
+
+  .panelOpen {
+    flex: 1 1 0;
+  }
+
+  .head {
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 0.625rem;
+    padding: 0.375rem 0.875rem;
+  }
+
+  .mascot,
+  .panelOpen .mascot {
+    width: 1.875rem;
+  }
+
+  [data-agent="ikea"] .mascot {
+    width: 2.375rem;
+  }
+
+  [data-agent="ikea"] .head {
+    padding-inline: 0.625rem;
+  }
+
+  .label {
+    font-size: 0.8125rem;
+  }
+
+  .panel:not(.panelOpen) .label {
+    writing-mode: horizontal-tb;
+    transform: none;
+  }
+
+  /* Open, the head lines up with the card's inset below it. */
+  .panelOpen .head {
+    padding: 0.625rem 1rem 0.5rem;
+  }
+
+  /* The card sits 16px in from the panel's edges, and its answer 16px in
+     from the card's, so neither runs flush. */
+  .card {
+    width: calc(100% - 2rem);
+    margin-top: 0;
+    padding: 1rem;
+    border-radius: 14px;
+  }
+
+  .demo {
+    bottom: 1.25rem;
+  }
+}

@@ -1,5 +1,14 @@
 # @openuidev/browser-bundle
 
+## 0.2.1
+
+### Patch Changes
+
+- [#1394](https://github.com/thesysdev/openui/pull/1394) [`5186585`](https://github.com/thesysdev/openui/commit/51865854eb16e259089b736bf480b10b2e42b2ad) Thanks [@Aditya-thesys](https://github.com/Aditya-thesys)! - Update the README for OpenUI Lang 1.0: working snippets and links to the new docs pages.
+- Updated dependencies [[`86da07f`](https://github.com/thesysdev/openui/commit/86da07f6266887ff819cd5a8e295c75b2edc8251), [`5186585`](https://github.com/thesysdev/openui/commit/51865854eb16e259089b736bf480b10b2e42b2ad)]:
+  - @openuidev/react-ui@0.18.1
+  - @openuidev/react-lang@1.0.1
+
 ## 0.2.0
 
 ### Minor Changes

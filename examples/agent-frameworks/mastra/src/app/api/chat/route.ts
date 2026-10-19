@@ -37,9 +37,10 @@ export async function POST(req: NextRequest) {
             },
             complete: close,
             error: (error: Error) => {
-              const msg = error.message;
               console.error("Mastra stream error:", error);
-              controller.enqueue(encoder.encode(`data: ${JSON.stringify({ error: msg })}\n\n`));
+              // An AG-UI RUN_ERROR event, so agUIAdapter shows the error in the chat.
+              const runError = { type: "RUN_ERROR", message: error.message };
+              controller.enqueue(encoder.encode(`data: ${JSON.stringify(runError)}\n\n`));
               close();
             },
           });

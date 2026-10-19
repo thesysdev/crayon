@@ -7,7 +7,7 @@ import { Command } from "commander";
 import { commands } from "./commands";
 import { CreateTelemetryClient } from "./commands/create/lib/telemetry";
 import { context as ctx } from "./lib/context";
-import { detectAgent, UNKNOWN_AGENT_NAME } from "./lib/detect-agent";
+import { UNKNOWN_AGENT_NAME } from "./lib/detect-agent";
 import { CliCancelledError, cliErrorProperties, CreateError } from "./lib/errors";
 
 let activeCommand = "unknown";
@@ -33,18 +33,28 @@ function buildProgram(): Command {
   program.configureHelp({ showGlobalOptions: true });
   program.addHelpText("after", '\nFound a bug or have an idea? Run: openui feedback "<message>"');
 
-  program.hook("preAction", (_thisCommand, actionCommand) => {
+  program.hook("preAction", async (_thisCommand, actionCommand) => {
     activeCommand = actionCommand.name();
     const globalOptions = program.opts<{
       agentName: string;
       telemetry?: boolean;
       verbose?: boolean;
     }>();
-    ctx.verbose = Boolean(globalOptions.verbose || actionCommand.optsWithGlobals()["verbose"]);
-    ctx.telemetry.init({ cliVersion, flagEnabled: globalOptions.telemetry !== false });
+    await ctx.initialize({
+      agent: globalOptions.agentName,
+      interactive: actionCommand.opts()["interactive"] as boolean | undefined,
+      verbose: Boolean(globalOptions.verbose || actionCommand.optsWithGlobals()["verbose"]),
+    });
+    ctx.telemetry.init({
+      cliVersion,
+      flagEnabled: globalOptions.telemetry !== false,
+      detectedInteractive: ctx.detectedInteractive,
+      detectedAgentName: ctx.detectedAgentName ?? UNKNOWN_AGENT_NAME,
+    });
     ctx.telemetry.registerRun({
       agent_name: globalOptions.agentName,
-      detected_agent_name: detectAgent(),
+      can_prompt: ctx.canPrompt,
+      ...(ctx.interactive === undefined ? {} : { interactive: ctx.interactive }),
       cli_run_id: randomUUID(),
       command: actionCommand.name(),
     });

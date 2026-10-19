@@ -6,7 +6,7 @@ Headless React state and streaming primitives for OpenUI chat experiences. Bring
 [![monthly downloads](https://img.shields.io/npm/dm/@openuidev/react-headless)](https://www.npmjs.com/package/@openuidev/react-headless)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/thesysdev/openui/blob/main/LICENSE)
 
-**Links:** [Package docs](https://openui.com/docs/api-reference/react-headless) | [Chat docs](https://openui.com/docs/chat) | [GitHub repo](https://github.com/thesysdev/openui)
+**Links:** [Package docs](https://openui.com/docs/api-reference/react-headless) | [Chat docs](https://openui.com/docs/agent) | [GitHub repo](https://github.com/thesysdev/openui)
 
 ## Install
 
@@ -288,7 +288,7 @@ import type {
 ## Documentation
 
 - [React Headless API reference](https://openui.com/docs/api-reference/react-headless)
-- [Chat guides](https://openui.com/docs/chat)
+- [Chat guides](https://openui.com/docs/agent)
 - [Source on GitHub](https://github.com/thesysdev/openui/tree/main/packages/react-headless)
 
 ## License

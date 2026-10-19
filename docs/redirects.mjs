@@ -4,6 +4,11 @@
 
 /** @type {import("next/dist/lib/load-custom-routes").Redirect[]} */
 export const redirects = [
+  {
+    source: "/favicon.svg",
+    destination: "/shiro-logo.svg",
+    permanent: true,
+  },
   // The Cookbooks overview is temporarily removed; open the only cookbook instead.
   {
     source: "/cookbooks",
@@ -193,74 +198,45 @@ export const redirects = [
     permanent: true,
   },
   {
-    source: "/docs/openui-lang/examples/harnesses/pi-agent-harness",
-    destination: "/docs/build-agents/frameworks/pi",
-    permanent: true,
-  },
-  {
-    source: "/docs/openui-lang/examples/harnesses/:path*",
-    destination: "/docs/build-agents/frameworks/:path*",
-    permanent: true,
-  },
-  // Examples removed or regrouped in the examples reorganisation (#1073).
-  {
-    source: "/docs/openui-lang/examples/:name(langchain-chat|langgraph-chat)",
-    destination: "/docs/build-agents/frameworks/langgraph",
-    permanent: true,
-  },
-  {
-    source: "/docs/openui-lang/examples/vercel-ai-chat",
-    destination: "/docs/build-agents/frameworks/vercel-ai-sdk",
-    permanent: true,
-  },
-  {
-    source: "/docs/openui-lang/examples/shadcn-chat",
-    destination: "/docs/openui-lang/examples/design-systems/shadcn",
-    permanent: true,
-  },
-  {
-    source: "/docs/openui-lang/examples/react-email",
-    destination: "/docs/openui-lang/examples/miscellaneous/react-email",
-    permanent: true,
-  },
-  {
-    source: "/docs/openui-lang/examples/react-native",
-    destination: "/docs/openui-lang",
-    permanent: true,
-  },
-  {
-    source: "/docs/openui-lang/examples/dashboard",
-    destination: "/docs/openui-lang/queries-mutations",
-    permanent: true,
-  },
-  {
-    source: "/docs/openui-lang/specification",
-    destination: "/docs/openui-lang/specification-v05",
-    permanent: true,
-  },
-  {
-    source: "/docs/openui-lang/standard-library",
-    destination: "/docs/api-reference/react-ui",
-    permanent: true,
-  },
-  {
-    source: "/docs/api-reference/lang-react",
-    destination: "/docs/api-reference/react-lang",
-    permanent: true,
-  },
-  {
-    source: "/docs/introduction",
-    destination: "/docs",
-    permanent: true,
-  },
-  {
-    source: "/docs/agent/guides/migrating",
-    destination: "/docs/agent/getting-started/introduction",
-    permanent: true,
-  },
-  {
     source: "/docs/openui-lang/examples/app-frameworks/react-native",
     destination: "/docs/openui-lang",
+    permanent: true,
+  },
+  // Pre-reorganisation flat example URLs.
+  ...Object.entries({
+    "shadcn-chat": "/docs/openui-lang/examples/design-systems/shadcn",
+    "react-email": "/docs/openui-lang/examples/miscellaneous/react-email",
+    "react-native": "/docs/openui-lang",
+    dashboard: "/cookbooks/conversational-analytics",
+    "langgraph-chat": "/docs/build-agents/frameworks/langgraph",
+    "langchain-chat": "/docs/build-agents/frameworks/langgraph",
+    "vercel-ai-chat": "/docs/build-agents/frameworks/vercel-ai-sdk",
+    "harnesses/pi-agent-harness": "/docs/build-agents/frameworks/pi",
+    "harnesses/vercel-eve": "/docs/build-agents/frameworks/vercel-eve",
+  }).map(([example, destination]) => ({
+    source: `/docs/openui-lang/examples/${example}`,
+    destination,
+    permanent: true,
+  })),
+  // The old /docs/chat section was replaced by the Agent Interface docs.
+  ...Object.entries({
+    "quick-start": "/docs/agent/getting-started/quickstart",
+    installation: "/docs/agent/getting-started/quickstart",
+    nextjs: "/docs/agent/reference/self-hosting",
+    connecting: "/docs/agent/reference/adapters-and-formats",
+    genui: "/docs/agent/core-concepts/generative-ui",
+    artifacts: "/docs/agent/core-concepts/artifacts",
+    welcome: "/docs/agent/customize/welcome-and-starters",
+    theming: "/docs/agent/reference/agentinterface-props#theme",
+    persistence: "/docs/build-agents/conversation-history",
+  }).map(([page, destination]) => ({
+    source: `/docs/chat/${page}`,
+    destination,
+    permanent: true,
+  })),
+  {
+    source: "/docs/chat/:path*",
+    destination: "/docs/build-agents/chat-ui",
     permanent: true,
   },
   {
@@ -398,87 +374,40 @@ export const redirects = [
     destination: "/benchmarks/language",
     permanent: true,
   },
-  // The Chat SDK docs (/docs/chat) were replaced by Agent Interface (#692).
+  // OpenUI 1.0 docs (#1352) moved the versioned specs under /specification and folded the
+  // built-in functions page into Functions.
   {
-    source: "/docs/chat",
-    destination: "/docs/agent/getting-started/introduction",
+    source: "/docs/openui-lang/specification-v01",
+    destination: "/docs/openui-lang/specification/v0.1",
     permanent: true,
   },
   {
-    source: "/docs/chat/:page(quick-start|installation|nextjs|from-scratch)",
-    destination: "/docs/agent/getting-started/quickstart",
+    source: "/docs/openui-lang/specification-v05",
+    destination: "/docs/openui-lang/specification/v0.5",
     permanent: true,
   },
   {
-    source: "/docs/chat/artifacts",
-    destination: "/docs/agent/core-concepts/artifacts",
+    source: "/docs/openui-lang/builtins",
+    destination: "/docs/openui-lang/functions",
     permanent: true,
   },
   {
-    source: "/docs/chat/genui",
-    destination: "/docs/agent/core-concepts/generative-ui",
+    source: "/docs/openui-lang/standard-library",
+    destination: "/docs/api-reference/react-ui",
     permanent: true,
   },
   {
-    source: "/docs/chat/:page(welcome|chat-ui/welcome-and-starters)",
-    destination: "/docs/agent/customize/welcome-and-starters",
+    source: "/docs/api-reference/lang-react",
+    destination: "/docs/api-reference/react-lang",
     permanent: true,
   },
   {
-    source: "/docs/chat/:page(persistence|chat-ui/conversation-history)",
-    destination: "/docs/agent/core-concepts/conversations",
+    source: "/docs/introduction",
+    destination: "/docs",
     permanent: true,
   },
   {
-    source:
-      "/docs/chat/:page(custom-chat-components|chat-ui/custom-rendering|customization/custom-ui)",
-    destination: "/docs/agent/customize/message-rendering",
-    permanent: true,
-  },
-  {
-    source: "/docs/chat/:page(theming|customization/theming)",
-    destination: "/docs/agent/reference/agentinterface-props",
-    permanent: true,
-  },
-  {
-    source:
-      "/docs/chat/:page(copilot|bottom-tray|fullscreen|chat-ui|chat-ui/copilot|chat-ui/bottom-tray|chat-ui/full-screen)",
-    destination: "/docs/agent/reference/components",
-    permanent: true,
-  },
-  {
-    source:
-      "/docs/chat/:page(connecting|api-contract|providers|chat-ui/connecting-to-llm|backend/.*)",
-    destination: "/docs/agent/reference/self-hosting",
-    permanent: true,
-  },
-  {
-    source: "/docs/chat/integrations/:name(openai-chat-completions|openai-responses)",
-    destination: "/docs/agent/reference/adapters-and-formats",
-    permanent: true,
-  },
-  {
-    source: "/docs/chat/integrations/langgraph",
-    destination: "/docs/build-agents/frameworks/langgraph",
-    permanent: true,
-  },
-  {
-    source: "/docs/chat/integrations/vercel-ai-sdk",
-    destination: "/docs/build-agents/frameworks/vercel-ai-sdk",
-    permanent: true,
-  },
-  {
-    source: "/docs/chat/hooks",
-    destination: "/docs/agent/reference/hooks",
-    permanent: true,
-  },
-  {
-    source: "/docs/chat/:page(headless-intro|custom-ui-guide)",
-    destination: "/docs/build-agents/custom-chat-ui",
-    permanent: true,
-  },
-  {
-    source: "/docs/chat/:path*",
+    source: "/docs/agent/guides/migrating",
     destination: "/docs/agent/getting-started/introduction",
     permanent: true,
   },

@@ -1,5 +1,13 @@
 # @openuidev/react-lang
 
+## 1.0.1
+
+### Patch Changes
+
+- [#1394](https://github.com/thesysdev/openui/pull/1394) [`5186585`](https://github.com/thesysdev/openui/commit/51865854eb16e259089b736bf480b10b2e42b2ad) Thanks [@Aditya-thesys](https://github.com/Aditya-thesys)! - Update the README for OpenUI Lang 1.0: working snippets and links to the new docs pages.
+- Updated dependencies [[`5186585`](https://github.com/thesysdev/openui/commit/51865854eb16e259089b736bf480b10b2e42b2ad)]:
+  - @openuidev/lang-core@1.0.1
+
 ## 1.0.0
 
 ### Major Changes

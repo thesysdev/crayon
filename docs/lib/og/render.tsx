@@ -2,7 +2,7 @@ import { ImageResponse } from "@takumi-rs/image-response";
 import { readFile } from "node:fs/promises";
 import { extname, join } from "node:path";
 import { ogImageFormat } from "./images";
-import { OG_SIZE, OgCard, type OgCardData, OgCover } from "./templates";
+import { OG_SIZE, OgCard, type OgCardData, OgCover, OgHome } from "./templates";
 
 let fonts: Promise<{ name: string; weight: number; data: Buffer }[]> | undefined;
 
@@ -40,7 +40,9 @@ async function publicImage(path: string): Promise<string> {
 export async function renderOgCard(card: OgCardData) {
   const logo = await publicImage("/shiro-logo.svg");
   const node =
-    card.template === "cover" ? (
+    card.template === "home" ? (
+      <OgHome mascot={logo} grain={await publicImage("/og-grain.png")} title={card.title} />
+    ) : card.template === "cover" ? (
       <OgCover
         src={await publicImage(card.cover)}
         logo={logo}

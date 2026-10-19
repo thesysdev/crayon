@@ -188,7 +188,16 @@ async function main(): Promise<void> {
 
   let output: string;
   if (spec) {
-    output = JSON.stringify({ ...library.toSpec(), schema: library.toJSONSchema() }, null, 2);
+    const promptOptions = findPromptOptions(mod, promptOptionsName);
+    output = JSON.stringify(
+      {
+        ...library.toSpec(),
+        schema: library.toJSONSchema(),
+        ...(promptOptions ? { promptOptions } : {}),
+      },
+      null,
+      2,
+    );
   } else if (jsonSchema) {
     // Output a PromptSpec-compatible JSON with component signatures, groups, and JSON schema.
     output = JSON.stringify(library.toJSONSchema(), null, 2);

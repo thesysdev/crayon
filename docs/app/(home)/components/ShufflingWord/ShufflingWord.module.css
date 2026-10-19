@@ -1,0 +1,85 @@
+/* Sits inline in the sentence, one line tall and clipped, so each word slides
+   through a window while matching the surrounding text exactly. Its width is
+   set per word and eased, so the rest of the line glides rather than jumps. */
+.slot {
+  position: relative;
+  display: inline-block;
+  height: 1.45em;
+  overflow: hidden;
+  vertical-align: bottom;
+  text-align: center;
+  transition: width 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.word {
+  display: block;
+  white-space: nowrap;
+  animation: shuffleIn 3.2s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Inline icon sized to the text and sat on its x-height, in the text colour. */
+.icon {
+  display: inline-flex;
+  margin-right: 0.3em;
+  vertical-align: -0.12em;
+}
+
+.icon > svg {
+  width: 0.95em;
+  height: 0.95em;
+  stroke-width: 1.75;
+}
+
+/* Snap in quickly (~250ms of the 3.2s cycle), hold, then lift out just before
+   the next word arrives. */
+@keyframes shuffleIn {
+  0% {
+    opacity: 0;
+    transform: translateY(100%);
+    filter: blur(4px);
+  }
+  8%,
+  89% {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-100%);
+    filter: blur(4px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .slot {
+    transition: none;
+  }
+
+  .word {
+    animation: none;
+  }
+}
+
+/* Hidden copies of every word, measured for the slot's width. */
+.measure {
+  position: absolute;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.measure > span {
+  position: absolute;
+  display: block;
+  white-space: nowrap;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}

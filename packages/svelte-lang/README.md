@@ -11,12 +11,14 @@ Svelte 5 bindings for OpenUI Lang. Define model-renderable Svelte components, ge
 ## Install
 
 ```bash
-npm install @openuidev/svelte-lang
+npm install @openuidev/svelte-lang zod
 # or
-pnpm add @openuidev/svelte-lang
+pnpm add @openuidev/svelte-lang zod
 ```
 
-**Peer dependencies:** `svelte >=5.0.0`
+**Peer dependencies:** `svelte >=5.0.0`, `zod ^3.25.0 || ^4.0.0`
+
+This package works with `@openuidev/lang-core` ^0.4 (OpenUI Lang 0.5). OpenUI Lang 1.0 features need the React renderer, `@openuidev/react-lang` 1.x, for now.
 
 ## Overview
 
@@ -256,7 +258,7 @@ const schema = library.toJSONSchema();
 ## Documentation
 
 - [OpenUI Lang guide](https://openui.com/docs/openui-lang)
-- [Language specification](https://openui.com/docs/openui-lang/specification-v05)
+- [Language specification 0.5](https://openui.com/docs/openui-lang/specification/v0.5)
 - [Source on GitHub](https://github.com/thesysdev/openui/tree/main/packages/svelte-lang)
 
 ## License

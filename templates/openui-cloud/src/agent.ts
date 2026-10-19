@@ -10,6 +10,9 @@ import { requiredEnv } from "./lib/env";
 import { DEFAULT_MODEL } from "./lib/models";
 import { executeGetWeather, getWeatherTool } from "./lib/tools/get-weather";
 
+// The generated spec carries the library and its prompt options; generateSystemPrompt takes them separately.
+const { promptOptions, ...library } = librarySpec;
+
 const getWeather = tool(
   async ({ location }, config) =>
     executeGetWeather(JSON.stringify({ location }), { signal: config.signal }),
@@ -65,7 +68,7 @@ const persistTurn = createMiddleware({
 export const graph = createAgent({
   model: cloudModel(DEFAULT_MODEL),
   tools: [getWeather],
-  systemPrompt: generateSystemPrompt({ cloud: true, library: librarySpec }),
+  systemPrompt: generateSystemPrompt({ cloud: true, library, promptOptions }),
   stateSchema: CloudAgentState,
   middleware: [selectedModel, persistTurn],
 });

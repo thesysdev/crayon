@@ -323,6 +323,7 @@
 
 .detailHeroInner,
 .detailLayout,
+.stepsSection,
 .detailBackRow {
   max-width: var(--home-container-max);
   margin-inline: auto;
@@ -401,21 +402,39 @@
   line-height: 1.55;
 }
 
+/* "Setup for Agent" copies the setup prompt. Lined up under the summary. */
+.copyPrompt {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1rem;
+  align-items: center;
+  margin: 1.75rem 0 0 calc(var(--detail-logo-size) + var(--detail-heading-gap));
+}
+
+.copyPromptStatus {
+  margin: 0;
+  color: var(--openui-text-neutral-tertiary);
+  font-size: 0.875rem;
+}
+
 .detailLayout {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(17rem, 20rem);
   gap: clamp(3rem, 8vw, 7rem);
-  padding-block: 5rem 7rem;
+  padding-block: 5rem 4.5rem;
 }
 
 .detailArticle {
   display: grid;
+  /* Don't stretch the intro to the sidebar's height. */
+  align-content: start;
   gap: 4.5rem;
   min-width: 0;
 }
 
 .detailArticle section > h2,
-.installSection h2 {
+.installSection h2,
+.stepsSection > h2 {
   max-width: 42rem;
   margin: 0;
   font-family: var(--home-font-display);
@@ -433,20 +452,135 @@
   line-height: 1.75;
 }
 
-.flowList {
+.stepsSection {
+  padding-bottom: 5rem;
+}
+
+/* ---- Example ----
+   Same two columns as the steps: what the app does on the left, a screenshot of
+   it answering the prompt on the right. */
+.exampleSection {
+  max-width: var(--home-container-max);
+  margin-inline: auto;
+  padding-inline: var(--home-section-padding-inline);
+  padding-bottom: 4.5rem;
+}
+
+.exampleSection > h2 {
+  margin: 0;
+  font-family: var(--home-font-display);
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-weight: 500;
+  letter-spacing: -0.035em;
+  line-height: 1.2;
+}
+
+.exampleLayout {
   display: grid;
-  gap: 0;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 2rem;
+  margin-top: 1.75rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--home-hairline);
+}
+
+.exampleText {
+  display: grid;
+  /* An explicit track, so the run-it code block scrolls instead of widening the column. */
+  grid-template-columns: minmax(0, 1fr);
+  align-content: start;
+  gap: 1.5rem;
+  min-width: 0;
+}
+
+.exampleText > p {
+  margin: 0;
+  color: var(--openui-text-neutral-secondary);
+  font-size: 0.9375rem;
+  line-height: 1.65;
+}
+
+.exampleLabel {
+  margin: 0 0 0.5rem;
+  color: var(--openui-text-neutral-tertiary);
+  font-family: var(--home-font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.examplePrompt {
+  margin: 0;
+  border-left: 2px solid var(--openui-border-default);
+  padding-left: 0.875rem;
+  color: var(--openui-text-neutral-primary);
+  font-size: 0.9375rem;
+  line-height: 1.6;
+}
+
+.exampleMedia {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1.5rem;
+  min-width: 0;
+}
+
+.exampleShot {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--home-hairline);
+  border-radius: 1rem;
+  background: var(--openui-sunk-light);
+}
+
+.exampleShot img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.exampleShot .exampleShotDark,
+[data-theme="dark"] .exampleShot .exampleShotLight {
+  display: none;
+}
+
+[data-theme="dark"] .exampleShot .exampleShotDark {
+  display: block;
+}
+
+@media (min-width: 1024px) {
+  .exampleLayout {
+    grid-template-columns: minmax(0, 20rem) minmax(0, 1fr);
+    gap: 3rem;
+  }
+}
+
+.flowList {
+  counter-reset: step;
+  display: grid;
+  /* Without an explicit track the column grows to the longest code line. */
+  grid-template-columns: minmax(0, 1fr);
   margin: 1.75rem 0 0;
   padding: 0;
   list-style: none;
 }
 
+/* Stacked on narrow screens; from 1024px the step's text sits beside its code
+   and stays in view while the code scrolls past. */
 .flowList li {
-  position: relative;
+  counter-increment: step;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1.25rem;
+  padding-block: 2rem;
+  border-top: 1px solid var(--home-hairline);
+}
+
+.flowText {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
   gap: 1rem;
-  padding: 0 0 1.75rem;
+  align-self: start;
 }
 
 .flowNumber {
@@ -464,17 +598,69 @@
   font-weight: 500;
 }
 
+.flowNumber::before {
+  content: counter(step);
+}
+
+/* Inline code and links in the guide prose (content/integrations/*.mdx). */
+.flowText :not(pre) > code,
+.exampleText :not(pre) > code {
+  border-radius: 0.3rem;
+  padding: 0.1em 0.35em;
+  background: var(--openui-highlight-subtle);
+  color: var(--openui-text-neutral-primary);
+  font-family: var(--home-font-mono);
+  font-size: 0.85em;
+}
+
+.flowText p a,
+.exampleText p a {
+  color: var(--openui-text-neutral-primary);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
 .flowList h3 {
-  margin: 0.15rem 0 0;
-  font-size: 0.9375rem;
+  margin: 0.2rem 0 0;
+  font-size: 1.0625rem;
   font-weight: 500;
 }
 
 .flowList p {
-  margin: 0.45rem 0 0;
+  margin: 0.5rem 0 0;
   color: var(--openui-text-neutral-secondary);
-  font-size: 0.875rem;
-  line-height: 1.6;
+  font-size: 0.9375rem;
+  line-height: 1.65;
+}
+
+.stepCode {
+  min-width: 0;
+}
+
+.stepCodeSource {
+  display: inline-flex;
+  gap: 0.3rem;
+  align-items: center;
+  margin-top: 0.625rem;
+  color: var(--openui-text-neutral-secondary);
+  font-size: 0.8125rem;
+}
+
+.stepCodeSource:hover,
+.stepCodeSource:focus-visible {
+  color: var(--openui-text-neutral-primary);
+}
+
+@media (min-width: 1024px) {
+  .flowList li {
+    grid-template-columns: minmax(0, 20rem) minmax(0, 1fr);
+    gap: 3rem;
+  }
+
+  .flowText {
+    position: sticky;
+    top: 6rem;
+  }
 }
 
 .installSection {
@@ -500,7 +686,9 @@
   overflow-x: auto;
   font-family: var(--home-font-mono);
   font-size: 0.8125rem;
-  white-space: nowrap;
+  /* Long install commands wrap rather than hide behind a scrollbar. */
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 
 .copyCommand {
@@ -713,7 +901,8 @@
     white-space: normal;
   }
 
-  .detailLockup > p {
+  .detailLockup > p,
+  .copyPrompt {
     margin-left: 0;
   }
 

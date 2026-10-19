@@ -21,11 +21,6 @@ const createFunnelSteps = {
   cloud_auth_failed: "0425",
   cloud_auth_cancelled: "0426",
   env_written: "0430",
-  skill_prompt_resolved: "0500",
-  skill_install_started: "0510",
-  skill_install_finished: "0520",
-  skill_install_failed: "0525",
-  skill_install_cancelled: "0526",
   dependency_install_started: "0600",
   dependency_install_succeeded: "0610",
   dependency_install_failed: "0620",
@@ -63,13 +58,9 @@ export class CreateTelemetryClient extends Telemetry {
   }
 
   trackStarted(props: {
-    interactive: boolean;
     has_name_arg: boolean;
-    has_template_arg: boolean;
     has_backend_framework_arg: boolean;
     has_example_arg: boolean;
-    has_api_key_arg: boolean;
-    has_auth_arg: boolean;
     no_install: boolean;
     immediate_arg: boolean | undefined;
   }) {
@@ -97,13 +88,6 @@ export class CreateTelemetryClient extends Telemetry {
   trackEnvResolutionStarted(props: { template?: string; ai_setup?: string; example?: string }) {
     this.capture("cli_env_resolution_started", {
       ...createFunnelProps("env_resolution_started"),
-      ...props,
-    });
-  }
-
-  trackSkillInstalled(props: { skill_installed: boolean }) {
-    this.capture("cli_skill_installed", {
-      ...createFunnelProps("skill_prompt_resolved"),
       ...props,
     });
   }
@@ -160,11 +144,8 @@ export class CreateTelemetryClient extends Telemetry {
     this.capture("cli_dev_command_failed", props);
   }
 
-  trackCloudAuthStarted(props: { auth_method?: string }) {
-    this.capture("cli_cloud_auth_started", {
-      ...createFunnelProps("cloud_auth_started"),
-      ...props,
-    });
+  trackCloudAuthStarted() {
+    this.capture("cli_cloud_auth_started", createFunnelProps("cloud_auth_started"));
   }
 
   trackCloudAuthMethod(props: { auth_method: string; auth_succeeded: boolean }) {
@@ -221,48 +202,11 @@ export class CreateTelemetryClient extends Telemetry {
     });
   }
 
-  trackSkillInstallStarted(props: { skill_installed: boolean }) {
-    this.capture("cli_skill_install_started", {
-      ...createFunnelProps("skill_install_started"),
-      ...props,
-    });
-  }
-
-  trackSkillInstallFinished(props: {
-    skill_installed: boolean;
-    duration_ms: number;
-    exit_code: number | null;
-  }) {
-    this.capture("cli_skill_install_finished", {
-      ...createFunnelProps("skill_install_finished"),
-      ...props,
-    });
-  }
-
-  trackSkillInstallCancelled(props: Record<string, unknown>) {
-    this.capture("cli_skill_install_cancelled", {
-      ...createFunnelProps("skill_install_cancelled"),
-      ...props,
-    });
-  }
-
-  trackSkillInstallFailed(props: Record<string, unknown>) {
-    this.capture("cli_skill_install_failed", {
-      ...createFunnelProps("skill_install_failed"),
-      ...props,
-    });
-  }
-
   trackTargetNameRetried(props: { retries: number }) {
     this.capture("cli_target_name_retried", props);
   }
 
-  trackTargetExists(props: {
-    interactive: boolean;
-    attempt: number;
-    exhausted: boolean;
-    error_code: string;
-  }) {
+  trackTargetExists(props: { attempt: number; exhausted: boolean; error_code: string }) {
     this.capture("cli_target_exists", props);
   }
 }
