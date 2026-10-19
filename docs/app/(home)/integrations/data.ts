@@ -325,6 +325,8 @@ const integrationCatalog: Integration[] = [
     slug: "a2ui",
     name: "A2UI",
     seoTitle: "A2UI React renderer and client with OpenUI Lang",
+    seoDescription:
+      "Render A2UI v1.0 surfaces in React with OpenUI. Keep A2UI's protocol for surfaces, data models and actions, and stream components as compact OpenUI Lang.",
     logo: "https://a2ui.org/assets/favicon.svg",
     category: "ai-frameworks",
     type: "Agent UI protocol",
@@ -332,24 +334,7 @@ const integrationCatalog: Integration[] = [
       "@openuidev/a2ui implements the A2UI v1.0 surface lifecycle (createSurface, updateComponents, updateDataModel, actions and functions) with OpenUI Lang statements as the component payload, plus an optional React renderer.",
     howItWorks:
       "A2UI defines what an agent says about a UI surface; AG-UI or any other transport carries the messages. The @openuidev/a2ui client keeps A2UI's message envelopes but sends components as OpenUI Lang statements instead of A2UI component JSON, so surfaces stream in fewer tokens and render progressively. Both the agent and the renderer must agree on that payload format.",
-    steps: [
-      {
-        title: "Create a client",
-        description:
-          "Call createA2UIClient() with the JSON schema of your OpenUI component library and an onMessage callback that sends renderer-to-agent messages over your transport.",
-      },
-      {
-        title: "Process agent messages",
-        description:
-          "Pass each decoded createSurface, updateComponents, updateDataModel or deleteSurface message to client.process() in arrival order. Component updates are merged by OpenUI Lang statement ID.",
-      },
-      {
-        title: "Render the surface",
-        description:
-          "Render a surface in React with A2UIRenderer from @openuidev/a2ui/react. User interactions are sent back to the agent as A2UI action messages, and Query() and Mutation() calls as callAgentFunction.",
-      },
-    ],
-    install: "npm install @openuidev/a2ui zod @openuidev/react-lang",
+    install: "npm install @openuidev/a2ui zod @openuidev/react-lang @openuidev/react-ui",
     links: [
       ...packageLinks("@openuidev/a2ui", "a2ui", "/docs/api-reference/a2ui"),
       {
