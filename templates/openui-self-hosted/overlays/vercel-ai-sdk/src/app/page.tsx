@@ -1,14 +1,18 @@
 "use client";
 import "@openuidev/react-ui/styles/index.css";
 
+import { OpenUIWordmark } from "@/components/openui-wordmark";
+import { OPENUI_LOGO, STARTERS } from "@/lib/starters";
 import {
   AgentInterface,
   fetchLLM,
-  useSystemThemeMode,
+  useThemeModePreference,
   vercelAIAdapter,
   vercelAIMessageFormat,
+  WelcomeMascot,
 } from "@openuidev/react-ui";
 import { openuiLibrary } from "@openuidev/react-ui/genui-lib";
+
 
 const llm = fetchLLM({
   url: "/api/chat",
@@ -17,16 +21,29 @@ const llm = fetchLLM({
 });
 
 export default function Home() {
-  const mode = useSystemThemeMode();
+  // Follows the system theme until the footer toggle is first used, then
+  // remembers the choice.
+  const { setPreference, mode } = useThemeModePreference();
 
   return (
-    <div style={{ height: "100vh", width: "100vw", overflow: "hidden" }}>
-      <AgentInterface
-        llm={llm}
-        componentLibrary={openuiLibrary}
-        agentName="OpenUI Self Hosted"
-        theme={{ mode }}
+    <AgentInterface
+      llm={llm}
+      componentLibrary={openuiLibrary}
+      logoUrl={OPENUI_LOGO}
+      theme={{ mode }}
+      starters={STARTERS}
+    >
+      <AgentInterface.SidebarHeader agentName={<OpenUIWordmark mode={mode} />} />
+      <AgentInterface.SidebarFooter>
+        <AgentInterface.ThemeModeToggle mode={mode} onModeChange={setPreference} />
+      </AgentInterface.SidebarFooter>
+      <AgentInterface.ThreadHeader />
+      <AgentInterface.Welcome
+        image={<WelcomeMascot />}
+        title="What's on your mind today?"
+        starterVariant="card"
+        glowAnimation
       />
-    </div>
+    </AgentInterface>
   );
 }

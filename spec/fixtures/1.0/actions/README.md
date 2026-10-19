@@ -1,0 +1,16 @@
+# actions
+
+These cases protect a client from running actions in the wrong order, sending host events in the wrong shape, treating a lone action differently from `Action([...])`, and getting the query and mutation lifecycle wrong. They cover [language.md section 6](../../../language.md#6-data-and-actions) (6.1 to 6.4) and [prompt.md section 6.3](../../../prompt.md#63-action-events). Most cases also have `interactions.json`, which a runner replays against a mounted program. Number 005 is not used.
+
+| Case | What it checks | Spec |
+| --- | --- | --- |
+| 001-several-actions (+ interactions) | `Action([...])` with @Set, @Reset, and @ToAssistant: a click runs the actions in order, so `$n` becomes 5, `$m` goes back to its default 7, and one `continue_conversation` event is sent. | [6.3](../../../language.md#63-actions) |
+| 002-one-action (+ interactions) | Buttons given a lone @ToAssistant, @Set, or @OpenUrl with no `Action` wrapper: each is an Action of one action, and the clicks send `continue_conversation`, write `$sel`, and send `open_url`. | [6.3](../../../language.md#63-actions) |
+| 003-event-context-any-value (+ interactions) | The second argument of @ToAssistant, an object in one button and the number 0 in the other, reaches the host unchanged in `params.context`. | [6.3](../../../language.md#63-actions), [prompt 6.3](../../../prompt.md#63-action-events) |
+| 004-event-form-state-per-action (+ interactions) | `@Set($note, "new")` before @ToAssistant in one `Action([...])`: the event's form state already shows "new". | [6.3](../../../language.md#63-actions) |
+| 006-query-rerun-on-state (+ interactions) | Typing into an Input bound to `$status`, which is written literally in the Query args, runs the query again with "closed". | [6.1](../../../language.md#61-query-lifecycle), [5.2](../../../language.md#52-two-way-binding) |
+| 007-mutation-run (+ interactions) | `@Run(newTicket)` calls the mutation tool with the current `$title`, then the following @ToAssistant sends its event. | [6.2](../../../language.md#62-mutation-lifecycle), [6.3](../../../language.md#63-actions) |
+| 008-tool-not-found-stops-plan (+ interactions) | The same program with no `createTicket` tool: the mutation fails with `tool-not-found`, nothing crashes, and the remaining @ToAssistant does not run, so there are no events and no tool calls. | [6.3](../../../language.md#63-actions), [6.4](../../../language.md#64-tool-resolution) |
+| 009-custom-action (+ interactions) | The library action @CopyToClipboard alone, inside `Action([...])`, and in the restricted `share` prop: each click sends an event with `type: "CopyToClipboard"`, `params.text`, and an empty message. | [6.3](../../../language.md#63-actions), [prompt 2.5](../../../prompt.md#25-custom-functions-and-actions) |
+| 010-one-action-by-reference (+ interactions) | A lone @OpenUrl bound to its own statement and passed by reference, and a lone @ToAssistant chosen by a ternary: both work as an Action of one action. | [6.3](../../../language.md#63-actions) |
+| 011-action-list-is-data | `[@Set(...), @ToAssistant(...)]` without `Action` is plain data: the Button receives a list of two one-action Actions, and no error is reported. | [6.3](../../../language.md#63-actions) |

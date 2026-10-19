@@ -21,10 +21,7 @@ export function getPersistedModel(): string {
 }
 
 // Like useState, but the value is remembered across refreshes.
-export function usePersistedModel(): readonly [
-  string,
-  (model: string) => void,
-] {
+export function usePersistedModel(): readonly [string, (model: string) => void] {
   const [model, setModel] = useState(DEFAULT_MODEL);
 
   useEffect(() => {

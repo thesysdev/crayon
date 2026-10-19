@@ -1,0 +1,181 @@
+"use client";
+
+import { useState } from "react";
+import styles from "../LangShowcase.module.css";
+import { Block, type Example, Segmented, type Segment } from "../stream";
+
+/* The Tokyo itinerary the showcase used to show as a screenshot, now live:
+   the trip at a glance, then a day picker that redraws the day's route. */
+
+const PROMPT = "I'm planning a trip to Japan. Can you create an itinerary for me?";
+
+const FACTS = [
+  { label: "Trip length", value: "7 days" },
+  { label: "Best base", value: "Ginza or Shinjuku" },
+  { label: "Getting around", value: "Suica card + metro" },
+];
+
+const DAYS = [
+  {
+    title: "Shinjuku arrival",
+    note: "An easy first day to reset after landing.",
+    stops: [
+      { time: "Morning", place: "Arrive in Tokyo" },
+      { time: "Afternoon", place: "Check in, Shinjuku Gyoen" },
+      { time: "Evening", place: "Casual sushi, early night" },
+    ],
+  },
+  {
+    title: "Harajuku + Shibuya",
+    note: "Vibrant culture and the city's best-known sights.",
+    stops: [
+      { time: "Morning", place: "Meiji Jingu, Yoyogi Park" },
+      { time: "Afternoon", place: "Takeshita Street, local cafes" },
+      { time: "Evening", place: "Shibuya Crossing, lively dinner" },
+    ],
+  },
+  {
+    title: "Asakusa + Ueno",
+    note: "A day in traditional Tokyo.",
+    stops: [
+      { time: "Morning", place: "Senso-ji Temple, Nakamise" },
+      { time: "Afternoon", place: "Ueno Park, art museums" },
+      { time: "Evening", place: "Ameya-Yokocho market" },
+    ],
+  },
+];
+
+const DAY_TABS = ["Day 1", "Day 2", "Day 3"] as const;
+type DayTab = (typeof DAY_TABS)[number];
+
+/* Where the three stops sit on each day's route drawing. */
+const ROUTES: [number, number][][] = [
+  [
+    [40, 92],
+    [130, 40],
+    [220, 78],
+  ],
+  [
+    [44, 46],
+    [128, 96],
+    [222, 52],
+  ],
+  [
+    [40, 70],
+    [132, 34],
+    [224, 96],
+  ],
+];
+
+const SEGMENTS: Segment[] = [
+  { id: "root", code: `root = Col([head, facts, tabs, day])\n` },
+  { id: "state", code: `$day = "Day 1"\n` },
+  {
+    id: "head",
+    code: `head = Col([
+  Title("Tokyo, day by day", "lg"),
+  Text("Seven days grouped by neighbourhood, pace and travel time.", "md", "muted")
+])\n`,
+  },
+  {
+    id: "facts",
+    code: `facts = Row([
+  Col([Caption("Trip length"), Text("7 days", "sm", null, "semibold")]),
+  Col([Caption("Best base"), Text("Ginza or Shinjuku", "sm", null, "semibold")]),
+  Col([Caption("Getting around"), Text("Suica card + metro", "sm", null, "semibold")])
+])\n`,
+  },
+  { id: "tabs", code: `tabs = SegmentedControl($day, ["Day 1", "Day 2", "Day 3"])\n` },
+  {
+    id: "day",
+    code: `plan = @Find(days, "tab", $day)
+day = Row([
+  Map(@Each(plan.stops, "s", MapMarker(s.place, s.lat, s.lng)), true),
+  Col(@Each(plan.stops, "s", Row([Caption(s.time), Spacer(), Text(s.place, "sm")])))
+])\n`,
+  },
+  { id: "days", code: `days = [\n` },
+  ...DAYS.map((d, i) => ({
+    id: `d${i}`,
+    code: `  {tab: "Day ${i + 1}", title: "${d.title}", stops: [${d.stops
+      .map((s) => `{time: "${s.time}", place: "${s.place}"}`)
+      .join(", ")}]}${i < DAYS.length - 1 ? "," : ""}\n`,
+  })),
+  { id: "daysEnd", code: `]` },
+];
+
+function TokyoAnswer({ has }: { has: (id: string) => boolean }) {
+  const [tab, setTab] = useState<DayTab>("Day 1");
+  const index = DAY_TABS.indexOf(tab);
+  const day = DAYS[index];
+  const route = ROUTES[index];
+
+  return has("root") ? (
+    <div className={styles.answer}>
+      <Block ready={has("head")} lines={2}>
+        <h4 className={styles.title}>Tokyo, day by day</h4>
+        <p className={styles.muted}>Seven days grouped by neighbourhood, pace and travel time.</p>
+      </Block>
+
+      <Block ready={has("facts")} lines={1}>
+        <dl className={styles.facts}>
+          {FACTS.map(({ label, value }) => (
+            <div key={label}>
+              <dt>{label}</dt>
+              <dd>{value}</dd>
+            </div>
+          ))}
+        </dl>
+      </Block>
+
+      <Block ready={has("tabs")} lines={1}>
+        <Segmented label="Day" options={DAY_TABS} value={tab} onChange={setTab} />
+      </Block>
+
+      <Block ready={has(`d${index}`)} lines={0} tall>
+        <div className={styles.day} key={tab}>
+          <svg className={styles.route} viewBox="0 24 264 82" role="img" aria-label={`Route for ${day.title}`}>
+            <polyline
+              className={styles.routeLine}
+              points={route.map(([x, y]) => `${x},${y}`).join(" ")}
+            />
+            {route.map(([x, y], i) => (
+              <g key={i}>
+                <circle className={styles.routeDot} cx={x} cy={y} r="7" />
+                <text className={styles.routeNum} x={x} y={y + 3.5}>
+                  {i + 1}
+                </text>
+              </g>
+            ))}
+          </svg>
+          <div>
+            <h5 className={styles.stepTitle}>{day.title}</h5>
+            <p className={styles.muted}>{day.note}</p>
+            <ol className={styles.rows}>
+              {day.stops.map((stop, i) => (
+                <li key={stop.time} className={styles.row}>
+                  <span className={styles.rowPos}>{i + 1}</span>
+                  <span className={styles.rowMain}>
+                    <span className={styles.caption}>{stop.time}</span>
+                  </span>
+                  <span className={styles.rowEnd}>{stop.place}</span>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </div>
+      </Block>
+    </div>
+  ) : null;
+}
+
+export const TOKYO: Example = {
+  id: "tokyo",
+  label: "Travel agent",
+  accent: "#fe5d71",
+  prompt: PROMPT,
+  mascot: "/homepage/shiro/shiro-travel.svg",
+  mascotAlt: "Shiro in a bucket hat",
+  segments: SEGMENTS,
+  Answer: TokyoAnswer,
+};

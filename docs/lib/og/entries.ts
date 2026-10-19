@@ -1,6 +1,6 @@
 import { getIntegrationPageMetadata, integrations } from "@/app/(home)/integrations/data";
 import { ogPages } from "@/generated/og-pages";
-import { pageOgImage } from "../page-metadata";
+import { pageOgImage, SITE_OG_IMAGE } from "../page-metadata";
 import { blog, source } from "../source";
 import { blogOgImage, docsOgImage } from "./content";
 import type { OgImage } from "./images";
@@ -11,7 +11,7 @@ let images: Map<string, OgImage> | undefined;
 export function getOgImages(): Map<string, OgImage> {
   if (images) return images;
 
-  const all: OgImage[] = [];
+  const all: OgImage[] = [SITE_OG_IMAGE];
   for (const [path, page] of Object.entries(ogPages)) {
     if (page.pathname !== path) {
       throw new Error(`metadata.ts for ${path} declares pathname ${page.pathname}`);

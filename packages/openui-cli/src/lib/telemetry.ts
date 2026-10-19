@@ -17,7 +17,6 @@ const isCi = () => {
   const e = process.env;
   return isTruthyEnv(e["CI"]) || !!e["GITHUB_ACTIONS"] || !!e["GITLAB_CI"] || !!e["BUILDKITE"];
 };
-const isInteractiveTerminal = () => Boolean(process.stdin.isTTY && process.stdout.isTTY);
 const debugLogPostHogFailure = (stage: string, error: unknown) => {
   if (!isTelemetryDebug()) return;
   const message = error instanceof Error ? error.message : String(error);
@@ -73,7 +72,12 @@ export class Telemetry {
     };
   }
 
-  init(opts: { cliVersion: string; flagEnabled: boolean }) {
+  init(opts: {
+    cliVersion: string;
+    flagEnabled: boolean;
+    detectedInteractive: boolean;
+    detectedAgentName: string;
+  }) {
     const optedOut =
       isTruthyEnv(process.env["DO_NOT_TRACK"]) ||
       isTruthyEnv(process.env["OPENUI_TELEMETRY_DISABLED"]) ||
@@ -81,7 +85,6 @@ export class Telemetry {
     if (optedOut) return; // enabled stays false → all capture() are no-ops
     const state = loadOrCreateState();
     this.session.distinctId = state.distinctId;
-    const interactiveTerminal = isInteractiveTerminal();
     this.session.superProps = {
       cli_version: opts.cliVersion,
       os: process.platform,
@@ -91,7 +94,8 @@ export class Telemetry {
       ci: isCi(),
       stdin_is_tty: Boolean(process.stdin.isTTY),
       stdout_is_tty: Boolean(process.stdout.isTTY),
-      is_interactive_terminal: interactiveTerminal,
+      is_interactive_terminal: opts.detectedInteractive,
+      detected_agent_name: opts.detectedAgentName,
     };
     try {
       this.session.client = createPostHogClient();
@@ -127,7 +131,9 @@ export class Telemetry {
 
   registerRun(props: {
     agent_name: string;
-    detected_agent_name: string;
+    can_prompt: boolean;
+    /** false when `--no-interactive` is passed; only sent for commands that have the flag. */
+    interactive?: boolean;
     cli_run_id: string;
     command: string;
   }) {

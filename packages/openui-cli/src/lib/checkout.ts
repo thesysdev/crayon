@@ -136,15 +136,16 @@ function runGit(
 
 export async function fetchSourceFile(
   repoPath: string,
-  opts: { onRetry?: (info: RetryAttemptInfo) => void } = {},
+  opts: { repo?: SourceRepo; onRetry?: (info: RetryAttemptInfo) => void } = {},
 ): Promise<FetchedFile> {
   const normalizedPath = posixRepoPath(repoPath);
-  const sourceDir = localSourceDir();
+  const { owner, name: repoName, ref } = resolveSourceRepo(opts.repo);
+  const sourceDir = ref === SOURCE_REF ? localSourceDir() : undefined;
   if (sourceDir) {
     return { content: fs.readFileSync(localSourcePath(sourceDir, normalizedPath), "utf8") };
   }
   const fetchOnce = async (): Promise<FetchedFile> => {
-    const url = `https://raw.githubusercontent.com/${SOURCE_OWNER}/${SOURCE_REPO}/${SOURCE_REF}/${normalizedPath}`;
+    const url = `https://raw.githubusercontent.com/${owner}/${repoName}/${ref}/${normalizedPath}`;
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
     try {

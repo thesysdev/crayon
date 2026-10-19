@@ -1,0 +1,305 @@
+diff --git a/docs/app/(home)/page.module.css b/docs/app/(home)/page.module.css
+index a71962b2..d1633eb4 100644
+--- a/docs/app/(home)/page.module.css
++++ b/docs/app/(home)/page.module.css
+@@ -38,8 +38,10 @@
+    the hero subtitle, which never wraps, so it restores wrapping for itself. */
+ .heroOutcome {
+   display: block;
+-  max-width: 40ch;
+-  margin: 1rem 0 0;
++  /* Wide enough that the line plus its longest shuffling word stays on one
++     line on desktop, so the hero never reflows as the word changes. */
++  max-width: 30em;
++  margin: 1rem auto 0;
+   font-family: var(--home-font-text, "Inter", sans-serif);
+   font-size: 1.25rem;
+   font-weight: 400;
+diff --git a/docs/app/(home)/page.tsx b/docs/app/(home)/page.tsx
+index fd36daba..05988738 100644
+--- a/docs/app/(home)/page.tsx
++++ b/docs/app/(home)/page.tsx
+@@ -1,8 +1,17 @@
+ import { SITE_OPEN_GRAPH } from "@/lib/page-metadata";
+ import { BASE_URL } from "@/lib/source";
++import {
++  ChartColumn,
++  FileText,
++  LayoutDashboard,
++  Presentation,
++  Table2,
++  TextCursorInput,
++} from "lucide-react";
+ import type { Metadata } from "next";
+ import { AGENT_SETUP_PROMPT, AgentPicker } from "./components/AgentPicker/AgentPicker";
+ import styles from "./page.module.css";
++import { ShufflingWord } from "./components/ShufflingWord/ShufflingWord";
+ import { BANNER_END_ANCHOR_ID } from "./sections/CloudBanner/CloudBanner";
+ import { CloudSection } from "./sections/CloudSection/CloudSection";
+ import { CompatibilitySection } from "./sections/CompatibilitySection/CompatibilitySection";
+@@ -16,6 +25,17 @@ import { ShiroPeek } from "./sections/ShiroPeek/ShiroPeek";
+ import { TweetWallSection } from "./sections/TweetWallSection/TweetWallSection";
+ import { WhatItDoesSection } from "./sections/WhatItDoesSection/WhatItDoesSection";
+ 
++/* What the hero's outcome line cycles through, one at a time. */
++const HERO_OUTPUTS = [
++  { label: "Interactive UI" },
++  { label: "Charts", icon: <ChartColumn aria-hidden /> },
++  { label: "Tables", icon: <Table2 aria-hidden /> },
++  { label: "Forms", icon: <TextCursorInput aria-hidden /> },
++  { label: "Dashboards", icon: <LayoutDashboard aria-hidden /> },
++  { label: "Reports", icon: <FileText aria-hidden /> },
++  { label: "Slides", icon: <Presentation aria-hidden /> },
++];
++
+ export const metadata: Metadata = {
+   alternates: {
+     canonical: "/",
+@@ -98,13 +118,18 @@ export default function HomePage() {
+           the last two so they never interrupt that story. */}
+       <div className={styles.heroShell}>
+         <HeroSection
+-          align="left"
++          align="center"
+           desktopFromTablet
++          /* No "OpenUI" wordmark: the header already names the product, so the
++             hero leads with the standard itself. */
++          title={null}
+           subtitle={
+             <>
+               Open Standard for Generative UI
+               <span className={styles.heroOutcome}>
+-                Make your AI apps and agents respond with intelligent UI, not just text.
++                Make your AI apps and agents respond
++                <br />
++                <ShufflingWord lead="with" items={HERO_OUTPUTS} />
+               </span>
+             </>
+           }
+@@ -115,17 +140,17 @@ export default function HomePage() {
+              the star count already. Dropping githubRepoUrl takes the desktop
+              button; the mobile banner defaults on, so it is turned off here. */
+           showGitHubBanner={false}
+-          /* Just the hero: what OpenUI is and how to start. The demo fold
+-             follows straight after, starting within the first screen. */
+-          showPreview={false}
++          /* TEMP: the live compare demo is back in the hero, as on main.
++             To return to the screenshot showcase, set showPreview={false},
++             move <LogoStrip /> back down by the tweet wall, restore
++             <WhatItDoesSection /> below and the contentSectionTight class. */
+         />
++        <LogoStrip />
+       </div>
+-      {/* The demo fold sits tight under the hero, so it starts halfway down
+-          the first screen. */}
+-      <div className={`${styles.contentSection} ${styles.contentSectionTight}`}>
++      <div className={styles.contentSection}>
+         <div className={styles.contentShell}>
+-          {/* Fold 2: what it does. */}
+-          <WhatItDoesSection />
++          {/* Fold 2: what it does. TEMP: hidden while the hero demo is back. */}
++          {/* <WhatItDoesSection /> */}
+ 
+           {/* Fold 3: how it works. */}
+           <HowItWorksSection />
+@@ -142,7 +167,6 @@ export default function HomePage() {
+             <ShiroPeek />
+             <CloudSection />
+           </div>
+-          <LogoStrip />
+           <TweetWallSection />
+ 
+           {/* Fold 5: FAQ. */}
+diff --git a/docs/app/(home)/sections/HeroSection/HeroSection.module.css b/docs/app/(home)/sections/HeroSection/HeroSection.module.css
+index 43bca024..4292f9ab 100644
+--- a/docs/app/(home)/sections/HeroSection/HeroSection.module.css
++++ b/docs/app/(home)/sections/HeroSection/HeroSection.module.css
+@@ -64,6 +64,21 @@
+   text-wrap: balance;
+ }
+ 
++/* With no title above it, the subtitle is the mobile headline. */
++.mobileSubtitle.mobileSubtitleLead {
++  font-family: var(--home-font-display);
++  margin-top: 0;
++  font-size: clamp(32px, 9vw, 40px);
++  font-weight: 600;
++  line-height: 1.1;
++  letter-spacing: -0.5px;
++  color: var(--openui-text-neutral-primary);
++  /* A headline must wrap: the nowrap the subtitle gets on wider phones would
++     push it off both edges between 480px and the desktop layout. */
++  white-space: normal;
++  text-wrap: balance;
++}
++
+ .tagline {
+   text-align: center;
+   font-size: clamp(1.875rem, 4vw, 2.5rem);
+@@ -817,6 +832,19 @@
+   white-space: normal;
+ }
+ 
++/* With no title above it, the subtitle is the headline, at the home page's
++   headline size whichever way the hero is aligned. */
++.desktopSubtitleLead {
++  font-family: var(--home-font-display);
++  color: var(--openui-text-neutral-primary);
++  font-size: 3.75rem;
++  font-weight: 600;
++  line-height: 1.1;
++  letter-spacing: -1px;
++  margin-top: 0;
++  white-space: normal;
++}
++
+ /* Sub-product pages reuse the left hero but want a smaller secondary headline
+    than the home page's 3.75rem (the one intended difference from home). */
+ .desktopSubtitleSmall {
+@@ -1083,7 +1111,7 @@
+      custom frame's drop shadow extend below without being cropped. */
+   overflow-x: clip;
+   overflow-y: visible;
+-  margin-top: 2rem;
++  margin-top: 4.75rem;
+ }
+ 
+ .previewSectionTight {
+@@ -1158,7 +1186,7 @@
+   }
+ 
+   .desktopFromTablet .previewSection {
+-    margin-top: 2rem;
++    margin-top: 4.75rem;
+   }
+ 
+   .desktopFromTablet .previewDesktopOnly {
+@@ -1171,6 +1199,26 @@
+   }
+ }
+ 
++/* Below the desktop lockup the install command shows in full rather than as a
++   scrolling ticker, sized down with the screen so it always fits the pill. */
++@media (max-width: 1023px) {
++  .npmButton,
++  .mobileCtaButtonWidth {
++    width: auto;
++    max-width: calc(100vw - 2rem);
++  }
++
++  .npmDesktopLabel {
++    display: inline-block;
++    vertical-align: middle;
++    font-size: clamp(11px, 3.3vw, 18px);
++  }
++
++  .npmMobileLabel {
++    display: none;
++  }
++}
++
+ /* ── Responsive: desktop (≥1024px) ── */
+ 
+ @media (min-width: 1024px) {
+@@ -1207,7 +1255,7 @@
+   }
+ 
+   .previewSection {
+-    margin-top: 2.5rem;
++    margin-top: 5.75rem;
+   }
+ 
+   .previewDesktopOnly {
+diff --git a/docs/app/(home)/sections/HeroSection/HeroSection.tsx b/docs/app/(home)/sections/HeroSection/HeroSection.tsx
+index 4d8e668c..a1870c12 100644
+--- a/docs/app/(home)/sections/HeroSection/HeroSection.tsx
++++ b/docs/app/(home)/sections/HeroSection/HeroSection.tsx
+@@ -365,6 +365,7 @@ function DesktopHero({
+   // applied when both the playground button AND the GitHub button are off.
+   const hasSecondaryCta = showPlaygroundButton || !!githubRepoUrl;
+   const isLeft = align === "left";
++  const SubtitleTag = title ? "p" : "h1";
+ 
+   return (
+     <div
+@@ -380,20 +381,25 @@ function DesktopHero({
+             isLeft ? styles.desktopHeroLockupLeft : ""
+           } ${splitLockup ? styles.desktopHeroLockupSplit : ""}`.trim()}
+         >
+-          <h1
+-            className={`${styles.desktopTitle} ${compact ? styles.desktopTitleCompact : ""} ${
+-              isLeft ? styles.desktopTitleLeft : ""
+-            }`.trim()}
+-          >
+-            {title}
+-          </h1>
+-          <p
++          {title ? (
++            <h1
++              className={`${styles.desktopTitle} ${compact ? styles.desktopTitleCompact : ""} ${
++                isLeft ? styles.desktopTitleLeft : ""
++              }`.trim()}
++            >
++              {title}
++            </h1>
++          ) : null}
++          {/* Without a title, the subtitle is the page's heading. */}
++          <SubtitleTag
+             className={`${styles.desktopSubtitle} ${
+               isLeft ? styles.desktopSubtitleLeft : ""
+-            } ${smallSubtitle ? styles.desktopSubtitleSmall : ""}`.trim()}
++            } ${title ? "" : styles.desktopSubtitleLead} ${
++              smallSubtitle ? styles.desktopSubtitleSmall : ""
++            }`.trim()}
+           >
+             {subtitle}
+-          </p>
++          </SubtitleTag>
+         </div>
+ 
+         <div
+@@ -511,24 +517,30 @@ function MobileHero({
+     <div className={styles.mobileHero}>
+       <div className={styles.mobileHeroIntro}>
+         <div className={styles.mobileHeroStack}>
+-          <div className={styles.mobileBrandGroup}>
++          {title ? (
++            <div className={styles.mobileBrandGroup}>
++              <p
++                className={`${styles.mobileTitle} ${
++                  compact || smallSubtitle ? styles.mobileTitleCompact : ""
++                }`.trim()}
++              >
++                {title}
++              </p>
++            </div>
++          ) : null}
++
++          {/* Subtitle; without a title it becomes the headline. */}
++          {title ? (
+             <p
+-              className={`${styles.mobileTitle} ${
+-                compact || smallSubtitle ? styles.mobileTitleCompact : ""
++              className={`${styles.mobileSubtitle} ${
++                smallSubtitle ? styles.mobileSubtitleSmall : ""
+               }`.trim()}
+             >
+-              {title}
++              {subtitle}
+             </p>
+-          </div>
+-
+-          {/* Subtitle */}
+-          <p
+-            className={`${styles.mobileSubtitle} ${
+-              smallSubtitle ? styles.mobileSubtitleSmall : ""
+-            }`.trim()}
+-          >
+-            {subtitle}
+-          </p>
++          ) : (
++            <h1 className={`${styles.mobileSubtitle} ${styles.mobileSubtitleLead}`}>{subtitle}</h1>
++          )}
+         </div>
+       </div>
+ 
