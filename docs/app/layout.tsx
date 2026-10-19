@@ -26,7 +26,7 @@ const geistMono = Geist_Mono({
 
 const SITE_TITLE = SITE_NAME;
 const SITE_DESCRIPTION =
-  "OpenUI is the open standard for Intelligent UI. Full-stack, framework-agnostic Generative UI built on OpenUI Lang, a streaming-first language with first-party runtimes for React, Vue, Svelte, and Angular, and up to 67% fewer tokens than JSON.";
+  "Open-source infrastructure for AI apps and agents to respond with interactive UI, not just text. Build with your own components, models and design system.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
@@ -39,7 +39,6 @@ export const metadata: Metadata = {
   referrer: "origin-when-cross-origin",
   keywords: [
     "OpenUI",
-    "Intelligent UI",
     "Generative UI",
     "AI UI",
     "OpenUI Lang",
@@ -74,6 +73,9 @@ export const metadata: Metadata = {
   },
 };
 
+/** Square Shiro mark for `og:logo`, which Next's Metadata API has no field for. */
+const OG_LOGO = `${BASE_URL}/shiro-og-logo.png`;
+
 export default function Layout({ children }: LayoutProps<"/">) {
   return (
     <html
@@ -83,11 +85,12 @@ export default function Layout({ children }: LayoutProps<"/">) {
       data-scroll-behavior="smooth"
       suppressHydrationWarning
     >
+      <head>
+        <meta property="og:logo" content={OG_LOGO} />
+      </head>
       <body className="flex flex-col min-h-screen">
         <PHProvider>
-          <RootProvider theme={{ defaultTheme: "system", enableSystem: true }}>
-            {children}
-          </RootProvider>
+          <RootProvider theme={{ defaultTheme: "light" }}>{children}</RootProvider>
         </PHProvider>
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-MZ0TZ82NM2"

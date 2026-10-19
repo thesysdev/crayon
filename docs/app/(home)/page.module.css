@@ -9,6 +9,17 @@
 .page {
   --openui-foreground: #fff;
 
+  /* One heading voice for the whole home page: every section title, fold
+     headline and hero stat shares this weight, tracking and leading, and only
+     the size changes with the level. Scoped here, not in globals.css, so the
+     other marketing pages keep their own scale. */
+  --home-display-weight: 600;
+  --home-display-tracking: -0.02em;
+  --home-display-leading: 1.1;
+  --home-title-weight: var(--home-display-weight);
+  --home-title-tracking: var(--home-display-tracking);
+  --home-title-leading: var(--home-display-leading);
+
   position: relative;
   min-height: 100vh;
   width: 100%;
@@ -17,10 +28,34 @@
 }
 
 .heroShell {
-  /* The tagline used to close this block out; with it hidden the logo strip sat
-     flush against the content section below. */
-  padding-bottom: clamp(3rem, 6vw, 5rem);
+  /* Kept short: the compare demo at the bottom of the hero and the how-it-works
+     fold below it read as one story, so they sit close together. */
+  padding-bottom: clamp(1.5rem, 3vw, 2.5rem);
   background: var(--openui-foreground);
+}
+
+/* The outcome line under "The Open Standard for Generative UI". It lives inside
+   the hero subtitle, which never wraps, so it restores wrapping for itself. */
+.heroOutcome {
+  display: block;
+  /* Wide enough that the line plus its longest shuffling word stays on one
+     line on desktop, so the hero never reflows as the word changes. */
+  max-width: 30em;
+  margin: 1rem auto 0;
+  font-family: var(--home-font-text, "Inter", sans-serif);
+  font-size: 1.25rem;
+  font-weight: 400;
+  line-height: 1.45;
+  letter-spacing: 0;
+  white-space: normal;
+  text-wrap: balance;
+  color: var(--openui-text-neutral-secondary);
+}
+
+/* Pulls the demo fold up under the hero's call to action, so the first
+   screen shows the hero and the start of the live demo. */
+.contentSectionTight .contentShell {
+  padding-top: 0;
 }
 
 .contentSection {
@@ -29,25 +64,13 @@
   background: var(--openui-foreground);
 }
 
-/* The Lang band sits straight in the shell, which has no gutters of its own,
-   so it gets the same inline padding the other sections apply themselves. */
-.langBand {
-  box-sizing: border-box;
-  width: 100%;
-  /* Mirrors CloudSection's .inner, so the Lang band lines up with the Gateway
-     and Observability bands below it rather than sitting 40px wider. */
-  max-width: var(--home-container-max);
-  margin-inline: auto;
-  padding-inline: var(--home-container-gutter);
-}
-
 /* NB: both breakpoints below override this gap, so editing it here has no
    visible effect. Change the media queries instead. */
 .contentShell {
   display: flex;
   flex-direction: column;
   gap: 5rem;
-  padding-block: 8rem;
+  padding-block: 5rem 8rem;
 }
 
 .contentShellTight {
@@ -94,13 +117,6 @@
     gap: 7rem;
     padding-block: 4rem;
   }
-  /* The feature grid states the Lang band's own capabilities, so it should read
-     as part of that band. The shell's gap is the measure between unrelated
-     sections, which is too much here; this pulls the grid back up under it. */
-  .langBand {
-    margin-bottom: -3.75rem;
-  }
-
   .faqBand {
     padding-inline: 1.25rem;
   }
@@ -119,4 +135,14 @@
 
 [data-theme="dark"] .contentSection {
   background: #000;
+}
+
+/* The restored open-source band under the logo carousel. Sized to the fold:
+   a 75rem content box inside the same gutters as the hero and comparison. */
+.langBand {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: calc(75rem + 2 * clamp(1.25rem, 3vw, 2.5rem));
+  margin-inline: auto;
+  padding-inline: clamp(1.25rem, 3vw, 2.5rem);
 }

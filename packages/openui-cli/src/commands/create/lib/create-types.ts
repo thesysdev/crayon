@@ -1,4 +1,4 @@
-import type { CloudAuthMethod, ResolvedAuthMethod } from "../../../lib/auth/mint";
+import type { ResolvedAuthMethod } from "../../../lib/auth/mint";
 
 /** Template `key` from `templates/templates.json`. */
 export type TemplateName = string;
@@ -7,16 +7,12 @@ export type OverlayName = string;
 
 export interface CreateAppOptions {
   name?: string;
-  template?: TemplateName;
   backendFramework?: OverlayName;
   example?: string;
-  skill?: boolean;
-  noInteractive?: boolean;
   noInstall?: boolean;
+  noSkill?: boolean;
   immediate?: boolean;
-  apiKey?: string;
   envFile?: string;
-  auth?: CloudAuthMethod;
 }
 
 export type AiSetup = "openui_cloud" | "openai_compatible_provider";

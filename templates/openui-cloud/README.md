@@ -1,5 +1,9 @@
 This is an [OpenUI](https://openui.com) Cloud project bootstrapped with [`openui-cli`](https://openui.com/docs/chat/quick-start).
 
+## OpenUI: guide for coding agents
+
+This project is built with [OpenUI](https://www.openui.com). Before changing it, read the maintained OpenUI skill for coding agents published at [thesysdev/skills](https://raw.githubusercontent.com/thesysdev/skills/refs/heads/main/skills/openui/SKILL.md).
+
 ## Setup
 
 The CLI writes `.env` for you. If you cloned the generated project elsewhere,

@@ -1,20 +1,22 @@
 "use client";
 
-import { SectionHeader } from "../../components/SectionHeader/SectionHeader";
+import { FoldHeader } from "../../components/FoldHeader/FoldHeader";
+import { LogoBubbles } from "../../components/LogoBubbles/LogoBubbles";
 import { stackChipStyles, type StackChipItem } from "../../components/StackChip/StackChip";
-import { CompatibilityDiagram } from "./CompatibilityDiagram";
 import styles from "./CompatibilitySection.module.css";
 
 interface StackRow {
   label: string;
+  /* Plain-language name and one line for the card. `label` stays the
+     technical term for the hidden list and any reader who wants it. */
+  title: string;
+  description: string;
   items: StackChipItem[];
 }
 
-/* The four compatibility groups, ordered the way the stack is drawn top to
-   bottom: the model at the top, then the service that calls it, the library it
-   renders with, and the client the user touches at the base. The diagram draws
-   one StackLayerRow per group, in this order, and runs that group's own logos
-   past it.
+/* The four compatibility groups: the model, the agent code that calls it, the
+   components it renders with, and the app the user touches. Each becomes one
+   card, in this order.
 
    Every entry needs a real mark. Anything with no logo to be found is left out
    rather than stood in for by a related company's. */
@@ -23,6 +25,8 @@ const STACK_ROWS: StackRow[] = [
     /* OpenAI, xAI and DeepSeek are local files: Simple Icons carries no OpenAI
        mark, and its "x" is the social network, not xAI. */
     label: "LLMs",
+    title: "Your model",
+    description: "Closed or open, hosted or running on your own machine.",
     items: [
       {
         name: "OpenAI",
@@ -66,12 +70,28 @@ const STACK_ROWS: StackRow[] = [
         iconColor: "ffffff",
         badgeClassName: stackChipStyles.badgeMistral,
       },
+      {
+        name: "Qwen",
+        iconKind: "image",
+        slug: "qwen",
+        iconColor: "6950ef",
+        badgeClassName: `${stackChipStyles.badgeWhite} ${stackChipStyles.badgeWithBorder}`,
+      },
+      {
+        name: "Ollama",
+        iconKind: "image",
+        slug: "ollama",
+        iconColor: "000000",
+        badgeClassName: `${stackChipStyles.badgeWhite} ${stackChipStyles.badgeWithBorder}`,
+      },
     ],
   },
   {
     /* Llama, LlamaIndex and Mastra are absent: no logo could be found for any of
        them, and a row is better short than wrong. */
     label: "Backend",
+    title: "Your agents",
+    description: "Add it to your existing agent code. No rewrite needed.",
     items: [
       {
         name: "Vercel AI SDK",
@@ -108,10 +128,33 @@ const STACK_ROWS: StackRow[] = [
         iconColor: "ffffff",
         badgeClassName: stackChipStyles.badgeCloudflare,
       },
+      {
+        name: "CrewAI",
+        iconKind: "image",
+        slug: "crewai",
+        iconColor: "ffffff",
+        badgeClassName: stackChipStyles.badgeCrewAi,
+      },
+      {
+        name: "n8n",
+        iconKind: "image",
+        slug: "n8n",
+        iconColor: "ea4b71",
+        badgeClassName: `${stackChipStyles.badgeWhite} ${stackChipStyles.badgeWithBorder}`,
+      },
+      {
+        name: "Haystack",
+        iconKind: "image",
+        slug: "haystack",
+        iconColor: "0eaf9c",
+        badgeClassName: `${stackChipStyles.badgeWhite} ${stackChipStyles.badgeWithBorder}`,
+      },
     ],
   },
   {
     label: "UI library",
+    title: "Your components",
+    description: "Bring your own design system and component library.",
     items: [
       {
         name: "OpenUI Design system",
@@ -171,6 +214,8 @@ const STACK_ROWS: StackRow[] = [
   },
   {
     label: "Clients",
+    title: "Your framework",
+    description: "Works in the web framework you build with today.",
     items: [
       {
         name: "React",
@@ -221,34 +266,40 @@ const STACK_ROWS: StackRow[] = [
         iconColor: "ffffff",
         badgeClassName: stackChipStyles.badgeBlack,
       },
+      {
+        name: "Astro",
+        iconKind: "image",
+        slug: "astro",
+        iconColor: "ffffff",
+        badgeClassName: stackChipStyles.badgeBlack,
+      },
     ],
   },
 ];
 
-export function CompatibilitySection({ embedded = false }: { embedded?: boolean } = {}) {
+/* Four cards in plain words rather than the stack diagram: what each group
+   means to someone choosing a tool, then the logos that prove it. */
+export function CompatibilitySection() {
   return (
-    <section
-      className={styles.section}
-      data-variant={embedded ? "embedded" : undefined}
-      aria-labelledby="favorite-stack-title"
-    >
+    <section className={styles.section} aria-labelledby="integrations-title">
+      <FoldHeader
+        id="integrations-title"
+        title="Works with the tools you already use."
+        subtitle="Works with any model, any frontend framework, and any design system or component library you already use."
+      />
       <div className={styles.container}>
-        <div className={styles.stack}>
-          <CompatibilityDiagram groups={STACK_ROWS} />
-        </div>
-        {/* Sits under the diagram, reading as its caption. Same treatment as the
-            benchmark header above this band, so the two read as peers, and
-            titleId keeps the section's aria-labelledby valid. */}
-        <div className={styles.header}>
-          {/* The diagram is images and a hidden list, so the caption is what
-              puts this band's claim into crawlable body text. One clause per
-              row above it, in the same order. */}
-          <SectionHeader
-            caption="Generative UI that renders in any client framework, uses any component library, and runs on any agent backend or model."
-            title="...and works with your stack."
-            titleId="favorite-stack-title"
-          />
-        </div>
+        <ul className={styles.cards}>
+          {STACK_ROWS.map((row, index) => (
+            <li key={row.label} className={styles.card}>
+              {/* Logos lead each column as its picture. */}
+              <LogoBubbles items={row.items} stagger={index} />
+              <h3 className={styles.cardTitle}>{row.title}</h3>
+              <p className={styles.cardDescription}>{row.description}</p>
+              {/* The names stay for screen readers; the logos carry them visually. */}
+              <p className="sr-only">{row.items.map((item) => item.name).join(", ")}</p>
+            </li>
+          ))}
+        </ul>
       </div>
     </section>
   );

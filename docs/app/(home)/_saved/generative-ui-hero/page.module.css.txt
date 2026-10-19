@@ -1,0 +1,138 @@
+/* The design system's light --openui-foreground is rgb(253,253,253), two levels
+   off white. Sections that paint pure #fff sit on it and the step reads as a
+   faint frame around them, so this page takes the token to white instead.
+
+   Scoped to this element on purpose. The token is declared in the react-ui
+   package and read in 167 places across the site, and .homeTheme covers all
+   thirteen marketing routes; setting it here keeps the change to the home page
+   while everything below still goes through the token rather than a literal. */
+.page {
+  --openui-foreground: #fff;
+
+  /* One heading voice for the whole home page: every section title, fold
+     headline and hero stat shares this weight, tracking and leading, and only
+     the size changes with the level. Scoped here, not in globals.css, so the
+     other marketing pages keep their own scale. */
+  --home-display-weight: 600;
+  --home-display-tracking: -0.02em;
+  --home-display-leading: 1.1;
+  --home-title-weight: var(--home-display-weight);
+  --home-title-tracking: var(--home-display-tracking);
+  --home-title-leading: var(--home-display-leading);
+
+  position: relative;
+  min-height: 100vh;
+  width: 100%;
+  overflow-x: clip;
+  background: var(--openui-foreground);
+}
+
+.heroShell {
+  /* Kept short: the compare demo at the bottom of the hero and the how-it-works
+     fold below it read as one story, so they sit close together. */
+  padding-bottom: clamp(1.5rem, 3vw, 2.5rem);
+  background: var(--openui-foreground);
+}
+
+/* The outcome line under "The Open Standard for Generative UI". It lives inside
+   the hero subtitle, which never wraps, so it restores wrapping for itself. */
+.heroOutcome {
+  display: block;
+  /* Wide enough that the line plus its longest shuffling word stays on one
+     line on desktop, so the hero never reflows as the word changes. */
+  max-width: 30em;
+  margin: 1rem auto 0;
+  font-family: var(--home-font-text, "Inter", sans-serif);
+  font-size: 1.25rem;
+  font-weight: 400;
+  line-height: 1.45;
+  letter-spacing: 0;
+  white-space: normal;
+  text-wrap: balance;
+  color: var(--openui-text-neutral-secondary);
+}
+
+/* Pulls the demo fold up under the hero's call to action, so the first
+   screen shows the hero and the start of the live demo. */
+.contentSectionTight .contentShell {
+  padding-top: 0;
+}
+
+.contentSection {
+  position: relative;
+  margin-top: 1.5rem;
+  background: var(--openui-foreground);
+}
+
+/* NB: both breakpoints below override this gap, so editing it here has no
+   visible effect. Change the media queries instead. */
+.contentShell {
+  display: flex;
+  flex-direction: column;
+  gap: 5rem;
+  padding-block: 5rem 8rem;
+}
+
+.contentShellTight {
+  gap: 4rem;
+}
+
+@media (min-width: 768px) {
+  .contentShell {
+    gap: 5.5rem;
+  }
+
+  .contentShellTight {
+    gap: 6rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .contentSection {
+    margin-top: 2rem;
+  }
+}
+
+/* Shiro peeks directly on top of the cloud section, no gap between them */
+.cloudGroup {
+  width: 100%;
+}
+
+.cloudGroup > :first-child {
+  margin-top: 0;
+}
+
+.faqBand {
+  box-sizing: border-box;
+  width: 100%;
+}
+
+/* Mobile-only: tighten the vertical rhythm so the page isn't sparse on phones. */
+@media (max-width: 767px) {
+  .contentSection {
+    margin-top: 1rem;
+  }
+
+  .contentShell {
+    gap: 7rem;
+    padding-block: 4rem;
+  }
+  .faqBand {
+    padding-inline: 1.25rem;
+  }
+}
+
+/* Keep the main page field solid in both themes. */
+/* Dark mode keeps the package's own value, so only the light one is pinned. */
+[data-theme="dark"] .page {
+  --openui-foreground: oklch(0.205 0 0 / 1);
+}
+
+[data-theme="dark"] .page,
+[data-theme="dark"] .heroShell {
+  background: #000;
+}
+
+[data-theme="dark"] .contentSection {
+  background: #000;
+}

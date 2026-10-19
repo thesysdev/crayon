@@ -4,7 +4,7 @@ import * as path from "node:path";
 import { resolveCloudApiKey, THESYS_KEYS_URL } from "../../../lib/auth/mint";
 import { DEFAULT_ENV_FILE, upsertEnvVar } from "../../../lib/env";
 import { CliCancelledError, cliErrorProperties } from "../../../lib/errors";
-import type { CreateAppOptions, EnvResult, TemplateName } from "./create-types";
+import type { CreateAppOptions, EnvResult } from "./create-types";
 import type { CreateTelemetryClient } from "./telemetry";
 
 export function buildAppId(name: string): string {
@@ -13,10 +13,6 @@ export function buildAppId(name: string): string {
   // suffix keeps two same-named apps in one org from colliding.
   const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, "-");
   return `${slug}-${Math.random().toString(36).slice(2, 8)}`;
-}
-
-export function requiredApiKeyEnv(template: TemplateName): "THESYS_API_KEY" | "OPENAI_API_KEY" {
-  return template === "openui-cloud" ? "THESYS_API_KEY" : "OPENAI_API_KEY";
 }
 
 export function writeEnvVar(filePath: string, name: string, value: string): void {
@@ -46,65 +42,24 @@ export async function writeEnv(
   }
 }
 
-async function promptForProviderKey(): Promise<string | null> {
-  try {
-    const { input } = await import("@inquirer/prompts");
-    const apiKey = (
-      await input({
-        message: "Enter your OpenAI-compatible provider API key (leave blank to skip):",
-      })
-    ).trim();
-    return apiKey || null;
-  } catch (error) {
-    const { ExitPromptError } = await import("@inquirer/core");
-    if (error instanceof ExitPromptError) {
-      throw new CliCancelledError("environment_resolution");
-    }
-    throw error;
-  }
-}
-
-export async function resolveChatEnv(interactive: boolean): Promise<EnvResult> {
-  const apiKey = interactive ? await promptForProviderKey() : null;
-
-  // Always write a file, so the scaffold has a .env to edit rather than one the
-  // user must know to create. Without a key the entries stay commented out: an
-  // empty `OPENAI_API_KEY=` would shadow a key already exported in the shell.
-  if (apiKey) {
-    return { envWritten: true, envVars: { OPENAI_API_KEY: apiKey } };
-  }
-
-  return {
-    // False without a key, so the immediate dev-server gate and the
-    // "add your API key" message still apply even though .env now exists.
-    envWritten: false,
-    envStub: [
-      "# Your OpenAI-compatible provider key. Uncomment and fill it in.",
-      "# OPENAI_API_KEY=sk-your-key-here",
-      "# Optional:",
-      "# OPENAI_MODEL=gpt-5.2",
-      "# OPENAI_BASE_URL=https://api.openai.com/v1",
-      "",
-    ].join("\n"),
-  };
-}
-
 export async function resolveCloudEnv(
   name: string,
   options: CreateAppOptions,
   interactive: boolean,
+  agent: string | undefined,
   tel: CreateTelemetryClient,
 ): Promise<EnvResult> {
   const envFile = options.envFile ?? DEFAULT_ENV_FILE;
+  if (!interactive) {
+    console.info(
+      `${agent ? "Coding agent detected" : "Non-interactive run"} — skipping OpenUI Cloud sign-in.`,
+    );
+  }
   let apiKey: string | null = null;
   let authMethod: EnvResult["authMethod"];
   try {
-    tel.trackCloudAuthStarted({
-      auth_method: options.auth ?? (options.apiKey ? "apikey-flag" : undefined),
-    });
+    tel.trackCloudAuthStarted();
     const resolved = await resolveCloudApiKey({
-      apiKey: options.apiKey,
-      auth: options.auth,
       projectName: name,
       envFile,
       interactive,
@@ -119,7 +74,6 @@ export async function resolveCloudEnv(
   } catch (err) {
     if (err instanceof CliCancelledError) {
       tel.trackCloudAuthCancelled({
-        auth_method: options.auth ?? (options.apiKey ? "apikey-flag" : undefined),
         auth_succeeded: false,
         ...cliErrorProperties(err),
       });
@@ -132,7 +86,6 @@ export async function resolveCloudEnv(
       error_code: "AUTH_FAILED",
     });
     tel.trackCloudAuthFailed({
-      auth_method: options.auth ?? (options.apiKey ? "apikey-flag" : undefined),
       auth_succeeded: false,
       ...properties,
     });
