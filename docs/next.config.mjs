@@ -43,6 +43,11 @@ const config = {
           },
         ],
       },
+      // Keep build chunks crawlable (Google needs them to render pages) but out of the index.
+      {
+        source: "/_next/static/:path*",
+        headers: [{ key: "X-Robots-Tag", value: "noindex" }],
+      },
     ];
   },
   async redirects() {
