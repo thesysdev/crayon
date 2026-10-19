@@ -1,0 +1,34 @@
+name: Docs redirects
+
+# Fails a pull request that removes or renames a docs-site URL without adding a redirect for it
+# in docs/redirects.mjs. URLs are read from files, so this needs no install or build.
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "docs/content/**"
+      - "docs/app/**"
+      - "docs/lib/source.ts"
+      - "docs/redirects.mjs"
+      - "docs/scripts/check-removed-urls.mjs"
+      - ".github/workflows/docs-redirects.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  removed-urls:
+    name: Removed URLs have redirects
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: v24.21.0
+
+      - name: Check removed URLs
+        working-directory: docs
+        run: node scripts/check-removed-urls.mjs --base origin/${{ github.base_ref }}
