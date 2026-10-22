@@ -176,8 +176,20 @@ function compareModels(a: Model, b: Model, sort: Sort) {
   return sort.dir === "asc" ? order : -order;
 }
 
+// Tables grow when the model list loads, which moves the browser's initial #anchor scroll off target.
+function useScrollToHashOnLoad(loaded: boolean) {
+  useEffect(() => {
+    if (!loaded || !window.location.hash) return;
+    const frame = requestAnimationFrame(() => {
+      document.getElementById(decodeURIComponent(window.location.hash.slice(1)))?.scrollIntoView();
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [loaded]);
+}
+
 export function FreeModelsTable() {
   const { data: models } = useRequest(getModels);
+  useScrollToHashOnLoad(models !== null);
   const byId = useMemo(() => new Map((models ?? []).map((m) => [m.id, m])), [models]);
 
   return (
