@@ -79,7 +79,7 @@ const structuredData = {
       sameAs: [
         "https://github.com/thesysdev/openui",
         "https://www.npmjs.com/org/openuidev",
-        "https://x.com/thesysdev",
+        "https://x.com/openuidev",
         "https://www.linkedin.com/company/thesysdev/",
       ],
     },

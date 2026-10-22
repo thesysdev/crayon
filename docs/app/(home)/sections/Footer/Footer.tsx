@@ -22,7 +22,7 @@ interface SocialLink {
 const SOCIAL_LINKS: SocialLink[] = [
   {
     label: "Twitter",
-    href: "https://x.com/thesysdev",
+    href: "https://x.com/openuidev",
     viewBox: "0 0 24 24",
     path: svgPaths.pa1e7100,
     wrapperClassName: styles.socialIconTwitter,
