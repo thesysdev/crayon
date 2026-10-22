@@ -1,7 +1,7 @@
 "use client";
 
 import clsx from "clsx";
-import { Maximize2, X } from "lucide-react";
+import { Maximize2, Minimize2 } from "lucide-react";
 import React, { useCallback, useEffect, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { IconButton } from "../IconButton";
@@ -9,7 +9,11 @@ import { useTheme } from "../ThemeProvider";
 
 export interface ShellProps {
   title: string;
-  children?: React.ReactNode;
+  /**
+   * Content, or a function of where it renders: `close` is set only in the
+   * full-screen view, so content there can close it (e.g. after an action).
+   */
+  children?: React.ReactNode | ((view: { close?: () => void }) => React.ReactNode);
   className?: string;
 }
 
@@ -56,10 +60,12 @@ export const Shell = ({ title, children, className }: ShellProps) => {
           onClick={() => setOpen(true)}
         />
       </div>
-      <div className="openui-shell__body">{children}</div>
+      <div className="openui-shell__body">
+        {typeof children === "function" ? children({}) : children}
+      </div>
       {open && (
         <ShellLightbox title={title} closing={closing} onClose={close}>
-          {children}
+          {typeof children === "function" ? children({ close }) : children}
         </ShellLightbox>
       )}
     </section>
@@ -134,11 +140,11 @@ const ShellLightbox = ({
           </span>
           <IconButton
             className="openui-shell__button"
-            icon={<X />}
+            icon={<Minimize2 />}
             shape="circle"
             variant="tertiary"
             size="extra-small"
-            aria-label="Close"
+            aria-label={`Collapse ${title}`}
             onClick={onClose}
           />
         </div>

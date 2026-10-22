@@ -1,7 +1,8 @@
 "use client";
 
 import type { ComponentGroup } from "@openuidev/react-lang";
-import { createLibrary } from "@openuidev/react-lang";
+import { createLibrary, defineComponent } from "@openuidev/react-lang";
+import { z } from "zod/v4";
 
 // Card building blocks
 import { EntityList } from "./EntityList";
@@ -84,7 +85,7 @@ import { Checklist, ChecklistItem } from "./Checklist";
 import { Grid } from "./Grid";
 import { Section } from "./Section";
 import { Separator } from "./Separator";
-import { Shell } from "./Shell";
+import { getShellChildUnion, SHELL_DESCRIPTION, ShellRenderer, ShellSchema } from "./Shell";
 import { Stack } from "./Stack";
 import { Steps, StepsItem } from "./Steps";
 import { TabItem, Tabs } from "./Tabs";
@@ -126,10 +127,10 @@ export const openuiComponentGroups: ComponentGroup[] = [
       "Modal",
     ],
     notes: [
-      "- Shell(title, [children]) frames a dashboard or large Grid layout: a small title, an outline, wider than the chat column, with an expand button for full screen. At most one per response. Bleed([children]) is the same width with no frame, for a wide hero Image, comparison Grid or Carousel; wrap a Grid comparing an odd number of cards (3 or 5 plans) in a Bleed, Bleed([Grid([p1, p2, p3], 3)]), so they sit in one row instead of 2 + 1. Never nest either.",
+      '- Shell(title, [children]) frames a dashboard or large Grid layout: a small title, an outline, wider than the chat column, with an expand button for full screen. At most one per response. Inside it, each titled group is a Section with its Heading first, e.g. Shell("October", [Grid([kpi1, kpi2, kpi3], 3), Section([Heading("Top 5 customers"), Table(...)]), Section([Heading("Key insights"), InsightCard([...])])]); never a loose Heading or Text title next to a Grid. Bleed([children]) is the same width with no frame, for a wide hero Image, comparison Grid or Carousel; wrap a Grid comparing an odd number of cards (3 or 5 plans) in a Bleed, Bleed([Grid([p1, p2, p3], 3)]), so they sit in one row instead of 2 + 1. Never nest either.',
       "- For dashboards and equal columns use Grid(children, columns?): columns 2 (default) | 3 | 4, collapsing to fewer on narrow screens, e.g. a KPI row Grid([c1, c2, c3, c4], 4) above Grid([chartCard1, chartCard2]). Use a Stack row only for a few items of mixed width.",
       "- Use nested Stacks when you need explicit rows/sections.",
-      "- Build every response from Sections: Section([children]) holds one part (an overview, then options, then next steps) with more space after it and tight spacing inside. Compose each part yourself: a Heading title first when it needs one, then content; rows or grids inside with Stack or card blocks. Never nested. Sections are high-level divisions and many responses have only one; never give a lone Text, Markdown, Buttons row or title (Heading or Text, with or without a subtitle) its own Section, so an intro or a dashboard header goes first inside the Section holding the content it introduces.",
+      "- Build every response from Sections: Section([children]) holds one part (an overview, then options, then next steps) with more space after it and tight spacing inside. Compose each part yourself: a Heading title first when it needs one, then content; rows or grids inside with Stack or card blocks. Never nested, except inside a dashboard Shell, where each titled group is its own Section. Sections are high-level divisions and many responses have only one; never give a lone Text, Markdown, Buttons row or title (Heading or Text, with or without a subtitle) its own Section, so an intro or a dashboard header goes first inside the Section holding the content it introduces.",
       '- Show/hide sections: $editId != "" ? Card([editForm]) : null',
       '- Modal: Modal("Title", $showModal, [content]) — $showModal is boolean, X/Escape auto-closes. Put Form with its own buttons inside children.',
       "- Use Tabs for alternative views (chart types, data sections) — no $variable needed",
@@ -327,6 +328,20 @@ export const openuiComponentGroups: ComponentGroup[] = [
 
 // ── Examples & prompt options ──
 export { openuiAdditionalRules, openuiExamples, openuiPromptOptions } from "./prompt-options";
+
+// Shell also takes a Section here, so a dashboard titles each group with its
+// own Section (Heading, then its Grid). Added at the library because
+// Section's own schema holds a Shell, which makes the import circular.
+const Shell = defineComponent({
+  name: "Shell",
+  props: ShellSchema.extend({
+    get children(): z.ZodArray<z.ZodType> {
+      return z.array(z.union([getShellChildUnion(), Section.ref]));
+    },
+  }),
+  description: SHELL_DESCRIPTION,
+  component: ShellRenderer,
+});
 
 // ── Library ──
 
