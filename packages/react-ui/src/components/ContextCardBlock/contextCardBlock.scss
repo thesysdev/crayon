@@ -77,6 +77,7 @@
   );
   @each $name, $pair in $tints {
     &--variant-#{$name} {
+      --openui-context-card-tint: #{list.nth($pair, 1)};
       background-color: list.nth($pair, 1);
       color: list.nth($pair, 2);
 
@@ -334,13 +335,40 @@
 
 // InsightCard tiles carry no photo, so they size to their text: overline,
 // title and subtitle stack tightly instead of spreading over a tall tile.
+// Each tint shows as a coloured outline on a transparent tile: the variant
+// sets the text colour, and the border is that colour at 15%.
 .openui-insight-card-block {
   .openui-context-card {
     min-height: 0;
   }
 
+  .openui-context-card:not(.openui-context-card--variant-inverted) {
+    background-color: transparent;
+    border: 1px solid color-mix(in oklch, currentColor 15%, transparent);
+  }
+
+  // Clickable tiles fill with their tint on hover instead of the shared
+  // grey wash, and don't grow.
+  .openui-context-card--clickable:not(.openui-context-card--variant-inverted):hover {
+    background-color: var(--openui-context-card-tint);
+    box-shadow: none;
+    transform: none;
+  }
+
   .openui-context-card__vertical {
     justify-content: flex-start;
     gap: cssUtils.$space-s;
+  }
+
+  // The overline keeps the tint's full colour, not the 75% fade the shared
+  // tints give it.
+  .openui-context-card__overline {
+    opacity: 1;
+  }
+
+  // The headline reads at Regular weight on a tint; size stays at 22px.
+  .openui-context-card__title {
+    font-weight: cssUtils.$font-weight-regular;
+    font-variation-settings: cssUtils.$font-variation-regular;
   }
 }

@@ -89,7 +89,9 @@ function InsightCardRenderer({ props, renderNode }: ComponentRenderProps<Insight
         return {
           id,
           title: insightOverline(item),
-          content: insightContent(item, renderNode),
+          // Insight tiles are the overline and the title only; a subtitle the
+          // model still passes is not drawn (ImageCard keeps it).
+          content: insightContent({ props: { title: item.props.title } }, renderNode),
           bgColor: color,
         };
       })}
@@ -101,6 +103,6 @@ export const InsightCard = defineComponent({
   name: "InsightCard",
   props: InsightCardSchema,
   description:
-    'A grid or carousel of 2 or more tall tiles, each one takeaway: InsightCard([item1, item2, item3], layout?, responsive?, action?, gap?). Each tile has a short overline (the topic) at the top and the insight as a large title at the bottom. Use it for key takeaways from research, trends or news (with a status Tag in each subtitle), topics to explore as entry points, plan options, or suggested next topics after an answer. layout "grid" (default) for the main side-by-side set, "carousel" for secondary browsing. Keep every item the same shape, with the same kind of subtitle. Tiles have no photo; for photo tiles use ImageCard. action is one shared action for every tile, with the clicked tile\'s details attached and hover and press feedback added automatically, so keep its @ToAssistant message generic (e.g. "Tell me more about this trend") and never use @OpenUrl. For figures use ValueCard or ValueLayout; for products with a price and a button use CompositeCardBlock.',
+    'A grid or carousel of 2 or more tall tiles, each one takeaway: InsightCard([item1, item2, item3], layout?, responsive?, action?, gap?). Each tile has a short overline (the topic) at the top and the insight as a large title at the bottom. Use it for key takeaways from research, trends or news topics to explore as entry points, plan options, or suggested next topics after an answer. layout "grid" (default) for the main side-by-side set, "carousel" for secondary browsing. Keep every item the same shape. Tiles have no photo; for photo tiles use ImageCard. action is one shared action for every tile, with the clicked tile\'s details attached and hover and press feedback added automatically, so keep its @ToAssistant message generic (e.g. "Tell me more about this trend") and never use @OpenUrl. For figures use ValueCard or ValueLayout; for products with a price and a button use CompositeCardBlock.',
   component: InsightCardRenderer,
 });
