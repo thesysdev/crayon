@@ -22,7 +22,7 @@ interface SocialLink {
 const SOCIAL_LINKS: SocialLink[] = [
   {
     label: "Twitter",
-    href: "https://x.com/thesysdev",
+    href: "https://x.com/openuidev",
     viewBox: "0 0 24 24",
     path: svgPaths.pa1e7100,
     wrapperClassName: styles.socialIconTwitter,
@@ -44,7 +44,7 @@ const SOCIAL_LINKS: SocialLink[] = [
   },
   {
     label: "LinkedIn",
-    href: "https://www.linkedin.com/company/thesysdev/",
+    href: "https://www.linkedin.com/showcase/openui-com/",
     viewBox: "0 0 19 19",
     path: svgPaths.p26fc3100,
     wrapperClassName: styles.socialIconLinkedIn,

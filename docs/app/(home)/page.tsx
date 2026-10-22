@@ -79,8 +79,8 @@ const structuredData = {
       sameAs: [
         "https://github.com/thesysdev/openui",
         "https://www.npmjs.com/org/openuidev",
-        "https://x.com/thesysdev",
-        "https://www.linkedin.com/company/thesysdev/",
+        "https://x.com/openuidev",
+        "https://www.linkedin.com/showcase/openui-com/",
       ],
     },
     {
