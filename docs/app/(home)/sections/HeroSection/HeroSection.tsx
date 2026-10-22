@@ -330,6 +330,7 @@ function DesktopHero({
   secondaryCommandLabel,
   commandSlot,
   commandTrailing,
+  proofSlot,
   compact,
   align,
   smallSubtitle,
@@ -350,6 +351,8 @@ function DesktopHero({
   commandSlot?: ReactNode;
   /* Rendered beside the command button, inside its row. */
   commandTrailing?: ReactNode;
+  /* A short proof line under the CTAs. */
+  proofSlot?: ReactNode;
   compact: boolean;
   align: "center" | "left";
   smallSubtitle: boolean;
@@ -425,6 +428,7 @@ function DesktopHero({
             <DesktopGithubButton href={githubRepoUrl} label={githubButtonLabel} />
           )}
         </div>
+        {proofSlot}
       </div>
     </div>
   );
@@ -444,6 +448,7 @@ function MobileHero({
   secondaryCommandLabel,
   commandSlot,
   commandTrailing,
+  proofSlot,
   compact,
   smallSubtitle,
   showCommand,
@@ -470,6 +475,8 @@ function MobileHero({
   commandSlot?: ReactNode;
   /* Rendered beside the command button, inside its row. */
   commandTrailing?: ReactNode;
+  /* A short proof line under the CTAs. */
+  proofSlot?: ReactNode;
   compact: boolean;
   smallSubtitle: boolean;
   showCommand: boolean;
@@ -558,6 +565,7 @@ function MobileHero({
         )}
         {showPlaygroundButton && <MobilePlaygroundButton className={styles.mobileCtaButtonWidth} />}
       </div>
+      {proofSlot && <div className={styles.mobileProof}>{proofSlot}</div>}
 
       {/* Mobile hero image */}
       {showPreview && (
@@ -693,6 +701,7 @@ export function HeroSection({
   secondaryCommandLabel,
   commandSlot,
   commandTrailing,
+  proofSlot,
   compact = false,
   align = "center",
   smallSubtitle = false,
@@ -734,6 +743,8 @@ export function HeroSection({
   commandSlot?: ReactNode;
   /* Rendered beside the command button, inside its row. */
   commandTrailing?: ReactNode;
+  /* A short proof line under the CTAs. */
+  proofSlot?: ReactNode;
   compact?: boolean;
   /** Horizontal alignment of the desktop hero content (default "center"). */
   align?: "center" | "left";
@@ -800,6 +811,7 @@ export function HeroSection({
         secondaryCommandLabel={secondaryCommandLabel}
         commandSlot={commandSlot}
         commandTrailing={commandTrailing}
+        proofSlot={proofSlot}
         compact={compact}
         align={align}
         smallSubtitle={smallSubtitle}
@@ -821,6 +833,7 @@ export function HeroSection({
         secondaryCommandLabel={secondaryCommandLabel}
         commandSlot={commandSlot}
         commandTrailing={commandTrailing}
+        proofSlot={proofSlot}
         compact={compact}
         smallSubtitle={smallSubtitle}
         showCommand={showCommand}

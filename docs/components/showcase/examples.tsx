@@ -33,7 +33,9 @@ export function ExampleCategory({ id }: { id: ExampleCategoryId }) {
             </div>
             <p className={styles.cardDescription}>{example.description}</p>
             <div className={styles.cardLinks}>
-              <RunLocally title={example.title} name={example.name} env={example.env} />
+              {example.runnable ? (
+                <RunLocally title={example.title} name={example.name} env={example.env} />
+              ) : null}
               <CardLink label="Source" href={example.sourceUrl} external />
               {example.guideUrl ? (
                 <Link className={styles.cardLink} href={example.guideUrl}>
