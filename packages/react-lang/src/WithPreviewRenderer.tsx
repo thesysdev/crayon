@@ -8,7 +8,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { HostButton, HostRegion, type HostButtonProps, type HostRegionProps } from "./host";
+import { Button, Section, type ButtonProps, type SectionProps } from "./components";
 import { Renderer, type RendererProps } from "./Renderer";
 import { parseResponseBundle, type ResponseMetadata } from "./responseBundle";
 
@@ -101,12 +101,12 @@ function PreviewRoot({
   );
 }
 
-export type PreviewButtonProps = HostButtonProps;
+export type PreviewButtonProps = ButtonProps;
 
 function PreviewTrigger({ children, ...props }: PreviewButtonProps) {
   const { metadata, isOpen, isStreaming, contentId, open, close } = useRendererPreview();
   return (
-    <HostButton
+    <Button
       {...props}
       aria-expanded={isOpen}
       controls={isOpen ? contentId : undefined}
@@ -115,27 +115,27 @@ function PreviewTrigger({ children, ...props }: PreviewButtonProps) {
       {children === undefined
         ? `${metadata.name || "Untitled artifact"}${isStreaming ? " (generating…)" : ""}`
         : children}
-    </HostButton>
+    </Button>
   );
 }
 
 function PreviewClose({ children, ...props }: PreviewButtonProps) {
   const { metadata, close } = useRendererPreview();
   return (
-    <HostButton {...props} onActivate={close}>
+    <Button {...props} onActivate={close}>
       {children === undefined ? `Close ${metadata.name || "Untitled artifact"}` : children}
-    </HostButton>
+    </Button>
   );
 }
 
-export type PreviewContentProps = HostRegionProps;
+export type PreviewContentProps = SectionProps;
 
 /** Mount one content slot per preview. Query hooks and Renderer slots belong inside it. */
 function PreviewContent({ children, ...props }: PreviewContentProps) {
   const { state, rendererProps } = usePreviewContext();
   if (!state.isOpen) return null;
   return (
-    <HostRegion
+    <Section
       aria-label={state.metadata.name || "Untitled artifact"}
       {...props}
       id={state.contentId}
@@ -148,7 +148,7 @@ function PreviewContent({ children, ...props }: PreviewContentProps) {
       ) : (
         <Renderer {...rendererProps}>{children}</Renderer>
       )}
-    </HostRegion>
+    </Section>
   );
 }
 

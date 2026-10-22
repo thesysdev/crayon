@@ -1,11 +1,11 @@
-// Host elements for the React Native build — same exports as host.tsx, built
-// from react-native primitives. Metro has no <div>/<button>, so the native
-// build resolves `./host` here (see tsdown.config.ts).
+// React Native building blocks — same exports as web.tsx, built from
+// react-native primitives. Metro has no <div>/<button>, so the native build
+// uses this file (via index.native.ts, see tsdown.config.ts).
 import type { ComponentPropsWithRef } from "react";
-import { ActivityIndicator, Pressable, Text, View } from "react-native";
+import { ActivityIndicator, Pressable, View as RNView, Text } from "react-native";
 
 /** Default query loader: a small spinner pinned to the top-right corner. */
-export function QuerySpinner() {
+export function Spinner() {
   return (
     <ActivityIndicator
       size="small"
@@ -16,16 +16,16 @@ export function QuerySpinner() {
   );
 }
 
-export type HostViewProps = ComponentPropsWithRef<typeof View> & {
+export type ViewProps = ComponentPropsWithRef<typeof RNView> & {
   /** Fades content while queries load. Omit to leave opacity untouched. */
   dimmed?: boolean;
   /** Hides the view while keeping its children mounted (the web `hidden` attribute). */
   hidden?: boolean;
 };
 
-export function HostView({ dimmed, hidden, style, ...props }: HostViewProps) {
+export function View({ dimmed, hidden, style, ...props }: ViewProps) {
   return (
-    <View
+    <RNView
       {...props}
       style={[
         dimmed !== undefined && { opacity: dimmed ? 0.7 : 1 },
@@ -36,17 +36,17 @@ export function HostView({ dimmed, hidden, style, ...props }: HostViewProps) {
   );
 }
 
-export type HostButtonProps = ComponentPropsWithRef<typeof Pressable>;
+export type ButtonProps = ComponentPropsWithRef<typeof Pressable>;
 
 /** A button that runs `onActivate` unless disabled or the press handler calls preventDefault(). */
-export function HostButton({
+export function Button({
   onActivate,
   controls: _controls,
   onPress,
   disabled,
   children,
   ...props
-}: HostButtonProps & { onActivate: () => void; controls?: string }) {
+}: ButtonProps & { onActivate: () => void; controls?: string }) {
   return (
     <Pressable
       role="button"
@@ -68,8 +68,8 @@ export function HostButton({
   );
 }
 
-export type HostRegionProps = ComponentPropsWithRef<typeof View>;
+export type SectionProps = ComponentPropsWithRef<typeof RNView>;
 
-export function HostRegion({ style, ...props }: HostRegionProps) {
-  return <View {...props} style={[{ position: "relative" }, style]} />;
+export function Section({ style, ...props }: SectionProps) {
+  return <RNView {...props} style={[{ position: "relative" }, style]} />;
 }

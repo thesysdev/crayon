@@ -17,15 +17,9 @@ import React, {
   useMemo,
   useRef,
 } from "react";
+import { Button, Spinner, View, type ButtonProps, type ViewProps } from "./components";
 import { OpenUIContext, useOpenUI, useRenderNode } from "./context";
 import { useOpenUIState } from "./hooks/useOpenUIState";
-import {
-  HostButton,
-  HostView,
-  QuerySpinner,
-  type HostButtonProps,
-  type HostViewProps,
-} from "./host";
 import type { ComponentRenderer, Library } from "./library";
 
 export interface RendererQueryState {
@@ -303,21 +297,21 @@ export function useRendererQuery(): RendererQueryState {
   return useRendererContext().query;
 }
 
-export type RendererContentSlotProps = Omit<HostViewProps, "children" | "dimmed">;
+export type RendererContentSlotProps = Omit<ViewProps, "children" | "dimmed">;
 
 /** Displays generated content, preserving mounted components while queries load or fail. */
 function RendererContent({ hidden, ...props }: RendererContentSlotProps) {
   const { root, query } = useRendererContext();
   if (!root) return null;
   return (
-    <HostView
+    <View
       {...props}
       aria-busy={query.isLoading}
       hidden={hidden || query.errors.length > 0}
       dimmed={query.isLoading}
     >
       <RenderNode node={root} />
-    </HostView>
+    </View>
   );
 }
 
@@ -332,7 +326,7 @@ function RendererQueryLoading({ children }: RendererSlotProps) {
     queryLoader,
   } = useRendererContext();
   if (!isLoading || errors.length > 0) return null;
-  return <>{children === undefined ? (queryLoader ?? <QuerySpinner />) : children}</>;
+  return <>{children === undefined ? (queryLoader ?? <Spinner />) : children}</>;
 }
 
 /** Shows the supplied content when queries fail; renders nothing without children. */
@@ -342,16 +336,12 @@ function RendererQueryError({ children }: RendererSlotProps) {
   return <>{children}</>;
 }
 
-export type RendererRetryProps = HostButtonProps;
+export type RendererRetryProps = ButtonProps;
 
 function RendererRetry({ disabled, ...props }: RendererRetryProps) {
   const { retry, isLoading, errors } = useRendererQuery();
   return (
-    <HostButton
-      {...props}
-      disabled={disabled || isLoading || errors.length === 0}
-      onActivate={retry}
-    />
+    <Button {...props} disabled={disabled || isLoading || errors.length === 0} onActivate={retry} />
   );
 }
 
@@ -359,12 +349,12 @@ function DefaultRendererContent() {
   const { root, query, queryLoader } = useRendererContext();
   if (!root) return null;
   return (
-    <HostView aria-busy={query.isLoading} style={{ position: "relative" }}>
-      {query.isLoading && (queryLoader ?? <QuerySpinner />)}
-      <HostView dimmed={query.isLoading}>
+    <View aria-busy={query.isLoading} style={{ position: "relative" }}>
+      {query.isLoading && (queryLoader ?? <Spinner />)}
+      <View dimmed={query.isLoading}>
         <RenderNode node={root} />
-      </HostView>
-    </HostView>
+      </View>
+    </View>
   );
 }
 

@@ -1,6 +1,6 @@
-// Host elements for the web build. The React Native build resolves
-// `./host` to host.native.tsx instead (see tsdown.config.ts), so Renderer and
-// WithPreviewRenderer stay platform-agnostic. Keep the exports in sync.
+// Web building blocks for Renderer and WithPreviewRenderer. The React Native
+// build swaps in mobile.native.tsx (via index.native.ts, see tsdown.config.ts).
+// Keep the exports of both files in sync.
 import { useInsertionEffect, type ComponentPropsWithRef } from "react";
 
 // ─── Loading style injection (once per document) ───
@@ -15,7 +15,7 @@ function ensureLoadingStyle() {
 }
 
 /** Default query loader: a small spinner pinned to the top-right corner. */
-export function QuerySpinner() {
+export function Spinner() {
   useInsertionEffect(() => {
     ensureLoadingStyle();
   }, []);
@@ -39,12 +39,12 @@ export function QuerySpinner() {
   );
 }
 
-export type HostViewProps = ComponentPropsWithRef<"div"> & {
+export type ViewProps = ComponentPropsWithRef<"div"> & {
   /** Fades content while queries load. Omit to leave opacity untouched. */
   dimmed?: boolean;
 };
 
-export function HostView({ dimmed, style, ...props }: HostViewProps) {
+export function View({ dimmed, style, ...props }: ViewProps) {
   return (
     <div
       {...props}
@@ -57,17 +57,17 @@ export function HostView({ dimmed, style, ...props }: HostViewProps) {
   );
 }
 
-export type HostButtonProps = ComponentPropsWithRef<"button">;
+export type ButtonProps = ComponentPropsWithRef<"button">;
 
 /** A button that runs `onActivate` unless disabled or the click handler calls preventDefault(). */
-export function HostButton({
+export function Button({
   onActivate,
   controls,
   onClick,
   disabled,
   "aria-controls": ariaControls,
   ...props
-}: HostButtonProps & { onActivate: () => void; controls?: string }) {
+}: ButtonProps & { onActivate: () => void; controls?: string }) {
   return (
     <button
       type="button"
@@ -83,8 +83,8 @@ export function HostButton({
   );
 }
 
-export type HostRegionProps = ComponentPropsWithRef<"section">;
+export type SectionProps = ComponentPropsWithRef<"section">;
 
-export function HostRegion({ style, ...props }: HostRegionProps) {
+export function Section({ style, ...props }: SectionProps) {
   return <section {...props} style={{ position: "relative", ...style }} />;
 }

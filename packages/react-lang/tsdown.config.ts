@@ -14,7 +14,7 @@ const shared = {
 
 export default defineConfig([
   { ...shared, entry: { index: "src/index.ts" } },
-  // React Native: prefer `*.native.tsx` siblings (e.g. host.native.tsx) the
+  // React Native: prefer `*.native.tsx` siblings (e.g. components/index.native.ts) the
   // way Metro would. Metro can't do this itself because dist is bundled.
   {
     ...shared,
