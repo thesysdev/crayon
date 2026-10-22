@@ -44,7 +44,7 @@ const SOCIAL_LINKS: SocialLink[] = [
   },
   {
     label: "LinkedIn",
-    href: "https://www.linkedin.com/company/thesysdev/",
+    href: "https://www.linkedin.com/showcase/openui-com/",
     viewBox: "0 0 19 19",
     path: svgPaths.p26fc3100,
     wrapperClassName: styles.socialIconLinkedIn,
