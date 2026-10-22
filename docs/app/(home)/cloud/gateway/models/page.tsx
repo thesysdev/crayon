@@ -35,9 +35,11 @@ export default function GatewayModelsPage() {
       />
 
       <div className={styles.content}>
-        <section className={styles.section}>
+        <section className={styles.section} id="free-models">
           <header className={styles.sectionHeader}>
-            <h2>Free models</h2>
+            <h2>
+              <a href="#free-models">Free models</a>
+            </h2>
             <p>
               These models are promotionally free. Gateway does not charge for their tokens, but
               each request still uses an API call from your plan. Free models are rate limited, and
@@ -49,17 +51,21 @@ export default function GatewayModelsPage() {
         </section>
 
         {PROVIDER_SECTIONS.map((p) => (
-          <section className={styles.section} key={p.group}>
+          <section className={styles.section} key={p.group} id={p.group}>
             <header className={styles.sectionHeader}>
-              <h2>{p.title}</h2>
+              <h2>
+                <a href={`#${p.group}`}>{p.title}</a>
+              </h2>
             </header>
             <ModelsTable group={p.group} preview={5} pageSize={15} />
           </section>
         ))}
 
-        <section className={styles.section}>
+        <section className={styles.section} id="other-models">
           <header className={styles.sectionHeader}>
-            <h2>Other models</h2>
+            <h2>
+              <a href="#other-models">Other models</a>
+            </h2>
             <p>
               OpenUI Gateway serves third-party models from providers other than OpenAI, Anthropic,
               and Google Gemini through OpenRouter. To require{" "}
