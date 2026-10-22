@@ -1,6 +1,6 @@
-// React Native building blocks — same exports as web.tsx, built from
+// React Native building blocks — same exports as index.tsx, built from
 // react-native primitives. Metro has no <div>/<button>, so the native build
-// uses this file (via index.native.ts, see tsdown.config.ts).
+// resolves `./components` here (see tsdown.config.ts).
 import type { ComponentPropsWithRef } from "react";
 import { ActivityIndicator, Pressable, View as RNView, Text } from "react-native";
 

@@ -1,6 +1,6 @@
 // Web building blocks for Renderer and WithPreviewRenderer. The React Native
-// build swaps in mobile.native.tsx (via index.native.ts, see tsdown.config.ts).
-// Keep the exports of both files in sync.
+// build resolves `./components` to index.native.tsx instead (see
+// tsdown.config.ts). Keep the exports of both files in sync.
 import { useInsertionEffect, type ComponentPropsWithRef } from "react";
 
 // ─── Loading style injection (once per document) ───
