@@ -48,3 +48,29 @@
     --openui-grid-columns: 1;
   }
 }
+
+// A lone last cell in a two-column row (an odd count in a 2-col Grid, or a
+// 4-col Grid stepped down to 2) spans the row instead of leaving half of it
+// empty.
+.openui-grid__cells--2 > :last-child:nth-child(odd) {
+  grid-column: 1 / -1;
+}
+
+@container (max-width: 739px) {
+  .openui-grid__cells--4 > :last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+}
+
+// EntityLists side by side (one list split over columns) share row tracks
+// through subgrid, so row N in each column has the same height and the
+// dashed rules line up across the row.
+.openui-grid__cells:has(> .openui-entity-list) {
+  row-gap: 0;
+
+  > .openui-entity-list {
+    display: grid;
+    grid-row: span var(--openui-entity-list-rows, 1);
+    grid-template-rows: subgrid;
+  }
+}

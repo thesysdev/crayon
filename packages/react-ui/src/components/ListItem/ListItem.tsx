@@ -70,7 +70,10 @@ const ListItem = React.forwardRef<HTMLDivElement, ListItemProps>((props, ref) =>
             {leading}
           </div>
         )}
-        {variant === "number" && <span className="openui-list-item-number">{index + 1}</span>}
+        {/* A leading visual already marks the row, so the number only shows without one. */}
+        {variant === "number" && !leading && (
+          <span className="openui-list-item-number">{index + 1}</span>
+        )}
         <div className="openui-list-item-content-wrapper">
           <div className="openui-list-item-content">
             {title && (

@@ -78,6 +78,7 @@ function InsightCardRenderer({ props, renderNode }: ComponentRenderProps<Insight
 
   return (
     <OpenUIContextCardBlock
+      className="openui-insight-card-block"
       layout={props.layout ?? "grid"}
       responsive={props.responsive !== false}
       gap={props.gap}

@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { forwardRef, type ReactNode } from "react";
+import { type CSSProperties, forwardRef, type ReactNode } from "react";
 import { InlineMarkdownRenderer } from "../InlineMarkdownRenderer";
 
 export interface EntityListRow {
@@ -65,11 +65,15 @@ function EntityListRowView({ row, rowType }: { row: EntityListRow; rowType: RowT
 export const EntityList = forwardRef<HTMLDivElement, EntityListProps>(
   ({ rows = [], size = "default", header, footer, className }, ref) => {
     const showHeaderFooter = size === "default";
+    const rowCount =
+      rows.length + (showHeaderFooter && header ? 1 : 0) + (showHeaderFooter && footer ? 1 : 0);
 
     return (
       <div
         ref={ref}
         className={clsx("openui-entity-list", `openui-entity-list--${size}`, className)}
+        // Lets side-by-side lists in a Grid share row heights (see grid.scss).
+        style={{ "--openui-entity-list-rows": rowCount } as CSSProperties}
       >
         {showHeaderFooter && header && <EntityListRowView row={header} rowType="header" />}
         {rows.map((row, index) => (
