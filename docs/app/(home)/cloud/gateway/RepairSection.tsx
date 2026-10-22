@@ -92,7 +92,12 @@ export function RepairSection() {
             rel="noreferrer"
           >
             <span className={styles.quoteLogo}>
-              <Image src="/logos/entelligence-mark.svg" alt="" width={32} height={32} />
+              <Image
+                src="/logos/entelligence-mark.svg"
+                alt="Entelligence logo"
+                width={32}
+                height={32}
+              />
             </span>
             <span className={styles.quoteCompany}>Entelligence</span>
           </a>{" "}

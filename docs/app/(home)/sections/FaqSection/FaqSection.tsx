@@ -15,8 +15,15 @@ export const FAQS: MarketingFaq[] = [
   {
     question: "What should I use to build a Generative UI app?",
     answer: [
-      "Start with OpenUI, the free and open-source framework for Generative UI.",
-      "For production, we recommend adding OpenUI Gateway for reliability and OpenUI Observability for monitoring and product analytics.",
+      "Start with OpenUI and OpenUI Gateway. One command scaffolds a working app: npx @openuidev/cli@latest create.",
+      "Gateway gives you free models to build with, and repairs invalid output so broken UI doesn't reach users. The same setup carries into production.",
+    ],
+  },
+  {
+    question: "How can I set up my coding agent to use OpenUI?",
+    answer: [
+      "Run npx @openuidev/cli@latest setup-agent in your project. It adds OpenUI instructions to AGENTS.md, or creates the file, so Codex, Cursor, Claude Code, and other coding agents know how to build with OpenUI.",
+      "Run it again any time to refresh the instructions. Projects created with npx @openuidev/cli@latest create already include them.",
     ],
   },
   {
@@ -40,16 +47,7 @@ export const FAQS: MarketingFaq[] = [
   {
     question: "Is OpenUI free and open source?",
     answer: [
-      "Yes. OpenUI is fully open source and works with your own models, infrastructure, components, and design system.",
-      "OpenUI Gateway and OpenUI Observability are managed services for teams running Generative UI in production.",
-    ],
-  },
-  {
-    question: "Do I need OpenUI Gateway to use OpenUI?",
-    answer: [
-      "No. You can call any supported LLM directly.",
-      "For production applications, OpenUI Gateway adds validation and automatic corrections for generated UI, model routing, and provider fallbacks through an OpenAI-compatible API.",
-      "Adopt it by changing your base URL and model configuration.",
+      "Yes. OpenUI is fully open source and works with your own components and design system.",
     ],
   },
   {
@@ -59,13 +57,6 @@ export const FAQS: MarketingFaq[] = [
     answer: [
       "No. They work independently.",
       "We recommend using both. Gateway makes generated UI more reliable. Observability shows what users experienced and whether it worked.",
-    ],
-  },
-  {
-    question: "Can OpenUI work with my existing stack?",
-    answer: [
-      "Yes. OpenUI works with your existing LLMs, agent frameworks, design systems, and infrastructure.",
-      "Bring your own OpenAI, Anthropic, or Google keys, use custom component libraries, and run OpenUI Gateway behind any OpenAI-compatible gateway, including Portkey.",
     ],
   },
   {
@@ -123,30 +114,41 @@ export function FaqSection({
         </p>
       </div>
 
-      <div className={styles.list}>
-        {faqs.map(({ question, answer }, index) => (
-          <details
-            className={styles.item}
-            key={question}
-            name={`${titleId}-accordion`}
-            open={firstOpen && index === 0}
-          >
-            <summary className={styles.question}>
-              <span className={styles.questionText}>{question}</span>
-              {/* Two bars making a plus; the upright one collapses when open,
-                  leaving a minus. */}
-              <span className={styles.marker} aria-hidden="true" />
-            </summary>
-            <div className={styles.answer}>
-              {answer.map((paragraph) => (
-                <p className={styles.paragraph} key={paragraph}>
-                  {paragraph}
-                </p>
-              ))}
-            </div>
-          </details>
-        ))}
-      </div>
+      <FaqList faqs={faqs} name={`${titleId}-accordion`} firstOpen={firstOpen} />
     </section>
+  );
+}
+
+/* The questions on their own, for pages that supply their own heading (blog
+ * posts). Items sharing `name` open one at a time. */
+export function FaqList({
+  faqs,
+  name,
+  firstOpen = false,
+}: {
+  faqs: { question: string; answer: ReactNode[] }[];
+  name: string;
+  firstOpen?: boolean;
+}) {
+  return (
+    <div className={styles.list}>
+      {faqs.map(({ question, answer }, index) => (
+        <details className={styles.item} key={question} name={name} open={firstOpen && index === 0}>
+          <summary className={styles.question}>
+            <span className={styles.questionText}>{question}</span>
+            {/* Two bars making a plus; the upright one collapses when open,
+                leaving a minus. */}
+            <span className={styles.marker} aria-hidden="true" />
+          </summary>
+          <div className={styles.answer}>
+            {answer.map((paragraph, paragraphIndex) => (
+              <p className={styles.paragraph} key={paragraphIndex}>
+                {paragraph}
+              </p>
+            ))}
+          </div>
+        </details>
+      ))}
+    </div>
   );
 }

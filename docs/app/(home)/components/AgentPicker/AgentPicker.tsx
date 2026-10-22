@@ -5,7 +5,7 @@ import { Check } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import styles from "./AgentPicker.module.css";
 
-// Coding agents the create flow can install the OpenUI skill for. The first one
+// Coding agents shown in the hero's agent picker. The first one
 // is the anchor: it is always visible, and the rest slide out from under it.
 // `slug` is the CLI's --agent-name value. `wideMark` is for marks drawn small in
 // their own box, which need a nudge to sit at the same visual weight as the
@@ -13,8 +13,11 @@ import styles from "./AgentPicker.module.css";
 // on the dark page; marks with colour of their own keep it on both themes.
 /* What each agent button puts on the clipboard. A prompt to paste into an
    agent, not a shell command: it is copied verbatim, with nothing appended. */
-export const AGENT_SETUP_PROMPT =
-  "Visit OpenUI.com/docs and set up my first Generative UI agent using the recommended OpenUI stack.";
+export const AGENT_SETUP_PROMPT = `Set up my first Generative UI agent using the recommended OpenUI stack. Docs: https://www.openui.com/docs/getting-started
+
+1. Scaffold: run \`npx @openuidev/cli@latest create\`. It runs without prompts, creates the project folder, and installs dependencies.
+2. Tell me if there are any steps required of me to complete.
+3. First message: start the app, open its local URL, send one message, and tell me what the server log actually returned.`;
 
 export const AGENTS = [
   {
@@ -94,7 +97,7 @@ function AgentButton({
             .replace(/\s+/g, " ")
             .trim()}
           src={agent.mark}
-          alt=""
+          alt={`${agent.label} logo`}
           aria-hidden="true"
           width={20}
           height={20}

@@ -79,7 +79,7 @@ function renderOptionLeading(option: PickerOption) {
     return option.avatarUsername ? (
       <img
         src={`https://github.com/${option.avatarUsername}.png?size=40`}
-        alt=""
+        alt={`${option.avatarUsername} avatar`}
         className="gh-choiceAvatar"
       />
     ) : (
@@ -295,7 +295,7 @@ export function GitHubConnect({ onConnectAndPrompt }: GitHubConnectProps) {
         <span className="gh-chip gh-chip-neutral">
           <span className="gh-chipLeading">
             {avatarUrl ? (
-              <img src={avatarUrl} alt="" className="gh-chipAvatar" />
+              <img src={avatarUrl} alt="GitHub avatar" className="gh-chipAvatar" />
             ) : (
               <span className="gh-chipMonogram">@</span>
             )}
@@ -314,7 +314,7 @@ export function GitHubConnect({ onConnectAndPrompt }: GitHubConnectProps) {
     }
     return (
       <span className={`gh-inputWrap ${avatarUrl ? "gh-inputWrap-withAvatar" : ""}`}>
-        {avatarUrl && <img src={avatarUrl} alt="" className="gh-chipAvatar" />}
+        {avatarUrl && <img src={avatarUrl} alt="GitHub avatar" className="gh-chipAvatar" />}
         <span className="gh-inputPrefix">@</span>
         <span className="gh-inputSizer">
           <span className="gh-inputGhost">{username || "username"}</span>

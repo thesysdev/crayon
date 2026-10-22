@@ -56,6 +56,10 @@ Frameworks that integrate with, support, or generate OpenUI interfaces.
   - Status: `Official integration`
   - [Documentation](https://mastra.ai/docs) · [Example](https://github.com/thesysdev/openui/tree/main/examples/agent-frameworks/mastra)
 
+- **Sage** — Uses the official OpenUI Lang parser with a native Flutter renderer for streaming interactive interfaces in Sage Desktop.
+  - Status: `Community integration`
+  - [Repository](https://github.com/ZHangZHengEric/Sage) · [Documentation](https://github.com/ZHangZHengEric/Sage/blob/v2.1.0/docs/en/applications/DESKTOP.md) · [Parser bridge](https://github.com/ZHangZHengEric/Sage/blob/v2.1.0/app/v2/desktop/backend/openui_runtime/worker.mjs)
+
 ## How to add an entry
 
 For a company or team, open a pull request that adds a row to the table above with:

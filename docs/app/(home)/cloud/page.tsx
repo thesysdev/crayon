@@ -35,7 +35,7 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/meta-image.png?v=20261008",
+        url: "/meta-image.png?v=20260725-1708",
         width: 1800,
         height: 942,
         alt: "OpenUI Cloud preview",
@@ -47,7 +47,7 @@ export const metadata: Metadata = {
     title: "OpenUI Cloud — Generative UI, ready for production",
     description:
       "The managed backend for production agent interfaces, powered by the open-source OpenUI rendering engine.",
-    images: ["/meta-image.png?v=20261008"],
+    images: ["/meta-image.png?v=20260725-1708"],
   },
 };
 
@@ -108,7 +108,7 @@ export default function OpenUICloudPage() {
               <Image
                 className={`${cloudStyles.heroImage} ${cloudStyles.heroImageDark}`}
                 src="/openui-cloud/hero-dark.svg"
-                alt=""
+                alt="OpenUI Cloud"
                 aria-hidden="true"
                 width={1280}
                 height={600}
@@ -129,7 +129,7 @@ export default function OpenUICloudPage() {
               <Image
                 className={`${cloudStyles.heroImage} ${cloudStyles.heroImageDark}`}
                 src="/openui-cloud/hero-dark.svg"
-                alt=""
+                alt="OpenUI Cloud"
                 aria-hidden="true"
                 width={1280}
                 height={600}

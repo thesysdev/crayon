@@ -1,8 +1,11 @@
 ---
 title: Introduction
+seoTitle: "OpenUI Lang: a compact language for Generative UI"
+description: A streaming-first language that models use to build interfaces from your components, in up to 67% fewer tokens than JSON.
 ---
 
 import { StreamingComparison } from "@/app/docs/openui-lang/streaming-comparison";
+import { LangGlanceDiagram } from "@/components/openui-lang-diagrams";
 import { GatewayCallout } from "./components/gateway-callout";
 
 OpenUI Lang is an open, compact language for describing interfaces with components your application controls. Models generate it efficiently, renderers can display it progressively, and applications can use it with any model provider, agent framework, or chat library.
@@ -11,19 +14,19 @@ OpenUI Lang is an open, compact language for describing interfaces with componen
 
 ## Architecture at a Glance
 
-<img src="/images/openui-lang/openui-chart-flow.png" alt="Architecture diagram" />
+<LangGlanceDiagram />
 
-1.  **System prompt includes OpenUI Lang spec**: Your backend appends the generated component library prompt alongside your system prompt, instructing the LLM to respond in OpenUI Lang instead of plain text or JSON.
+1.  **System prompt includes OpenUI Lang spec**: Your backend adds the prompt generated from your component library to your system prompt. It tells the LLM to respond in OpenUI Lang instead of plain text or JSON.
 
 2.  **LLM generates OpenUI Lang**: Instead of returning markdown, the model outputs a compact, line-oriented syntax (e.g., `root = Stack([chart])`) constrained to your component library.
 
-3.  **Streaming render**: On the client, the `<Renderer />` component parses each line as it arrives and maps it to your React components in real-time. Structure renders first, then data fills in progressively.
+3.  **Streaming render**: On the client, the `<Renderer />` component parses each line as it arrives and maps it to your React components. Structure renders first, then data fills in.
 
 The result is a native UI dynamically composed by the AI, streamed efficiently, and rendered safely from your own components. For data-driven apps with live tools and reactive state, see [Architecture](/docs/openui-lang/architecture).
 
 ## OpenUI Lang
 
-OpenUI Lang is a compact, line-oriented language designed specifically for Large Language Models (LLMs) to generate user interfaces. It serves as a more efficient, predictable, and stream-friendly alternative to verbose formats like JSON. For the complete syntax reference, see the [Language Specification](/docs/openui-lang/specification-v05).
+OpenUI Lang is a compact, line-oriented language designed specifically for Large Language Models (LLMs) to generate user interfaces. It uses fewer tokens than JSON and streams line by line. For the complete syntax reference, see the [Language Specification](/docs/openui-lang/specification).
 
 ### Why a New Language?
 
@@ -31,11 +34,11 @@ While JSON is a common data interchange format, it has significant drawbacks whe
 
 OpenUI Lang was created to solve these core issues:
 
-- **Token Efficiency:** JSON is extremely verbose. Keys like `"component"`, `"props"`, and `"children"` are repeated for every single element, consuming a large number of tokens. This directly increases API costs and latency. OpenUI Lang uses a concise, positional syntax that drastically reduces the token count. Benchmarks show it is up to **[67% more token-efficient](/docs/openui-lang/benchmarks)** than JSON.
+- **Token Efficiency:** JSON repeats keys like `"component"`, `"props"`, and `"children"` for every element. Each repeated key costs tokens, which adds cost and latency. OpenUI Lang uses positional arguments instead. In our [benchmarks](/docs/openui-lang/benchmarks) it uses up to 67% fewer tokens than JSON.
 
-- **Streaming-First Design:** The language is line-oriented (`identifier = Expression`), making it trivial to parse and render progressively. As each line arrives from the model, a new piece of the UI can be rendered immediately. This provides a superior user experience with much better perceived performance compared to waiting for a complete JSON object to download and parse.
+- **Streaming-First Design:** The language is line-oriented (`identifier = Expression`). The renderer can show each line as it arrives from the model. With JSON, the UI often waits until the object is complete enough to parse.
 
-- **Robustness:** LLMs are unpredictable. They can hallucinate component names or produce invalid structures. OpenUI Lang validates output and drops invalid portions, rendering only what's valid.
+- **Robustness:** LLMs can invent component names or produce invalid structures. The parser validates the output, drops the invalid parts, and the renderer shows the rest.
 
 <StreamingComparison />
 

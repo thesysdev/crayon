@@ -1,7 +1,13 @@
 ---
 title: Reactive State
-description: Make your UI interactive with $variables that update automatically.
+description: Keep UI state in $variables so the generated UI updates without another model call when the user changes something.
 ---
+
+import { ReactivityDiagram } from "@/components/openui-lang-diagrams";
+
+Reactive state makes a generated UI interactive: filters, tabs, and inputs respond to the user without another model call. The model declares a `$variable` and uses it in several places. When the user changes it, the renderer updates every place that reads it.
+
+For example, a dashboard has a date range picker, a heading, and a chart. The user picks "30 days". The heading changes to "Showing last 30 days" and the chart fetches 30 days of data. The model wrote that wiring once, in the first response.
 
 <video
   src="/videos/openui-lang/reactive.mp4"
@@ -12,12 +18,9 @@ description: Make your UI interactive with $variables that update automatically.
   className="w-full rounded-lg"
 />
 
-Every UI needs state: which tab is selected, what the user typed, whether a modal is open.
-In OpenUI Lang, state is declared with `$variables`.
-
 ## Declaring a variable
 
-A `$variable` is a line that starts with `$`:
+A `$variable` is a statement whose name starts with `$`:
 
 ```text
 $days = "7"
@@ -25,17 +28,18 @@ $title = ""
 $showEdit = false
 ```
 
-That's it. The value on the right is the default.
+The value on the right is the default.
 
 ## Binding to inputs
 
-When you pass a `$variable` to an input component, it creates a two-way binding.
-The user changes the input, the variable updates. The variable changes, the input updates.
+When a `$variable` is passed to an input's `value` prop, the two stay in sync. When the user changes the input, the variable updates. When the variable changes, the input shows the new value.
 
 ```text
 $days = "7"
-filter = Select("days", $days, [SelectItem("7", "7 days"), SelectItem("30", "30 days")])
+filter = Select("days", [SelectItem("7", "7 days"), SelectItem("30", "30 days")], null, null, $days)
 ```
+
+In `openuiLibrary`, `value` is the fifth argument of `Select` and `Input`, so the model writes `null` for the placeholder and rules it skips.
 
 ## Using variables in expressions
 
@@ -46,18 +50,17 @@ title = TextContent("Showing last " + $days + " days")
 data = Query("analytics", {days: $days}, {rows: []})
 ```
 
-When `$days` changes (user picks "30" in the Select), the title updates and the Query
-re-fetches with the new value. This happens automatically - no wiring needed.
+When the user picks "30" in the Select, `$days` changes. The renderer updates the title and fetches the Query again with the new value.
 
 ## Changing state from buttons
 
-Use `@Set` inside an `Action` to change a variable when a button is clicked:
+`@Set` is an action that sets a variable when the button is clicked:
 
 ```text
-btn = Button("Show 30 days", Action([@Set($days, "30")]))
+btn = Button("Show 30 days", @Set($days, "30"))
 ```
 
-You can set multiple variables at once:
+To set several variables, put several actions in `Action([...])`. They run in order:
 
 ```text
 saveBtn = Button("Save", Action([@Set($showEdit, false), @Set($saved, true)]))
@@ -70,32 +73,92 @@ saveBtn = Button("Save", Action([@Set($showEdit, false), @Set($saved, true)]))
 ```text
 $title = ""
 $priority = "medium"
-resetBtn = Button("Clear", Action([@Reset($title, $priority)]))
+resetBtn = Button("Clear", @Reset($title, $priority))
 ```
 
-After click: `$title` goes back to `""`, `$priority` goes back to `"medium"`.
+After the click, `$title` is `""` again and `$priority` is `"medium"`.
 
 ## Conditional rendering
 
-Use ternary expressions to show/hide UI based on state:
+A ternary shows or hides part of the UI based on state. The result must be assigned to a statement like any other expression:
 
 ```text
-$showEdit ? editForm : null
-status == "error" ? Callout("error", "Failed", errorMsg) : null
+$showHelp = false
+helpBtn = Button("Help", @Set($showHelp, true))
+help = $showHelp ? Callout("info", "Tip", "Pick a range to update the chart.") : null
+root = Stack([helpBtn, help])
 ```
 
 ## How reactivity works
 
-<img
-  src="/images/openui-lang/reactive.png"
-  alt="Reactivity chain: $days changes, Query re-fetches, TextContent re-evaluates, Chart re-renders"
-/>
+<ReactivityDiagram />
 
-When a `$variable` changes:
+When a `$variable` changes, the renderer:
 
-1. All inputs bound to it update their display
-2. All `Query` calls that reference it in their args re-fetch
-3. All expressions that reference it re-evaluate
-4. The UI re-renders with new values
+1. Updates every input bound to it.
+2. Fetches every `Query` that uses it in its arguments again.
+3. Re-evaluates every expression that reads it.
+4. Re-renders the components whose props changed.
 
-No event listeners. No useEffect. No wiring. Just declare and reference.
+The model declares the variable and uses it. The renderer keeps everything in sync.
+
+## Complete example
+
+A usage dashboard where the date range drives the heading and the chart.
+
+Your app renders the response with `openuiLibrary` and gives the renderer one tool:
+
+```tsx
+"use client";
+
+import { Renderer } from "@openuidev/react-lang";
+import { openuiLibrary } from "@openuidev/react-ui";
+
+export function Dashboard({ response }: { response: string }) {
+  return (
+    <Renderer
+      library={openuiLibrary}
+      response={response}
+      toolProvider={{
+        get_usage: async ({ days }) => fetch(`/api/usage?days=${days}`).then((r) => r.json()),
+      }}
+    />
+  );
+}
+```
+
+The model writes:
+
+```text
+root = Stack([header, filter, summary, chart])
+header = CardHeader("Usage")
+$days = "7"
+filter = FormControl("Date range", Select("days", [SelectItem("7", "7 days"), SelectItem("30", "30 days")], null, null, $days))
+usage = Query("get_usage", {days: $days}, {rows: []})
+summary = TextContent("Showing last " + $days + " days, " + @Sum(usage.rows.events) + " events")
+chart = LineChart(usage.rows.day, [Series("Events", usage.rows.events)])
+```
+
+The user sees a "Usage" card with a date range picker set to "7 days", a summary line, and a line chart. When the user picks "30 days", the summary changes to "Showing last 30 days" and the renderer calls `get_usage` with `{ days: "30" }`. The chart redraws with the new rows. The model is not called again.
+
+## What your component must do
+
+The components in `openuiLibrary` already support `$variable` binding. A component in your own library supports it when it:
+
+1. Marks the prop with `reactive(...)`, for example `value: reactive(z.string().optional())`.
+2. Reads and writes the value through `useStateField(props.name, props.value)` instead of local React state.
+
+`useStateField` returns `{ value, setValue }`. Calling `setValue` updates the `$variable`, and the renderer re-evaluates everything that reads it. See [Interactivity](/docs/openui-lang/interactivity#reactive-state-variables) for a full component.
+
+## When to use it
+
+Use reactive state when:
+
+- A filter, tab, or toggle should change what the UI shows.
+- Form inputs feed a `Query` or `Mutation`.
+- A button should open a modal or show a section.
+
+Do not use it when:
+
+- The change needs new reasoning or new layout from the model. Use `@ToAssistant` to send a message instead.
+- The value never changes. Use a plain statement, such as `title = "Usage"`.

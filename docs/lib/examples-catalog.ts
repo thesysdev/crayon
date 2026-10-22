@@ -39,13 +39,12 @@ const EXAMPLE_LOGOS: Record<string, string> = {
   "app-frameworks/vue": "/integration-logos/vue.svg",
   "design-systems/material-ui": "/integration-logos/mui.svg",
   "design-systems/shadcn": "/integration-logos/shadcn-ui.svg",
-  "harnesses/grok-build":
-    "https://media.x.ai/v1/website/spacexai-symbol-black-transparent-6435cf42.png",
+  "harnesses/grok-build": "/brand-icons/xai.svg",
   "harnesses/pi": "/integration-logos/pi.svg",
-  "miscellaneous/autofix": "/favicon.svg",
+  "miscellaneous/autofix": "/shiro-logo.svg",
   "miscellaneous/handsontable":
     "https://raw.githubusercontent.com/handsontable/handsontable/develop/docs/public/favicon.png",
-  "miscellaneous/html-artifact": "/favicon.svg",
+  "miscellaneous/html-artifact": "/shiro-logo.svg",
   "miscellaneous/react-email": "/integration-logos/react-email.svg",
   "miscellaneous/supabase": "/integration-logos/supabase.svg",
 };
@@ -74,6 +73,8 @@ export type RepoExample = {
   logoIsDark: boolean;
   /** Environment setup used by the CLI while scaffolding. */
   env?: { file: string; key?: string };
+  /** False for integrations without an example in this repo, so there is no `openui create` command. */
+  runnable: boolean;
 };
 
 export const REPO_EXAMPLES: RepoExample[] = catalog.examples.flatMap((example) => {
@@ -88,12 +89,30 @@ export const REPO_EXAMPLES: RepoExample[] = catalog.examples.flatMap((example) =
     category,
     sourceUrl: `${EXAMPLES_REPO_URL}/${example.path}`,
     guideUrl: EXAMPLE_GUIDES[example.path],
-    logo: EXAMPLE_LOGOS[example.path] ?? "/favicon.svg",
+    logo: EXAMPLE_LOGOS[example.path] ?? "/shiro-logo.svg",
     logoIsDark: DARK_LOGOS.has(example.path),
     env: example.env,
+    runnable: true,
   };
 });
 
+/** Integrations listed on the integrations page that have no example in this repo. */
+const EXTERNAL_INTEGRATIONS: RepoExample[] = [
+  {
+    name: "lynx",
+    title: "Lynx",
+    description:
+      "Streaming OpenUI Lang rendered as cross-platform ReactLynx interfaces with @lynx-js/genui.",
+    category: "app-frameworks",
+    sourceUrl: "https://github.com/lynx-family/lynx-stack/tree/main/packages/genui/openui",
+    logo: "/integration-logos/lynx.svg",
+    logoIsDark: true,
+    runnable: false,
+  },
+];
+
 export function getExamplesInCategory(category: ExampleCategoryId): RepoExample[] {
-  return REPO_EXAMPLES.filter((example) => example.category === category);
+  return [...REPO_EXAMPLES, ...EXTERNAL_INTEGRATIONS].filter(
+    (example) => example.category === category,
+  );
 }

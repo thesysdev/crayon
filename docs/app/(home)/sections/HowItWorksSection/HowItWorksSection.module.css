@@ -1,0 +1,409 @@
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(2.5rem, 5vw, 3.75rem);
+  width: 100%;
+}
+
+.walkthrough {
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: clamp(1.5rem, 3vw, 2.5rem);
+  width: 100%;
+  max-width: var(--home-container-max);
+  margin-inline: auto;
+  padding-inline: var(--home-container-gutter);
+}
+
+/* ── Steps ── */
+
+.steps {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.step {
+  position: relative;
+  display: flex;
+  gap: 1rem;
+  width: 100%;
+  overflow: hidden;
+  padding: 1.25rem 1.25rem 1.375rem;
+  border: 1px solid transparent;
+  border-radius: 16px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background 200ms ease,
+    border-color 200ms ease;
+}
+
+.step:hover {
+  background: var(--openui-background);
+}
+
+.stepActive,
+.stepActive:hover {
+  border-color: var(--openui-border-default);
+  background: var(--openui-background);
+}
+
+.stepNumber {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--openui-border-default);
+  border-radius: 999px;
+  font-family: var(--home-font-mono, ui-monospace, monospace);
+  font-size: 0.8125rem;
+  color: var(--openui-text-neutral-secondary);
+  transition:
+    background 200ms ease,
+    color 200ms ease;
+}
+
+.stepActive .stepNumber {
+  border-color: var(--openui-text-neutral-primary);
+  background: var(--openui-text-neutral-primary);
+  color: var(--openui-background);
+}
+
+.stepText {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  padding-top: 0.125rem;
+}
+
+.stepTitle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--home-font-display);
+  font-size: 1.1875rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--openui-text-neutral-secondary);
+  transition: color 200ms ease;
+}
+
+.stepActive .stepTitle {
+  color: var(--openui-text-neutral-primary);
+}
+
+/* Inactive steps keep only their titles, so the column reads as a list of
+   three moves with the current one opened up. */
+.stepBody {
+  display: none;
+  font-family: var(--home-font-text);
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  color: var(--openui-text-neutral-secondary);
+}
+
+.stepActive .stepBody {
+  display: block;
+  animation: bodyIn 300ms ease both;
+}
+
+@keyframes bodyIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+
+.stepProgress {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 2px;
+  width: 100%;
+  background: var(--openui-text-neutral-primary);
+  transform-origin: left;
+  animation: progress linear both;
+}
+
+@keyframes progress {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/* ── Stage ── */
+
+.stage {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 520px;
+  padding: clamp(1.25rem, 2.5vw, 2rem);
+  overflow: hidden;
+  border: 1px solid var(--openui-border-default);
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at 1px 1px, var(--openui-border-default) 1px, transparent 0) 0 0 / 18px
+      18px,
+    var(--openui-background);
+}
+
+.stageInner {
+  width: 100%;
+  animation: enter 450ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+@keyframes enter {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.inlineVisual {
+  display: none;
+}
+
+.visualStack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+}
+
+/* A plain app window around code. */
+.window {
+  width: 100%;
+  max-width: 560px;
+  overflow: hidden;
+  border: 1px solid var(--openui-border-default);
+  border-radius: 14px;
+  background: var(--openui-foreground);
+  box-shadow: 0 18px 40px -24px rgba(0, 0, 0, 0.35);
+}
+
+.windowBar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.625rem 0.875rem;
+  border-bottom: 1px solid var(--openui-border-default);
+}
+
+.dots {
+  display: inline-flex;
+  gap: 5px;
+}
+
+.dots i {
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  background: var(--openui-border-default);
+}
+
+/* macOS window controls: close, minimise, zoom. */
+.dots i:nth-child(1) {
+  background: #ff5f57;
+}
+
+.dots i:nth-child(2) {
+  background: #febc2e;
+}
+
+.dots i:nth-child(3) {
+  background: #28c840;
+}
+
+.windowTitle {
+  font-family: var(--home-font-mono, ui-monospace, monospace);
+  font-size: 0.75rem;
+  color: var(--openui-text-neutral-secondary);
+}
+
+.windowBody {
+  padding: 1rem 1.125rem 1.125rem;
+}
+
+.code {
+  margin: 0;
+  overflow-x: auto;
+  font-family: var(--home-font-mono, ui-monospace, monospace);
+  font-size: 0.78rem;
+  line-height: 1.65;
+  white-space: pre;
+  color: var(--openui-text-neutral-primary);
+}
+
+/* Holds the tallest schema's height, so the window doesn't jump as they swap. */
+.codeSwap {
+  min-height: calc(13 * 1.65em);
+  animation: swap 250ms ease both;
+}
+
+@keyframes swap {
+  from {
+    opacity: 0;
+  }
+}
+
+.tokenNew {
+  padding: 0 0.2em;
+  border-radius: 4px;
+  background: var(--openui-text-neutral-primary);
+  color: var(--openui-background);
+  font-weight: 600;
+}
+
+.caret {
+  display: inline-block;
+  width: 7px;
+  height: 1.05em;
+  margin-left: 1px;
+  vertical-align: text-bottom;
+  background: var(--openui-text-neutral-primary);
+  animation: blink 1s steps(2) infinite;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+.library {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  max-width: 560px;
+}
+
+.libraryLabel {
+  margin-right: 0.25rem;
+  font-family: var(--home-font-text);
+  font-size: 0.75rem;
+  color: var(--openui-text-neutral-secondary);
+}
+
+.libraryChip {
+  cursor: pointer;
+  transition:
+    background 150ms ease,
+    color 150ms ease,
+    border-color 150ms ease;
+  padding: 0.25rem 0.625rem;
+  border: 1px solid var(--openui-border-default);
+  border-radius: 8px;
+  background: var(--openui-foreground);
+  font-family: var(--home-font-mono, ui-monospace, monospace);
+  font-size: 0.75rem;
+  color: var(--openui-text-neutral-secondary);
+}
+
+.libraryChipNew {
+  border-color: var(--openui-text-neutral-primary);
+  background: var(--openui-text-neutral-primary);
+  color: var(--openui-background);
+}
+
+.prompt {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  width: 100%;
+  max-width: 560px;
+  box-sizing: border-box;
+  padding: 0.5rem 0.5rem 0.5rem 1rem;
+  border: 1px solid var(--openui-border-default);
+  border-radius: 14px;
+  background: var(--openui-foreground);
+  font-family: var(--home-font-text);
+  font-size: 0.875rem;
+  color: var(--openui-text-neutral-primary);
+}
+
+.promptSend {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: var(--openui-text-neutral-primary);
+  color: var(--openui-background);
+}
+
+.rendered {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.renderNote {
+  margin: 0;
+  font-family: var(--home-font-text);
+  font-size: 0.75rem;
+  color: var(--openui-text-neutral-secondary);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stageInner,
+  .stepProgress,
+  .caret {
+    animation: none;
+  }
+}
+
+/* ── Phones and small tablets: one column, picture under the open step ── */
+
+@media (max-width: 899px) {
+  /* minmax(0, …) so long code lines scroll inside their window instead of
+     widening the column past the screen. */
+  .walkthrough {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .steps li {
+    min-width: 0;
+  }
+
+  .stage {
+    display: none;
+  }
+
+  .inlineVisual {
+    display: block;
+    min-width: 0;
+    overflow: hidden;
+    margin-top: 0.5rem;
+    padding: 1rem;
+    border: 1px solid var(--openui-border-default);
+    border-radius: 18px;
+    background: var(--openui-background);
+  }
+
+  .code {
+    font-size: 0.6875rem;
+  }
+}

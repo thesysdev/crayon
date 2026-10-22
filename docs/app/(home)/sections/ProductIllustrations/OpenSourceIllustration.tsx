@@ -12,7 +12,7 @@ export function OpenSourceIllustration({ theme }: { theme?: "light" | "dark" } =
       <Image
         className={`${styles.image} ${styles.imageLight}`}
         src="/openui-illustrations/home-open-source-light.webp"
-        alt=""
+        alt="OpenUI Lang code generating a trip-planning interface"
         aria-hidden="true"
         fill
         quality={95}
@@ -22,7 +22,7 @@ export function OpenSourceIllustration({ theme }: { theme?: "light" | "dark" } =
       <Image
         className={`${styles.image} ${styles.imageDark}`}
         src="/openui-illustrations/home-open-source-dark.webp"
-        alt=""
+        alt="OpenUI Lang code generating a trip-planning interface"
         aria-hidden="true"
         fill
         quality={95}

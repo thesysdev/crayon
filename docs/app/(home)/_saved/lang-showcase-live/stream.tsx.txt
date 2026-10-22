@@ -1,0 +1,124 @@
+"use client";
+
+import { useEffect, useState, type ReactNode } from "react";
+import styles from "./LangShowcase.module.css";
+
+/* The streaming shared by every example: an answer is written as OpenUI Lang
+   statements, streamed a fixed number of characters per tick (the
+   how-it-works section's pace), and a block of the preview renders once its
+   statement has fully arrived. */
+
+export type Segment = { id: string; code: string };
+
+export type Example = {
+  id: string;
+  /* The panel's name, beside the mascot. */
+  label: string;
+  /* The mascot's own colour; the panel is tinted with a lighter mix of it. */
+  accent: string;
+  /* A recording of the answer. Until one exists, the panel renders the answer
+     live in HTML instead. */
+  gif?: string;
+  prompt: string;
+  /* A Shiro mascot under /public, drawn as supplied: never recoloured. */
+  mascot: string;
+  mascotAlt: string;
+  segments: Segment[];
+  Answer: (props: { has: (id: string) => boolean }) => ReactNode;
+};
+
+const CHARS_PER_TICK = 9;
+const TICK_MS = 28;
+
+/* Where each statement ends in the full program. */
+export function compile(segments: Segment[]) {
+  const ends: Record<string, number> = {};
+  let offset = 0;
+  for (const { id, code } of segments) {
+    offset += code.length;
+    ends[id] = offset;
+  }
+  return { length: offset, ends };
+}
+
+/* Streams while `running`, and starts over from nothing whenever it stops, so
+   a panel that reopens writes its answer again. */
+export function useStream(length: number, running: boolean) {
+  const [chars, setChars] = useState(0);
+
+  useEffect(() => {
+    if (!running) {
+      const frame = requestAnimationFrame(() => setChars(0));
+      return () => cancelAnimationFrame(frame);
+    }
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      const frame = requestAnimationFrame(() => setChars(length));
+      return () => cancelAnimationFrame(frame);
+    }
+    const id = window.setInterval(() => {
+      setChars((c) => {
+        const next = Math.min(length, c + CHARS_PER_TICK);
+        if (next >= length) window.clearInterval(id);
+        return next;
+      });
+    }, TICK_MS);
+    return () => window.clearInterval(id);
+  }, [length, running]);
+
+  return chars;
+}
+
+/* A block of the answer: a skeleton while its statement is still streaming,
+   then the rendered component. */
+export function Block({
+  ready,
+  lines,
+  tall = false,
+  children,
+}: {
+  ready: boolean;
+  lines: number;
+  tall?: boolean;
+  children: ReactNode;
+}) {
+  if (ready) return <div className={styles.enter}>{children}</div>;
+  return (
+    <div className={styles.skeleton} aria-hidden="true">
+      {tall ? (
+        <span className={styles.skeletonPicture} />
+      ) : (
+        Array.from({ length: Math.max(lines, 1) }, (_, i) => <span key={i} />)
+      )}
+    </div>
+  );
+}
+
+/* A segmented control, as the library's SegmentedControl renders it. */
+export function Segmented<T extends string>({
+  options,
+  value,
+  onChange,
+  label,
+}: {
+  options: readonly T[];
+  value: T;
+  onChange: (value: T) => void;
+  label: string;
+}) {
+  return (
+    <div className={styles.segmented} role="radiogroup" aria-label={label}>
+      {options.map((option) => (
+        <button
+          key={option}
+          type="button"
+          role="radio"
+          aria-checked={value === option}
+          className={value === option ? styles.segmentOn : undefined}
+          onClick={() => onChange(option)}
+        >
+          {option}
+        </button>
+      ))}
+    </div>
+  );
+}

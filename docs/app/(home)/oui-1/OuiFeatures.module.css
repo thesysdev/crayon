@@ -1,0 +1,566 @@
+/* ---------- stream ---------- */
+/* Bezel and screen match the hero device (public/oui-1/hero.html). */
+.streamScene {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 588px;
+  height: 360px;
+  transform-origin: 0 0;
+  /* stage width / 588px as a unitless ratio */
+  transform: scale(tan(atan2(100cqw, 588px)));
+}
+/* The device palette. The pipeline scene shares it so its card matches. */
+.device,
+.pipeScene {
+  --device-screen: #ebebec;
+  --device-ink: #16171c;
+  --device-card: #fff;
+  --device-bubble: #fff;
+  --device-accent: #4b4bf7;
+  --device-accent-line: rgb(255 255 255 / 0.55);
+  --device-user: var(--device-ink);
+  --device-on-user: var(--device-screen);
+  --device-ai: #4b4bf7;
+  --device-font: inherit;
+  --device-radius-card: 12px;
+  --device-radius-pill: 999px;
+  --device-radius-bar: 3px;
+  --device-edge: none;
+}
+.device {
+  position: absolute;
+  top: 32px;
+  left: 88px;
+  width: 640px;
+  height: 480px;
+  box-sizing: border-box;
+  padding: 9px 0 0 9px;
+  border-radius: 22px 0 0;
+  background: linear-gradient(152deg, #56565c 0%, #24242a 9%, #101014 26%, #0a0a0d 50%);
+  box-shadow:
+    inset 0 1px 1px rgb(255 255 255 / 0.38),
+    0 22px 44px rgb(0 0 0 / 0.12);
+}
+[data-theme="dark"] .device,
+[data-theme="dark"] .pipeScene {
+  --device-screen: #171717;
+  --device-ink: #f2f2f2;
+  --device-card: #222222;
+  --device-bubble: #262626;
+  --device-accent: #9d9dff;
+  --device-accent-line: #3a3ad0;
+}
+[data-theme="dark"] .device {
+  background: linear-gradient(152deg, #585858 0%, #262626 9%, #111111 26%, #0b0b0b 50%);
+}
+.screen {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  height: 100%;
+  box-sizing: border-box;
+  padding: 20px;
+  border-radius: 14px 0 0;
+  background: var(--device-screen);
+  box-shadow: inset 0 0 0 1.5px #000;
+  color: var(--device-ink);
+  font-family: var(--device-font);
+}
+.chatRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.avatar {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 24px;
+  height: 24px;
+  border-radius: var(--device-radius-pill);
+}
+.avatarUser {
+  background: var(--device-user);
+  color: var(--device-on-user);
+}
+.avatarAi {
+  background: var(--device-ai);
+  color: #fff;
+}
+.bubble {
+  padding: 6px 12px;
+  border-radius: var(--device-radius-pill);
+  background: var(--device-bubble);
+  box-shadow: var(--device-edge);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 14px;
+  white-space: nowrap;
+}
+.bubbleUser {
+  background: var(--device-user);
+  color: var(--device-on-user);
+}
+.chartCard {
+  display: flex;
+  flex-direction: column;
+  width: 560px;
+  box-sizing: border-box;
+  margin-top: 4px;
+  padding: 16px;
+  border-radius: var(--device-radius-card);
+  background: var(--device-card);
+  box-shadow: var(--device-edge);
+}
+.chartCardHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.chartCardTitle {
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 20px;
+  color: color-mix(in srgb, var(--device-ink) 60%, transparent);
+}
+.chartCardTotal {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+  font-size: 12px;
+  line-height: 24px;
+}
+.chartCardTotal b {
+  font-size: 20px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+.chartCardTotal i {
+  font-style: normal;
+  color: color-mix(in srgb, var(--device-ink) 50%, transparent);
+}
+.chartCardDelta {
+  padding: 3px 6px;
+  border-radius: 6px;
+  background: color-mix(in srgb, #30a46c 14%, transparent);
+  color: #30a46c;
+  font-weight: 500;
+  line-height: 12px;
+  font-variant-numeric: tabular-nums;
+}
+.plot {
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr);
+  height: 88px;
+  margin-top: 24px;
+}
+.plotAxis {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  /* centre each label on its gridline */
+  margin-block: -6px;
+  font-size: 12px;
+  line-height: 12px;
+  font-variant-numeric: tabular-nums;
+  color: color-mix(in srgb, var(--device-ink) 45%, transparent);
+}
+.streamBars,
+.streamDays {
+  display: grid;
+  grid-template-columns: repeat(30, minmax(0, 1fr));
+}
+.streamBars {
+  position: relative;
+  height: 100%;
+  background:
+    linear-gradient(
+        color-mix(in srgb, var(--device-ink) 8%, transparent),
+        color-mix(in srgb, var(--device-ink) 8%, transparent)
+      )
+      0 0 / 100% 1px no-repeat,
+    linear-gradient(
+        color-mix(in srgb, var(--device-ink) 8%, transparent),
+        color-mix(in srgb, var(--device-ink) 8%, transparent)
+      )
+      0 50% / 100% 1px no-repeat,
+    linear-gradient(
+        color-mix(in srgb, var(--device-ink) 8%, transparent),
+        color-mix(in srgb, var(--device-ink) 8%, transparent)
+      )
+      0 100% / 100% 1px no-repeat;
+}
+.barSlot {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  height: 100%;
+}
+/* a bright column with a darker stroke down its centre */
+.bar {
+  position: relative;
+  width: 6px;
+  border-radius: var(--device-radius-bar) var(--device-radius-bar) 0 0;
+  background: var(--device-accent);
+  transform-origin: bottom;
+  animation: streamBar 6s cubic-bezier(0.32, 0.72, 0, 1) infinite both;
+}
+.bar::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  bottom: 3px;
+  left: 50%;
+  width: 1px;
+  margin-left: -0.5px;
+  border-radius: 1px;
+  background: var(--device-accent-line);
+}
+.barValue {
+  position: absolute;
+  left: 50%;
+  margin-bottom: 4px;
+  padding: 3px 5px;
+  border-radius: 5px;
+  background: var(--device-ink);
+  color: var(--device-card);
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 12px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  transform: translateX(-50%);
+  animation: streamValue 6s cubic-bezier(0.32, 0.72, 0, 1) infinite both;
+}
+.streamDays {
+  margin: 8px 0 0 32px;
+}
+.streamDays span {
+  display: flex;
+  justify-content: center;
+  font-size: 12px;
+  line-height: 1;
+  white-space: nowrap;
+  color: color-mix(in srgb, var(--device-ink) 50%, transparent);
+}
+.streamBlock {
+  animation: 6s cubic-bezier(0.32, 0.72, 0, 1) infinite both;
+}
+.streamA {
+  animation-name: streamA;
+}
+.streamB {
+  animation-name: streamB;
+}
+.streamC {
+  animation-name: streamC;
+}
+@keyframes streamA {
+  0%,
+  6% {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  12%,
+  92% {
+    opacity: 1;
+    transform: none;
+  }
+  100% {
+    opacity: 0;
+    transform: none;
+  }
+}
+@keyframes streamB {
+  0%,
+  22% {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  28%,
+  92% {
+    opacity: 1;
+    transform: none;
+  }
+  100% {
+    opacity: 0;
+    transform: none;
+  }
+}
+@keyframes streamC {
+  0%,
+  36% {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  42%,
+  92% {
+    opacity: 1;
+    transform: none;
+  }
+  100% {
+    opacity: 0;
+    transform: none;
+  }
+}
+@keyframes streamValue {
+  0%,
+  56% {
+    opacity: 0;
+  }
+  62%,
+  100% {
+    opacity: 1;
+  }
+}
+@keyframes streamBar {
+  0%,
+  42% {
+    transform: scaleY(0);
+  }
+  54%,
+  100% {
+    transform: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .streamBlock,
+  .bar,
+  .barValue {
+    animation: none;
+  }
+}
+
+/* ---------- pipeline ---------- */
+.pipeScene {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 588px;
+  height: 360px;
+  transform-origin: 0 0;
+  transform: scale(tan(atan2(100cqw, 588px)));
+}
+@media (max-width: 767px) {
+  .pipeScene {
+    top: 50%;
+    transform-origin: left center;
+    transform: translateY(-50%) scale(tan(atan2(100cqw, 530px)));
+  }
+}
+/* the token field runs a little way under the panel, so blocks flow into it */
+.pipeRows {
+  position: absolute;
+  top: 100px;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 252px;
+  overflow: hidden;
+  mask-image: linear-gradient(to right, transparent, #000 45%);
+}
+.pipeRow {
+  display: flex;
+  gap: 4px;
+  width: max-content;
+  animation: pipeFlow linear infinite;
+}
+.pipeRow span {
+  flex: none;
+  height: 4px;
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--feat-ink) 12%, transparent);
+}
+.pipeRow span[data-tone="strong"] {
+  background: color-mix(in srgb, var(--feat-ink) 28%, transparent);
+}
+.pipeRow span[data-tone="accent"] {
+  background: var(--device-accent);
+}
+@keyframes pipeFlow {
+  from {
+    transform: translateX(-50%);
+  }
+  to {
+    transform: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pipeRow {
+    animation: none;
+  }
+}
+/* the response card: positioned so the stage crops its right edge, as the
+   device does in the stream illustration */
+.pipeCard {
+  position: absolute;
+  top: 74px;
+  left: 232px;
+  border-radius: 12px;
+  box-shadow:
+    0 0 0 1px var(--feat-line),
+    0 12px 32px rgb(0 0 0 / 0.08);
+  color: var(--device-ink);
+}
+.pipeCard .chartCard {
+  margin-top: 0;
+}
+/* a still card: no arrival, bars at full height */
+.chartCardStill .bar,
+.chartCardStill .barValue {
+  animation: none;
+}
+
+/* ---------- benchmark ---------- */
+.chart {
+  width: 100%;
+  height: 100%;
+}
+.chartCurve {
+  fill: none;
+  stroke: color-mix(in srgb, var(--feat-ink) 30%, transparent);
+  stroke-width: 1.5;
+}
+.chartAreaTop {
+  stop-color: var(--feat-ink);
+  stop-opacity: 0.08;
+}
+.chartAreaBottom {
+  stop-color: var(--feat-ink);
+  stop-opacity: 0;
+}
+.chartLabel {
+  fill: var(--feat-muted);
+  font-variant-numeric: tabular-nums;
+}
+.chartDot {
+  fill: color-mix(in srgb, var(--feat-ink) 35%, transparent);
+}
+.chartHeroHalo {
+  fill: color-mix(in srgb, var(--feat-ink) 10%, transparent);
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: ouiHalo 2.4s ease-in-out infinite;
+}
+/* One shared beat for the three single-figure cards. */
+@keyframes ouiHalo {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.6);
+    opacity: 0.4;
+  }
+}
+@keyframes ouiRing {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--feat-ink) 28%, transparent);
+  }
+  70%,
+  100% {
+    box-shadow: 0 0 0 10px transparent;
+  }
+}
+@keyframes ouiCore {
+  0%,
+  100% {
+    fill: var(--feat-fill);
+    transform: scale(1);
+  }
+  50% {
+    fill: color-mix(in srgb, var(--feat-ink) 14%, transparent);
+    transform: scale(1.04);
+  }
+}
+.chartHero {
+  fill: var(--feat-ink);
+}
+.chartHeroLabel {
+  fill: var(--feat-ink);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- params ---------- */
+.params {
+  position: relative;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--feat-ink) 8%, transparent);
+  font-family: var(--home-font-mono);
+  font-size: 12px;
+  line-height: 1;
+}
+.paramsTotal {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  color: var(--feat-muted);
+}
+/* concentric with the outer corner: 12px radius less the 8px inset */
+.paramsActive {
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+  display: grid;
+  place-items: center;
+  border-radius: 4px;
+  background: var(--feat-ink);
+  color: var(--feat-panel);
+  font-weight: 500;
+  animation: ouiRing 2.4s ease-out infinite;
+}
+
+/* ---------- hardware ---------- */
+.chipPin {
+  stroke: color-mix(in srgb, var(--feat-ink) 25%, transparent);
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+.chipBody {
+  fill: var(--feat-panel);
+  stroke: var(--feat-line);
+}
+.chipRing {
+  stroke: color-mix(in srgb, var(--feat-ink) 10%, transparent);
+  stroke-dasharray: 2 4;
+}
+.chipTrace {
+  stroke: color-mix(in srgb, var(--feat-ink) 12%, transparent);
+}
+.chipMark {
+  fill: color-mix(in srgb, var(--feat-ink) 30%, transparent);
+}
+.chipCore {
+  fill: var(--feat-fill);
+  stroke: var(--feat-line);
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: ouiCore 2.4s ease-in-out infinite;
+}
+.chipText {
+  fill: var(--feat-ink);
+  font-family: var(--home-font-mono);
+  font-weight: 500;
+}
+.chipSub {
+  fill: var(--feat-muted);
+  font-family: var(--home-font-mono);
+}
+
+/* after the rules that start the pulses, so it wins */
+@media (prefers-reduced-motion: reduce) {
+  .chartHeroHalo,
+  .paramsActive,
+  .chipCore {
+    animation: none;
+  }
+}

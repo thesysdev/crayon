@@ -5,14 +5,8 @@
   margin: 1.25rem 0 0;
 }
 
-/* At most two columns, so four featured cards form a 2x2 grid instead of 3 + 1. */
-.featuredGrid {
-  grid-template-columns: repeat(
-    auto-fit,
-    minmax(min(100%, max(22rem, calc((100% - 1rem) / 2))), 1fr)
-  );
-}
-
+/* Image and text cards share one grid: three columns on wide screens, fewer as it narrows. */
+.featuredGrid,
 .grid {
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 18rem), 1fr));
 }
@@ -264,4 +258,35 @@
   margin: 0.25rem 0 0 !important;
   color: var(--docs-text-secondary);
   font-size: 0.9375rem;
+}
+
+/* Whole-card links (the /demos page): the card's main link stretches over the
+   card, and its other links sit above that layer so they stay clickable. */
+.cardClickable {
+  position: relative;
+  cursor: pointer;
+  transition:
+    border-color 150ms ease,
+    background-color 150ms ease;
+}
+
+.cardClickable:hover {
+  background: var(--docs-hover-bg);
+}
+
+.cardClickable .cardLink {
+  position: relative;
+  z-index: 2;
+}
+
+.cardClickable .cardStretch {
+  position: static;
+}
+
+.cardClickable .cardStretch::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
 }

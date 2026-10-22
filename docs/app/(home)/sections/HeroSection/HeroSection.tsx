@@ -64,6 +64,20 @@ const MOBILE_HERO_IMAGE = {
 } as const;
 
 type HeroTheme = "light" | "dark";
+
+/* Both hero images are in the markup and CSS shows one per breakpoint, but an
+   <img> under display:none still downloads. Each one sits in a <picture> whose
+   <source> swaps in this inline blank wherever its layout is hidden, so a phone
+   never fetches the desktop shot and a desktop never fetches the phone one.
+   These widths must match the breakpoints in HeroSection.module.css. */
+const BLANK_IMAGE =
+  "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
+const DESKTOP_MIN_WIDTH = 1024;
+const DESKTOP_FROM_TABLET_MIN_WIDTH = 900;
+
+function desktopMinWidth(desktopFromTablet: boolean) {
+  return desktopFromTablet ? DESKTOP_FROM_TABLET_MIN_WIDTH : DESKTOP_MIN_WIDTH;
+}
 // ---------------------------------------------------------------------------
 // Buttons
 // ---------------------------------------------------------------------------
@@ -316,6 +330,7 @@ function DesktopHero({
   secondaryCommandLabel,
   commandSlot,
   commandTrailing,
+  proofSlot,
   compact,
   align,
   smallSubtitle,
@@ -336,6 +351,8 @@ function DesktopHero({
   commandSlot?: ReactNode;
   /* Rendered beside the command button, inside its row. */
   commandTrailing?: ReactNode;
+  /* A short proof line under the CTAs. */
+  proofSlot?: ReactNode;
   compact: boolean;
   align: "center" | "left";
   smallSubtitle: boolean;
@@ -411,6 +428,7 @@ function DesktopHero({
             <DesktopGithubButton href={githubRepoUrl} label={githubButtonLabel} />
           )}
         </div>
+        {proofSlot}
       </div>
     </div>
   );
@@ -430,6 +448,7 @@ function MobileHero({
   secondaryCommandLabel,
   commandSlot,
   commandTrailing,
+  proofSlot,
   compact,
   smallSubtitle,
   showCommand,
@@ -444,6 +463,7 @@ function MobileHero({
   mobileImageCropTopPercent = 0,
   mobilePreviewSlot,
   showPreview,
+  desktopFromTablet,
 }: {
   theme: HeroTheme;
   title: ReactNode;
@@ -455,6 +475,8 @@ function MobileHero({
   commandSlot?: ReactNode;
   /* Rendered beside the command button, inside its row. */
   commandTrailing?: ReactNode;
+  /* A short proof line under the CTAs. */
+  proofSlot?: ReactNode;
   compact: boolean;
   smallSubtitle: boolean;
   showCommand: boolean;
@@ -469,6 +491,7 @@ function MobileHero({
   mobileImageCropTopPercent?: number;
   mobilePreviewSlot?: ReactNode;
   showPreview: boolean;
+  desktopFromTablet: boolean;
 }) {
   const [platform, setPlatform] = useState<CommandPlatform>("macos");
   const activeCommand = platform === "windows" && secondaryCommand ? secondaryCommand : command;
@@ -542,6 +565,7 @@ function MobileHero({
         )}
         {showPlaygroundButton && <MobilePlaygroundButton className={styles.mobileCtaButtonWidth} />}
       </div>
+      {proofSlot && <div className={styles.mobileProof}>{proofSlot}</div>}
 
       {/* Mobile hero image */}
       {showPreview && (
@@ -552,17 +576,23 @@ function MobileHero({
           style={viewportStyle}
         >
           {mobilePreviewSlot ?? (
-            <img
-              src={mobileHeroImage}
-              alt={mobileImageAlt ?? "OpenUI mobile hero preview"}
-              width={naturalWidth}
-              height={naturalHeight}
-              className={styles.mobileIllustrationImage}
-              style={imageStyle}
-              loading="eager"
-              decoding="async"
-              fetchPriority="high"
-            />
+            <picture className={styles.heroPicture}>
+              <source
+                media={`(min-width: ${desktopMinWidth(desktopFromTablet)}px)`}
+                srcSet={BLANK_IMAGE}
+              />
+              <img
+                src={mobileHeroImage}
+                alt={mobileImageAlt ?? "OpenUI mobile hero preview"}
+                width={naturalWidth}
+                height={naturalHeight}
+                className={styles.mobileIllustrationImage}
+                style={imageStyle}
+                loading="eager"
+                decoding="async"
+                fetchPriority="high"
+              />
+            </picture>
           )}
         </div>
       )}
@@ -583,6 +613,7 @@ function PreviewImage({
   desktopImageHeight,
   widePreview,
   desktopPreviewSlot,
+  desktopFromTablet,
 }: {
   theme: HeroTheme;
   desktopImageOverride?: string;
@@ -592,6 +623,7 @@ function PreviewImage({
   desktopImageHeight?: number;
   widePreview?: boolean;
   desktopPreviewSlot?: ReactNode;
+  desktopFromTablet: boolean;
 }) {
   const desktopHeroImage = desktopImageOverride
     ? theme === "dark"
@@ -612,16 +644,22 @@ function PreviewImage({
           } ${desktopPreviewSlot ? styles.previewFrameSlot : ""}`.trim()}
         >
           {desktopPreviewSlot ?? (
-            <img
-              src={desktopHeroImage}
-              alt={desktopImageAlt ?? "OpenUI desktop hero preview"}
-              width={desktopImageWidth ?? DESKTOP_HERO_IMAGE.width}
-              height={desktopImageHeight ?? DESKTOP_HERO_IMAGE.height}
-              className={styles.previewImage}
-              loading="eager"
-              decoding="async"
-              fetchPriority="high"
-            />
+            <picture className={styles.heroPicture}>
+              <source
+                media={`(max-width: ${desktopMinWidth(desktopFromTablet) - 1}px)`}
+                srcSet={BLANK_IMAGE}
+              />
+              <img
+                src={desktopHeroImage}
+                alt={desktopImageAlt ?? "OpenUI desktop hero preview"}
+                width={desktopImageWidth ?? DESKTOP_HERO_IMAGE.width}
+                height={desktopImageHeight ?? DESKTOP_HERO_IMAGE.height}
+                className={styles.previewImage}
+                loading="eager"
+                decoding="async"
+                fetchPriority="high"
+              />
+            </picture>
           )}
         </div>
       </div>
@@ -656,13 +694,14 @@ export function Tagline({ children, compact }: { children?: ReactNode; compact?:
 
 export function HeroSection({
   title = "OpenUI",
-  subtitle = "The Open Standard for Intelligent UI",
+  subtitle = "The Open Standard for Generative UI",
   command = primaryCTA,
   commandLabel,
   secondaryCommand,
   secondaryCommandLabel,
   commandSlot,
   commandTrailing,
+  proofSlot,
   compact = false,
   align = "center",
   smallSubtitle = false,
@@ -704,6 +743,8 @@ export function HeroSection({
   commandSlot?: ReactNode;
   /* Rendered beside the command button, inside its row. */
   commandTrailing?: ReactNode;
+  /* A short proof line under the CTAs. */
+  proofSlot?: ReactNode;
   compact?: boolean;
   /** Horizontal alignment of the desktop hero content (default "center"). */
   align?: "center" | "left";
@@ -770,6 +811,7 @@ export function HeroSection({
         secondaryCommandLabel={secondaryCommandLabel}
         commandSlot={commandSlot}
         commandTrailing={commandTrailing}
+        proofSlot={proofSlot}
         compact={compact}
         align={align}
         smallSubtitle={smallSubtitle}
@@ -791,6 +833,7 @@ export function HeroSection({
         secondaryCommandLabel={secondaryCommandLabel}
         commandSlot={commandSlot}
         commandTrailing={commandTrailing}
+        proofSlot={proofSlot}
         compact={compact}
         smallSubtitle={smallSubtitle}
         showCommand={showCommand}
@@ -805,6 +848,7 @@ export function HeroSection({
         mobileImageCropTopPercent={mobilePreviewImageCropTopPercent}
         mobilePreviewSlot={mobilePreviewSlot}
         showPreview={showPreview}
+        desktopFromTablet={desktopFromTablet}
       />
       {showPreview && (
         <PreviewImage
@@ -816,6 +860,7 @@ export function HeroSection({
           desktopImageHeight={desktopPreviewImageHeight}
           widePreview={widePreview}
           desktopPreviewSlot={desktopPreviewSlot}
+          desktopFromTablet={desktopFromTablet}
         />
       )}
       {showTagline && <Tagline compact={taglineCompact}>{tagline}</Tagline>}

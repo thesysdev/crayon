@@ -13,7 +13,7 @@ You need Node.js 20 or later. Run:
 npx @openuidev/cli@latest create
 ```
 
-The interactive setup asks how to connect to a model and which agent framework to use, then creates the project, installs its dependencies, and can start the development server for you. See the [CLI reference](/docs/api-reference/cli) for templates, framework options, and deploying a preview.
+The setup asks which agent framework to use, then creates the project, installs its dependencies, and can start the development server for you. See the [CLI reference](/docs/api-reference/cli) for framework options and deploying a preview.
 
 ## End-to-end integration
 
@@ -51,7 +51,7 @@ The generated specification describes the available components and their propert
 
 Generate the system prompt from the library specification and send it with the user's message.
 
-```ts title="server.ts" tab="OpenUI Gateway (recommended)" tab-group="call-model"
+```ts title="server.ts"
 import OpenAI from "openai";
 import { generateSystemPrompt } from "@openuidev/lang-core";
 import library from "./lib/openui.spec.json";
@@ -71,37 +71,13 @@ const completion = await gateway.chat.completions.create({
 });
 ```
 
-```ts title="server.ts" tab="OpenAI" tab-group="call-model"
-import OpenAI from "openai";
-import { generateSystemPrompt } from "@openuidev/lang-core";
-import { createAutofix } from "@openuidev/server/openai";
-import library from "./lib/openui.spec.json";
-
-const model = new OpenAI();
-const autofix = createAutofix({ apiKey: process.env.THESYS_API_KEY!, library });
-
-const messages = [{ role: "user" as const, content: "Compare quarterly revenue by region." }];
-
-const source = await model.chat.completions.create({
-  model: "gpt-5",
-  messages: [{ role: "system", content: generateSystemPrompt({ library }) }, ...messages],
-  stream: true,
-});
-
-// Autofix adds the library itself, so pass only the conversation.
-// Return this from your API route as a server-sent events response.
-const response = autofix.completions.stream({ stream: source, messages }).toResponse();
-```
-
-Both examples use a `THESYS_API_KEY`. Run the command below to sign in with Thesys, create a key, and write it to your `.env` file. Keep the key on the server and never expose it to browser code.
+Generate an API key and write it to `.env` with the command below. Keep the key on the server and never expose it to browser code.
 
 ```bash
 npx @openuidev/cli@latest generate-api-key
 ```
 
-The OpenAI example uses [Autofix](/docs/autofix) to repair invalid OpenUI Lang against your library before it reaches your application. Gateway does this for you as the response streams.
-
-You can also use Anthropic, Gemini, or any other LLM provider. Send the generated system prompt with your provider's SDK.
+Gateway repairs invalid OpenUI Lang as the response streams.
 
 ### 4. Render the UI
 

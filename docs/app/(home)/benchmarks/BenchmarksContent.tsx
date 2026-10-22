@@ -353,7 +353,7 @@ export function BenchmarksContent() {
             href: "https://console.thesys.dev/keys",
             external: true,
           }}
-          secondary={{ label: "Learn more", href: "/cloud/gateway" }}
+          secondary={{ label: "Explore Gateway", href: "/cloud/gateway" }}
         />
       </VizSkin>
     </main>
