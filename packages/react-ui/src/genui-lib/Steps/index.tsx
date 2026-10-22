@@ -3,6 +3,7 @@
 import { defineComponent } from "@openuidev/react-lang";
 import { z } from "zod/v4";
 import { Timeline as OpenUITimeline } from "../../components/Timeline";
+import { withoutOwnNumber } from "../helpers";
 import { renderOneOrMany } from "../oneOrMany";
 import { StepsItemSchema } from "./schema";
 
@@ -12,7 +13,7 @@ export const StepsItem = defineComponent({
   name: "StepsItem",
   props: StepsItemSchema,
   description:
-    'One numbered step: StepsItem(title, subtitle?). title is the action in a few words: a string, or a Text, Link or Tag; there is no emphasis option, so to emphasize the title pass Text("Install the CLI", "body", true). subtitle is one or two plain sentences (not Markdown) on how to do it: a string, or a Text, Metric, Tag, TagBlock, LeadingText or Link. When title or subtitle needs two or more pieces side by side, pass an array.',
+    'One numbered step: StepsItem(title, subtitle?). title is the action in a few words, with no "1." or other number of its own (the chip already numbers it): a string, or a Text, Link or Tag; there is no emphasis option, so to emphasize the title pass Text("Install the CLI", "body", true). subtitle is one or two plain sentences (not Markdown) on how to do it: a string, or a Text, Metric, Tag, TagBlock, LeadingText or Link. When title or subtitle needs two or more pieces side by side, pass an array.',
   component: () => null,
 });
 
@@ -31,7 +32,7 @@ export const Steps = defineComponent({
       <OpenUITimeline
         marker="number"
         items={items.map((item) => ({
-          title: cell(item?.props?.title),
+          title: cell(withoutOwnNumber(item?.props?.title)),
           subtitle: cell(item?.props?.subtitle),
         }))}
       />

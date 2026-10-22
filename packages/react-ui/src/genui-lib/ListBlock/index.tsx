@@ -6,6 +6,7 @@ import { ChevronRight } from "lucide-react";
 import { z } from "zod/v4";
 import { ListBlock as OpenUIListBlock } from "../../components/ListBlock";
 import { ListItem as OpenUIListItem } from "../../components/ListItem";
+import { withoutOwnNumber } from "../helpers";
 import { renderIconSlot } from "../iconSlot";
 import { ListItem } from "../ListItem";
 import { renderOneOrMany } from "../oneOrMany";
@@ -25,7 +26,7 @@ export const ListBlock = defineComponent({
     variant: z.enum(["number", "plain"]).optional(),
   }),
   description:
-    'A vertical list of ListItems for a set of options, picks or ranked results: ListBlock([item1, item2, item3]). variant "number" (default) puts a small black number inline before each title, for rankings, ordered picks or a short sequence; "plain" drops the numbers, for an unordered set such as people, companies or places that each lead with an Avatar. For named steps or options with a description, give each ListItem an emphasized title, ListItem(Text("Read the docs", "body", true), "Skim the quickstart."). Use Steps for a step-by-step process and EntityList for key/value facts. Give each ListItem an action to turn the list into a menu of follow-ups, or an actionSlot Button when each row needs its own verb such as Book or Approve.',
+    'A vertical list of ListItems for a set of options, picks or ranked results: ListBlock([item1, item2, item3]). variant "number" (default) puts a small black number inline before each title, for rankings, ordered picks or a short sequence; "plain" drops the numbers, for an unordered set such as people, companies or places that each lead with an Avatar. The numbers are added for you, so never start a title with "1.", "#1", "Step 1" or any other number or bullet of your own. For named steps or options with a description, give each ListItem an emphasized title, ListItem(Text("Read the docs", "body", true), "Skim the quickstart."). Use Steps for a step-by-step process and EntityList for key/value facts. Give each ListItem an action to turn the list into a menu of follow-ups, or an actionSlot Button when each row needs its own verb such as Book or Approve.',
   component: ({ props, renderNode }) => {
     const triggerAction = useTriggerAction();
     const items = (props.items ?? []) as {
@@ -61,7 +62,7 @@ export const ListBlock = defineComponent({
           return (
             <OpenUIListItem
               key={index}
-              title={cell(p.title)}
+              title={cell(variant === "number" ? withoutOwnNumber(p.title) : p.title)}
               subtitle={cell(p.subtitle)}
               leading={p.leading ? leadingNode(p.leading as Node) : undefined}
               listHasSubtitle={listHasSubtitle}
