@@ -110,16 +110,10 @@ import { dashboardLibrary } from "@/libraries/dashboard";
 import { dataTools } from "./data-tools";
 import { openui } from "./openui";
 
-// What both tools return: the artifact's reference.
-const artifactReferenceSchema = {
-  type: "object",
-  properties: {
-    id: { type: "string", description: "The artifact's id. Use it to edit this dashboard later." },
-    type: { type: "string", enum: ["live"] },
-    title: { type: "string" },
-    description: { type: "string" },
-  },
-  required: ["id", "type", "title"],
+// What both tools return: a short response for your agent, which also identifies the artifact.
+const artifactResponseSchema = {
+  type: "string",
+  description: "The artifact's id and title. Use the id to edit this dashboard later.",
 };
 
 export function dashboardTools(userId: string) {
@@ -146,7 +140,7 @@ export function dashboardTools(userId: string) {
         },
         required: ["title", "prompt"],
       },
-      outputSchema: artifactReferenceSchema,
+      outputSchema: artifactResponseSchema,
       execute: async ({ title, description, prompt }) => {
         const { toolResponse } = await openui.artifacts.createLive({
           title,
@@ -172,7 +166,7 @@ export function dashboardTools(userId: string) {
         },
         required: ["id", "prompt"],
       },
-      outputSchema: artifactReferenceSchema,
+      outputSchema: artifactResponseSchema,
       execute: async ({ id, prompt }) => {
         const { toolResponse } = await openui.artifacts.edit({
           id,
@@ -201,13 +195,13 @@ the subagent reads your data tools' descriptions and example outputs; your tools
 
 ### The tool response
 
-Your tools return right away, as soon as the artifact has an `id`. `toolResponse` is the artifact's reference:
-`id`, `type`, `title` and `description`. Your agent doesn't wait for the artifact to be generated, and carries on
-with its reply.
+Your tools return right away, as soon as the artifact has an `id`. `toolResponse` is a short string for your agent,
+with the artifact's `id` and `title`, in a format the renderer also understands. Your agent doesn't wait for the
+artifact to be generated, and carries on with its reply.
 
-The artifact keeps generating in OpenUI Cloud, and the renderer streams it in directly (step 7). The reference is
-saved with your chat messages like any other tool result, and it is all the renderer needs, during generation and
-after.
+Return `toolResponse` as is, and pass the same string to the renderer (step 7). You don't need to parse it. The
+artifact keeps generating in OpenUI Cloud, and the renderer streams it in directly. The string is saved with your
+chat messages like any other tool result, and it is all the renderer needs, during generation and after.
 
 ### Editing
 
@@ -285,17 +279,17 @@ These match the options of `useOpenuiCloudStorage`. If you already use it, pass 
 
 ## 7. Render artifacts in your chat
 
-Wherever your chat shows the dashboard tools' output, render it with `LiveArtifactRenderer`. The `id` is all it
-needs:
+Wherever your chat shows the dashboard tools' output, render it with `LiveArtifactRenderer`. Pass the tool's
+result, unchanged, as `response`:
 
 ```tsx title="components/dashboard-output.tsx"
 import { LiveArtifactRenderer } from "@openuidev/cloud";
 import { dashboardLibrary } from "@/libraries/dashboard";
 
-export function DashboardOutput({ output }) {
+export function DashboardOutput({ toolResult }) {
   return (
     <LiveArtifactRenderer
-      id={output.id}
+      response={toolResult}
       library={dashboardLibrary}
       interpreter={{ url: "/api/interpreter" }}
       onAction={(event) => {
@@ -311,7 +305,8 @@ fullscreen overlay, which closes on Escape or a click outside.
 
 | Prop                           | Description                                                                                                                                                                  |
 | ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `id`                           | The artifact's `id`                                                                                                                                                          |
+| `response`                     | The tool's result, as is. The renderer reads the artifact from it                                                                                                            |
+| `id`                           | Instead of `response`, the artifact's `id`, such as from `useArtifactList` (step 8)                                                                                          |
 | `library`                      | Your dashboard library from step 1                                                                                                                                           |
 | `interpreter`                  | Your interpreter endpoint from step 4, where the artifact's data tools run                                                                                                   |
 | `preview`                      | Optional. `false` for standalone mode, or a function that renders your own preview. Defaults to a preview card                                                               |
@@ -336,7 +331,7 @@ For standalone mode, pass `preview={false}`:
 
 ```tsx
 <LiveArtifactRenderer
-  id={output.id}
+  response={toolResult}
   preview={false}
   library={dashboardLibrary}
   interpreter={{ url: "/api/interpreter" }}
@@ -350,7 +345,7 @@ Pass a function as `preview` to render your own card. The artifact still opens i
 
 ```tsx
 <LiveArtifactRenderer
-  id={output.id}
+  response={toolResult}
   library={dashboardLibrary}
   interpreter={{ url: "/api/interpreter" }}
   preview={({ title, description, isStreaming, isOpen, open, close }) => (
@@ -380,7 +375,7 @@ const [isOpen, setIsOpen] = useState(false);
 
 <>
   <LiveArtifactRenderer
-    id={output.id}
+    response={toolResult}
     library={dashboardLibrary}
     interpreter={{ url: "/api/interpreter" }}
     renderInHtmlElement={panel}
@@ -397,7 +392,7 @@ Like `Renderer`, `LiveArtifactRenderer` has slots. Use `LiveArtifactRenderer.Roo
 
 ```tsx
 <LiveArtifactRenderer.Root
-  id={output.id}
+  response={toolResult}
   library={dashboardLibrary}
   interpreter={{ url: "/api/interpreter" }}
 >
@@ -515,11 +510,11 @@ Pins and deletes show up immediately everywhere the artifact appears; you don't 
 Static artifacts, slides and reports work like live ones, with fewer pieces. They don't use data tools, so they
 need no interpreter endpoint (step 4):
 
-| Kind   | Create                                                                           | Render                                  |
-| ------ | -------------------------------------------------------------------------------- | --------------------------------------- |
-| Static | `openui.artifacts.createStatic({ title, description, prompt, userId, library })` | `<StaticArtifactRenderer id library />` |
-| Slides | `openui.artifacts.createSlides({ title, description, prompt, userId })`          | `<SlidesRenderer id />`                 |
-| Report | `openui.artifacts.createReport({ title, description, prompt, userId })`          | `<ReportRenderer id />`                 |
+| Kind   | Create                                                                           | Render                                        |
+| ------ | -------------------------------------------------------------------------------- | --------------------------------------------- |
+| Static | `openui.artifacts.createStatic({ title, description, prompt, userId, library })` | `<StaticArtifactRenderer response library />` |
+| Slides | `openui.artifacts.createSlides({ title, description, prompt, userId })`          | `<SlidesRenderer response />`                 |
+| Report | `openui.artifacts.createReport({ title, description, prompt, userId })`          | `<ReportRenderer response />`                 |
 
 All the renderers come from the same place as `LiveArtifactRenderer`:
 
