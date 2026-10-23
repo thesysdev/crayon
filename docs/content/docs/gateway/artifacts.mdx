@@ -412,12 +412,12 @@ function PinButton() {
 }
 
 function DashboardCard() {
-  const { title, description, isStreaming, isOpen, open, close } = useArtifactPreview();
+  const { title, description, isLoading, isOpen, open, close } = useArtifactPreview();
   return (
     <ArtifactCard
       title={title}
       description={description}
-      generating={isStreaming}
+      loading={isLoading}
       active={isOpen}
       onClick={isOpen ? close : open}
     />
@@ -440,19 +440,27 @@ function DashboardCard() {
 </LiveArtifactRenderer>;
 ```
 
-| Slot                           | Default                                                                                                          | Props                  | Hook for your own      |
-| ------------------------------ | ---------------------------------------------------------------------------------------------------------------- | ---------------------- | ---------------------- |
-| `LiveArtifactRenderer.Preview` | A card with the title, marked while the artifact generates                                                       | `title`, `description` | `useArtifactPreview()` |
-| `LiveArtifactRenderer.Chrome`  | A bar around the artifact with its title, a generating indicator and, when opened from a preview, a close button | `title`, `actions`     | `useArtifactChrome()`  |
-| `LiveArtifactRenderer.Loading` | A spinner until the first content arrives                                                                        | `label`                | `useArtifactStatus()`  |
-| `LiveArtifactRenderer.Error`   | A message and a retry button if the artifact fails                                                               | `message`              | `useArtifactStatus()`  |
+| Slot                           | Default                                                                                            | Props                            | Hook for your own      |
+| ------------------------------ | -------------------------------------------------------------------------------------------------- | -------------------------------- | ---------------------- |
+| `LiveArtifactRenderer.Preview` | A card with the title, and its own loader while the artifact loads                                 | `title`, `description`, `loader` | `useArtifactPreview()` |
+| `LiveArtifactRenderer.Chrome`  | A bar around the artifact with its title, a loader and, when opened from a preview, a close button | `title`, `actions`               | `useArtifactChrome()`  |
+| `LiveArtifactRenderer.Loading` | A loader over the artifact while it loads                                                          | `label`                          | `useArtifactStatus()`  |
+| `LiveArtifactRenderer.Error`   | A message and a retry button if the artifact fails                                                 | `message`                        | `useArtifactStatus()`  |
 
-| Hook                   | Returns                                                                          |
-| ---------------------- | -------------------------------------------------------------------------------- |
-| `useArtifactPreview()` | `title`, `description`, `isStreaming`, `isOpen`, `open`, `close`                 |
-| `useArtifactChrome()`  | `id`, `title`, `description`, `isStreaming`, `standalone`, `close`               |
-| `useArtifactStatus()`  | `status` (`loading`, `generating`, `ready` or `failed`), `error`, `retry`        |
-| `useRendererQuery()`   | `isLoading`, `errors` and `retry` for the artifact's live data, as in `Renderer` |
+Each hook tells you what the artifact is doing with three flags:
+
+| Flag          | True while                                |
+| ------------- | ----------------------------------------- |
+| `isStreaming` | The artifact's content is being generated |
+| `isFetching`  | Its tools are running, to load live data  |
+| `isLoading`   | Either of the two                         |
+
+| Hook                   | Returns                                                              |
+| ---------------------- | -------------------------------------------------------------------- |
+| `useArtifactPreview()` | `title`, `description`, the three flags, `isOpen`, `open`, `close`   |
+| `useArtifactChrome()`  | `id`, `title`, `description`, the three flags, `standalone`, `close` |
+| `useArtifactStatus()`  | The three flags, `error` if the artifact failed, and `retry`         |
+| `useRendererQuery()`   | `errors` and `retry` for the artifact's live data, as in `Renderer`  |
 
 ## 8. Add an artifacts page
 
