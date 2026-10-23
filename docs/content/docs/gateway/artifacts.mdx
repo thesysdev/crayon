@@ -456,12 +456,47 @@ function DashboardCard() {
 </LiveArtifactRenderer>;
 ```
 
-| Slot                           | Default                                                                                            | Props                            |
-| ------------------------------ | -------------------------------------------------------------------------------------------------- | -------------------------------- |
-| `LiveArtifactRenderer.Preview` | A card with the title, and its own loader while the artifact loads                                 | `title`, `description`, `loader` |
-| `LiveArtifactRenderer.Chrome`  | A bar around the artifact with its title, a loader and, when opened from a preview, a close button | `title`, `actions`               |
-| `LiveArtifactRenderer.Loading` | A loader over the artifact while it loads                                                          | `label`                          |
-| `LiveArtifactRenderer.Error`   | A message and a retry button if the artifact fails                                                 | `message`                        |
+| Slot                           | Default                                                                                                       | Props                            |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------- | -------------------------------- |
+| `LiveArtifactRenderer.Preview` | A card with the title, and its own loader while the artifact loads                                            | `title`, `description`, `loader` |
+| `LiveArtifactRenderer.Chrome`  | The frame around the artifact: a bar with its title, a loader and, when opened from a preview, a close button | `title`, `actions`               |
+| `LiveArtifactRenderer.Loading` | A loader over the artifact while it loads                                                                     | `label`                          |
+| `LiveArtifactRenderer.Error`   | A message and a retry button if the artifact fails                                                            | `message`                        |
+
+### Replace the chrome
+
+`LiveArtifactRenderer.Content` is the artifact itself. When you replace the chrome with your own, place `Content`
+where the artifact should go:
+
+```tsx
+import { LiveArtifactRenderer, useArtifact } from "@openuidev/cloud";
+
+function DashboardChrome() {
+  const { title, isLoading, standalone, close } = useArtifact();
+  return (
+    <div className="dashboard-frame">
+      <header>
+        <h2>{title}</h2>
+        {isLoading && <Spinner />}
+        {!standalone && <button onClick={close}>Close</button>}
+      </header>
+      <LiveArtifactRenderer.Content className="dashboard-body" />
+    </div>
+  );
+}
+
+<LiveArtifactRenderer
+  response={toolResult}
+  library={dashboardLibrary}
+  interpreter={{ url: "/api/interpreter" }}
+>
+  <LiveArtifactRenderer.Chrome>
+    <DashboardChrome />
+  </LiveArtifactRenderer.Chrome>
+</LiveArtifactRenderer>;
+```
+
+`Content` takes `className`. The `Loading` and `Error` slots render over it, wherever you place it.
 
 ### `useArtifact()`
 
