@@ -207,8 +207,9 @@ chat messages like any other tool result, and it is all the renderer needs, duri
 
 Your agent edits a dashboard by calling `editDashboard` with its `id`, for example after the user asks to "add a
 chart for Europe". To edit the dashboard the user has open, include its `id` in the request you send to your agent.
-The edit also returns right away. It replaces the artifact in place, and every renderer showing it streams the
-change in.
+The edit also returns right away. While the edit is generated, every renderer showing the dashboard keeps showing the
+current version, with `isStreaming` true, then switches to the edited version once it is ready. The edit replaces
+the artifact in place.
 
 ## 4. Add an interpreter
 
@@ -346,7 +347,8 @@ a bar showing its title and a close button.
 
 While the artifact is being generated, the renderer attaches to its stream and shows it as it comes in. It can
 attach at any time: after a reload, or when the user opens it later, it shows everything generated so far, then
-continues live. Once the artifact is done, the renderer loads it by `id`.
+continues live. Once the artifact is done, the renderer loads it by `id`. During an edit, it keeps showing the
+current version until the edited one is ready.
 
 ### Customize it with props
 
@@ -364,6 +366,8 @@ Props customize what the renderer shows, and the renderer stays in control of it
 | `isOpen`, `onOpenChange`       | Optional. Control whether the artifact is open. Without them, the renderer manages it                                                                                        |
 | `defaultOpen`                  | Optional. Start open, when the renderer manages the open state                                                                                                               |
 | `className`                    | Optional. Added to the artifact's root element                                                                                                                               |
+| `onReady`                      | Optional. Called when the artifact is generated and its data has loaded                                                                                                      |
+| `onFailure`                    | Optional. Called with the `error` when the artifact can't be shown. See [Errors](#errors)                                                                                    |
 | `onAction`, `onStateUpdate`, … | `LiveArtifactRenderer` extends [`Renderer`](/docs/openui-lang/renderer), so it takes the same props. Handle your [custom actions](/docs/openui-lang/actions) with `onAction` |
 
 ### Two modes
@@ -456,29 +460,39 @@ function DashboardCard() {
 </LiveArtifactRenderer>;
 ```
 
-| Slot                           | Default                                                                                                       | Props                            |
-| ------------------------------ | ------------------------------------------------------------------------------------------------------------- | -------------------------------- |
-| `LiveArtifactRenderer.Preview` | A card with the title, and its own loader while the artifact loads                                            | `title`, `description`, `loader` |
-| `LiveArtifactRenderer.Chrome`  | The frame around the artifact: a bar with its title, a loader and, when opened from a preview, a close button | `title`, `actions`               |
-| `LiveArtifactRenderer.Loading` | A loader over the artifact while it loads                                                                     | `label`                          |
-| `LiveArtifactRenderer.Error`   | A message and a retry button if the artifact fails                                                            | `message`                        |
+| Slot                           | Default                                                                                                       | Props                              |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------- | ---------------------------------- |
+| `LiveArtifactRenderer.Preview` | A card with the title, and its own loader while the artifact loads                                            | `title`, `description`, `loader`   |
+| `LiveArtifactRenderer.Chrome`  | The frame around the artifact: a bar with its title, a loader and, when opened from a preview, a close button | `title`, `actions`                 |
+| `LiveArtifactRenderer.Loading` | A loader over the artifact while it loads                                                                     | `label`                            |
+| `LiveArtifactRenderer.Error`   | A message and, when the error can be retried, a retry button                                                  | `message`                          |
+| `LiveArtifactRenderer.Overlay` | The fullscreen overlay the artifact opens in, with a backdrop. Not used with `renderInHtmlElement`            | `closeOnEscape`, `closeOnBackdrop` |
 
-### Replace the chrome
+### Building blocks
 
-`LiveArtifactRenderer.Content` is the artifact itself. When you replace the chrome with your own, place `Content`
-where the artifact should go:
+When you replace a slot with your own children, place these inside it:
+
+| Building block                          | Renders                                                               | Place it in                                          |
+| --------------------------------------- | --------------------------------------------------------------------- | ---------------------------------------------------- |
+| `LiveArtifactRenderer.Content`          | The artifact itself. Takes `className`                                | Your own `Chrome`                                    |
+| `LiveArtifactRenderer.Frame`            | The artifact in its chrome                                            | Your own `Overlay`                                   |
+| `LiveArtifactRenderer.CloseButton`      | A button that closes the artifact. Renders nothing in standalone mode | Your own `Chrome`, or the default chrome's `actions` |
+| `LiveArtifactRenderer.FullscreenButton` | A button that toggles fullscreen                                      | Your own `Chrome`, or the default chrome's `actions` |
+
+The default chrome has both buttons. For example, your own chrome with its own header:
 
 ```tsx
 import { LiveArtifactRenderer, useArtifactRenderer } from "@openuidev/cloud";
 
 function DashboardChrome() {
-  const { title, isLoading, standalone, close } = useArtifactRenderer();
+  const { title, isLoading } = useArtifactRenderer();
   return (
     <div className="dashboard-frame">
       <header>
         <h2>{title}</h2>
         {isLoading && <Spinner />}
-        {!standalone && <button onClick={close}>Close</button>}
+        <LiveArtifactRenderer.FullscreenButton />
+        <LiveArtifactRenderer.CloseButton />
       </header>
       <LiveArtifactRenderer.Content className="dashboard-body" />
     </div>
@@ -496,23 +510,60 @@ function DashboardChrome() {
 </LiveArtifactRenderer>;
 ```
 
-`Content` takes `className`. The `Loading` and `Error` slots render over it, wherever you place it.
+Or your own dialog in place of the overlay, with the default chrome inside:
+
+```tsx
+function DashboardDialog() {
+  const { isOpen, close } = useArtifactRenderer();
+  return (
+    <Dialog open={isOpen} onClose={close}>
+      <LiveArtifactRenderer.Frame />
+    </Dialog>
+  );
+}
+
+<LiveArtifactRenderer
+  response={toolResult}
+  library={dashboardLibrary}
+  interpreter={{ url: "/api/interpreter" }}
+>
+  <LiveArtifactRenderer.Overlay>
+    <DashboardDialog />
+  </LiveArtifactRenderer.Overlay>
+</LiveArtifactRenderer>;
+```
+
+The `Loading` and `Error` slots render over `Content`, wherever you place it.
 
 ### `useArtifactRenderer()`
 
 One hook gives your own parts the renderer's state and controls. Call it anywhere inside a renderer:
 
-| Field                        | Description                                                                       |
-| ---------------------------- | --------------------------------------------------------------------------------- |
-| `id`, `title`, `description` | The artifact                                                                      |
-| `isStreaming`                | True while the artifact's content is being generated                              |
-| `isFetching`                 | True while its tools are running, to load live data                               |
-| `isLoading`                  | True while either is happening                                                    |
-| `error`, `retry`             | Why the artifact failed, if it did, and a function to try again                   |
-| `isOpen`, `open`, `close`    | Whether the artifact is open from its preview, and functions to open and close it |
-| `standalone`                 | Whether the renderer is in standalone mode                                        |
+| Field                              | Description                                                                                               |
+| ---------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| `id`, `title`, `description`       | The artifact                                                                                              |
+| `isStreaming`                      | True while the artifact's content is being generated                                                      |
+| `isFetching`                       | True while its tools are running, to load live data                                                       |
+| `isLoading`                        | True while either is happening                                                                            |
+| `error`, `retry`                   | If the artifact can't be shown, the error, and a function that retries what failed. See [Errors](#errors) |
+| `isOpen`, `open`, `close`          | Whether the artifact is open from its preview, and functions to open and close it                         |
+| `standalone`                       | Whether the renderer is in standalone mode                                                                |
+| `isFullscreen`, `toggleFullscreen` | Whether the artifact is fullscreen, and a function to toggle it                                           |
 
-For errors in the artifact's live data, `useRendererQuery()` works as it does in `Renderer`.
+### Errors
+
+When an artifact can't be shown, `useArtifactRenderer()` returns an `error` with a `code` and a `message`. `retry`
+retries whatever failed:
+
+| `code`              | What happened                                      | `retry`                                                                                  |
+| ------------------- | -------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| `not_found`         | The artifact was deleted, or the user can't see it | Not available. The default `Error` shows that the artifact is gone, with no retry button |
+| `generation_failed` | The subagent couldn't build the artifact           | Generates it again, from the same prompt                                                 |
+| `data_failed`       | One of its data tools failed                       | Runs the failed tool calls again. The rest of the artifact stays on screen               |
+| `network_error`     | The renderer couldn't reach OpenUI Cloud           | Connects again                                                                           |
+
+`onFailure` receives the same `error`. For the details of a failed data call, `useRendererQuery()` works as it does in
+`Renderer`.
 
 ## 8. Add an artifacts page
 
