@@ -172,6 +172,7 @@ export function dashboardTools(userId: string) {
           id,
           prompt,
           userId,
+          library: dashboardLibrary,
           tools: dataTools,
         });
         return toolResponse;
@@ -552,7 +553,7 @@ export default function DashboardsPage() {
   const [pinnedOnly, setPinnedOnly] = useState(false);
   const [openId, setOpenId] = useState<string | null>(null);
   const { artifacts, isLoading, hasMore, loadMore, pin, unpin, deleteArtifact } = useArtifactList({
-    filter: { type: "dashboard", pinned: pinnedOnly || undefined, limit: 20 },
+    filter: { type: "live", pinned: pinnedOnly || undefined, limit: 20 },
   });
 
   if (isLoading) return <Spinner />;
@@ -623,11 +624,11 @@ Static artifacts, slides and reports work like live ones, with fewer pieces. Wha
 
 None of them use data tools, so they need no interpreter (step 4), and their renderers take no `interpreter`:
 
-| Kind   | Create                                                                           | Edit                                            | Render                                        |
-| ------ | -------------------------------------------------------------------------------- | ----------------------------------------------- | --------------------------------------------- |
-| Static | `openui.artifacts.createStatic({ title, description, prompt, userId, library })` | `openui.artifacts.edit({ id, prompt, userId })` | `<StaticArtifactRenderer response library />` |
-| Slides | `openui.artifacts.createSlides({ title, description, prompt, userId })`          | `openui.artifacts.edit({ id, prompt, userId })` | `<SlidesRenderer response />`                 |
-| Report | `openui.artifacts.createReport({ title, description, prompt, userId })`          | `openui.artifacts.edit({ id, prompt, userId })` | `<ReportRenderer response />`                 |
+| Kind   | Create                                                                           | Edit                                                     | Render                                        |
+| ------ | -------------------------------------------------------------------------------- | -------------------------------------------------------- | --------------------------------------------- |
+| Static | `openui.artifacts.createStatic({ title, description, prompt, userId, library })` | `openui.artifacts.edit({ id, prompt, userId, library })` | `<StaticArtifactRenderer response library />` |
+| Slides | `openui.artifacts.createSlides({ title, description, prompt, userId })`          | `openui.artifacts.edit({ id, prompt, userId })`          | `<SlidesRenderer response />`                 |
+| Report | `openui.artifacts.createReport({ title, description, prompt, userId })`          | `openui.artifacts.edit({ id, prompt, userId })`          | `<ReportRenderer response />`                 |
 
 All the renderers come from the same place as `LiveArtifactRenderer`:
 
