@@ -164,7 +164,10 @@ function findRepoExample(spec: string, examples: ExampleProject[]): ExampleProje
     description: "",
     path: subpath,
     repo,
-    env: { file: ".env" },
+    env:
+      repo.owner.toLowerCase() === "thesysdev"
+        ? { file: ".env", key: "THESYS_API_KEY" }
+        : { file: ".env" },
   };
 }
 
