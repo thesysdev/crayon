@@ -400,9 +400,9 @@ Children win over props, and a dev warning fires if you pass both.
 ```tsx
 import { LiveArtifactRenderer, useArtifact } from "@openuidev/cloud";
 
-function PinButton() {
-  const { pinned, pin, unpin } = useArtifact();
-  return <button onClick={pinned ? unpin : pin}>{pinned ? "Unpin" : "Pin"}</button>;
+function OpenInPage() {
+  const { id } = useArtifact();
+  return <a href={`/dashboards/${id}`}>Open in page</a>;
 }
 
 function DashboardCard() {
@@ -425,8 +425,8 @@ function DashboardCard() {
 >
   {/* Props: the default loader, with your label */}
   <LiveArtifactRenderer.Loading label="Building your dashboard…" />
-  {/* Props: the default chrome, with a pin button added */}
-  <LiveArtifactRenderer.Chrome actions={<PinButton />} />
+  {/* Props: the default chrome, with a link added */}
+  <LiveArtifactRenderer.Chrome actions={<OpenInPage />} />
   {/* Children: your own preview card */}
   <LiveArtifactRenderer.Preview>
     <DashboardCard />
@@ -443,7 +443,7 @@ function DashboardCard() {
 
 ### `useArtifact()`
 
-One hook gives your own parts everything about the artifact they are in. Call it anywhere inside a renderer:
+One hook gives your own parts the renderer's state and controls. Call it anywhere inside a renderer:
 
 | Field                        | Description                                                                       |
 | ---------------------------- | --------------------------------------------------------------------------------- |
@@ -454,7 +454,6 @@ One hook gives your own parts everything about the artifact they are in. Call it
 | `error`, `retry`             | Why the artifact failed, if it did, and a function to try again                   |
 | `isOpen`, `open`, `close`    | Whether the artifact is open from its preview, and functions to open and close it |
 | `standalone`                 | Whether the renderer is in standalone mode                                        |
-| `pinned`, `pin`, `unpin`     | Whether the user pinned the artifact, and functions to pin and unpin it           |
 
 For errors in the artifact's live data, `useRendererQuery()` works as it does in `Renderer`.
 
