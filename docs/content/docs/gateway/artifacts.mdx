@@ -284,13 +284,13 @@ export function DashboardOutput({ output }) {
 }
 ```
 
-| Prop              | Description                                                                                               |
-| ----------------- | --------------------------------------------------------------------------------------------------------- |
-| `id`              | The artifact's `id`                                                                                       |
-| `library`         | Your dashboard library from step 1                                                                        |
-| `interpreter`     | Your interpreter endpoint from step 4, where the artifact's data tools run                                |
-| `toolProvider`    | Optional. Tools that run in the browser, such as copying to the clipboard. Works as it does in `Renderer` |
-| `previewRenderer` | Optional. Renders a preview in place of the artifact. See [Show a preview](#show-a-preview)               |
+| Prop           | Description                                                                                               |
+| -------------- | --------------------------------------------------------------------------------------------------------- |
+| `id`           | The artifact's `id`                                                                                       |
+| `library`      | Your dashboard library from step 1                                                                        |
+| `interpreter`  | Your interpreter endpoint from step 4, where the artifact's data tools run                                |
+| `toolProvider` | Optional. Tools that run in the browser, such as copying to the clipboard. Works as it does in `Renderer` |
+| `preview`      | Optional. Renders a preview in place of the artifact. See [Show a preview](#show-a-preview)               |
 
 While the artifact is being generated, the renderer attaches to its stream and shows it as it comes in. It can
 attach at any time: after a reload, or when the user opens it later, it shows everything generated so far, then
@@ -299,7 +299,7 @@ first content arrives, and a message if the artifact fails.
 
 ### Show a preview
 
-Pass `previewRenderer` to show a compact preview in the chat instead of the whole artifact. The artifact loads when
+Pass `preview` to show a compact preview in the chat instead of the whole artifact. The artifact loads when
 the user opens it:
 
 ```tsx
@@ -307,7 +307,7 @@ the user opens it:
   id={output.id}
   library={dashboardLibrary}
   interpreter={{ url: "/api/interpreter" }}
-  previewRenderer={({ title, description, isStreaming, open }) => (
+  preview={({ title, description, isStreaming, open }) => (
     <button onClick={open}>
       {title}
       {isStreaming ? " · generating…" : ""}
@@ -316,9 +316,9 @@ the user opens it:
 />
 ```
 
-`previewRenderer` receives the artifact's `title` and `description`, whether it `isStreaming`, and `open`, which
+`preview` receives the artifact's `title` and `description`, whether it `isStreaming`, and `open`, which
 shows the artifact in place of the preview. To show the artifact somewhere else, such as a side panel, render a
-`LiveArtifactRenderer` without `previewRenderer` there instead.
+`LiveArtifactRenderer` without `preview` there instead.
 
 ### Customize loading and errors
 
@@ -459,4 +459,4 @@ import {
 ```
 
 Slides and reports use the built-in libraries, so they take no `library`. All of them return a `toolResponse`, take
-`previewRenderer`, and are edited with `artifacts.edit`.
+`preview`, and are edited with `artifacts.edit`.
