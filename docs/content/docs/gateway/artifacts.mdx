@@ -415,20 +415,20 @@ slot works three ways:
 - **Omit it:** the built-in default renders.
 - **Pass props:** the default renders with your values. The renderer stays in control.
 - **Pass children:** your children replace the default entirely, and you are in control. Read the state you need
-  with `useArtifact()`.
+  with `useArtifactRenderer()`.
 
 Children win over props, and a dev warning fires if you pass both.
 
 ```tsx
-import { LiveArtifactRenderer, useArtifact } from "@openuidev/cloud";
+import { LiveArtifactRenderer, useArtifactRenderer } from "@openuidev/cloud";
 
 function OpenInPage() {
-  const { id } = useArtifact();
+  const { id } = useArtifactRenderer();
   return <a href={`/dashboards/${id}`}>Open in page</a>;
 }
 
 function DashboardCard() {
-  const { title, description, isLoading, isOpen, open, close } = useArtifact();
+  const { title, description, isLoading, isOpen, open, close } = useArtifactRenderer();
   return (
     <ArtifactCard
       title={title}
@@ -469,10 +469,10 @@ function DashboardCard() {
 where the artifact should go:
 
 ```tsx
-import { LiveArtifactRenderer, useArtifact } from "@openuidev/cloud";
+import { LiveArtifactRenderer, useArtifactRenderer } from "@openuidev/cloud";
 
 function DashboardChrome() {
-  const { title, isLoading, standalone, close } = useArtifact();
+  const { title, isLoading, standalone, close } = useArtifactRenderer();
   return (
     <div className="dashboard-frame">
       <header>
@@ -498,7 +498,7 @@ function DashboardChrome() {
 
 `Content` takes `className`. The `Loading` and `Error` slots render over it, wherever you place it.
 
-### `useArtifact()`
+### `useArtifactRenderer()`
 
 One hook gives your own parts the renderer's state and controls. Call it anywhere inside a renderer:
 
@@ -614,5 +614,5 @@ All the renderers come from the same place as `LiveArtifactRenderer`:
 import { ReportRenderer, SlidesRenderer, StaticArtifactRenderer } from "@openuidev/cloud";
 ```
 
-All of them return a `toolResponse`, and their renderers have the same two modes, slots and `useArtifact()` as
+All of them return a `toolResponse`, and their renderers have the same two modes, slots and `useArtifactRenderer()` as
 `LiveArtifactRenderer`.
