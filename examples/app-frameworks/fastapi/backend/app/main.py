@@ -21,8 +21,22 @@ MODEL = os.environ.get("OPENUI_MODEL", "google/gemini-3.6-flash-free")
 SPEC_PATH = Path(__file__).resolve().parents[2] / "frontend" / "src" / "generated" / "spec.json"
 
 
+# Without these, a request like "when I submit, show a summary" gets a pre-written
+# summary revealed locally, so the user's entries never reach the assistant.
+FORM_RULES = (
+    "A Form's submit button must send the entries to you: its action must be @ToAssistant(...), "
+    'e.g. Button("Plan my trip", @ToAssistant("Plan my trip"), "primary"), never @Set or another '
+    "local-only action. Don't put what the form produces (a summary, plan or itinerary) in the "
+    "same reply, hidden or not; write it in your next reply from the values the user submitted.\n"
+    "When a field should only appear for a certain answer (e.g. a company name only for "
+    "Business trips), bind the deciding field to a $variable with its value argument, e.g. "
+    'RadioGroup("tripType", items, "Leisure", { required: true }, $tripType), and show the '
+    'field with $tripType == "Business" ? companyField : null.'
+)
+
+
 def cloud_system_prompt() -> str:
-    """Same payload as generateSystemPrompt({ cloud: true, library }) from @openuidev/lang-core."""
+    """Same payload as generateSystemPrompt({ cloud: true, library, instructions }) from @openuidev/lang-core."""
     if not SPEC_PATH.is_file():
         raise RuntimeError(f"Missing {SPEC_PATH}. From frontend/, run: pnpm generate")
     spec = json.loads(SPEC_PATH.read_text())
@@ -31,7 +45,7 @@ def cloud_system_prompt() -> str:
         for key in ("schema", "root", "componentGroups", "id")
         if key in spec and spec[key] is not None
     }
-    return "]]>openui:config\n" + json.dumps({"chatLibrary": chat_library})
+    return "]]>openui:config\n" + json.dumps({"chatLibrary": chat_library}) + "\n" + FORM_RULES
 
 
 app = FastAPI()
