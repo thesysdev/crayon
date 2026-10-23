@@ -355,20 +355,19 @@ current version until the edited one is ready.
 Props customize what the renderer shows, and the renderer stays in control of it. To replace parts of it, see
 [Customize or replace parts](#customize-or-replace-parts).
 
-| Prop                           | Description                                                                                                                                                                       |
-| ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `response`                     | The tool's result, as is. The renderer reads the artifact from it                                                                                                                 |
-| `id`                           | Instead of `response`, the artifact's `id`, such as from `useArtifactList` (step 8)                                                                                               |
-| `library`                      | Your dashboard library from step 1                                                                                                                                                |
-| `interpreter`                  | Where the artifact's data tools run: a config object for your endpoint, such as `{ url: "/api/interpreter" }`, or an async function. See [step 4](#4-add-an-interpreter)          |
-| `preview`                      | Optional. Defaults to `true`: show a preview card that opens the artifact. Pass `false` for standalone mode, which renders the whole artifact inline. See [Two modes](#two-modes) |
-| `renderInHtmlElement`          | Optional. The element the artifact opens in. Defaults to a fullscreen overlay                                                                                                     |
-| `isOpen`, `onOpenChange`       | Optional. Control whether the artifact is open. Without them, the renderer manages it                                                                                             |
-| `defaultOpen`                  | Optional. Start open, when the renderer manages the open state                                                                                                                    |
-| `className`                    | Optional. Added to the artifact's root element                                                                                                                                    |
-| `onReady`                      | Optional. Called when the artifact is generated and its data has loaded                                                                                                           |
-| `onFailure`                    | Optional. Called with the `error` when the artifact can't be shown. See [Errors](#errors)                                                                                         |
-| `onAction`, `onStateUpdate`, … | `LiveArtifactRenderer` extends [`Renderer`](/docs/openui-lang/renderer), so it takes the same props. Handle your [custom actions](/docs/openui-lang/actions) with `onAction`      |
+| Prop                                      | Description                                                                                                                                                                                                                                        |
+| ----------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `response`                                | The tool's result, as is. The renderer reads the artifact from it                                                                                                                                                                                  |
+| `id`                                      | Instead of `response`, the artifact's `id`, such as from `useArtifactList` (step 8)                                                                                                                                                                |
+| `library`                                 | Your dashboard library from step 1                                                                                                                                                                                                                 |
+| `interpreter`                             | Where the artifact's data tools run: a config object for your endpoint, such as `{ url: "/api/interpreter" }`, or an async function. See [step 4](#4-add-an-interpreter)                                                                           |
+| `preview`                                 | Optional. Defaults to `true`: show a preview card that opens the artifact. Pass `false` for standalone mode, which renders the whole artifact inline. See [Two modes](#two-modes)                                                                  |
+| `renderInHtmlElement`                     | Optional. The element the artifact opens in. Defaults to a fullscreen overlay                                                                                                                                                                      |
+| `isOpen`, `onOpenChange`                  | Optional. Control whether the artifact is open. Without them, the renderer manages it                                                                                                                                                              |
+| `defaultOpen`                             | Optional. Start open, when the renderer manages the open state                                                                                                                                                                                     |
+| `className`                               | Optional. Added to the artifact's root element                                                                                                                                                                                                     |
+| `onReady`                                 | Optional. Called when the artifact is generated and its data has loaded                                                                                                                                                                            |
+| `onAction`, `onError`, `onStateUpdate`, … | `LiveArtifactRenderer` extends [`Renderer`](/docs/openui-lang/renderer), so it takes the same props. Handle your [custom actions](/docs/openui-lang/actions) with `onAction`. `onError` also receives the artifact's errors: see [Errors](#errors) |
 
 ### Two modes
 
@@ -524,18 +523,18 @@ One hook gives your own parts the renderer's state and controls. Call it anywher
 
 ### Errors
 
-When an artifact can't be shown, `useArtifactRenderer()` returns an `error` with a `code` and a `message`. `retry`
-retries whatever failed:
+When an artifact can't be shown, `useArtifactRenderer()` returns an `error` with the same shape as `Renderer`'s
+errors: a `source`, a `code` and a `message`. `retry` retries whatever failed:
 
-| `code`              | What happened                                      | `retry`                                                                                  |
-| ------------------- | -------------------------------------------------- | ---------------------------------------------------------------------------------------- |
-| `not_found`         | The artifact was deleted, or the user can't see it | Not available. The default `Error` shows that the artifact is gone, with no retry button |
-| `generation_failed` | The subagent couldn't build the artifact           | Generates it again, from the same prompt                                                 |
-| `data_failed`       | One of its data tools failed                       | Runs the failed tool calls again. The rest of the artifact stays on screen               |
-| `network_error`     | The renderer couldn't reach OpenUI Cloud           | Connects again                                                                           |
+| `source`   | `code`              | What happened                                      | `retry`                                                                                  |
+| ---------- | ------------------- | -------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| `artifact` | `not-found`         | The artifact was deleted, or the user can't see it | Not available. The default `Error` shows that the artifact is gone, with no retry button |
+| `artifact` | `generation-failed` | The subagent couldn't build the artifact           | Generates it again, from the same prompt                                                 |
+| `artifact` | `network-error`     | The renderer couldn't reach OpenUI Cloud           | Connects again                                                                           |
+| `query`    | `tool-error`        | One of its data tools failed                       | Runs the failed tool calls again. The rest of the artifact stays on screen               |
 
-`onFailure` receives the same `error`. For the details of a failed data call, `useRendererQuery()` works as it does in
-`Renderer`.
+`onError` receives these along with `Renderer`'s own parse and query errors, and is called with `[]` once they
+clear. For the details of a failed data call, `useRendererQuery()` works as it does in `Renderer`.
 
 ## 8. Add an artifacts page
 
