@@ -1,5 +1,14 @@
 # @openuidev/react-lang
 
+## 1.0.2
+
+### Patch Changes
+
+- [#1455](https://github.com/thesysdev/openui/pull/1455) [`c9f93b6`](https://github.com/thesysdev/openui/commit/c9f93b6e57d05b19b9781846769da530c6741dc4) Thanks [@AbhinRustagi](https://github.com/AbhinRustagi)! - The React Native entry now renders React Native primitives instead of DOM elements. `Renderer`, its slots, and `WithPreviewRenderer` used to mount `<div>`/`<button>`/`<section>` on native, which crashed Metro with "View config getter callback for component `div` must be a function". The native build now uses `View`, `Pressable`, and `ActivityIndicator`, with slot props typed for React Native (`onPress`, `View` styles). `react-native` is an optional peer dependency. Web is unchanged.
+- Updated dependencies [[`9d73d17`](https://github.com/thesysdev/openui/commit/9d73d17d2bbac565672a85e78f6eb7740cb0d9ca)]:
+  - @openuidev/devtools@0.3.1
+  - @openuidev/lang-core@1.0.2
+
 ## 1.0.1
 
 ### Patch Changes

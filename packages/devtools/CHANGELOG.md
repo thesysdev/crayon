@@ -1,5 +1,13 @@
 # @openuidev/devtools
 
+## 0.3.1
+
+### Patch Changes
+
+- [#1373](https://github.com/thesysdev/openui/pull/1373) [`9d73d17`](https://github.com/thesysdev/openui/commit/9d73d17d2bbac565672a85e78f6eb7740cb0d9ca) Thanks [@AbhinRustagi](https://github.com/AbhinRustagi)! - Keep the devtools launcher off the host app's own controls. On narrow windows it could sit on top of a chat's Send button; it now moves just clear of any button, link or input underneath it.
+- Updated dependencies [[`c9f93b6`](https://github.com/thesysdev/openui/commit/c9f93b6e57d05b19b9781846769da530c6741dc4)]:
+  - @openuidev/react-lang@1.0.2
+
 ## 0.3.0
 
 ### Minor Changes
