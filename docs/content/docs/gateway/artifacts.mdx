@@ -231,6 +231,24 @@ export async function POST(request: Request) {
 }
 ```
 
+Instead of an endpoint, you can give the renderer an async function, such as a server action:
+
+```ts title="app/actions/interpreter.ts"
+"use server";
+
+import { createInterpreter } from "@openuidev/server";
+import { dataTools } from "@/server/data-tools";
+
+const interpreter = createInterpreter({ apiKey: process.env.THESYS_API_KEY, tools: dataTools });
+
+export async function runInterpreter(request) {
+  const session = await getSession();
+  return interpreter.execute(request, { userId: session.user.id });
+}
+```
+
+Pass it as `interpreter={runInterpreter}` in step 7.
+
 Register every tool your artifacts call here: artifacts don't run tools in the browser. For something that should
 happen in the browser, such as copying text, use a custom action (step 7). Only live artifacts need this endpoint.
 
@@ -303,22 +321,27 @@ export function DashboardOutput({ toolResult }) {
 By default, this shows a preview card with the dashboard's title in the chat. Clicking it opens the dashboard in a
 fullscreen overlay, which closes on Escape or a click outside.
 
+While the artifact is being generated, the renderer attaches to its stream and shows it as it comes in. It can
+attach at any time: after a reload, or when the user opens it later, it shows everything generated so far, then
+continues live. Once the artifact is done, the renderer loads it by `id`.
+
+### Customize it with props
+
+Props customize what the renderer shows, and the renderer stays in control of it. To replace parts of it, see
+[Customize or replace parts](#customize-or-replace-parts).
+
 | Prop                           | Description                                                                                                                                                                  |
 | ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `response`                     | The tool's result, as is. The renderer reads the artifact from it                                                                                                            |
 | `id`                           | Instead of `response`, the artifact's `id`, such as from `useArtifactList` (step 8)                                                                                          |
 | `library`                      | Your dashboard library from step 1                                                                                                                                           |
-| `interpreter`                  | Your interpreter endpoint from step 4, where the artifact's data tools run                                                                                                   |
-| `preview`                      | Optional. `false` for standalone mode, or a function that renders your own preview. Defaults to a preview card                                                               |
+| `interpreter`                  | Where the artifact's data tools run (step 4): `{ url }` for your interpreter endpoint, or an async function that takes the request and returns the result                    |
+| `standalone`                   | Optional. Render the whole artifact inline, without a preview. See [Two modes](#two-modes)                                                                                   |
 | `renderInHtmlElement`          | Optional. The element the artifact opens in. Defaults to a fullscreen overlay                                                                                                |
 | `isOpen`, `onOpenChange`       | Optional. Control whether the artifact is open. Without them, the renderer manages it                                                                                        |
 | `defaultOpen`                  | Optional. Start open, when the renderer manages the open state                                                                                                               |
 | `className`                    | Optional. Added to the artifact's root element                                                                                                                               |
 | `onAction`, `onStateUpdate`, … | `LiveArtifactRenderer` extends [`Renderer`](/docs/openui-lang/renderer), so it takes the same props. Handle your [custom actions](/docs/openui-lang/actions) with `onAction` |
-
-While the artifact is being generated, the renderer attaches to its stream and shows it as it comes in. It can
-attach at any time: after a reload, or when the user opens it later, it shows everything generated so far, then
-continues live. Once the artifact is done, the renderer loads it by `id`.
 
 ### Two modes
 
@@ -327,41 +350,16 @@ continues live. Once the artifact is done, the renderer loads it by `id`.
 | With a preview (default) | A preview card that opens the artifact | Chat messages              |
 | Standalone               | The whole artifact, inline             | Side panels and full pages |
 
-For standalone mode, pass `preview={false}`:
+For standalone mode, pass `standalone`:
 
 ```tsx
 <LiveArtifactRenderer
   response={toolResult}
-  preview={false}
+  standalone
   library={dashboardLibrary}
   interpreter={{ url: "/api/interpreter" }}
 />
 ```
-
-### Use your own preview
-
-Pass a function as `preview` to render your own card. The artifact still opens in the overlay, or in
-`renderInHtmlElement`:
-
-```tsx
-<LiveArtifactRenderer
-  response={toolResult}
-  library={dashboardLibrary}
-  interpreter={{ url: "/api/interpreter" }}
-  preview={({ title, description, isStreaming, isOpen, open, close }) => (
-    <ArtifactCard
-      title={title}
-      description={description}
-      generating={isStreaming}
-      active={isOpen}
-      onClick={isOpen ? close : open}
-    />
-  )}
-/>
-```
-
-`preview` receives the artifact's `title` and `description`, whether it `isStreaming` and `isOpen`, and `open` and
-`close`.
 
 ### Open the artifact in your own element
 
@@ -386,43 +384,59 @@ const [isOpen, setIsOpen] = useState(false);
 </>;
 ```
 
-### Customize loading and errors
+### Customize or replace parts
 
-Like `Renderer`, `LiveArtifactRenderer` has slots. Use `LiveArtifactRenderer.Root` and place the slots you need:
+Like [`AgentInterface`](/docs/agent/reference/components), the renderer has slots, which you pass as children. Each
+slot works three ways:
+
+- **Omit it:** the built-in default renders.
+- **Pass props:** the default renders with your values. The renderer stays in control.
+- **Pass children:** your children replace the default entirely, and you are in control. Read the state you need
+  with a hook.
+
+Children win over props, and a dev warning fires if you pass both.
 
 ```tsx
-<LiveArtifactRenderer.Root
+import { LiveArtifactRenderer, useArtifactPreview } from "@openuidev/cloud";
+
+function DashboardCard() {
+  const { title, description, isStreaming, isOpen, open, close } = useArtifactPreview();
+  return (
+    <ArtifactCard
+      title={title}
+      description={description}
+      generating={isStreaming}
+      active={isOpen}
+      onClick={isOpen ? close : open}
+    />
+  );
+}
+
+<LiveArtifactRenderer
   response={toolResult}
   library={dashboardLibrary}
   interpreter={{ url: "/api/interpreter" }}
 >
-  <div style={{ position: "relative" }}>
-    <LiveArtifactRenderer.Content />
-    <LiveArtifactRenderer.Loading>Generating your dashboard…</LiveArtifactRenderer.Loading>
-    <LiveArtifactRenderer.Error>
-      <p role="alert">This dashboard couldn't be loaded.</p>
-      <LiveArtifactRenderer.Retry>Try again</LiveArtifactRenderer.Retry>
-    </LiveArtifactRenderer.Error>
-    <LiveArtifactRenderer.QueryLoading>Loading data…</LiveArtifactRenderer.QueryLoading>
-    <LiveArtifactRenderer.QueryError>
-      <p role="alert">Data is unavailable.</p>
-      <LiveArtifactRenderer.Retry>Try again</LiveArtifactRenderer.Retry>
-    </LiveArtifactRenderer.QueryError>
-  </div>
-</LiveArtifactRenderer.Root>
+  {/* Props: the default loader, with your label */}
+  <LiveArtifactRenderer.Loading label="Building your dashboard…" />
+  {/* Children: your own preview card */}
+  <LiveArtifactRenderer.Preview>
+    <DashboardCard />
+  </LiveArtifactRenderer.Preview>
+</LiveArtifactRenderer>;
 ```
 
-| Slot           | Shown                                                                                            |
-| -------------- | ------------------------------------------------------------------------------------------------ |
-| `Content`      | The artifact, as it streams in and once it is ready                                              |
-| `Loading`      | While the artifact loads, until its first content arrives. Omit children for the default spinner |
-| `Error`        | When the artifact fails. Renders nothing without children                                        |
-| `QueryLoading` | While live data loads, as with `Renderer.QueryLoading`                                           |
-| `QueryError`   | When live data fails, as with `Renderer.QueryError`                                              |
-| `Retry`        | A button that retries whatever failed: the artifact or its live data                             |
+| Slot                           | Default                                                    | Props                  | Hook for your own      |
+| ------------------------------ | ---------------------------------------------------------- | ---------------------- | ---------------------- |
+| `LiveArtifactRenderer.Preview` | A card with the title, marked while the artifact generates | `title`, `description` | `useArtifactPreview()` |
+| `LiveArtifactRenderer.Loading` | A spinner until the first content arrives                  | `label`                | `useArtifactStatus()`  |
+| `LiveArtifactRenderer.Error`   | A message and a retry button if the artifact fails         | `message`              | `useArtifactStatus()`  |
 
-`Root` takes the same props as `LiveArtifactRenderer` and renders only its children. With a preview, the slots
-shape the opened artifact.
+| Hook                   | Returns                                                                          |
+| ---------------------- | -------------------------------------------------------------------------------- |
+| `useArtifactPreview()` | `title`, `description`, `isStreaming`, `isOpen`, `open`, `close`                 |
+| `useArtifactStatus()`  | `status` (`loading`, `generating`, `ready` or `failed`), `error`, `retry`        |
+| `useRendererQuery()`   | `isLoading`, `errors` and `retry` for the artifact's live data, as in `Renderer` |
 
 ## 8. Add an artifacts page
 
@@ -473,7 +487,7 @@ export default function DashboardsPage() {
         <Panel onClose={() => setOpenId(null)}>
           <LiveArtifactRenderer
             id={openId}
-            preview={false}
+            standalone
             library={dashboardLibrary}
             interpreter={{ url: "/api/interpreter" }}
           />
