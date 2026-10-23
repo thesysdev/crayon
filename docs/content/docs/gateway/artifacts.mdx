@@ -355,20 +355,20 @@ current version until the edited one is ready.
 Props customize what the renderer shows, and the renderer stays in control of it. To replace parts of it, see
 [Customize or replace parts](#customize-or-replace-parts).
 
-| Prop                           | Description                                                                                                                                                                  |
-| ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `response`                     | The tool's result, as is. The renderer reads the artifact from it                                                                                                            |
-| `id`                           | Instead of `response`, the artifact's `id`, such as from `useArtifactList` (step 8)                                                                                          |
-| `library`                      | Your dashboard library from step 1                                                                                                                                           |
-| `interpreter`                  | Where the artifact's data tools run: a config object for your endpoint, such as `{ url: "/api/interpreter" }`, or an async function. See [step 4](#4-add-an-interpreter)     |
-| `standalone`                   | Optional. Render the whole artifact inline, without a preview. See [Two modes](#two-modes)                                                                                   |
-| `renderInHtmlElement`          | Optional. The element the artifact opens in. Defaults to a fullscreen overlay                                                                                                |
-| `isOpen`, `onOpenChange`       | Optional. Control whether the artifact is open. Without them, the renderer manages it                                                                                        |
-| `defaultOpen`                  | Optional. Start open, when the renderer manages the open state                                                                                                               |
-| `className`                    | Optional. Added to the artifact's root element                                                                                                                               |
-| `onReady`                      | Optional. Called when the artifact is generated and its data has loaded                                                                                                      |
-| `onFailure`                    | Optional. Called with the `error` when the artifact can't be shown. See [Errors](#errors)                                                                                    |
-| `onAction`, `onStateUpdate`, … | `LiveArtifactRenderer` extends [`Renderer`](/docs/openui-lang/renderer), so it takes the same props. Handle your [custom actions](/docs/openui-lang/actions) with `onAction` |
+| Prop                           | Description                                                                                                                                                                       |
+| ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `response`                     | The tool's result, as is. The renderer reads the artifact from it                                                                                                                 |
+| `id`                           | Instead of `response`, the artifact's `id`, such as from `useArtifactList` (step 8)                                                                                               |
+| `library`                      | Your dashboard library from step 1                                                                                                                                                |
+| `interpreter`                  | Where the artifact's data tools run: a config object for your endpoint, such as `{ url: "/api/interpreter" }`, or an async function. See [step 4](#4-add-an-interpreter)          |
+| `preview`                      | Optional. Defaults to `true`: show a preview card that opens the artifact. Pass `false` for standalone mode, which renders the whole artifact inline. See [Two modes](#two-modes) |
+| `renderInHtmlElement`          | Optional. The element the artifact opens in. Defaults to a fullscreen overlay                                                                                                     |
+| `isOpen`, `onOpenChange`       | Optional. Control whether the artifact is open. Without them, the renderer manages it                                                                                             |
+| `defaultOpen`                  | Optional. Start open, when the renderer manages the open state                                                                                                                    |
+| `className`                    | Optional. Added to the artifact's root element                                                                                                                                    |
+| `onReady`                      | Optional. Called when the artifact is generated and its data has loaded                                                                                                           |
+| `onFailure`                    | Optional. Called with the `error` when the artifact can't be shown. See [Errors](#errors)                                                                                         |
+| `onAction`, `onStateUpdate`, … | `LiveArtifactRenderer` extends [`Renderer`](/docs/openui-lang/renderer), so it takes the same props. Handle your [custom actions](/docs/openui-lang/actions) with `onAction`      |
 
 ### Two modes
 
@@ -377,12 +377,12 @@ Props customize what the renderer shows, and the renderer stays in control of it
 | With a preview (default) | A preview card that opens the artifact | Chat messages              |
 | Standalone               | The whole artifact, inline             | Side panels and full pages |
 
-For standalone mode, pass `standalone`:
+For standalone mode, pass `preview={false}`:
 
 ```tsx
 <LiveArtifactRenderer
   response={toolResult}
-  standalone
+  preview={false}
   library={dashboardLibrary}
   interpreter={{ url: "/api/interpreter" }}
 />
@@ -520,7 +520,7 @@ One hook gives your own parts the renderer's state and controls. Call it anywher
 | `isLoading`                  | True while either is happening                                                                            |
 | `error`, `retry`             | If the artifact can't be shown, the error, and a function that retries what failed. See [Errors](#errors) |
 | `isOpen`, `open`, `close`    | Whether the artifact is open from its preview, and functions to open and close it                         |
-| `standalone`                 | Whether the renderer is in standalone mode                                                                |
+| `preview`                    | Whether the renderer shows a preview, or is in standalone mode                                            |
 
 ### Errors
 
@@ -579,7 +579,7 @@ export default function DashboardsPage() {
         <Panel onClose={() => setOpenId(null)}>
           <LiveArtifactRenderer
             id={openId}
-            standalone
+            preview={false}
             library={dashboardLibrary}
             interpreter={{ url: "/api/interpreter" }}
           />
