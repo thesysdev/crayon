@@ -41,7 +41,7 @@ React renderers, provider and hooks, and re-exports `@openuidev/observability-cl
 1. [Create your dashboard library](#1-create-your-dashboard-library)
 2. [Define your data tools](#2-define-your-data-tools)
 3. [Add the artifact tools to your agent](#3-add-the-artifact-tools-to-your-agent)
-4. [Add an interpreter endpoint](#4-add-an-interpreter-endpoint)
+4. [Add an interpreter](#4-add-an-interpreter)
 5. [Add a frontend token endpoint](#5-add-a-frontend-token-endpoint)
 6. [Wrap your app in `OpenUICloudProvider`](#6-wrap-your-app-in-openuicloudprovider)
 7. [Render artifacts in your chat](#7-render-artifacts-in-your-chat)
@@ -210,10 +210,13 @@ chart for Europe". To edit the dashboard the user has open, include its `id` in 
 The edit also returns right away. It replaces the artifact in place, and every renderer showing it streams the
 change in.
 
-## 4. Add an interpreter endpoint
+## 4. Add an interpreter
 
-When a live artifact loads data, it calls your data tools through this endpoint, and they run on your server. Use
-the same `dataTools`:
+When a live artifact loads data, it calls your data tools through an interpreter, which runs them on your server.
+Add it as an endpoint or as an async function, and pass it to the renderer as `interpreter` (step 7). Both use
+`createInterpreter` with the same `dataTools`.
+
+### As an endpoint
 
 ```ts title="app/api/interpreter/route.ts"
 import { createInterpreter } from "@openuidev/server";
@@ -231,7 +234,21 @@ export async function POST(request: Request) {
 }
 ```
 
-Instead of an endpoint, you can give the renderer an async function, such as a server action:
+Pass the renderer a config object with the endpoint's URL:
+
+```tsx
+<LiveArtifactRenderer interpreter={{ url: "/api/interpreter" }} />
+```
+
+| Field     | Description                                                         |
+| --------- | ------------------------------------------------------------------- |
+| `url`     | Your interpreter endpoint                                           |
+| `headers` | Optional. Headers to send with each request, such as an auth header |
+
+### As an async function
+
+The function receives the same request the renderer would send to an endpoint, and returns the result. For
+example, a server action:
 
 ```ts title="app/actions/interpreter.ts"
 "use server";
@@ -247,10 +264,15 @@ export async function runInterpreter(request) {
 }
 ```
 
-Pass it as `interpreter={runInterpreter}` in step 7.
+Pass the function to the renderer:
 
-Register every tool your artifacts call here: artifacts don't run tools in the browser. For something that should
-happen in the browser, such as copying text, use a custom action (step 7). Only live artifacts need this endpoint.
+```tsx
+<LiveArtifactRenderer interpreter={runInterpreter} />
+```
+
+Register every tool your artifacts call in the interpreter: artifacts don't run tools in the browser. For
+something that should happen in the browser, such as copying text, use a custom action (step 7). Only live
+artifacts need an interpreter.
 
 ## 5. Add a frontend token endpoint
 
@@ -336,7 +358,7 @@ Props customize what the renderer shows, and the renderer stays in control of it
 | `response`                     | The tool's result, as is. The renderer reads the artifact from it                                                                                                            |
 | `id`                           | Instead of `response`, the artifact's `id`, such as from `useArtifactList` (step 8)                                                                                          |
 | `library`                      | Your dashboard library from step 1                                                                                                                                           |
-| `interpreter`                  | Where the artifact's data tools run (step 4): `{ url }` for your interpreter endpoint, or an async function that takes the request and returns the result                    |
+| `interpreter`                  | Where the artifact's data tools run: a config object for your endpoint, such as `{ url: "/api/interpreter" }`, or an async function. See [step 4](#4-add-an-interpreter)     |
 | `standalone`                   | Optional. Render the whole artifact inline, without a preview. See [Two modes](#two-modes)                                                                                   |
 | `renderInHtmlElement`          | Optional. The element the artifact opens in. Defaults to a fullscreen overlay                                                                                                |
 | `isOpen`, `onOpenChange`       | Optional. Control whether the artifact is open. Without them, the renderer manages it                                                                                        |
@@ -536,7 +558,7 @@ Pins and deletes show up immediately everywhere the artifact appears; you don't 
 ## Other kinds of artifact
 
 Static artifacts, slides and reports work like live ones, with fewer pieces. They don't use data tools, so they
-need no interpreter endpoint (step 4):
+need no interpreter (step 4):
 
 | Kind   | Create                                                                           | Render                                        |
 | ------ | -------------------------------------------------------------------------------- | --------------------------------------------- |
