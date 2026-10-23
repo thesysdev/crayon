@@ -22,7 +22,7 @@ const isEmptyRow = (row: CellValue[]) => row.every((cell) => cell === null || ce
  * The grid's own data, with formulas kept as formulas (getData() would return their
  * computed values) and without the blank spare rows the grid adds at the bottom.
  */
-function readSourceData(hot: any): CellValue[][] {
+function readSourceData(hot: { getSourceData(): unknown }): CellValue[][] {
   const rows = (hot.getSourceData() as CellValue[][]).map((row) => [...row]);
   while (rows.length > 0 && isEmptyRow(rows[rows.length - 1])) rows.pop();
   return rows;

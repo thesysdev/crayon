@@ -46,6 +46,10 @@ Examples of good follow-ups:
 - After a chart: "Break down by product", "Show as a table instead", "Compare Q1 vs Q4"
 
 The follow-up buttons should be contextually relevant to what you just did.
+
+FORMS:
+- A Form's submit button must send the entries to you: its action must be @ToAssistant(...), e.g. Button("Plan my trip", @ToAssistant("Plan my trip"), "primary"), never @Set or another local-only action. Don't put what the form produces (a summary, plan or itinerary) in the same reply, hidden or not; write it in your next reply from the values the user submitted.
+- When a field should only appear for a certain answer (e.g. a company name only for Business trips), bind the deciding field to a $variable with its value argument, e.g. RadioGroup("tripType", items, "Leisure", { required: true }, $tripType), and show the field with $tripType == "Business" ? companyField : null.
 `.trim();
 
 const systemPrompt = cloudInstructions(SPREADSHEET_INSTRUCTIONS);
@@ -151,7 +155,8 @@ export async function POST(req: NextRequest) {
     .filter((m) => m.role !== "tool")
     .map((m) => {
       if (m.role === "assistant" && m.tool_calls?.length) {
-        const { tool_calls: _tc, ...rest } = m;
+        const rest = { ...m };
+        delete rest.tool_calls;
         return rest;
       }
       return m;

@@ -57,20 +57,22 @@ function readTableId(): string {
 }
 
 export function TableProvider({ children }: { children: ReactNode }) {
-  const [tableId, setTableId] = useState<string | null>(null);
+  // Read on the client only: there is no localStorage while rendering on the server.
+  const [tableId] = useState<string | null>(() =>
+    typeof window === "undefined" ? null : readTableId(),
+  );
   const [tableData, setTableDataState] = useState<TableData | null>(INITIAL_TABLE);
 
   // Load this browser's table from the server instead of uploading the starting copy over it.
   useEffect(() => {
-    const id = readTableId();
-    setTableId(id);
-    fetch(`/api/table?threadId=${encodeURIComponent(id)}`)
+    if (!tableId) return;
+    fetch(`/api/table?threadId=${encodeURIComponent(tableId)}`)
       .then((res) => (res.ok ? (res.json() as Promise<TableData>) : null))
       .then((saved) => {
         if (saved?.data) setTableDataState(saved);
       })
       .catch((error) => console.error("Failed to load table data:", error));
-  }, []);
+  }, [tableId]);
 
   const syncTableData = useCallback(
     async (data: CellValue[][], colHeaders?: string[]) => {
