@@ -319,7 +319,8 @@ export function DashboardOutput({ toolResult }) {
 ```
 
 By default, this shows a preview card with the dashboard's title in the chat. Clicking it opens the dashboard in a
-fullscreen overlay, which closes on Escape or a click outside.
+fullscreen overlay, which closes on Escape or a click outside. The open dashboard has a chrome: a bar with its
+title and a close button.
 
 While the artifact is being generated, the renderer attaches to its stream and shows it as it comes in. It can
 attach at any time: after a reload, or when the user opens it later, it shows everything generated so far, then
@@ -397,7 +398,18 @@ slot works three ways:
 Children win over props, and a dev warning fires if you pass both.
 
 ```tsx
-import { LiveArtifactRenderer, useArtifactPreview } from "@openuidev/cloud";
+import {
+  LiveArtifactRenderer,
+  useArtifactChrome,
+  useArtifactPin,
+  useArtifactPreview,
+} from "@openuidev/cloud";
+
+function PinButton() {
+  const { id } = useArtifactChrome();
+  const { pin } = useArtifactPin();
+  return <button onClick={() => pin(id)}>Pin</button>;
+}
 
 function DashboardCard() {
   const { title, description, isStreaming, isOpen, open, close } = useArtifactPreview();
@@ -419,6 +431,8 @@ function DashboardCard() {
 >
   {/* Props: the default loader, with your label */}
   <LiveArtifactRenderer.Loading label="Building your dashboard…" />
+  {/* Props: the default chrome, with a pin button added */}
+  <LiveArtifactRenderer.Chrome actions={<PinButton />} />
   {/* Children: your own preview card */}
   <LiveArtifactRenderer.Preview>
     <DashboardCard />
@@ -426,15 +440,17 @@ function DashboardCard() {
 </LiveArtifactRenderer>;
 ```
 
-| Slot                           | Default                                                    | Props                  | Hook for your own      |
-| ------------------------------ | ---------------------------------------------------------- | ---------------------- | ---------------------- |
-| `LiveArtifactRenderer.Preview` | A card with the title, marked while the artifact generates | `title`, `description` | `useArtifactPreview()` |
-| `LiveArtifactRenderer.Loading` | A spinner until the first content arrives                  | `label`                | `useArtifactStatus()`  |
-| `LiveArtifactRenderer.Error`   | A message and a retry button if the artifact fails         | `message`              | `useArtifactStatus()`  |
+| Slot                           | Default                                                                                                          | Props                  | Hook for your own      |
+| ------------------------------ | ---------------------------------------------------------------------------------------------------------------- | ---------------------- | ---------------------- |
+| `LiveArtifactRenderer.Preview` | A card with the title, marked while the artifact generates                                                       | `title`, `description` | `useArtifactPreview()` |
+| `LiveArtifactRenderer.Chrome`  | A bar around the artifact with its title, a generating indicator and, when opened from a preview, a close button | `title`, `actions`     | `useArtifactChrome()`  |
+| `LiveArtifactRenderer.Loading` | A spinner until the first content arrives                                                                        | `label`                | `useArtifactStatus()`  |
+| `LiveArtifactRenderer.Error`   | A message and a retry button if the artifact fails                                                               | `message`              | `useArtifactStatus()`  |
 
 | Hook                   | Returns                                                                          |
 | ---------------------- | -------------------------------------------------------------------------------- |
 | `useArtifactPreview()` | `title`, `description`, `isStreaming`, `isOpen`, `open`, `close`                 |
+| `useArtifactChrome()`  | `id`, `title`, `description`, `isStreaming`, `standalone`, `close`               |
 | `useArtifactStatus()`  | `status` (`loading`, `generating`, `ready` or `failed`), `error`, `retry`        |
 | `useRendererQuery()`   | `isLoading`, `errors` and `retry` for the artifact's live data, as in `Renderer` |
 
