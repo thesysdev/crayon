@@ -1,5 +1,9 @@
 # @openuidev/lang-core
 
+## 1.0.2
+
+No changes in this release.
+
 ## 1.0.1
 
 ### Patch Changes
