@@ -31,6 +31,7 @@ import type { DevtoolsPosition, OpenUIDevtoolsWidgetProps } from "./types";
 import { ErrorBoundary, IconButton, INTER_FONT_FACE, ShiroLogo, ThemeSegmented } from "./ui";
 import { DeployBanner, DeployHint } from "./ui/DeployHint";
 import ReliabilityBanner from "./ui/ReliabilityBanner";
+import { useAvoidHostControls } from "./ui/avoidHostControls";
 
 export type { DevtoolsPosition, OpenUIDevtoolsProps, OpenUIDevtoolsWidgetProps } from "./types";
 
@@ -114,6 +115,12 @@ export function OpenUIDevtoolsWidget({
     return () => document.removeEventListener("keydown", onKeyDown);
   }, [open, debug.trayOpen, debug.retract]);
 
+  // Keep the launcher off the host app's own controls (e.g. a chat Send button
+  // on a narrow window) by moving it along its anchored edge.
+  const toggleRef = useRef<HTMLDivElement>(null);
+  const anchor = position.startsWith("top") ? "top" : "bottom";
+  const lift = useAvoidHostControls(toggleRef, anchor, isEnabled && isSingleton);
+
   if (!isEnabled || !isSingleton) return null;
 
   const errorCount = events.filter((event) => event.level === "error").length;
@@ -147,7 +154,15 @@ export function OpenUIDevtoolsWidget({
     <DevtoolsModeProvider mode={mode}>
       <style>{INTER_FONT_FACE}</style>
       <DeployHint position={position} hidden={open || debug.trayOpen} />
-      <div style={{ ...styles.toggleWrap, ...rootStyle(mode), ...positionStyles[position] }}>
+      <div
+        ref={toggleRef}
+        style={{
+          ...styles.toggleWrap,
+          ...rootStyle(mode),
+          ...positionStyles[position],
+          ...(lift ? { [anchor]: 16 + lift } : null),
+        }}
+      >
         <button
           style={{
             ...styles.toggle,
