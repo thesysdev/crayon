@@ -315,7 +315,6 @@ export function ComparePageClient({
           onStop={stopAll}
           onReset={resetAll}
           isDegraded={unavailableModes.size > 0}
-          cloudEnabled={selectedPair.modes.includes("cloud")}
         />
       </div>
 

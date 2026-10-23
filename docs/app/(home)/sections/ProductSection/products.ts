@@ -10,8 +10,8 @@ import {
 } from "@phosphor-icons/react/dist/ssr";
 import type { ProductSectionProps } from "./ProductSection";
 
-/* The product bands, in the order the page tells them: what OpenUI is, then
-   the hosted thing built on it.
+/* The product bands. The open-source band's copy now opens the "What it does"
+   fold (WhatItDoesSection); Gateway is the one band left on the home page.
 
    OBSERVABILITY_PRODUCT is still defined but no longer rendered: while it is in
    early access the home page gives it a line rather than a band. Its props are
@@ -32,34 +32,10 @@ import type { ProductSectionProps } from "./ProductSection";
  * HREFS: Gateway points at its own page. Observability's still points at the
  * nearest real destination; repoint it if that band comes back. */
 
-export const LANG_PRODUCT: ProductSectionProps = {
-  /* "OpenUI", not "OpenUI Lang": the language/runtime split is a distinction the
-     docs make and the marketing pages do not. The const keeps its name because
-     it is internal. */
-  name: "OpenUI",
-  tag: "Open Source",
-  /* Keep the performance claim qualitative here. The benchmark fold directly
-     below carries the supporting numbers and comparison details. */
-  headline: "A framework for agent-driven interfaces.",
-  description:
-    "Make your AI agents stream live charts, forms, cards, tables, and dashboards faster, with fewer tokens.",
-  secondaryCta: { label: "View docs", href: "/docs/openui-lang" },
-  tone: "light",
-  shot: "/homepage/openui-lang",
-  fullBleedArt: true,
-  stageAspectRatio: "1120 / 440",
-  /* The phone artwork is a different drawing, at 1440x1200. */
-  stageMobileAspectRatio: "1440 / 1200",
-  /* No cards. Interactive, Bring your UI library, Safe by default and Stream UI
-     live all moved to the feature grid directly below this band, which states
-     them once alongside Live data and Cross-platform. */
-  cards: [],
-};
-
 export const GATEWAY_PRODUCT: ProductSectionProps = {
   name: "OpenUI",
   tag: "Gateway",
-  headline: "Production reliability for OpenUI",
+  headline: "OpenUI in production",
   description:
     "Make agent responses more reliable in production. Gateway catches and repairs invalid output before users see it.",
   primaryCta: {
@@ -67,7 +43,7 @@ export const GATEWAY_PRODUCT: ProductSectionProps = {
     href: "https://console.thesys.dev/keys",
     external: true,
   },
-  secondaryCta: { label: "Learn more", href: "/cloud/gateway" },
+  secondaryCta: { label: "Explore Gateway", href: "/cloud/gateway" },
   tone: "dark",
   shot: "/homepage/gateway",
   fullBleedArt: true,
@@ -142,4 +118,24 @@ export const OBSERVABILITY_PRODUCT: ProductSectionProps = {
       description: "Surface unmet needs, emerging demand, and opportunities to improve.",
     },
   ],
+};
+
+/* The open-source band ("OpenUI" / "Open Source"), restored under the logo
+   carousel on the home page. */
+export const LANG_PRODUCT: ProductSectionProps = {
+  name: "OpenUI",
+  tag: "Open Source",
+  headline: "A framework for agent-driven interfaces.",
+  /* No description: the headline stands alone. */
+  secondaryCta: { label: "View docs", href: "/docs/openui-lang" },
+  tone: "light",
+  /* The stage is live HTML (LangShowcase, passed as art from page.tsx): the
+     KALLAX answer streams as OpenUI Lang beside its rendered preview. */
+  fullBleedArt: true,
+  bareStage: true,
+  stageAspectRatio: "1120 / 560",
+  /* Taller on a phone, where the three agent panels stack (the closed two
+     are thin rows, so the open one still gets most of the height). */
+  stageMobileAspectRatio: "3 / 4",
+  cards: [],
 };

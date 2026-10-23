@@ -1,21 +1,18 @@
 import type { Metadata } from "next";
 import { type OgImage, ogImageMetadata } from "./og/images";
 
-export const SITE_NAME = "OpenUI - The Open Standard for Intelligent UI";
+export const SITE_NAME = "OpenUI - The Open Standard for Generative UI";
 
 /** Site-wide card, used by the homepage and the blog index. */
+export const SITE_OG_IMAGE: OgImage = {
+  path: "/home",
+  card: { template: "home", title: "OpenUI, the open standard for Generative UI" },
+};
+
 export const SITE_OPEN_GRAPH = {
   type: "website",
   siteName: SITE_NAME,
-  images: [
-    {
-      url: "/meta-image.png?v=20261008",
-      type: "image/png",
-      width: 1800,
-      height: 942,
-      alt: "OpenUI preview",
-    },
-  ],
+  images: [ogImageMetadata(SITE_OG_IMAGE)],
 } satisfies Metadata["openGraph"];
 
 /**

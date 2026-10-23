@@ -71,7 +71,7 @@ function Card({ title, titlePrefix, image, lightImage, darkImage, href }: CardPr
         />
         <img
           src={darkImage}
-          alt=""
+          alt={`${title} illustration`}
           aria-hidden="true"
           className={`${styles.cardImage} ${styles.cardImageDark}`}
           draggable={false}

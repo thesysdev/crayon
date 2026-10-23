@@ -23,21 +23,10 @@ export function assertValidApiKeyName(name: string): void {
   }
 }
 
-export type CloudAuthMethod = "oauth" | "manual" | "skip";
+export type CloudAuthMethod = "oauth" | "skip";
 
-export function normalizeAuth(a?: string): CloudAuthMethod | undefined {
-  if (!a) return undefined;
-  const v = a.toLowerCase();
-  if (v === "oauth" || v === "manual" || v === "skip") return v;
-  throw new CreateError(
-    "args_resolution",
-    `unknown --auth "${a}". Use: oauth | skip (manual is deprecated).`,
-    "invalid_input",
-    "INVALID_AUTH",
-  );
-}
-/** How the cloud key was obtained (for telemetry) — auth method + the `--api-key` flag case. */
-export type ResolvedAuthMethod = CloudAuthMethod | "apikey-flag";
+/** How the cloud key was obtained (for telemetry). */
+export type ResolvedAuthMethod = CloudAuthMethod;
 
 type CloudAuthFailureStage =
   | "method_resolution"
@@ -169,61 +158,36 @@ export async function mintCloudApiKey(
 }
 
 /**
- * Resolve a cloud API key by the chosen method: an explicitly provided key, a
- * browser OAuth mint, the deprecated manual paste, or skip (null → leave the
+ * Resolve a cloud API key: a browser OAuth mint, or skip (null → leave the
  * .env slot empty).
  */
 export async function resolveCloudApiKey(opts: {
-  apiKey?: string;
-  auth?: CloudAuthMethod;
   projectName: string;
   envFile?: string;
   interactive: boolean;
   tel: AuthTelemetryClient;
 }): Promise<{ key: string | null; method: ResolvedAuthMethod }> {
-  const provided = opts.apiKey?.trim();
-  if (provided) return { key: provided, method: "apikey-flag" };
-
-  let method = opts.auth;
-  if (!method) {
-    if (!opts.interactive) {
-      throw new CloudAuthError(
-        "method_resolution",
-        "AUTH_REQUIRED",
-        `An API key is required in non-interactive mode. Pass --api-key <key> ` +
-          `(get one at ${THESYS_KEYS_URL}).`,
-      );
-    }
-    const { select } = await import("@inquirer/prompts");
-    method = await cloudAuthPrompt(
-      "method_resolution",
-      "AUTH_METHOD_PROMPT_FAILED",
-      () =>
-        select({
-          message: "Connect to OpenUI Cloud:",
-          choices: [
-            { name: "Sign in with Thesys (opens a browser, mints a key)", value: "oauth" },
-            {
-              name: `Skip — add THESYS_API_KEY to ${opts.envFile ?? ".env"} later`,
-              value: "skip",
-            },
-          ],
-        }) as Promise<CloudAuthMethod>,
-    );
-  }
+  // Nobody is there to sign in: leave the .env slot empty and let the
+  // closing message point at `generate-api-key`.
+  if (!opts.interactive) return { key: null, method: "skip" };
+  const { select } = await import("@inquirer/prompts");
+  const method = await cloudAuthPrompt(
+    "method_resolution",
+    "AUTH_METHOD_PROMPT_FAILED",
+    () =>
+      select({
+        message: "Connect to OpenUI Cloud:",
+        choices: [
+          { name: "Sign in with Thesys (opens a browser, mints a key)", value: "oauth" },
+          {
+            name: `Skip — add THESYS_API_KEY to ${opts.envFile ?? ".env"} later`,
+            value: "skip",
+          },
+        ],
+      }) as Promise<CloudAuthMethod>,
+  );
 
   if (method === "skip") return { key: null, method: "skip" };
-
-  if (method === "manual") {
-    console.warn(
-      "[!] --auth manual is deprecated. Use browser sign-in or pass --api-key for scripted setup.",
-    );
-    const { password } = await import("@inquirer/prompts");
-    const key = await cloudAuthPrompt("manual_key_prompt", "MANUAL_KEY_PROMPT_FAILED", () =>
-      password({ message: "Paste your OpenUI Cloud API key:", mask: true }),
-    );
-    return { key: key.trim() || null, method: "manual" };
-  }
 
   return { key: await mintCloudApiKey(opts.projectName, opts.tel), method: "oauth" };
 }

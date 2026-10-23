@@ -3,9 +3,19 @@ import clsx from "clsx";
 import { PanelLeft } from "lucide-react";
 import { createContext, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useLayoutContext } from "../../context/LayoutContext";
+import { readPreference, writePreference } from "../../utils/preferences";
+import { useIsomorphicLayoutEffect } from "../Charts/hooks/core/useIsomorphicLayoutEffect";
 import { IconButton } from "../IconButton";
+import { SidebarResizeEdge } from "./SidebarResizeEdge";
 import { AgentInterfaceTooltip } from "./_shared/AgentInterfaceTooltip";
 import { useAgentInterfaceStore } from "./_shared/store";
+
+/**
+ * The saved desktop open/closed choice. Mobile never writes it, so opening the
+ * drawer on a phone isn't remembered on desktop.
+ */
+const SIDEBAR_OPEN_KEY = "openui-agent-sidebar-open";
+const readSavedDesktopOpen = () => readPreference<boolean>(SIDEBAR_OPEN_KEY) === true;
 
 const SIDEBAR_FADE_DURATION_MS = 90;
 const SIDEBAR_RESIZE_DURATION_MS = 160;
@@ -26,9 +36,10 @@ export const SidebarContainer = ({
   children?: React.ReactNode;
   className?: string;
 }) => {
-  const { isSidebarOpen, setIsSidebarOpen } = useAgentInterfaceStore((state) => ({
+  const { isSidebarOpen, setIsSidebarOpen, isHydrated } = useAgentInterfaceStore((state) => ({
     isSidebarOpen: state.isSidebarOpen,
     setIsSidebarOpen: state.setIsSidebarOpen,
+    isHydrated: state.isHydrated,
   }));
   const { isDetailedViewActive } = useActiveDetailedView();
   const { layout } = useLayoutContext() || {};
@@ -39,6 +50,7 @@ export const SidebarContainer = ({
   );
   const animationTimeoutsRef = useRef<Array<ReturnType<typeof setTimeout>>>([]);
   const previousIsMobileRef = useRef<boolean | null>(null);
+  const appliedRestoreRef = useRef(false);
 
   const clearAnimationTimeouts = () => {
     animationTimeoutsRef.current.forEach((timeoutId) => clearTimeout(timeoutId));
@@ -51,19 +63,39 @@ export const SidebarContainer = ({
     };
   }, []);
 
+  // Once hydrated, restore the saved desktop choice: once, before paint and
+  // without animating, as if the sidebar had started that way. The effect
+  // below then finds it already in place.
+  useIsomorphicLayoutEffect(() => {
+    if (!isHydrated || appliedRestoreRef.current) return;
+    appliedRestoreRef.current = true;
+    const savedOpen = readSavedDesktopOpen();
+    if (isMobile || isSidebarOpen === savedOpen) return;
+    setIsSidebarOpen(savedOpen);
+    setIsCollapsedLayout(!savedOpen);
+    setVisualState(savedOpen ? "expanded" : "collapsed");
+  }, [isHydrated, isMobile]);
+
   useEffect(() => {
     clearAnimationTimeouts();
 
+    const isFirstRun = previousIsMobileRef.current === null;
     const justSwitchedLayout = previousIsMobileRef.current !== isMobile;
     previousIsMobileRef.current = isMobile;
 
+    // Mobile always starts closed; coming back from mobile restores the
+    // desktop choice.
     if (justSwitchedLayout) {
-      const targetOpen = !isMobile;
+      const targetOpen = isMobile ? false : isFirstRun ? isSidebarOpen : readSavedDesktopOpen();
       if (isSidebarOpen !== targetOpen) {
         setIsSidebarOpen(targetOpen);
         return;
       }
     }
+
+    // Desktop only (mobile always starts closed), and only once hydrated so
+    // the collapsed default never overwrites the saved choice.
+    if (!isMobile && isHydrated) writePreference(SIDEBAR_OPEN_KEY, isSidebarOpen);
 
     if (isMobile) {
       setIsCollapsedLayout(!isSidebarOpen);
@@ -110,7 +142,7 @@ export const SidebarContainer = ({
         );
       }, SIDEBAR_FADE_DURATION_MS),
     );
-  }, [isMobile, isSidebarOpen]);
+  }, [isMobile, isSidebarOpen, isHydrated]);
 
   const contextValue = useMemo(
     () => ({
@@ -142,13 +174,9 @@ export const SidebarContainer = ({
           className,
         )}
         data-sidebar-visual-state={visualState}
-        onClick={() => {
-          if (!isMobile && isCollapsedLayout) {
-            setIsSidebarOpen(true);
-          }
-        }}
       >
         {children}
+        {!isMobile && <SidebarResizeEdge />}
       </div>
     </SidebarVisualStateContext.Provider>
   );
@@ -268,6 +296,20 @@ export const SidebarContent = ({
       {children}
     </div>
   );
+};
+
+/**
+ * Pinned to the bottom of the sidebar, below the thread list. Holds controls
+ * like `ThemeModeToggle`.
+ */
+export const SidebarFooter = ({
+  children,
+  className,
+}: {
+  children?: React.ReactNode;
+  className?: string;
+}) => {
+  return <div className={clsx("openui-agent-sidebar-footer", className)}>{children}</div>;
 };
 
 export const SidebarSeparator = () => {

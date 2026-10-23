@@ -1,2 +1,9 @@
-export const genuiOutput =
-  'root = Stack([welcomeCard])\nwelcomeCard = MyCard([welcomeHeader, welcomeBody])\nwelcomeHeader = CardHeader("Welcome", "Get started with our platform")\nwelcomeBody = Stack([signupForm], "column", "m")\nsignupForm = Form("signup", [nameField, emailField], actions)\nnameField = FormControl("Name", Input("name", "Your name", "text", ["required", "minLength:2"]))\nemailField = FormControl("Email", Input("email", "you@example.com", "email", ["required", "email"]))\nactions = Buttons([signUpBtn, learnMoreBtn], "row")\nsignUpBtn = Button("Sign up", "submit:signup", "primary")\nlearnMoreBtn = Button("Learn more", "action:learn_more", "secondary")';
+export const genuiOutput = `root = Stack([welcomeCard])
+welcomeCard = Card([welcomeHeader, signupForm])
+welcomeHeader = CardHeader("Welcome", "Get started with our platform")
+signupForm = Form("signup", actions, [nameField, emailField])
+nameField = FormControl("Name", Input("name", "Your name", "text", {required: true, minLength: 2}))
+emailField = FormControl("Email", Input("email", "you@example.com", "email", {required: true, email: true}))
+actions = Buttons([signUpBtn, learnMoreBtn], "row")
+signUpBtn = Button("Sign up", @ToAssistant("Sign me up"), "primary")
+learnMoreBtn = Button("Learn more", @ToAssistant("Tell me more about the platform"), "secondary")`;

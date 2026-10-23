@@ -51,13 +51,22 @@ import { ArtifactViewPage } from "./ArtifactViewPage";
 import { Composer } from "./Composer";
 import { Container } from "./Container";
 import { type ConversationStarterVariant } from "./ConversationStarter";
+import { HistoryButton } from "./HistoryButton";
 import { MobileHeader } from "./MobileHeader";
 import { NewChatButton } from "./NewChatButton";
 import { Route } from "./Route";
-import { SidebarContainer, SidebarContent, SidebarHeader, SidebarSeparator } from "./Sidebar";
+import {
+  SidebarContainer,
+  SidebarContent,
+  SidebarFooter,
+  SidebarHeader,
+  SidebarSeparator,
+} from "./Sidebar";
 import { SidebarItem } from "./SidebarItem";
 import { SidebarSlot } from "./SidebarSlot";
-import { MessageLoading, Messages, ScrollArea, ThreadContainer, ThreadHeader } from "./Thread";
+import { ThemeModeToggle } from "./ThemeModeToggle";
+import { MessageLoading, Messages, ScrollArea, ThreadContainer } from "./Thread";
+import { ThreadHeader } from "./ThreadHeader";
 import { ThreadList } from "./ThreadList";
 import { WelcomeGlow } from "./WelcomeGlow";
 import { WelcomeScreen } from "./WelcomeScreen";
@@ -111,6 +120,7 @@ export interface AgentInterfaceProps extends Omit<ChatProviderProps, "children">
 interface ExtractedSlots {
   sidebar?: ReactElement;
   sidebarHeader?: ReactElement;
+  sidebarFooter?: ReactElement;
   mobileHeader?: ReactElement;
   threadHeader?: ReactElement;
   welcome?: ReactElement;
@@ -125,6 +135,7 @@ type SingleSlotKey = Exclude<keyof ExtractedSlots, "rest" | "routes">;
 const SLOT_KEY_BY_TYPE = new Map<unknown, SingleSlotKey>([
   [SidebarSlot, "sidebar"],
   [SidebarHeader, "sidebarHeader"],
+  [SidebarFooter, "sidebarFooter"],
   [MobileHeader, "mobileHeader"],
   [ThreadHeader, "threadHeader"],
   [WelcomeScreen, "welcome"],
@@ -170,6 +181,8 @@ interface AgentInterfaceComponent extends FC<AgentInterfaceProps> {
   SidebarHeader: typeof SidebarHeader;
   SidebarContent: typeof SidebarContent;
   SidebarSeparator: typeof SidebarSeparator;
+  SidebarFooter: typeof SidebarFooter;
+  ThemeModeToggle: typeof ThemeModeToggle;
   SidebarItem: typeof SidebarItem;
   ArtifactNav: typeof ArtifactNav;
   Workspace: typeof Workspace;
@@ -180,6 +193,7 @@ interface AgentInterfaceComponent extends FC<AgentInterfaceProps> {
   WelcomeGlow: typeof WelcomeGlow;
   Composer: typeof Composer;
   NewChatButton: typeof NewChatButton;
+  HistoryButton: typeof HistoryButton;
   ThreadList: typeof ThreadList;
   Messages: typeof Messages;
   MessageLoading: typeof MessageLoading;
@@ -420,12 +434,14 @@ const AgentInterfaceBody = ({
               {slots.sidebarHeader ?? <SidebarHeader />}
               <div className="openui-agent-sidebar-primary-actions">
                 <NewChatButton />
+                <HistoryButton />
                 <ArtifactNav className="openui-agent-sidebar-artifact-nav" />
               </div>
             </div>
             <SidebarContent>
               <ThreadList />
             </SidebarContent>
+            {slots.sidebarFooter}
           </>
         )}
       </SidebarContainer>
@@ -488,6 +504,8 @@ AgentInterface.Sidebar = SidebarSlot;
 AgentInterface.SidebarHeader = SidebarHeader;
 AgentInterface.SidebarContent = SidebarContent;
 AgentInterface.SidebarSeparator = SidebarSeparator;
+AgentInterface.SidebarFooter = SidebarFooter;
+AgentInterface.ThemeModeToggle = ThemeModeToggle;
 AgentInterface.SidebarItem = SidebarItem;
 AgentInterface.ArtifactNav = ArtifactNav;
 AgentInterface.Workspace = Workspace;
@@ -498,6 +516,7 @@ AgentInterface.Welcome = WelcomeScreen;
 AgentInterface.WelcomeGlow = WelcomeGlow;
 AgentInterface.Composer = Composer;
 AgentInterface.NewChatButton = NewChatButton;
+AgentInterface.HistoryButton = HistoryButton;
 AgentInterface.ThreadList = ThreadList;
 AgentInterface.Messages = Messages;
 AgentInterface.MessageLoading = MessageLoading;

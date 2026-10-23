@@ -1,9 +1,9 @@
-"use client";
 import svgPaths from "@/imports/svg-urruvoh2be";
-import { Monitor, Moon, Sun } from "@phosphor-icons/react";
-import { useTheme } from "next-themes";
-import { useId, useSyncExternalStore } from "react";
+import { SITE_NAV_LINKS } from "@/lib/site-nav-links";
+import Link from "next/link";
+import { useId } from "react";
 import styles from "./Footer.module.css";
+import { ThemeTabs } from "./ThemeTabs";
 
 // ---------------------------------------------------------------------------
 // Data
@@ -22,7 +22,7 @@ interface SocialLink {
 const SOCIAL_LINKS: SocialLink[] = [
   {
     label: "Twitter",
-    href: "https://x.com/thesysdev",
+    href: "https://x.com/openuidev",
     viewBox: "0 0 24 24",
     path: svgPaths.pa1e7100,
     wrapperClassName: styles.socialIconTwitter,
@@ -44,7 +44,7 @@ const SOCIAL_LINKS: SocialLink[] = [
   },
   {
     label: "LinkedIn",
-    href: "https://www.linkedin.com/company/thesysdev/",
+    href: "https://www.linkedin.com/showcase/openui-com/",
     viewBox: "0 0 19 19",
     path: svgPaths.p26fc3100,
     wrapperClassName: styles.socialIconLinkedIn,
@@ -109,7 +109,13 @@ function SocialIcons() {
 
 function ThesysLogo() {
   return (
-    <div className={styles.logoWrap}>
+    <a
+      className={styles.logoWrap}
+      href="https://thesys.dev"
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="Thesys"
+    >
       <svg className={styles.absoluteSvg} fill="none" viewBox="0 0 123.871 49.5484">
         <path d={svgPaths.p16775200} fill="currentColor" />
         <path clipRule="evenodd" d={svgPaths.p29abae30} fill="currentColor" fillRule="evenodd" />
@@ -118,55 +124,83 @@ function ThesysLogo() {
         <path d={svgPaths.p27013980} fill="currentColor" />
         <path d={svgPaths.p21b7f300} fill="currentColor" />
       </svg>
-    </div>
+    </a>
   );
 }
 
-// A segmented control rather than the header's single swap button: down here the
-// current choice is worth showing, and "system" has no opposite to swap to.
-// System sits in the middle, between the two it can resolve to.
-const THEMES = [
-  { id: "light", label: "Light", Icon: Sun },
-  { id: "system", label: "System", Icon: Monitor },
-  { id: "dark", label: "Dark", Icon: Moon },
-] as const;
+type FooterLink = { title: string; href: string; newTab?: boolean };
 
-// Never fires: the value we want differs only between the server snapshot and
-// the client one, which is precisely the "have we hydrated yet" signal.
-const NEVER_CHANGES = () => () => {};
+const FOOTER_GROUPS: { title: string; links: FooterLink[] }[] = [
+  {
+    title: "Products",
+    links: [
+      { title: "OpenUI", ...SITE_NAV_LINKS.openui },
+      { title: "Gateway", ...SITE_NAV_LINKS.gateway },
+      { title: "Observability", ...SITE_NAV_LINKS.observability },
+      { title: "Pricing", ...SITE_NAV_LINKS.pricing },
+    ],
+  },
+  {
+    title: "Build",
+    links: [
+      { title: "Getting Started", ...SITE_NAV_LINKS.gettingStarted },
+      { title: "Documentation", ...SITE_NAV_LINKS.documentation },
+      { title: "Cookbooks", ...SITE_NAV_LINKS.cookbooks },
+      { title: "Integrations", ...SITE_NAV_LINKS.integrations },
+      { title: "API Reference", ...SITE_NAV_LINKS.apiReference },
+    ],
+  },
+  {
+    title: "Explore",
+    links: [
+      { title: "All Demos", ...SITE_NAV_LINKS.demos },
+      { title: "Open Intelligent UI", ...SITE_NAV_LINKS.openIntelligentUi },
+      { title: "F1 Dashboard", ...SITE_NAV_LINKS.f1Dashboard },
+      { title: "Trip Planner", ...SITE_NAV_LINKS.tripPlanner },
+      { title: "AI Dashboards", ...SITE_NAV_LINKS.aiDashboards },
+    ],
+  },
+  {
+    title: "Labs",
+    links: [
+      { title: "OUI-1", ...SITE_NAV_LINKS.oui1 },
+      { title: "OpenClaw OS", ...SITE_NAV_LINKS.openClawOs },
+      { title: "AppLess", ...SITE_NAV_LINKS.appless },
+      { title: "Community Projects", ...SITE_NAV_LINKS.community },
+    ],
+  },
+  {
+    title: "Resources",
+    links: [
+      { title: "Blog", ...SITE_NAV_LINKS.blog },
+      { title: "Benchmarks", ...SITE_NAV_LINKS.benchmarks },
+      { title: "GitHub", href: "https://github.com/thesysdev/openui", newTab: true },
+      { title: "Discord", href: "https://discord.com/invite/Pbv5PsqUSv", newTab: true },
+    ],
+  },
+];
 
-function ThemeTabs() {
-  // `theme`, not `resolvedTheme`: the latter resolves "system" to light or dark,
-  // which would light up the wrong segment.
-  const { setTheme, theme } = useTheme();
-  // The server has no theme to render, so nothing is marked active until mount.
-  // Read as an external store rather than set from an effect, which would kick
-  // off a second render on every mount.
-  const mounted = useSyncExternalStore(
-    NEVER_CHANGES,
-    () => true,
-    () => false,
-  );
-  const active = mounted ? theme : undefined;
-
+function FooterLinks() {
   return (
-    <div className={styles.themeTabs} role="group" aria-label="Colour theme">
-      {THEMES.map(({ id, label, Icon }) => (
-        <button
-          key={id}
-          type="button"
-          className={`${styles.themeTab} ${active === id ? styles.themeTabActive : ""}`.trim()}
-          aria-pressed={active === id}
-          aria-label={`Use ${label.toLowerCase()} theme`}
-          title={`Use ${label.toLowerCase()} theme`}
-          onClick={() => setTheme(id)}
-        >
-          {/* Line weight rather than fill: at 16px the solid shapes read as
-              blobs, and the outline matches the social row below. */}
-          <Icon className={styles.themeTabIcon} weight="regular" aria-hidden="true" />
-        </button>
+    <nav className={styles.navigation} aria-label="Footer">
+      {FOOTER_GROUPS.map((group) => (
+        <div key={group.title}>
+          <h2 className={styles.navigationHeading}>{group.title}</h2>
+          <ul className={styles.navigationList}>
+            {group.links.map((link) => (
+              <li key={link.title}>
+                <Link
+                  href={link.href}
+                  {...(link.newTab ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                >
+                  {link.title}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
       ))}
-    </div>
+    </nav>
   );
 }
 
@@ -180,6 +214,8 @@ export function Footer() {
       {/* Footer content */}
       <div className={styles.contentSection}>
         <div className={styles.contentContainer}>
+          <FooterLinks />
+
           {/* Mark on the left, theme control on the right, sitting directly on
               the separator below. */}
           <div className={styles.brandRow}>

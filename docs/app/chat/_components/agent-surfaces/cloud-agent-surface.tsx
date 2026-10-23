@@ -6,11 +6,7 @@ import {
   getChatDemoArtifactAnalytics,
   getChatDemoId,
 } from "@/lib/chat-demo-analytics";
-import {
-  OPENUI_CLOUD_LOGO_URL,
-  OPENUI_CLOUD_PROMPT_TEMPLATES,
-  OPENUI_CLOUD_STARTERS,
-} from "@/lib/openui-cloud/chat-constants";
+import { OPENUI_CLOUD_LOGO_URL, OPENUI_CLOUD_STARTERS } from "@/lib/openui-cloud/chat-constants";
 import { createCloudChatLLM } from "@/lib/openui-cloud/chat-llm";
 import { CLOUD_USER_ID_HEADER, getOrCreateCloudUserId } from "@/lib/openui-cloud/user-id";
 import { useThreadList } from "@openuidev/react-headless";
@@ -168,13 +164,20 @@ export function CloudAgentSurface() {
             />
           }
         />
-        <AgentInterface.ThreadHeader className={styles.cloudThreadHeader}>
-          <DemoAwareModelSwitcher selectedModel={selectedModel} onModelChange={handleModelChange} />
-        </AgentInterface.ThreadHeader>
+        <AgentInterface.ThreadHeader
+          className={styles.cloudThreadHeader}
+          showChatTitle={false}
+          start={
+            <DemoAwareModelSwitcher
+              selectedModel={selectedModel}
+              onModelChange={handleModelChange}
+            />
+          }
+        />
         <AgentInterface.Welcome
           title="Good to see you"
           description="What's on your mind today?"
-          promptTemplates={OPENUI_CLOUD_PROMPT_TEMPLATES}
+          starterVariant="card"
           glowAnimation
         />
         <AgentInterface.Composer>

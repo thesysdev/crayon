@@ -1,21 +1,25 @@
 "use client";
 
+import { OpenUIWordmark } from "@/components/openui-wordmark";
 import { usePersistedModel } from "@/hooks/use-persisted-model";
 import { MODEL_OPTIONS } from "@/lib/models";
-import { OPENUI_LOGOS, PROMPT_TEMPLATES, STARTERS } from "@/lib/starters";
+import { OPENUI_LOGO, STARTERS } from "@/lib/starters";
 import {
   AgentInterface,
-  ModelSwitcher,
   fetchLLM,
   langGraphAdapter,
   langGraphMessageFormat,
+  ModelSwitcher,
   openuiLibrary,
   useOpenuiCloudStorage,
-  useSystemThemeMode,
+  useThemeModePreference,
+  WelcomeMascot,
 } from "@openuidev/react-ui";
 
 export default function CloudChat() {
-  const mode = useSystemThemeMode();
+  // Follows the system theme until the footer toggle is first used, then
+  // remembers the choice.
+  const { setPreference, mode } = useThemeModePreference();
   const [selectedModel, setSelectedModel] = usePersistedModel();
   // The /api/chat route runs the LangGraph agent in-process and streams its
   // native `messages`-mode SSE. Outgoing messages are converted to LangChain
@@ -30,45 +34,48 @@ export default function CloudChat() {
   const storage = useOpenuiCloudStorage({
     token: "/api/frontend-token",
     apiBaseUrl: "https://api.thesys.dev",
-    features: { artifact: false }
+    features: { artifact: false },
   });
 
-  const logoPath = mode === "dark" ? OPENUI_LOGOS.DARK : OPENUI_LOGOS.LIGHT;
-
   return (
-    <div className="openui-cloud-page">
-      <AgentInterface
-        storage={storage}
-        llm={llm}
-        componentLibrary={openuiLibrary}
-        logoUrl={logoPath}
-        theme={{ mode }}
-        starters={STARTERS}
-      >
-        <AgentInterface.MobileHeader
-          agentName=""
-          actions={
-            <ModelSwitcher
-              models={MODEL_OPTIONS}
-              value={selectedModel}
-              onValueChange={setSelectedModel}
-            />
-          }
-        />
-        <AgentInterface.ThreadHeader className="openui-cloud-thread-header">
+    <AgentInterface
+      storage={storage}
+      llm={llm}
+      componentLibrary={openuiLibrary}
+      logoUrl={OPENUI_LOGO}
+      theme={{ mode }}
+      starters={STARTERS}
+    >
+      <AgentInterface.SidebarHeader agentName={<OpenUIWordmark mode={mode} />} />
+      <AgentInterface.SidebarFooter>
+        <AgentInterface.ThemeModeToggle mode={mode} onModeChange={setPreference} />
+      </AgentInterface.SidebarFooter>
+      <AgentInterface.MobileHeader
+        agentName=""
+        logo={
           <ModelSwitcher
             models={MODEL_OPTIONS}
             value={selectedModel}
             onValueChange={setSelectedModel}
           />
-        </AgentInterface.ThreadHeader>
-        <AgentInterface.Welcome
-          title="Good to see you"
-          description="What's on your mind today?"
-          promptTemplates={PROMPT_TEMPLATES}
-          glowAnimation
-        />
-      </AgentInterface>
-    </div>
+        }
+      />
+      <AgentInterface.ThreadHeader
+        showChatTitle={false}
+        start={
+          <ModelSwitcher
+            models={MODEL_OPTIONS}
+            value={selectedModel}
+            onValueChange={setSelectedModel}
+          />
+        }
+      />
+      <AgentInterface.Welcome
+        image={<WelcomeMascot />}
+        title="What's on your mind today?"
+        starterVariant="card"
+        glowAnimation
+      />
+    </AgentInterface>
   );
 }

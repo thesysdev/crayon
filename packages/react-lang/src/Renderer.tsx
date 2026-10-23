@@ -14,10 +14,10 @@ import React, {
   createContext,
   useContext,
   useEffect,
-  useInsertionEffect,
   useMemo,
   useRef,
 } from "react";
+import { Button, Spinner, View, type ButtonProps, type ViewProps } from "./components";
 import { OpenUIContext, useOpenUI, useRenderNode } from "./context";
 import { useOpenUIState } from "./hooks/useOpenUIState";
 import type { ComponentRenderer, Library } from "./library";
@@ -189,37 +189,7 @@ function RenderNodeInner({ el, Comp }: { el: ElementNode; Comp: ComponentRendere
   return <Comp props={el.props} renderNode={renderNode} statementId={el.statementId} />;
 }
 
-// ─── Loading style injection (once per document) ───
-
-let loadingStyleInjected = false;
-function ensureLoadingStyle() {
-  if (loadingStyleInjected || typeof document === "undefined") return;
-  loadingStyleInjected = true;
-  const style = document.createElement("style");
-  style.textContent = `@keyframes openui-spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`;
-  document.head.appendChild(style);
-}
-
 // ─── Public component ───
-
-const DefaultQueryLoader = () => (
-  <div
-    role="status"
-    aria-label="Loading data"
-    style={{
-      position: "absolute",
-      top: 8,
-      right: 8,
-      width: 16,
-      height: 16,
-      border: "2px solid #e5e7eb",
-      borderTopColor: "#3b82f6",
-      borderRadius: "50%",
-      animation: "openui-spin 0.6s linear infinite",
-      zIndex: 10,
-    }}
-  />
-);
 
 function RendererRoot<L extends Library = Library>({
   response,
@@ -235,10 +205,6 @@ function RendererRoot<L extends Library = Library>({
   onError,
   publishObservability,
 }: RendererProps<L>) {
-  useInsertionEffect(() => {
-    ensureLoadingStyle();
-  }, []);
-
   const onParseResultRef = useRef(onParseResult);
   onParseResultRef.current = onParseResult;
 
@@ -331,21 +297,21 @@ export function useRendererQuery(): RendererQueryState {
   return useRendererContext().query;
 }
 
-export type RendererContentSlotProps = Omit<React.ComponentPropsWithRef<"div">, "children">;
+export type RendererContentSlotProps = Omit<ViewProps, "children" | "dimmed">;
 
 /** Displays generated content, preserving mounted components while queries load or fail. */
-function RendererContent({ style, hidden, ...props }: RendererContentSlotProps) {
+function RendererContent({ hidden, ...props }: RendererContentSlotProps) {
   const { root, query } = useRendererContext();
   if (!root) return null;
   return (
-    <div
+    <View
       {...props}
       aria-busy={query.isLoading}
       hidden={hidden || query.errors.length > 0}
-      style={{ opacity: query.isLoading ? 0.7 : 1, transition: "opacity 0.2s ease", ...style }}
+      dimmed={query.isLoading}
     >
       <RenderNode node={root} />
-    </div>
+    </View>
   );
 }
 
@@ -360,7 +326,7 @@ function RendererQueryLoading({ children }: RendererSlotProps) {
     queryLoader,
   } = useRendererContext();
   if (!isLoading || errors.length > 0) return null;
-  return <>{children === undefined ? (queryLoader ?? <DefaultQueryLoader />) : children}</>;
+  return <>{children === undefined ? (queryLoader ?? <Spinner />) : children}</>;
 }
 
 /** Shows the supplied content when queries fail; renders nothing without children. */
@@ -370,24 +336,12 @@ function RendererQueryError({ children }: RendererSlotProps) {
   return <>{children}</>;
 }
 
-export type RendererRetryProps = React.ComponentPropsWithRef<"button">;
+export type RendererRetryProps = ButtonProps;
 
-function RendererRetry({ children, onClick, disabled, ...props }: RendererRetryProps) {
+function RendererRetry({ disabled, ...props }: RendererRetryProps) {
   const { retry, isLoading, errors } = useRendererQuery();
-  const isDisabled = disabled || isLoading || errors.length === 0;
   return (
-    <button
-      type="button"
-      {...props}
-      disabled={isDisabled}
-      onClick={(event: React.MouseEvent<HTMLButtonElement>) => {
-        if (isDisabled || event.defaultPrevented) return;
-        onClick?.(event);
-        if (!event.defaultPrevented) retry();
-      }}
-    >
-      {children}
-    </button>
+    <Button {...props} disabled={disabled || isLoading || errors.length === 0} onActivate={retry} />
   );
 }
 
@@ -395,12 +349,12 @@ function DefaultRendererContent() {
   const { root, query, queryLoader } = useRendererContext();
   if (!root) return null;
   return (
-    <div aria-busy={query.isLoading} style={{ position: "relative" }}>
-      {query.isLoading && (queryLoader ?? <DefaultQueryLoader />)}
-      <div style={{ opacity: query.isLoading ? 0.7 : 1, transition: "opacity 0.2s ease" }}>
+    <View aria-busy={query.isLoading} style={{ position: "relative" }}>
+      {query.isLoading && (queryLoader ?? <Spinner />)}
+      <View dimmed={query.isLoading}>
         <RenderNode node={root} />
-      </div>
-    </div>
+      </View>
+    </View>
   );
 }
 

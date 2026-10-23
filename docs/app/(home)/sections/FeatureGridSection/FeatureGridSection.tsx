@@ -28,6 +28,7 @@ import { ExpandChevron } from "../../components/ExpandChevron";
 import { useSingleOpenAccordion } from "../../components/MobileAccordion/useSingleOpenAccordion";
 import { SectionHeader } from "../../components/SectionHeader/SectionHeader";
 import { CompatibilitySection } from "../CompatibilitySection/CompatibilitySection";
+import { TokenRace } from "../TokenRace/TokenRace";
 import styles from "./FeatureGridSection.module.css";
 
 export type GridFeature = {
@@ -154,50 +155,53 @@ export function FeatureGridSection({
 
   const compatBand = showCompat ? (
     <div className={styles.compat}>
-      <CompatibilitySection embedded />
+      <CompatibilitySection />
     </div>
   ) : null;
 
-  const gridBlock = (
-    <div
-      className={`${styles.grid} ${fadeColumnLines ? styles.gridFadeLines : ""} ${
-        features.length <= desktopColumns ? styles.gridSingleRow : ""
-      } ${flushOuterCards ? styles.gridFlushOuterCards : ""} ${
-        balanceLastRow ? styles.gridBalancedLastRow : ""
-      } ${desktopColumns === 4 ? styles.gridFourColumns : ""}`.trim()}
-    >
-      {lead && <div className={styles.lead}>{lead}</div>}
-      {features.map(({ Icon, icon, title, description }, index) => {
-        const FeatureIcon = Icon ?? (icon ? FEATURE_ICONS[icon] : undefined);
+  /* An empty feature list drops the grid, leaving only the benchmark header
+     (the home page keeps the speed proof without the six-feature grid). */
+  const gridBlock =
+    features.length === 0 && !lead ? null : (
+      <div
+        className={`${styles.grid} ${fadeColumnLines ? styles.gridFadeLines : ""} ${
+          features.length <= desktopColumns ? styles.gridSingleRow : ""
+        } ${flushOuterCards ? styles.gridFlushOuterCards : ""} ${
+          balanceLastRow ? styles.gridBalancedLastRow : ""
+        } ${desktopColumns === 4 ? styles.gridFourColumns : ""}`.trim()}
+      >
+        {lead && <div className={styles.lead}>{lead}</div>}
+        {features.map(({ Icon, icon, title, description }, index) => {
+          const FeatureIcon = Icon ?? (icon ? FEATURE_ICONS[icon] : undefined);
 
-        return (
-          <div
-            className={`${styles.feature} ${FeatureIcon ? "" : styles.featureWithPlaceholder}`.trim()}
-            key={title}
-            {...(mobileAccordion ? accordion.getToggleProps(index) : {})}
-          >
-            <span
-              className={`${styles.icon} ${FeatureIcon ? "" : styles.iconPlaceholder}`.trim()}
-              aria-hidden="true"
+          return (
+            <div
+              className={`${styles.feature} ${FeatureIcon ? "" : styles.featureWithPlaceholder}`.trim()}
+              key={title}
+              {...(mobileAccordion ? accordion.getToggleProps(index) : {})}
             >
-              {FeatureIcon && <FeatureIcon size={28} weight="light" />}
-            </span>
-            <h3 className={styles.featureTitle}>{title}</h3>
-            <ExpandChevron className={styles.chevron} />
-            <p className={styles.featureDescription}>
-              <span className={styles.featureDescriptionInner}>{description}</span>
-            </p>
-          </div>
-        );
-      })}
-    </div>
-  );
+              <span
+                className={`${styles.icon} ${FeatureIcon ? "" : styles.iconPlaceholder}`.trim()}
+                aria-hidden="true"
+              >
+                {FeatureIcon && <FeatureIcon size={28} weight="light" />}
+              </span>
+              <h3 className={styles.featureTitle}>{title}</h3>
+              <ExpandChevron className={styles.chevron} />
+              <p className={styles.featureDescription}>
+                <span className={styles.featureDescriptionInner}>{description}</span>
+              </p>
+            </div>
+          );
+        })}
+      </div>
+    );
 
   return (
     <section
       className={`${styles.section} ${flushSectionPadding ? styles.sectionFlushPadding : ""} ${!mobileAccordion ? styles.sectionStatic : ""}`.trim()}
     >
-      {gridFirst && <div className={styles.gridLead}>{gridBlock}</div>}
+      {gridFirst && gridBlock && <div className={styles.gridLead}>{gridBlock}</div>}
       {compatFirst && compatBand && (
         /* No rule here: the space below the band separates it from the header,
            which reads quieter than a line across the page. */
@@ -206,17 +210,26 @@ export function FeatureGridSection({
       {showHeader && (
         <>
           <div className={styles.header}>
+            {/* Plain words first, numbers second. The figures are the speed
+                benchmark's contact-form screen against json-render
+                (lib/benchmark-data.ts), which TokenRace draws. */}
             <SectionHeader
-              title="Renders 3x faster"
-              subtitle="with 67% fewer tokens"
-              caption="when compared to JSON based formats"
+              title="Screens appear 3x faster"
+              subtitle="with 67% fewer tokens."
+              caption={
+                /* Narrow and quiet, like the captions under the fold headlines. */
+                <span className={styles.speedCaption}>
+                  Fewer tokens means screens show up sooner and cost less to generate.
+                </span>
+              }
             >
+              <TokenRace />
               <div className={styles.ctaWrap}>
                 <BevelButton
                   /* The format view, not the model board: this claim is about how OpenUI
                      compares with other formats, and the chart reads that param on load. */
                   href="/benchmarks?view=formats"
-                  label="View benchmarks"
+                  label="See the benchmark"
                   badge={<ArrowUpRight size={16} weight="bold" />}
                 />
               </div>

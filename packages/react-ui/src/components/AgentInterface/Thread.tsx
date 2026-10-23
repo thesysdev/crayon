@@ -8,7 +8,7 @@ import {
   useToolActivities,
 } from "@openuidev/react-headless";
 import clsx from "clsx";
-import React, { memo, useId, useMemo, useRef } from "react";
+import React, { memo, useId, useLayoutEffect, useMemo, useRef } from "react";
 import { useLayoutContext } from "../../context/LayoutContext";
 import { ScrollVariant, useScrollToBottom } from "../../hooks/useScrollToBottom";
 import {
@@ -18,6 +18,7 @@ import {
   readMessage,
 } from "../../utils/messages";
 import { ToolCallTimeline, type TimelineStep } from "../ToolCall";
+import { TimelineWorkingIndicator } from "../ToolCall/ToolCallTimeline";
 import {
   DetailedViewOverlay,
   DetailedViewPanel,
@@ -33,7 +34,6 @@ import type {
 } from "./_shared/types";
 
 import { Callout } from "../Callout";
-import { DotMatrixLoader } from "../DotMatrixLoader";
 import { IconButton } from "../IconButton";
 import { MarkDownRenderer } from "../MarkDownRenderer";
 import { AgentInterfaceTooltip } from "./_shared/AgentInterfaceTooltip";
@@ -85,20 +85,21 @@ export const ThreadContainer = ({
       className={clsx("openui-agent-thread-container", className, {
         "openui-agent-thread-container--detailed-view-active": isDetailedViewActive,
       })}
-      style={{
-        visibility: isLoadingMessages ? "hidden" : undefined,
-      }}
     >
-      {/* Full-screen loading state while a thread's messages load. The
-          container above hides via `visibility` (keeps layout + scroll state);
-          this overlay opts back in with `visibility: visible`. */}
+      {/* Loading state while a thread's messages load. Only the content below
+          hides (via `visibility`, which keeps layout + scroll state), so the
+          card itself stays on screen around the spinner. */}
       {isLoadingMessages && (
         <AmbientLoader
           className="openui-agent-thread-container__loading"
           label="Loading conversation…"
         />
       )}
-      <div className="openui-agent-thread-wrapper" ref={containerRef}>
+      <div
+        className="openui-agent-thread-wrapper"
+        ref={containerRef}
+        style={{ visibility: isLoadingMessages ? "hidden" : undefined }}
+      >
         {/* Chat panel - always visible */}
         <div
           ref={chatPanelRef}
@@ -313,7 +314,7 @@ export const RenderMessage = memo(
 export const MessageLoading = () => {
   return (
     <div className="openui-agent-thread-message-loading">
-      <DotMatrixLoader variant="compact" />
+      <TimelineWorkingIndicator />
     </div>
   );
 };
@@ -542,6 +543,103 @@ const RenderGroup = ({
   );
 };
 
+/**
+ * Lifts a freshly sent user message up from the composer into its place in the
+ * thread. Runs on the bubble's DOM node (no wrapper), so custom `UserMessage`
+ * renderers animate too and the scroll anchor's sibling checks stay intact.
+ * History loads and thread switches never animate; reduced motion skips it.
+ */
+const USER_MESSAGE_SELECTOR =
+  ".openui-agent-thread-message-user, .openui-shell-thread-message-user";
+
+const SEND_ANIMATION_MAX_OFFSET = 48;
+
+function useUserMessageSendAnimation(
+  containerRef: React.RefObject<HTMLDivElement | null>,
+  messages: Message[],
+  isRunning: boolean,
+) {
+  const lastMessage = messages[messages.length - 1];
+  const sentId = isRunning && lastMessage?.role === "user" ? lastMessage.id : null;
+  const animatedId = useRef<string | null>(null);
+
+  useLayoutEffect(() => {
+    if (!sentId || animatedId.current === sentId) return;
+    animatedId.current = sentId;
+
+    const container = containerRef.current;
+    const bubble = Array.from(
+      container?.querySelectorAll<HTMLElement>(USER_MESSAGE_SELECTOR) ?? [],
+    ).pop();
+    const composer = container
+      ?.closest(".openui-agent-thread-chat-panel")
+      ?.querySelector<HTMLElement>(".openui-agent-thread-composer__input-wrapper");
+    if (!bubble || !composer || typeof bubble.animate !== "function") return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    // Hide now, start two frames later: the scroll anchor measures the bubble's
+    // resting position in a passive effect, and a transform would skew it.
+    bubble.style.opacity = "0";
+    let frame = requestAnimationFrame(() => {
+      frame = requestAnimationFrame(() => {
+        bubble.style.opacity = "";
+        // Rise toward the composer, but only a short hop so it reads as a lift.
+        const distance = composer.getBoundingClientRect().top - bubble.getBoundingClientRect().top;
+        const offset = Math.min(Math.max(distance, 0), SEND_ANIMATION_MAX_OFFSET);
+        bubble.animate(
+          [
+            { transform: `translateY(${offset}px) scale(0.96)`, opacity: 0 },
+            { opacity: 1, offset: 0.3 },
+            { transform: "none", opacity: 1 },
+          ],
+          { duration: 360, easing: "cubic-bezier(0.22, 1, 0.36, 1)" },
+        );
+      });
+    });
+    return () => {
+      cancelAnimationFrame(frame);
+      bubble.style.opacity = "";
+    };
+  }, [sentId, containerRef]);
+}
+
+/**
+ * Flags user bubbles whose text wraps (`data-multiline`) so they can take
+ * roomier vertical padding while a single line stays a compact pill. Works on
+ * the DOM so the default and GenUI user renderers are both covered.
+ */
+const USER_BUBBLE_CONTENT_SELECTOR =
+  ".openui-agent-thread-message-user__content, .openui-shell-thread-message-user__content";
+
+function useMultilineUserBubbles(
+  containerRef: React.RefObject<HTMLDivElement | null>,
+  messages: Message[],
+) {
+  useLayoutEffect(() => {
+    const container = containerRef.current;
+    if (!container || typeof ResizeObserver === "undefined") return;
+
+    const update = (bubble: HTMLElement) => {
+      const style = getComputedStyle(bubble);
+      const lineHeight = Number.parseFloat(style.lineHeight) || 0;
+      const textHeight =
+        bubble.clientHeight -
+        Number.parseFloat(style.paddingTop) -
+        Number.parseFloat(style.paddingBottom);
+      bubble.toggleAttribute("data-multiline", lineHeight > 0 && textHeight > lineHeight * 1.5);
+    };
+
+    const observer = new ResizeObserver((entries) => {
+      entries.forEach((entry) => update(entry.target as HTMLElement));
+    });
+    container.querySelectorAll<HTMLElement>(USER_BUBBLE_CONTENT_SELECTOR).forEach((bubble) => {
+      update(bubble);
+      observer.observe(bubble);
+    });
+    return () => observer.disconnect();
+  }, [containerRef, messages]);
+}
+
 export const Messages = ({
   className,
   loader,
@@ -567,8 +665,12 @@ export const Messages = ({
   // shimmer survives trailing tool messages.
   const lastAssistantId = useMemo(() => getLastAssistantMessageId(messages), [messages]);
 
+  const messagesRef = useRef<HTMLDivElement>(null);
+  useUserMessageSendAnimation(messagesRef, messages, isRunning);
+  useMultilineUserBubbles(messagesRef, messages);
+
   return (
-    <div className={clsx("openui-agent-thread-messages", className)}>
+    <div ref={messagesRef} className={clsx("openui-agent-thread-messages", className)}>
       {groups.map((group) => (
         <RenderGroup
           key={group.messages[0]!.id}
@@ -588,25 +690,7 @@ export const Messages = ({
   );
 };
 
-export const ThreadHeader = ({
-  children,
-  className,
-}: {
-  children?: React.ReactNode;
-  className?: string;
-}) => {
-  return (
-    <div className={clsx("openui-agent-thread-header", className)}>
-      <div className="openui-agent-thread-header__title">{/* Thread title hidden for now. */}</div>
-      <div className="openui-agent-thread-header__actions">
-        {children}
-        <WorkspaceToggleButton />
-      </div>
-    </div>
-  );
-};
-
-const WorkspaceToggleButton = () => {
+export const WorkspaceToggleButton = () => {
   const artifacts = useArtifactList();
   const { isDetailedViewActive } = useActiveDetailedView();
   const { workspaceToggle } = useAgentInterfaceLabels();

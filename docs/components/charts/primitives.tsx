@@ -2,7 +2,6 @@
 
 import { createContext, useContext, useId, useLayoutEffect, useRef, type ReactNode } from "react";
 import { BRAND_MARKS, markViewBox } from "./brand-marks";
-import { MASCOT_SHAPES, MASCOT_VIEWBOX } from "./openui-mascot";
 import s from "./viz.module.css";
 
 export const SLOT = [s.s1, s.s2, s.s3] as const;
@@ -63,22 +62,9 @@ function useReveal(enabled: boolean) {
 }
 
 export function Mark({ id }: { id?: string }) {
-  /* the mascot is the nav's own artwork: baked colours, drawn edge to edge so
-     it rasterises as crisply here as it does in the site header */
   if (id === "openui") {
-    return (
-      <svg className={s.mascot} viewBox={MASCOT_VIEWBOX} aria-hidden>
-        {MASCOT_SHAPES.map((shape, i) => (
-          <path
-            key={i}
-            d={shape.d}
-            fill={shape.fill}
-            stroke={shape.stroke}
-            strokeWidth={shape.strokeWidth}
-          />
-        ))}
-      </svg>
-    );
+    // eslint-disable-next-line @next/next/no-img-element
+    return <img className={s.mascot} src="/shiro-logo.svg" alt="" aria-hidden />;
   }
   const d = id ? BRAND_MARKS[id] : undefined;
   if (!d) return null;

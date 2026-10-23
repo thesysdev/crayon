@@ -1,5 +1,6 @@
 import { ArrowRight } from "@phosphor-icons/react/dist/ssr";
 import Image from "next/image";
+import type { ReactNode } from "react";
 import { BevelButton } from "../../components/Button/BevelButton";
 import styles from "./AutofixSection.module.css";
 
@@ -22,90 +23,121 @@ const PROVIDERS = [
 export function AutofixSection({
   tone = "page",
   headingLevel = "h2",
+  content,
+  actionOnRight = false,
 }: {
+  actionOnRight?: boolean;
   tone?: "page" | "cloud";
   headingLevel?: "h2" | "h3";
+  content?: {
+    title: ReactNode;
+    description: ReactNode;
+    action: { label: string; href: string };
+    visual?: ReactNode;
+  };
 }) {
   const Heading = headingLevel;
 
   return (
-    <section className={`${styles.section} ${tone === "cloud" ? styles.cloud : ""}`.trim()}>
+    <section
+      className={`${styles.section} ${tone === "cloud" ? styles.cloud : ""} ${actionOnRight ? styles.actionOnRight : ""}`.trim()}
+    >
       <div className={styles.banner}>
         <div className={styles.copy}>
           <Heading className={styles.title}>
-            <span className={styles.providerLine}>
-              <span>Keep your existing model provider,</span>
-              <span
-                className={styles.providerStack}
-                aria-label="Works with leading model providers and AI gateways"
-              >
-                {PROVIDERS.map((provider) => (
+            {content?.title ?? (
+              <>
+                <span className={styles.providerLine}>
+                  <span>Keep your existing model provider,</span>
                   <span
-                    className={styles.providerLogo}
-                    key={provider.name}
-                    data-tooltip={provider.name}
-                    aria-label={provider.name}
-                    tabIndex={0}
+                    className={styles.providerStack}
+                    aria-label="Works with leading model providers and AI gateways"
                   >
-                    <Image
-                      className={`${provider.markClass} ${"darkIcon" in provider ? styles.providerLogoLight : ""}`.trim()}
-                      src={provider.icon}
-                      alt=""
-                      width={18}
-                      height={18}
-                    />
-                    {"darkIcon" in provider ? (
-                      <Image
-                        className={`${provider.markClass} ${styles.providerLogoDark}`}
-                        src={provider.darkIcon}
-                        alt=""
-                        width={18}
-                        height={18}
-                      />
-                    ) : null}
+                    {PROVIDERS.map((provider) => (
+                      <span
+                        className={styles.providerLogo}
+                        key={provider.name}
+                        data-tooltip={provider.name}
+                        aria-label={provider.name}
+                        tabIndex={0}
+                      >
+                        <Image
+                          className={`${provider.markClass} ${"darkIcon" in provider ? styles.providerLogoLight : ""}`.trim()}
+                          src={provider.icon}
+                          alt={`${provider.name} logo`}
+                          width={18}
+                          height={18}
+                        />
+                        {"darkIcon" in provider ? (
+                          <Image
+                            className={`${provider.markClass} ${styles.providerLogoDark}`}
+                            src={provider.darkIcon}
+                            alt={`${provider.name} logo`}
+                            width={18}
+                            height={18}
+                          />
+                        ) : null}
+                      </span>
+                    ))}
                   </span>
-                ))}
-              </span>
-            </span>
-            <span className={styles.titleLine}>Add reliability with Autofix.</span>
+                </span>
+                <span className={styles.titleLine}>Add reliability with Autofix.</span>
+              </>
+            )}
           </Heading>
           <p className={styles.description}>
-            Keep your existing model calls, direct or through AI gateways. Add one Autofix API call
-            to repair invalid generations before users see them.
+            {content?.description ??
+              "Keep your existing model calls, direct or through AI gateways. Add one Autofix API call to repair invalid generations before users see them."}
           </p>
-          <BevelButton
-            className={styles.cta}
-            variant="secondary"
-            href="/docs/gateway/api/autofix"
-            label="View docs"
-            badge={<ArrowRight size={16} weight="bold" />}
-          />
+          {!actionOnRight && (
+            <BevelButton
+              className={styles.cta}
+              variant="secondary"
+              href={content?.action.href ?? "/docs/gateway/api/autofix"}
+              label={content?.action.label ?? "View docs"}
+              badge={<ArrowRight size={16} weight="bold" />}
+            />
+          )}
         </div>
 
-        <div
-          className={styles.visual}
-          role="img"
-          aria-label="Invalid generated output corrected into valid UI by Autofix"
-        >
-          <div className={styles.illustration} aria-hidden="true">
-            <Image
-              className={`${styles.illustrationImage} ${styles.illustrationImageLight}`}
-              src="/images/gateway/autofix-illustration-light.webp"
-              alt=""
-              width={1940}
-              height={636}
-              unoptimized
-            />
-            <Image
-              className={`${styles.illustrationImage} ${styles.illustrationImageDark}`}
-              src="/images/gateway/autofix-illustration-dark.webp"
-              alt=""
-              width={1940}
-              height={636}
-              unoptimized
+        {actionOnRight ? (
+          <div className={styles.bannerAction}>
+            <BevelButton
+              className={styles.cta}
+              variant="secondary"
+              href={content?.action.href ?? "/docs/gateway/api/autofix"}
+              label={content?.action.label ?? "View docs"}
+              badge={<ArrowRight size={16} weight="bold" />}
             />
           </div>
-        </div>
+        ) : content ? (
+          <div className={styles.visual}>{content.visual}</div>
+        ) : (
+          <div
+            className={styles.visual}
+            role="img"
+            aria-label="Invalid generated output corrected into valid UI by Autofix"
+          >
+            <div className={styles.illustration} aria-hidden="true">
+              <Image
+                className={`${styles.illustrationImage} ${styles.illustrationImageLight}`}
+                src="/images/gateway/autofix-illustration-light.webp"
+                alt="Invalid generated output corrected into valid UI by Autofix"
+                width={1940}
+                height={636}
+                unoptimized
+              />
+              <Image
+                className={`${styles.illustrationImage} ${styles.illustrationImageDark}`}
+                src="/images/gateway/autofix-illustration-dark.webp"
+                alt="Invalid generated output corrected into valid UI by Autofix"
+                width={1940}
+                height={636}
+                unoptimized
+              />
+            </div>
+          </div>
+        )}
       </div>
     </section>
   );

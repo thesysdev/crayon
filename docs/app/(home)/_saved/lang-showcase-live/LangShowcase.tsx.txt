@@ -1,0 +1,83 @@
+"use client";
+
+import Image from "next/image";
+import { type CSSProperties, useEffect, useRef, useState } from "react";
+import styles from "./LangShowcase.module.css";
+import { F1 } from "./examples/f1";
+import { KALLAX } from "./examples/kallax";
+import { TOKYO } from "./examples/tokyo";
+import { compile, type Example, useStream } from "./stream";
+
+/* The "framework for agent-driven interfaces" showcase: three agents side by
+   side, each on a dithered panel tinted from its Shiro. A panel plays its
+   recording when it has one; until then it renders the answer live, streamed
+   as OpenUI Lang and drawn in HTML block by block. */
+
+const EXAMPLES: Example[] = [KALLAX, F1, TOKYO];
+
+export function LangShowcase() {
+  const [visible, setVisible] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const node = ref.current;
+    if (!node || typeof IntersectionObserver === "undefined") return;
+    const observer = new IntersectionObserver(([entry]) => setVisible(entry.isIntersecting), {
+      threshold: 0.3,
+    });
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <div ref={ref} className={styles.showcase}>
+      {EXAMPLES.map((example) => (
+        <Panel key={example.id} example={example} visible={visible} />
+      ))}
+    </div>
+  );
+}
+
+function Panel({ example, visible }: { example: Example; visible: boolean }) {
+  const { length, ends } = compile(example.segments);
+  const chars = useStream(length, visible && !example.gif);
+  const has = (id: string) => chars >= ends[id];
+  const { Answer } = example;
+
+  return (
+    <section
+      className={styles.panel}
+      style={{ "--accent": example.accent } as CSSProperties}
+      aria-label={example.label}
+    >
+      <header className={styles.panelHead}>
+        <Image
+          className={styles.mascot}
+          src={example.mascot}
+          alt={example.mascotAlt}
+          width={48}
+          height={48}
+          unoptimized
+        />
+        <span className={styles.panelLabel}>{example.label}</span>
+      </header>
+
+      <div className={styles.window}>
+        {example.gif ? (
+          <Image
+            className={styles.recording}
+            src={example.gif}
+            alt={`${example.label} answering: ${example.prompt}`}
+            fill
+            unoptimized
+          />
+        ) : (
+          <div className={styles.previewBody}>
+            <p className={styles.prompt}>{example.prompt}</p>
+            <Answer has={has} />
+          </div>
+        )}
+      </div>
+    </section>
+  );
+}

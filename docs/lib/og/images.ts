@@ -17,27 +17,33 @@ export function publicFileExists(path: string) {
 function cardAssets(card: OgCardData) {
   const assets = ["/shiro-logo.svg"];
   if (card.template === "cover") assets.push(card.cover);
-  else if (card.partnerLogo) assets.push(card.partnerLogo);
+  else if (card.template === "home") assets.push("/og-grain.png");
+  else if (card.template === "card" && card.partnerLogo) assets.push(card.partnerLogo);
   return assets;
 }
 
 /**
- * `/og/<page path>?v=<hash>`. The hash covers the card content, the artwork bytes, and
+ * `/og/<page path>.<png|jpg>?v=<hash>`. The hash covers the card content, the artwork bytes, and
  * `TEMPLATE_VERSION`, so link-preview caches refetch whenever the rendered image would change.
  * The route ignores the query string.
  */
 export function ogImageUrl({ path, card }: OgImage) {
   const hash = createHash("sha256").update(`${TEMPLATE_VERSION}\n${JSON.stringify(card)}`);
   for (const asset of cardAssets(card)) hash.update(readFileSync(publicPath(asset)));
-  return `/og${path}?v=${hash.digest("hex").slice(0, 10)}`;
+  return `${ogImagePath({ path, card })}?v=${hash.digest("hex").slice(0, 10)}`;
+}
+
+/** `/og/<page path>.<png|jpg>`, so the image URL carries a file extension like a static asset. */
+export function ogImagePath({ path, card }: OgImage) {
+  return `/og${path}.${ogImageFormat(card) === "jpeg" ? "jpg" : "png"}`;
 }
 
 /**
- * Blog covers are photographic, so they ship as JPEG to stay small (WhatsApp drops previews for
- * large images). Text cards stay PNG for crisp type.
+ * Blog covers are photographic and the homepage card is covered in grain, so both ship as JPEG
+ * to stay small (WhatsApp drops previews for large images). Text cards stay PNG for crisp type.
  */
 export function ogImageFormat(card: OgCardData) {
-  return card.template === "cover" ? "jpeg" : "png";
+  return card.template === "cover" || card.template === "home" ? "jpeg" : "png";
 }
 
 export function ogImageMetadata(image: OgImage) {

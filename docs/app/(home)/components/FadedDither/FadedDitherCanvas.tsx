@@ -41,18 +41,21 @@ export function FadedDitherCanvas({
   compact = false,
   className,
   style,
+  onReady,
 }: {
   tone?: keyof typeof TONES;
   /* Set when the viewport is phone width. */
   compact?: boolean;
   className?: string;
   style?: CSSProperties;
+  /* Called once the first frame has been drawn. */
+  onReady?: () => void;
 }) {
   const { base, stipple } = TONES[tone];
   const wave = WAVE[compact ? "compact" : "wide"];
 
   return (
-    <Shader className={className} style={style}>
+    <Shader className={className} style={style} onReady={onReady}>
       <SolidColor color={base} />
       <Dither colorB={stipple} pattern="bayer8" threshold={0.41}>
         <SineWave

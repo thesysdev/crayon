@@ -25,7 +25,7 @@ export function ExampleCategory({ id }: { id: ExampleCategoryId }) {
               {/* Brand marks keep their intrinsic aspect ratio, as on the integrations page. */}
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                alt=""
+                alt={`${example.name} logo`}
                 src={example.logo}
                 className={example.logoIsDark ? styles.cardLogoDark : styles.cardLogo}
               />
@@ -33,7 +33,9 @@ export function ExampleCategory({ id }: { id: ExampleCategoryId }) {
             </div>
             <p className={styles.cardDescription}>{example.description}</p>
             <div className={styles.cardLinks}>
-              <RunLocally title={example.title} name={example.name} env={example.env} />
+              {example.runnable ? (
+                <RunLocally title={example.title} name={example.name} env={example.env} />
+              ) : null}
               <CardLink label="Source" href={example.sourceUrl} external />
               {example.guideUrl ? (
                 <Link className={styles.cardLink} href={example.guideUrl}>

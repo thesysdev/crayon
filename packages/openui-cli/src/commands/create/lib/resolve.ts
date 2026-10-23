@@ -10,7 +10,7 @@ import {
   rejectConflictingScaffoldSelectors,
   type ExampleProject,
 } from "./examples-catalog";
-import { resolveAvailableTarget } from "./target-dir";
+import { firstAvailableName, resolveAvailableTarget, resolveCurrentDirTarget } from "./target-dir";
 import type { CreateTelemetryClient } from "./telemetry";
 import {
   DEFAULT_TEMPLATE_KEY,
@@ -20,6 +20,8 @@ import {
   type CatalogOverlay,
   type CatalogTemplate,
 } from "./templates-catalog";
+
+const DEFAULT_PROJECT_NAME = "openui-agent";
 
 export function rejectConflictingImmediateFlags(args: string[]): void {
   const separatorIndex = args.indexOf("--");
@@ -39,29 +41,13 @@ export type CreateCatalog = {
 
 export async function loadCreateCatalog(params: {
   example?: string;
-  template?: TemplateName;
   backendFramework?: OverlayName;
   interactive: boolean;
   onRetry?: (info: RetryAttemptInfo) => void;
 }): Promise<CreateCatalog> {
-  const { example, template: requestedTemplate, backendFramework, interactive, onRetry } = params;
+  const { example, backendFramework, interactive, onRetry } = params;
 
-  rejectConflictingScaffoldSelectors({
-    example,
-    backendFramework,
-    template: requestedTemplate,
-  });
-
-  // Interactive runs always scaffold the Cloud backend; openui-self-hosted stays
-  // available, but only when requested explicitly with --template.
-  if (!interactive && !example && !requestedTemplate) {
-    throw new CreateError(
-      "args_resolution",
-      "Missing required argument --template",
-      "invalid_input",
-      "MISSING_REQUIRED_ARG",
-    );
-  }
+  rejectConflictingScaffoldSelectors({ example, backendFramework });
 
   if (example) {
     const examples = await loadExamplesCatalog({ onRetry });
@@ -74,7 +60,7 @@ export async function loadCreateCatalog(params: {
       loadTemplatesCatalog({ onRetry }),
       loadExamplesCatalog({ onRetry }),
     ]);
-    const template = requestedTemplate ?? DEFAULT_TEMPLATE_KEY;
+    const template = DEFAULT_TEMPLATE_KEY;
     const templateEntry = findCatalogTemplate(catalog, template);
     if (backendFramework) {
       findCatalogOverlay(templateEntry, backendFramework);
@@ -83,7 +69,7 @@ export async function loadCreateCatalog(params: {
   }
 
   const catalog = await loadTemplatesCatalog({ onRetry });
-  const template = requestedTemplate ?? DEFAULT_TEMPLATE_KEY;
+  const template = DEFAULT_TEMPLATE_KEY;
   const templateEntry = findCatalogTemplate(catalog, template);
   if (backendFramework) {
     findCatalogOverlay(templateEntry, backendFramework);
@@ -95,13 +81,28 @@ export async function resolveProjectIdentity(
   requestedName: string | undefined,
   interactive: boolean,
   tel: CreateTelemetryClient,
+): Promise<{ name: string; targetDir: string; dir: string }> {
+  if (requestedName === "." || requestedName === "./") {
+    return { ...resolveCurrentDirTarget(), dir: "." };
+  }
+  const target = await resolveNamedTarget(requestedName, interactive, tel);
+  return { ...target, dir: target.name };
+}
+
+async function resolveNamedTarget(
+  requestedName: string | undefined,
+  interactive: boolean,
+  tel: CreateTelemetryClient,
 ): Promise<{ name: string; targetDir: string }> {
+  if (!requestedName && !interactive) {
+    return resolveAvailableTarget(firstAvailableName(DEFAULT_PROJECT_NAME), interactive, tel);
+  }
   const nameArgs = await resolveArgs(
     {
       name: requestedName
         ? { value: requestedName }
         : {
-            prompt: { type: "input", message: "Project name?", default: "openui-agent" },
+            prompt: { type: "input", message: "Project name?", default: DEFAULT_PROJECT_NAME },
             required: true,
           },
     },
@@ -204,8 +205,6 @@ export async function resolveCreateSelection(params: {
   }
 }
 
-const isInteractiveTerminal = () => Boolean(process.stdin.isTTY && process.stdout.isTTY);
-
 export function resolveImmediate(
   immediate: boolean | undefined,
   noInstall: boolean | undefined,
@@ -225,7 +224,7 @@ export function resolveImmediate(
       source: "flag",
     };
   }
-  if (!interactive || !isInteractiveTerminal()) {
+  if (!interactive) {
     return {
       immediate: false,
       installDependencies: true,
