@@ -592,14 +592,21 @@ Pins and deletes show up immediately everywhere the artifact appears; you don't 
 
 ## Other kinds of artifact
 
-Static artifacts, slides and reports work like live ones, with fewer pieces. They don't use data tools, so they
-need no interpreter (step 4):
+Static artifacts, slides and reports work like live ones, with fewer pieces. What you pass depends on the kind:
 
-| Kind   | Create                                                                           | Render                                        |
-| ------ | -------------------------------------------------------------------------------- | --------------------------------------------- |
-| Static | `openui.artifacts.createStatic({ title, description, prompt, userId, library })` | `<StaticArtifactRenderer response library />` |
-| Slides | `openui.artifacts.createSlides({ title, description, prompt, userId })`          | `<SlidesRenderer response />`                 |
-| Report | `openui.artifacts.createReport({ title, description, prompt, userId })`          | `<ReportRenderer response />`                 |
+| Kind           | `library`           | `tools` |
+| -------------- | ------------------- | ------- |
+| Live           | Yours               | Yours   |
+| Static         | Yours               | None    |
+| Slides, Report | None: they use ours | None    |
+
+None of them use data tools, so they need no interpreter (step 4), and their renderers take no `interpreter`:
+
+| Kind   | Create                                                                           | Edit                                            | Render                                        |
+| ------ | -------------------------------------------------------------------------------- | ----------------------------------------------- | --------------------------------------------- |
+| Static | `openui.artifacts.createStatic({ title, description, prompt, userId, library })` | `openui.artifacts.edit({ id, prompt, userId })` | `<StaticArtifactRenderer response library />` |
+| Slides | `openui.artifacts.createSlides({ title, description, prompt, userId })`          | `openui.artifacts.edit({ id, prompt, userId })` | `<SlidesRenderer response />`                 |
+| Report | `openui.artifacts.createReport({ title, description, prompt, userId })`          | `openui.artifacts.edit({ id, prompt, userId })` | `<ReportRenderer response />`                 |
 
 All the renderers come from the same place as `LiveArtifactRenderer`:
 
@@ -607,5 +614,5 @@ All the renderers come from the same place as `LiveArtifactRenderer`:
 import { ReportRenderer, SlidesRenderer, StaticArtifactRenderer } from "@openuidev/cloud";
 ```
 
-Slides and reports use the built-in libraries, so they take no `library`. All of them return a `toolResponse`, have
-the same two modes and overrides as `LiveArtifactRenderer`, and are edited with `openui.artifacts.edit`.
+All of them return a `toolResponse`, and their renderers have the same two modes, slots and `useArtifact()` as
+`LiveArtifactRenderer`.
