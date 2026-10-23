@@ -53,13 +53,26 @@ A dashboard is built from a component library. Start from the built-in dashboard
 components to it:
 
 ```ts title="src/libraries/dashboard.ts"
+import { defineAction } from "@openuidev/react-lang";
 import { dashboardLibrary as base } from "@openuidev/react-ui/genui-lib";
+import { z } from "zod/v4";
 import { RevenueCard } from "@/components/revenue-card";
 
-export const dashboardLibrary = base.extend({ components: { add: [RevenueCard] } });
+// A custom action your app handles in the browser (step 7).
+export const copyToClipboard = defineAction({
+  name: "CopyToClipboard",
+  description: "Copies text to the clipboard",
+  params: z.object({ text: z.string() }),
+});
+
+export const dashboardLibrary = base.extend({
+  components: { add: [RevenueCard] },
+  actions: { add: [copyToClipboard] },
+});
 ```
 
-You can also [build a library from scratch](/docs/openui-lang/defining-components) with your own components. Your
+You can also [build a library from scratch](/docs/openui-lang/defining-components) with your own components. Add
+[custom actions](/docs/openui-lang/actions) for anything that should happen in the browser, such as copying text. Your
 server uses the library to tell the model which components it can use, and your browser renders with it.
 
 ## 2. Define your data tools
@@ -224,7 +237,8 @@ export async function POST(request: Request) {
 }
 ```
 
-Only live artifacts need this endpoint.
+Register every tool your artifacts call here: artifacts don't run tools in the browser. For something that should
+happen in the browser, such as copying text, use a custom action (step 7). Only live artifacts need this endpoint.
 
 ## 5. Add a frontend token endpoint
 
@@ -284,8 +298,8 @@ export function DashboardOutput({ output }) {
       id={output.id}
       library={dashboardLibrary}
       interpreter={{ url: "/api/interpreter" }}
-      toolProvider={{
-        copy_text: async ({ text }) => navigator.clipboard.writeText(String(text)),
+      onAction={(event) => {
+        if (event.type === "CopyToClipboard") void navigator.clipboard.writeText(event.params.text);
       }}
     />
   );
@@ -295,17 +309,17 @@ export function DashboardOutput({ output }) {
 By default, this shows a preview card with the dashboard's title in the chat. Clicking it opens the dashboard in a
 fullscreen overlay, which closes on Escape or a click outside.
 
-| Prop                     | Description                                                                                                    |
-| ------------------------ | -------------------------------------------------------------------------------------------------------------- |
-| `id`                     | The artifact's `id`                                                                                            |
-| `library`                | Your dashboard library from step 1                                                                             |
-| `interpreter`            | Your interpreter endpoint from step 4, where the artifact's data tools run                                     |
-| `toolProvider`           | Optional. Tools that run in the browser, such as copying to the clipboard. Works as it does in `Renderer`      |
-| `preview`                | Optional. `false` for standalone mode, or a function that renders your own preview. Defaults to a preview card |
-| `renderInHtmlElement`    | Optional. The element the artifact opens in. Defaults to a fullscreen overlay                                  |
-| `isOpen`, `onOpenChange` | Optional. Control whether the artifact is open. Without them, the renderer manages it                          |
-| `defaultOpen`            | Optional. Start open, when the renderer manages the open state                                                 |
-| `className`              | Optional. Added to the artifact's root element                                                                 |
+| Prop                           | Description                                                                                                                                                                  |
+| ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `id`                           | The artifact's `id`                                                                                                                                                          |
+| `library`                      | Your dashboard library from step 1                                                                                                                                           |
+| `interpreter`                  | Your interpreter endpoint from step 4, where the artifact's data tools run                                                                                                   |
+| `preview`                      | Optional. `false` for standalone mode, or a function that renders your own preview. Defaults to a preview card                                                               |
+| `renderInHtmlElement`          | Optional. The element the artifact opens in. Defaults to a fullscreen overlay                                                                                                |
+| `isOpen`, `onOpenChange`       | Optional. Control whether the artifact is open. Without them, the renderer manages it                                                                                        |
+| `defaultOpen`                  | Optional. Start open, when the renderer manages the open state                                                                                                               |
+| `className`                    | Optional. Added to the artifact's root element                                                                                                                               |
+| `onAction`, `onStateUpdate`, … | `LiveArtifactRenderer` extends [`Renderer`](/docs/openui-lang/renderer), so it takes the same props. Handle your [custom actions](/docs/openui-lang/actions) with `onAction` |
 
 While the artifact is being generated, the renderer attaches to its stream and shows it as it comes in. It can
 attach at any time: after a reload, or when the user opens it later, it shows everything generated so far, then
