@@ -393,26 +393,20 @@ slot works three ways:
 - **Omit it:** the built-in default renders.
 - **Pass props:** the default renders with your values. The renderer stays in control.
 - **Pass children:** your children replace the default entirely, and you are in control. Read the state you need
-  with a hook.
+  with `useArtifact()`.
 
 Children win over props, and a dev warning fires if you pass both.
 
 ```tsx
-import {
-  LiveArtifactRenderer,
-  useArtifactChrome,
-  useArtifactPin,
-  useArtifactPreview,
-} from "@openuidev/cloud";
+import { LiveArtifactRenderer, useArtifact } from "@openuidev/cloud";
 
 function PinButton() {
-  const { id } = useArtifactChrome();
-  const { pin } = useArtifactPin();
-  return <button onClick={() => pin(id)}>Pin</button>;
+  const { pinned, pin, unpin } = useArtifact();
+  return <button onClick={pinned ? unpin : pin}>{pinned ? "Unpin" : "Pin"}</button>;
 }
 
 function DashboardCard() {
-  const { title, description, isLoading, isOpen, open, close } = useArtifactPreview();
+  const { title, description, isLoading, isOpen, open, close } = useArtifact();
   return (
     <ArtifactCard
       title={title}
@@ -440,31 +434,33 @@ function DashboardCard() {
 </LiveArtifactRenderer>;
 ```
 
-| Slot                           | Default                                                                                            | Props                            | Hook for your own      |
-| ------------------------------ | -------------------------------------------------------------------------------------------------- | -------------------------------- | ---------------------- |
-| `LiveArtifactRenderer.Preview` | A card with the title, and its own loader while the artifact loads                                 | `title`, `description`, `loader` | `useArtifactPreview()` |
-| `LiveArtifactRenderer.Chrome`  | A bar around the artifact with its title, a loader and, when opened from a preview, a close button | `title`, `actions`               | `useArtifactChrome()`  |
-| `LiveArtifactRenderer.Loading` | A loader over the artifact while it loads                                                          | `label`                          | `useArtifactStatus()`  |
-| `LiveArtifactRenderer.Error`   | A message and a retry button if the artifact fails                                                 | `message`                        | `useArtifactStatus()`  |
+| Slot                           | Default                                                                                            | Props                            |
+| ------------------------------ | -------------------------------------------------------------------------------------------------- | -------------------------------- |
+| `LiveArtifactRenderer.Preview` | A card with the title, and its own loader while the artifact loads                                 | `title`, `description`, `loader` |
+| `LiveArtifactRenderer.Chrome`  | A bar around the artifact with its title, a loader and, when opened from a preview, a close button | `title`, `actions`               |
+| `LiveArtifactRenderer.Loading` | A loader over the artifact while it loads                                                          | `label`                          |
+| `LiveArtifactRenderer.Error`   | A message and a retry button if the artifact fails                                                 | `message`                        |
 
-Each hook tells you what the artifact is doing with three flags:
+### `useArtifact()`
 
-| Flag          | True while                                |
-| ------------- | ----------------------------------------- |
-| `isStreaming` | The artifact's content is being generated |
-| `isFetching`  | Its tools are running, to load live data  |
-| `isLoading`   | Either of the two                         |
+One hook gives your own parts everything about the artifact they are in. Call it anywhere inside a renderer:
 
-| Hook                   | Returns                                                              |
-| ---------------------- | -------------------------------------------------------------------- |
-| `useArtifactPreview()` | `title`, `description`, the three flags, `isOpen`, `open`, `close`   |
-| `useArtifactChrome()`  | `id`, `title`, `description`, the three flags, `standalone`, `close` |
-| `useArtifactStatus()`  | The three flags, `error` if the artifact failed, and `retry`         |
-| `useRendererQuery()`   | `errors` and `retry` for the artifact's live data, as in `Renderer`  |
+| Field                        | Description                                                                       |
+| ---------------------------- | --------------------------------------------------------------------------------- |
+| `id`, `title`, `description` | The artifact                                                                      |
+| `isStreaming`                | True while the artifact's content is being generated                              |
+| `isFetching`                 | True while its tools are running, to load live data                               |
+| `isLoading`                  | True while either is happening                                                    |
+| `error`, `retry`             | Why the artifact failed, if it did, and a function to try again                   |
+| `isOpen`, `open`, `close`    | Whether the artifact is open from its preview, and functions to open and close it |
+| `standalone`                 | Whether the renderer is in standalone mode                                        |
+| `pinned`, `pin`, `unpin`     | Whether the user pinned the artifact, and functions to pin and unpin it           |
+
+For errors in the artifact's live data, `useRendererQuery()` works as it does in `Renderer`.
 
 ## 8. Add an artifacts page
 
-Use the hooks from `@openuidev/cloud` to build a page where users browse their dashboards. The list
+Use `useArtifactList` from `@openuidev/cloud` to build a page where users browse their dashboards. The list
 returns each artifact's `id`, `title` and `description`, which is enough for your cards. Mount the renderer with the
 `id` when the user opens one; it loads the artifact itself.
 
@@ -472,22 +468,15 @@ returns each artifact's `id`, `title` and `description`, which is enough for you
 "use client";
 
 import { useState } from "react";
-import {
-  LiveArtifactRenderer,
-  useArtifactDelete,
-  useArtifactList,
-  useArtifactPin,
-} from "@openuidev/cloud";
+import { LiveArtifactRenderer, useArtifactList } from "@openuidev/cloud";
 import { dashboardLibrary } from "@/libraries/dashboard";
 
 export default function DashboardsPage() {
   const [pinnedOnly, setPinnedOnly] = useState(false);
   const [openId, setOpenId] = useState<string | null>(null);
-  const { artifacts, isLoading, hasMore, loadMore } = useArtifactList({
+  const { artifacts, isLoading, hasMore, loadMore, pin, unpin, deleteArtifact } = useArtifactList({
     filter: { type: "dashboard", pinned: pinnedOnly || undefined, limit: 20 },
   });
-  const { pin, unpin } = useArtifactPin();
-  const { deleteArtifact } = useArtifactDelete();
 
   if (isLoading) return <Spinner />;
 
@@ -524,13 +513,15 @@ export default function DashboardsPage() {
 
 Pins and deletes show up immediately everywhere the artifact appears; you don't need to refetch.
 
-### Hooks
+### `useArtifactList()`
 
-| Hook                          | Returns                                                                                                         |
-| ----------------------------- | --------------------------------------------------------------------------------------------------------------- |
-| `useArtifactList({ filter })` | `artifacts`, `isLoading`, `error`, `hasMore`, `loadMore`. `filter` takes `type`, `pinned`, `search` and `limit` |
-| `useArtifactPin()`            | `pin(id)`, `unpin(id)`                                                                                          |
-| `useArtifactDelete()`         | `deleteArtifact(id)`                                                                                            |
+| Field                                        | Description                                                                  |
+| -------------------------------------------- | ---------------------------------------------------------------------------- |
+| `artifacts`, `isLoading`, `error`            | The current page of artifacts                                                |
+| `hasMore`, `loadMore`                        | Whether there are more, and a function to load the next page                 |
+| `pin(id)`, `unpin(id)`, `deleteArtifact(id)` | Change an artifact. The list and every renderer showing it update right away |
+
+`filter` takes `type`, `pinned`, `search` and `limit`.
 
 ### The artifact object
 
