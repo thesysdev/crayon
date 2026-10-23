@@ -102,6 +102,18 @@ export async function POST(req: NextRequest) {
     });
   }
 
+  // Settles once Pi produces output, or with the error text if it fails first.
+  // A failure before any output (e.g. a rejected key) is returned as a normal
+  // HTTP error the chat shows: plain error text inside the stream isn't valid
+  // OpenUI Lang, so the chat would render an empty reply.
+  let hasOutput = false;
+  let settleFirst: (failure: string | null) => void = () => {};
+  const firstOutcome = new Promise<string | null>((resolve) => (settleFirst = resolve));
+  const markOutput = () => {
+    hasOutput = true;
+    settleFirst(null);
+  };
+
   const encoder = new TextEncoder();
   const stream = new ReadableStream<Uint8Array>({
     start(controller) {
@@ -149,8 +161,10 @@ export async function POST(req: NextRequest) {
         if (event.type === "message_update") {
           const ame = event.assistantMessageEvent;
           if (ame.type === "text_delta" && ame.delta) {
+            markOutput();
             enqueue(ndjsonChunk({ content: ame.delta }));
           } else if (ame.type === "thinking_delta" && ame.delta) {
+            markOutput();
             // Stream the model's reasoning into a single "Thinking" card.
             if (!thinkingId) {
               thinkingId = `thinking-${thinkingSeq++}`;
@@ -170,9 +184,11 @@ export async function POST(req: NextRequest) {
           };
           if (message.role === "assistant" && message.stopReason === "error") {
             const reason = message.errorMessage || "The model request failed.";
-            enqueue(ndjsonChunk({ content: `\n\n**Pi error:** ${reason}` }));
+            if (!hasOutput) settleFirst(reason);
+            else enqueue(ndjsonChunk({ content: `\n\n**Pi error:** ${reason}` }));
           }
         } else if (event.type === "tool_execution_start") {
+          markOutput();
           // Show each tool run (read/bash/edit/write …) and its input.
           enqueue(
             toolStartChunk(
@@ -197,15 +213,26 @@ export async function POST(req: NextRequest) {
           await session.prompt(userText);
         } catch (err) {
           const message = err instanceof Error ? err.message : String(err);
-          enqueue(ndjsonChunk({ content: `\n\n**Pi error:** ${message}` }));
+          if (!hasOutput) settleFirst(message);
+          else enqueue(ndjsonChunk({ content: `\n\n**Pi error:** ${message}` }));
         } finally {
           unsubscribe();
           req.signal.removeEventListener("abort", onAbort);
           finish();
+          settleFirst(null);
         }
       })();
     },
   });
+
+  const failure = await firstOutcome;
+  if (failure) {
+    const status = Number(/^(\d{3})\b/.exec(failure)?.[1]) || 502;
+    return new Response(JSON.stringify({ error: failure }), {
+      status,
+      headers: { "Content-Type": "application/json", "x-conversation-id": conversationId },
+    });
+  }
 
   return new Response(stream, {
     headers: {
