@@ -422,25 +422,45 @@ slot works three ways:
 
 Children win over props, and a dev warning fires if you pass both.
 
+The preview and the chrome are each a slot, and so is every part inside them. Override a part on its own, and the
+rest of the preview or chrome stays as it is:
+
+| Slot                 | Default                                                                                    | Props                               |
+| -------------------- | ------------------------------------------------------------------------------------------ | ----------------------------------- |
+| `Preview`            | The card in the chat: the artifact's title, description and loader                         | `title`, `description`, `className` |
+| `PreviewTitle`       | The artifact's title, in the preview                                                       | `className`                         |
+| `PreviewDescription` | Its description, in the preview                                                            | `className`                         |
+| `PreviewLoader`      | A loader in the preview while the artifact loads                                           | `label`                             |
+| `Chrome`             | The frame around the open artifact: its title, loader and actions, with the artifact below | `title`, `actions`, `className`     |
+| `ChromeTitle`        | The artifact's title, in the chrome                                                        | `className`                         |
+| `ChromeLoader`       | A loader in the chrome while the artifact loads                                            | `label`                             |
+| `ChromeActions`      | The chrome's buttons: any `actions` you pass to `Chrome`, then the close button            | `className`                         |
+| `CloseButton`        | A button that closes the artifact. Renders nothing in standalone mode                      | `label`                             |
+| `Loading`            | A loader over the artifact while it loads                                                  | `label`                             |
+| `Error`              | A message and, when the error can be retried, a retry button                               | `message`                           |
+
+All slots are on `LiveArtifactRenderer`, such as `LiveArtifactRenderer.PreviewLoader`.
+
+### Override one part
+
+Pass a part's slot to change only that part:
+
 ```tsx
 import { LiveArtifactRenderer, useArtifactRenderer } from "@openuidev/cloud";
+
+function DashboardTitle() {
+  const { title, isStreaming } = useArtifactRenderer();
+  return (
+    <h2>
+      {title}
+      {isStreaming && <small> · writing</small>}
+    </h2>
+  );
+}
 
 function OpenInPage() {
   const { id } = useArtifactRenderer();
   return <a href={`/dashboards/${id}`}>Open in page</a>;
-}
-
-function DashboardCard() {
-  const { title, description, isLoading, isOpen, open, close } = useArtifactRenderer();
-  return (
-    <ArtifactCard
-      title={title}
-      description={description}
-      loading={isLoading}
-      active={isOpen}
-      onClick={isOpen ? close : open}
-    />
-  );
 }
 
 <LiveArtifactRenderer
@@ -448,45 +468,40 @@ function DashboardCard() {
   library={dashboardLibrary}
   interpreter={{ url: "/api/interpreter" }}
 >
-  {/* Props: the default loader, with your label */}
-  <LiveArtifactRenderer.Loading label="Building your dashboard…" />
-  {/* Props: the default chrome, with a link added */}
+  {/* Props: the default preview loader, with your label */}
+  <LiveArtifactRenderer.PreviewLoader label="Building your dashboard…" />
+  {/* Props: the default chrome, with a link added to its actions */}
   <LiveArtifactRenderer.Chrome actions={<OpenInPage />} />
-  {/* Children: your own preview card */}
-  <LiveArtifactRenderer.Preview>
-    <DashboardCard />
-  </LiveArtifactRenderer.Preview>
+  {/* Children: your own title in the chrome. Its loader and actions stay */}
+  <LiveArtifactRenderer.ChromeTitle>
+    <DashboardTitle />
+  </LiveArtifactRenderer.ChromeTitle>
 </LiveArtifactRenderer>;
 ```
 
-| Slot                           | Default                                                                                                       | Props                            |
-| ------------------------------ | ------------------------------------------------------------------------------------------------------------- | -------------------------------- |
-| `LiveArtifactRenderer.Preview` | A card with the title, and its own loader while the artifact loads                                            | `title`, `description`, `loader` |
-| `LiveArtifactRenderer.Chrome`  | The frame around the artifact: a bar with its title, a loader and, when opened from a preview, a close button | `title`, `actions`               |
-| `LiveArtifactRenderer.Loading` | A loader over the artifact while it loads                                                                     | `label`                          |
-| `LiveArtifactRenderer.Error`   | A message and, when the error can be retried, a retry button                                                  | `message`                        |
+### Replace the preview or the chrome
 
-### Building blocks
-
-When you replace a slot with your own children, place these inside it:
-
-| Building block                     | Renders                                                               | Place it in                                          |
-| ---------------------------------- | --------------------------------------------------------------------- | ---------------------------------------------------- |
-| `LiveArtifactRenderer.Content`     | The artifact itself. Takes `className`                                | Your own `Chrome`                                    |
-| `LiveArtifactRenderer.CloseButton` | A button that closes the artifact. Renders nothing in standalone mode | Your own `Chrome`, or the default chrome's `actions` |
-
-The default chrome has a close button. For example, your own chrome with its own header:
+When you replace `Preview` or `Chrome` with your own children, place its parts inside yourself, wherever you want
+them. In a chrome, also place `LiveArtifactRenderer.Content`, the artifact itself, which takes `className`:
 
 ```tsx
-import { LiveArtifactRenderer, useArtifactRenderer } from "@openuidev/cloud";
+function DashboardCard() {
+  const { isOpen, open, close } = useArtifactRenderer();
+  return (
+    <button className="dashboard-card" onClick={isOpen ? close : open}>
+      <ChartIcon />
+      <LiveArtifactRenderer.PreviewTitle />
+      <LiveArtifactRenderer.PreviewLoader />
+    </button>
+  );
+}
 
 function DashboardChrome() {
-  const { title, isLoading } = useArtifactRenderer();
   return (
     <div className="dashboard-frame">
       <header>
-        <h2>{title}</h2>
-        {isLoading && <Spinner />}
+        <LiveArtifactRenderer.ChromeTitle />
+        <LiveArtifactRenderer.ChromeLoader />
         <LiveArtifactRenderer.CloseButton />
       </header>
       <LiveArtifactRenderer.Content className="dashboard-body" />
@@ -499,13 +514,18 @@ function DashboardChrome() {
   library={dashboardLibrary}
   interpreter={{ url: "/api/interpreter" }}
 >
+  <LiveArtifactRenderer.Preview>
+    <DashboardCard />
+  </LiveArtifactRenderer.Preview>
   <LiveArtifactRenderer.Chrome>
     <DashboardChrome />
   </LiveArtifactRenderer.Chrome>
 </LiveArtifactRenderer>;
 ```
 
-The `Loading` and `Error` slots render over `Content`, wherever you place it.
+The parts you place still follow your other slots: a `ChromeTitle` slot you pass at the top level replaces the
+`ChromeTitle` inside your own chrome too. The `Loading` and `Error` slots render over `Content`, wherever you place
+it.
 
 ### `useArtifactRenderer()`
 
