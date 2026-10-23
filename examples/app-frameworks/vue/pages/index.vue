@@ -37,6 +37,14 @@ function handleSend(text: string) {
   chat.sendMessage({ text: text.trim() });
 }
 
+function startNewChat() {
+  chat.messages = [];
+  chat.clearError();
+  try {
+    localStorage.removeItem(MESSAGES_KEY);
+  } catch {}
+}
+
 function handleAction(event: ActionEvent) {
   if (event.type === BuiltinActionType.ContinueConversation && event.humanFriendlyMessage) {
     handleSend(event.humanFriendlyMessage);
@@ -70,7 +78,11 @@ const starters = [
 
 <template>
   <div class="h-screen flex flex-col bg-zinc-50 dark:bg-zinc-950">
-    <ChatHeader />
+    <ChatHeader
+      :can-start-new="messages.length > 0 || !!error"
+      :disabled="isLoading"
+      @new-chat="startNewChat"
+    />
 
     <div class="flex-1 overflow-y-auto">
       <WelcomeScreen v-if="messages.length === 0" :starters="starters" @send="handleSend" />

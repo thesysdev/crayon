@@ -28,6 +28,14 @@
     chat.sendMessage({ text: text.trim() });
   }
 
+  function startNewChat() {
+    chat.messages = [];
+    chat.clearError();
+    try {
+      localStorage.removeItem(MESSAGES_KEY);
+    } catch {}
+  }
+
   function handleAction(event: ActionEvent) {
     if (event.type === BuiltinActionType.ContinueConversation && event.humanFriendlyMessage) {
       handleSend(event.humanFriendlyMessage);
@@ -57,7 +65,10 @@
 </script>
 
 <div class="h-screen flex flex-col bg-zinc-50 dark:bg-zinc-950">
-  <ChatHeader />
+  <ChatHeader
+    onNewChat={chat.messages.length > 0 || chat.error ? startNewChat : undefined}
+    disabled={isLoading}
+  />
 
   <div class="flex-1 overflow-y-auto">
     {#if chat.messages.length === 0}
